@@ -1,6 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 import type { ConstructorOfATypedSvelteComponent } from './svelteTypes.js';
-import type { AnimatePresenceProps, MotionConfigProps, MotionProps, SharedLayoutProps } from '../../src/index.js'
+import type { AnimatePresenceProps, MotionConfigProps, MotionProps, SharedLayoutProps } from '../../src/index.js';
 import { M, Motion, AnimatePresence, AnimateSharedLayout, MotionConfig, UseDomEvent } from '../../src/index.js';
 import type { ConditionalGeneric } from '../../src/components/AnimatePresence/types.js';
 import type { CustomMotionComponentConfig } from '../../src/render/dom/motion-proxy.js';
@@ -12,9 +12,9 @@ describe('test components type - svelte 4', () => {
         assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new Motion({target: new Element }));
     })
 
-    // it('should have Svelte legacy component type for M', () => {
-    //     assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new M({target: new Element }));
-    // })
+    it('should have Svelte legacy component type for M', () => {
+        assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new M({target: new Element }));
+    })
 
     it('should have Svelte legacy component type for AnimatePresence', () => {
         assertType<SvelteComponent<AnimatePresenceProps<any>, {}, {default:{ item: ConditionalGeneric<any> }}>>(new AnimatePresence({ target: new Element }));
