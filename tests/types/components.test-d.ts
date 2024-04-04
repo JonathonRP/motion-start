@@ -1,16 +1,20 @@
 import type { SvelteComponent } from 'svelte';
 import type { ConstructorOfATypedSvelteComponent } from './svelteTypes.js';
-import type { AnimatePresenceProps, MotionConfigProps, MotionProps, SharedLayoutProps } from '../../types/index.js'
-import { Motion, AnimatePresence, AnimateSharedLayout, MotionConfig, UseDomEvent } from '../../types/index.js';
-import type { ConditionalGeneric } from '../../types/components/AnimatePresence/index.js';
-import type { CustomMotionComponentConfig } from '../../types/render/dom/motion-proxy.js';
-import type { IsSVG } from '../../types/render/dom/motion.js';
-import type { UseDomEventProps } from '../../types/events/use-dom-event.js';
+import type { AnimatePresenceProps, MotionConfigProps, MotionProps, SharedLayoutProps } from '../../src/index.js'
+import { M, Motion, AnimatePresence, AnimateSharedLayout, MotionConfig, UseDomEvent } from '../../src/index.js';
+import type { ConditionalGeneric } from '../../src/components/AnimatePresence/types.js';
+import type { CustomMotionComponentConfig } from '../../src/render/dom/motion-proxy.js';
+import type { IsSVG } from '../../src/render/dom/motion.js';
+import type { UseDomEventProps } from '../../src/events/use-dom-event.js';
 
 describe('test components type - svelte 4', () => {
     it('should have Svelte legacy component type for Motion', () => {
         assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new Motion({target: new Element }));
     })
+
+    // it('should have Svelte legacy component type for M', () => {
+    //     assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new M({target: new Element }));
+    // })
 
     it('should have Svelte legacy component type for AnimatePresence', () => {
         assertType<SvelteComponent<AnimatePresenceProps<any>, {}, {default:{ item: ConditionalGeneric<any> }}>>(new AnimatePresence({ target: new Element }));
