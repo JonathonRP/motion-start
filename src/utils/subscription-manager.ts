@@ -1,0 +1,59 @@
+/** 
+based on framer-motion@4.1.17,
+Copyright (c) 2018 Framer B.V.
+*/
+declare type GenericHandler = (...args: any) => void;
+export declare class SubscriptionManager<Handler extends GenericHandler> {
+    private subscriptions;
+    add(handler: Handler): () => void;
+    notify(a?: Parameters<Handler>[0], b?: Parameters<Handler>[1], c?: Parameters<Handler>[2]): void;
+    getSize(): number;
+    clear(): void;
+}
+
+/** 
+based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V.
+*/
+import { addUniqueItem, removeItem } from './array.js';
+
+var SubscriptionManager = /** @class */ (function () {
+    function SubscriptionManager() {
+        this.subscriptions = [];
+    }
+    SubscriptionManager.prototype.add = function (handler) {
+        var _this = this;
+        addUniqueItem(this.subscriptions, handler);
+        return function () { return removeItem(_this.subscriptions, handler); };
+    };
+    SubscriptionManager.prototype.notify = function (a, b, c) {
+        var numSubscriptions = this.subscriptions.length;
+        if (!numSubscriptions)
+            return;
+        if (numSubscriptions === 1) {
+            /**
+             * If there's only a single handler we can just call it without invoking a loop.
+             */
+            this.subscriptions[0](a, b, c);
+        }
+        else {
+            for (var i = 0; i < numSubscriptions; i++) {
+                /**
+                 * Check whether the handler exists before firing as it's possible
+                 * the subscriptions were modified during this loop running.
+                 */
+                var handler = this.subscriptions[i];
+                handler && handler(a, b, c);
+            }
+        }
+    };
+    SubscriptionManager.prototype.getSize = function () {
+        return this.subscriptions.length;
+    };
+    SubscriptionManager.prototype.clear = function () {
+        this.subscriptions.length = 0;
+    };
+    return SubscriptionManager;
+}());
+
+export { SubscriptionManager };
