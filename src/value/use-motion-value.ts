@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from ".";
+import { MotionValue } from "./index.js";
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.
  *
@@ -24,7 +24,5 @@ import { MotionValue } from ".";
  *
  * @public
  */
-export declare function useMotionValue<T>(initial: T): MotionValue<T>;
-
-export { motionValue as useMotionValue } from '.';
+export { motionValue as useMotionValue } from './index.js';
 //export { default as UseMotionValue } from './UseMotionValue.svelte';
