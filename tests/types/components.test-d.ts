@@ -2,7 +2,7 @@ import type { SvelteComponent } from 'svelte';
 import type { ConstructorOfATypedSvelteComponent } from './svelteTypes.js';
 import type { AnimatePresenceProps, MotionConfigProps, MotionProps, SharedLayoutProps } from '../../src/index.js';
 import { M, Motion, AnimatePresence, AnimateSharedLayout, MotionConfig, UseDomEvent } from '../../src/index.js';
-import type { ConditionalGeneric } from '../../src/components/AnimatePresence/types.js';
+import type { ConditionalGeneric } from '../../src/components/AnimatePresence/index.js';
 import type { CustomMotionComponentConfig } from '../../src/render/dom/motion-proxy.js';
 import type { IsSVG } from '../../src/render/dom/motion.js';
 import type { UseDomEventProps } from '../../src/events/use-dom-event.js';

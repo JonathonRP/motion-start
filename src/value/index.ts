@@ -1,80 +1,93 @@
 /** 
+based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V.
+*/
+import { fixed } from '../utils/fix-process-env.js';
+import sync, { getFrameData } from 'framesync';
+import { velocityPerSecond } from 'popmotion';
+import { SubscriptionManager } from '../utils/subscription-manager.js';
+/** 
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { SubscriptionManager } from "../utils/subscription-manager";
 import type { Writable, Unsubscriber } from 'svelte/store' 
-export declare type Transformer<T> = (v: T) => T;
+export type Transformer<T> = (v: T) => T;
 /**
  * @public
  */
-export declare type Subscriber<T> = (v: T) => void;
+export type Subscriber<T> = (v: T) => void;
 /**
  * @public
  */
-export declare type PassiveEffect<T> = (v: T, safeSetter: (v: T) => void) => void;
-export declare type StartAnimation = (complete: () => void) => () => void;
+export type PassiveEffect<T> = (v: T, safeSetter: (v: T) => void) => void;
+export type StartAnimation = (complete: () => void) => (() => void) | undefined;
 /**
  * `MotionValue` is used to track the state and velocity of motion values.
  *
  * @public
  */
-export declare class MotionValue<V = any> implements Writable<V> {
+export class MotionValue<V = any> implements Writable<V> {
+    _this = this;
+
     /**
      * Subscribe method to make MotionValue compatible with Svelte store. Returns a unsubscribe function.
      * Same as onChange.
      *      
      * @public
      */
-    subscribe: (this: void, run: Subscriber<V>) => Unsubscriber;
+    subscribe(this: void & MotionValue<V>, subscription: Subscriber<V>): Unsubscriber {
+        return this.onChange(subscription);
+    };
     /**
      * Update method to make MotionValue compatible with Svelte writable store
      * 
      * @public
      */
-    update: (cb:(value:V) => V) => void;
+    update(cb:(value: V) => V): void {
+        this.set(cb(this.get()));
+    }
     /**
      * The current state of the `MotionValue`.
      *
      * @internal
      */
-    private current;
+    private current: V;
     /**
      * The previous state of the `MotionValue`.
      *
      * @internal
      */
-    private prev;
+    private prev: V;
     /**
      * Duration, in milliseconds, since last updating frame.
      *
      * @internal
      */
-    private timeDelta;
+    private timeDelta = 0;
     /**
      * Timestamp of the last time this `MotionValue` was updated.
      *
      * @internal
      */
-    private lastUpdated;
+    private lastUpdated = 0;
     /**
      * Functions to notify when the `MotionValue` updates.
      *
      * @internal
      */
-    private updateSubscribers;
+    private updateSubscribers = new SubscriptionManager()
     /**
      * Functions to notify when the velocity updates.
      *
      * @internal
      */
-    velocityUpdateSubscribers: SubscriptionManager<Subscriber<number>>;
+    velocityUpdateSubscribers: SubscriptionManager<Subscriber<number>> = new SubscriptionManager();
     /**
      * Functions to notify when the `MotionValue` updates and `render` is set to `true`.
      *
      * @internal
      */
-    private renderSubscribers;
+    private renderSubscribers = new SubscriptionManager();
     /**
      * Add a passive effect to this `MotionValue`.
      *
@@ -84,13 +97,13 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    private passiveEffect?;
+    private passiveEffect?: PassiveEffect<V>;
     /**
      * A reference to the currently-controlling Popmotion animation
      *
      * @internal
      */
-    private stopAnimation?;
+    private stopAnimation?: (() => void) | null | undefined;
     /**
      * Tracks whether this value can output a velocity. Currently this is only true
      * if the value is numerical, but we might be able to widen the scope here and support
@@ -98,7 +111,11 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    private canTrackVelocity;
+    private canTrackVelocity = false;
+
+    private onSubscription = () => { }
+    private onUnsubscription = () => { }
+
     /**
      * @param init - The initiating value
      * @param startStopNotifier - a function that is called, once the first subscriber is added to this motion value.
@@ -108,7 +125,28 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    constructor(init: V, startStopNotifier: ()=>()=>void);
+    constructor(init: V, startStopNotifier: ()=>()=>void) {
+        this.prev = this.current = init;
+        this.canTrackVelocity = isFloat(this.current);
+        
+        if (startStopNotifier) {
+            this.onSubscription = () => {
+                if (this.updateSubscribers.getSize() + this.velocityUpdateSubscribers.getSize() + this.renderSubscribers.getSize() === 0) {
+
+                    const unsub = startStopNotifier()
+                    this.onUnsubscription = () => { }
+                    if (unsub) {
+                        this.onUnsubscription = () => {
+                            if (this.updateSubscribers.getSize() + this.velocityUpdateSubscribers.getSize() + this.renderSubscribers.getSize() === 0) {
+                                unsub()
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
     /**
      * Adds a function that will be notified when the `MotionValue` is updated.
      *
@@ -153,8 +191,19 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @public
      */
-    onChange(subscription: Subscriber<V>): () => void;
-    clearListeners(): void;
+    onChange(subscription: Subscriber<V>): () => void {
+        this.onSubscription();
+        const unsub = this.updateSubscribers.add(subscription);
+        return () => {
+            unsub()
+            this.onUnsubscription()
+
+        }
+    }
+    clearListeners(): void {
+        this.updateSubscribers.clear();
+        this.onUnsubscription()
+    }
     /**
      * Adds a function that will be notified when the `MotionValue` requests a render.
      *
@@ -163,13 +212,24 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    onRenderRequest(subscription: Subscriber<V>): () => void;
+    onRenderRequest(subscription: Subscriber<V>): () => void {
+        this.onSubscription()
+        // Render immediately
+        subscription(this.get());
+        const unsub = this.renderSubscribers.add(subscription);
+        return () => {
+            unsub()
+            this.onUnsubscription()
+        }
+    }
     /**
      * Attaches a passive effect to the `MotionValue`.
      *
      * @internal
      */
-    attach(passiveEffect: PassiveEffect<V>): void;
+    attach(passiveEffect: PassiveEffect<V>): void {
+        this.passiveEffect = passiveEffect;
+    }
     /**
      * Sets the state of the `MotionValue`.
      *
@@ -185,8 +245,39 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @public
      */
-    set(v: V, render?: boolean): void;
-    updateAndNotify: (v: V, render?: boolean) => void;
+    set(v: V, render?: boolean): void {
+        if (render === void 0) { render = true; }
+        if (!render || !this.passiveEffect) {
+            this.updateAndNotify(v, render);
+        }
+        else {
+            this.passiveEffect(v, this.updateAndNotify);
+        }
+    }
+    updateAndNotify(v: V, render?: boolean): void {
+        if (render === void 0) { render = true; }
+        this.prev = this.current;
+        this.current = v;
+        // Update timestamp
+        var _a = getFrameData(), delta = _a.delta, timestamp = _a.timestamp;
+        if (this.lastUpdated !== timestamp) {
+            this.timeDelta = delta;
+            this.lastUpdated = timestamp;
+            sync.postRender(this.scheduleVelocityCheck);
+        }
+        // Update update subscribers
+        if (this.prev !== this.current) {
+            this.updateSubscribers.notify(this.current);
+        }
+        // Update velocity subscribers
+        if (this.velocityUpdateSubscribers.getSize()) {
+            this.velocityUpdateSubscribers.notify(this.getVelocity());
+        }
+        // Update render subscribers
+        if (render) {
+            this.renderSubscribers.notify(this.current);
+        }
+    }
     /**
      * Returns the latest state of `MotionValue`
      *
@@ -194,11 +285,18 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @public
      */
-    get(): V;
+    get(): V {
+        this.onSubscription()
+        const curr = this.current;
+        this.onUnsubscription()
+        return curr
+    }
     /**
      * @public
      */
-    getPrevious(): V;
+    getPrevious(): V {
+        return this.prev;
+    }
     /**
      * Returns the latest velocity of `MotionValue`
      *
@@ -206,7 +304,17 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @public
      */
-    getVelocity(): number;
+    getVelocity(): number {
+        // This could be isFloat(this.prev) && isFloat(this.current), but that would be wasteful
+        this.onSubscription()
+        const vel = this.canTrackVelocity
+            ? // These casts could be avoided if parseFloat would be typed better
+            velocityPerSecond(parseFloat(String(this.current)) -
+                parseFloat(String(this.prev)), this.timeDelta)
+            : 0;
+        this.onUnsubscription()
+        return vel;
+    }
     /**
      * Schedule a velocity check for the next frame.
      *
@@ -215,7 +323,7 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    private scheduleVelocityCheck;
+    private scheduleVelocityCheck() { return sync.postRender(this.velocityCheck); }
     /**
      * Updates `prev` with `current` if the value hasn't been updated this frame.
      * This ensures velocity calculations return `0`.
@@ -225,8 +333,14 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    private velocityCheck;
-    hasAnimated: boolean;
+    private velocityCheck(_a: { timestamp: any; }) {
+        var timestamp = _a.timestamp;
+        if (timestamp !== this.lastUpdated) {
+            this.prev = this.current;
+            this.velocityUpdateSubscribers.notify(this.getVelocity());
+        }
+    }
+    hasAnimated: boolean = false;
     /**
      * Registers a new animation to control this `MotionValue`. Only one
      * animation can drive a `MotionValue` at one time.
@@ -239,374 +353,35 @@ export declare class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    start(animation: StartAnimation): Promise<void>;
-    /**
-     * Stop the currently active animation.
-     *
-     * @public
-     */
-    stop(): void;
-    /**
-     * Returns `true` if this value is currently animating.
-     *
-     * @public
-     */
-    isAnimating(): boolean;
-    private clearAnimation;
-    /**
-     * Destroy and clean up subscribers to this `MotionValue`.
-     *
-     * The `MotionValue` hooks like `useMotionValue` and `useTransform` automatically
-     * handle the lifecycle of the returned `MotionValue`, so this method is only necessary if you've manually
-     * created a `MotionValue` via the `motionValue` function.
-     *
-     * @public
-     */
-    destroy(): void;
-}
-/**
- * @internal
- */
-export declare function motionValue<V>(init: V): MotionValue<V>;
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { fixed } from '../utils/fix-process-env.js';
-import sync, { getFrameData } from 'framesync';
-import { velocityPerSecond } from 'popmotion';
-import { SubscriptionManager } from '../utils/subscription-manager.js';
-
-var isFloat = function (value) {
-    return !isNaN(parseFloat(value));
-};
-/**
- * `MotionValue` is used to track the state and velocity of motion values.
- *
- * @public
- */
-var MotionValue = /** @class */ (function () {
-    /**
-     * @param init - The initiating value
-     * @param config - Optional configuration options
-     *
-     * -  `transformer`: A function to transform incoming values with.
-     *
-     * @internal
-     */
-    function MotionValue(init, startStopNotifier) {
-        var _this = this;
-        /**
-         * Duration, in milliseconds, since last updating frame.
-         *
-         * @internal
-         */
-        this.timeDelta = 0;
-        /**
-         * Timestamp of the last time this `MotionValue` was updated.
-         *
-         * @internal
-         */
-        this.lastUpdated = 0;
-        /**
-         * Functions to notify when the `MotionValue` updates.
-         *
-         * @internal
-         */
-        this.updateSubscribers = new SubscriptionManager();
-        /**
-         * Functions to notify when the velocity updates.
-         *
-         * @internal
-         */
-        this.velocityUpdateSubscribers = new SubscriptionManager();
-        /**
-         * Functions to notify when the `MotionValue` updates and `render` is set to `true`.
-         *
-         * @internal
-         */
-        this.renderSubscribers = new SubscriptionManager();
-        /**
-         * Tracks whether this value can output a velocity. Currently this is only true
-         * if the value is numerical, but we might be able to widen the scope here and support
-         * other value types.
-         *
-         * @internal
-         */
-        this.canTrackVelocity = false;
-        this.updateAndNotify = function (v, render) {
-            if (render === void 0) { render = true; }
-            _this.prev = _this.current;
-            _this.current = v;
-            // Update timestamp
-            var _a = getFrameData(), delta = _a.delta, timestamp = _a.timestamp;
-            if (_this.lastUpdated !== timestamp) {
-                _this.timeDelta = delta;
-                _this.lastUpdated = timestamp;
-                sync.postRender(_this.scheduleVelocityCheck);
-            }
-            // Update update subscribers
-            if (_this.prev !== _this.current) {
-                _this.updateSubscribers.notify(_this.current);
-            }
-            // Update velocity subscribers
-            if (_this.velocityUpdateSubscribers.getSize()) {
-                _this.velocityUpdateSubscribers.notify(_this.getVelocity());
-            }
-            // Update render subscribers
-            if (render) {
-                _this.renderSubscribers.notify(_this.current);
-            }
-        };
-        /**
-         * Schedule a velocity check for the next frame.
-         *
-         * This is an instanced and bound function to prevent generating a new
-         * function once per frame.
-         *
-         * @internal
-         */
-        this.scheduleVelocityCheck = function () { return sync.postRender(_this.velocityCheck); };
-        /**
-         * Updates `prev` with `current` if the value hasn't been updated this frame.
-         * This ensures velocity calculations return `0`.
-         *
-         * This is an instanced and bound function to prevent generating a new
-         * function once per frame.
-         *
-         * @internal
-         */
-        this.velocityCheck = function (_a) {
-            var timestamp = _a.timestamp;
-            if (timestamp !== _this.lastUpdated) {
-                _this.prev = _this.current;
-                _this.velocityUpdateSubscribers.notify(_this.getVelocity());
-            }
-        };
-        this.hasAnimated = false;
-        this.prev = this.current = init;
-        this.canTrackVelocity = isFloat(this.current);
-        this.onSubscription = () => { }
-        this.onUnsubscription = () => { }
-        if (startStopNotifier) {
-            this.onSubscription = () => {
-                if (this.updateSubscribers.getSize() + this.velocityUpdateSubscribers.getSize() + this.renderSubscribers.getSize() === 0) {
-
-                    const unsub = startStopNotifier()
-                    this.onUnsubscription = () => { }
-                    if (unsub) {
-                        this.onUnsubscription = () => {
-                            if (this.updateSubscribers.getSize() + this.velocityUpdateSubscribers.getSize() + this.renderSubscribers.getSize() === 0) {
-                                unsub()
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-    /**
-     * Adds a function that will be notified when the `MotionValue` is updated.
-     *
-     * It returns a function that, when called, will cancel the subscription.
-     *
-     * When calling `onChange` inside a React component, it should be wrapped with the
-     * `useEffect` hook. As it returns an unsubscribe function, this should be returned
-     * from the `useEffect` function to ensure you don't add duplicate subscribers..
-     *
-     * @motion
-     *
-     * ```jsx
-     * export const MyComponent = () => {
-     *   const x = useMotionValue(0)
-     *   const y = useMotionValue(0)
-     *   const opacity = useMotionValue(1)
-     *
-     *   useEffect(() => {
-     *     function updateOpacity() {
-     *       const maxXY = Math.max(x.get(), y.get())
-     *       const newOpacity = transform(maxXY, [0, 100], [1, 0])
-     *       opacity.set(newOpacity)
-     *     }
-     *
-     *     const unsubscribeX = x.onChange(updateOpacity)
-     *     const unsubscribeY = y.onChange(updateOpacity)
-     *
-     *     return () => {
-     *       unsubscribeX()
-     *       unsubscribeY()
-     *     }
-     *   }, [])
-     *
-     *   return <MotionDiv style={{ x }} />
-     * }
-     * ```
-     *
-     * @internalremarks
-     *
-     * We could look into a `useOnChange` hook if the above lifecycle management proves confusing.
-     *
-     * ```jsx
-     * useOnChange(x, () => {})
-     * ```
-     *
-     * @param subscriber - A function that receives the latest value.
-     * @returns A function that, when called, will cancel this subscription.
-     *
-     * @public
-     */
-    MotionValue.prototype.onChange = function (subscription) {
-        this.onSubscription();
-        const unsub = this.updateSubscribers.add(subscription);
-        return () => {
-            unsub()
-            this.onUnsubscription()
-
-        }
-    };
-    /** Add subscribe method for Svelte store interface */
-    MotionValue.prototype.subscribe = function (subscription) {
-        return this.onChange(subscription);
-    };
-
-    MotionValue.prototype.clearListeners = function () {
-        this.updateSubscribers.clear();
-        this.onUnsubscription()
-    };
-    /**
-     * Adds a function that will be notified when the `MotionValue` requests a render.
-     *
-     * @param subscriber - A function that's provided the latest value.
-     * @returns A function that, when called, will cancel this subscription.
-     *
-     * @internal
-     */
-    MotionValue.prototype.onRenderRequest = function (subscription) {
-        this.onSubscription()
-        // Render immediately
-        subscription(this.get());
-        const unsub = this.renderSubscribers.add(subscription);
-        return () => {
-            unsub()
-            this.onUnsubscription()
-        }
-    };
-    /**
-     * Attaches a passive effect to the `MotionValue`.
-     *
-     * @internal
-     */
-    MotionValue.prototype.attach = function (passiveEffect) {
-        this.passiveEffect = passiveEffect;
-    };
-    /**
-     * Sets the state of the `MotionValue`.
-     *
-     * @remarks
-     *
-     * ```jsx
-     * const x = useMotionValue(0)
-     * x.set(10)
-     * ```
-     *
-     * @param latest - Latest value to set.
-     * @param render - Whether to notify render subscribers. Defaults to `true`
-     *
-     * @public
-     */
-    MotionValue.prototype.set = function (v, render) {
-        if (render === void 0) { render = true; }
-        if (!render || !this.passiveEffect) {
-            this.updateAndNotify(v, render);
-        }
-        else {
-            this.passiveEffect(v, this.updateAndNotify);
-        }
-    };
-    /** Add update method for Svelte Store behavior */
-    MotionValue.prototype.update = function (v) {
-        this.set(v(this.get()));
-    }
-    /**
-     * Returns the latest state of `MotionValue`
-     *
-     * @returns - The latest state of `MotionValue`
-     *
-     * @public
-     */
-    MotionValue.prototype.get = function () {
-        this.onSubscription()
-        const curr = this.current;
-        this.onUnsubscription()
-        return curr
-    };
-    /**
-     * @public
-     */
-    MotionValue.prototype.getPrevious = function () {
-        return this.prev;
-    };
-    /**
-     * Returns the latest velocity of `MotionValue`
-     *
-     * @returns - The latest velocity of `MotionValue`. Returns `0` if the state is non-numerical.
-     *
-     * @public
-     */
-    MotionValue.prototype.getVelocity = function () {
-        // This could be isFloat(this.prev) && isFloat(this.current), but that would be wasteful
-        this.onSubscription()
-        const vel = this.canTrackVelocity
-            ? // These casts could be avoided if parseFloat would be typed better
-            velocityPerSecond(parseFloat(this.current) -
-                parseFloat(this.prev), this.timeDelta)
-            : 0;
-        this.onUnsubscription()
-        return vel;
-    };
-    /**
-     * Registers a new animation to control this `MotionValue`. Only one
-     * animation can drive a `MotionValue` at one time.
-     *
-     * ```jsx
-     * value.start()
-     * ```
-     *
-     * @param animation - A function that starts the provided animation
-     *
-     * @internal
-     */
-    MotionValue.prototype.start = function (animation) {
+    start(animation: StartAnimation): Promise<void> {
         var _this = this;
         this.stop();
         return new Promise(function (resolve) {
             _this.hasAnimated = true;
             _this.stopAnimation = animation(resolve);
         }).then(function () { return _this.clearAnimation(); });
-    };
+    }
     /**
      * Stop the currently active animation.
      *
      * @public
      */
-    MotionValue.prototype.stop = function () {
+    stop(): void {
         if (this.stopAnimation)
             this.stopAnimation();
         this.clearAnimation();
-    };
+    }
     /**
      * Returns `true` if this value is currently animating.
      *
      * @public
      */
-    MotionValue.prototype.isAnimating = function () {
+    isAnimating(): boolean {
         return !!this.stopAnimation;
-    };
-    MotionValue.prototype.clearAnimation = function () {
+    }
+    private clearAnimation() {
         this.stopAnimation = null;
-    };
+    }
     /**
      * Destroy and clean up subscribers to this `MotionValue`.
      *
@@ -616,20 +391,22 @@ var MotionValue = /** @class */ (function () {
      *
      * @public
      */
-    MotionValue.prototype.destroy = function () {
+    destroy(): void {
         this.updateSubscribers.clear();
         this.renderSubscribers.clear();
         this.stop();
         this.onUnsubscription()
-    };
-    return MotionValue;
-}());
+    }
+}
+
+var isFloat = function (value: string) {
+    return !isNaN(parseFloat(value));
+};
+
 /**
  * @internal
  */
-function motionValue(init, startStopNotifier) {
+export function motionValue<V>(init: V, startStopNotifier: () => () => void): MotionValue<V> {
     return new MotionValue(init, startStopNotifier);
 }
-
-export { MotionValue, motionValue };
 

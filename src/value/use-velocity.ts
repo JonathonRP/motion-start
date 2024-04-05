@@ -3,7 +3,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from ".";
+import { MotionValue } from "./index.js";
+import { useMotionValue } from "./use-motion-value.js"
 /**
  * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.
  *
@@ -15,28 +16,9 @@ import { MotionValue } from ".";
  *
  * @public
  */
-export declare function useVelocity(value: MotionValue<number>): 
-    MotionValue<number> & { reset: (value: MotionValue<number>) => void };
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { useMotionValue } from "./use-motion-value"
-/**
- * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.
- *
- * ```javascript
- * const x = useMotionValue(0)
- * const xVelocity = useVelocity(x)
- * const xAcceleration = useVelocity(xVelocity)
- * ```
- *
- * @public
- */
-export const useVelocity = (value) => {
+export const useVelocity = (value : MotionValue<number>): MotionValue<number> & { reset: (value: MotionValue<number>) => void } => {
     let val = value;
-    let cleanup;
+    let cleanup: () => void;
     
     const velocity = useMotionValue(value.getVelocity(),()=>{
         cleanup?.();
@@ -49,9 +31,9 @@ export const useVelocity = (value) => {
     });
 
     
-    const reset = (valu) => {
+    const reset = (value: MotionValue<number>): void => {
         cleanup?.();
-        val = valu
+        val = value
         cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
             velocity.set(newVelocity);
         })
