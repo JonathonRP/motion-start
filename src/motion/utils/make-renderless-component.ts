@@ -2,16 +2,14 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { FeatureProps } from "../features/types";
-export declare const makeRenderlessComponent: <P = FeatureProps>(hook: Function) => (props: P) => null;
-
+import type { FeatureProps } from "../features/types";
 
 /** 
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 
-var makeRenderlessComponent = function (hook) { return function (props) {
+var makeRenderlessComponent = function <P = FeatureProps>(hook: Function) { return function (props: P) {
     hook(props);
     return null;
 }; };
