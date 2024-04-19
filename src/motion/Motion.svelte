@@ -1,8 +1,8 @@
-<script>
-    /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
+
+<script lang="ts">
+    import type { MotionProps } from "./index.js";
     import { MotionConfigContext } from "../context/MotionConfigContext";
     import { UseVisualElement } from "./utils/use-visual-element";
     import { UseFeatures } from "./features/use-features";
@@ -17,74 +17,78 @@ Copyright (c) 2018 Framer B.V.
     import { useMotionRef } from "./utils/use-motion-ref.js";
     import ScaleCorrectionProvider from "../context/ScaleCorrectionProvider.svelte";
 
+    type $$Props = MotionProps;
 
-    export let isSVG = false,
-        forwardMotionProps = false,
-        externalRef = undefined,
-        targetEl=undefined;/*
-        initial = undefined,
-        style = undefined,
-        transformTemplate = undefined,
+    // component props
+    export let initial: $$Props['initial'] = undefined,
+        style: $$Props['style'] = undefined,
+        transformTemplate: $$Props['transformTemplate'] = undefined,
         transformValues = undefined,
         //AnimationProps
-        animate = undefined,
-        exit = undefined,
-        variants = undefined,
-        transition = undefined,
+        animate: $$Props['animate'] = undefined,
+        exit: $$Props['exit'] = undefined,
+        variants: $$Props['variants'] = undefined,
+        transition: $$Props['transition'] = undefined,
         //VisualElementLifecycles
-        onViewportBoxUpdate = undefined,
-        onBeforeLayoutMeasure = undefined,
-        onLayoutMeasure = undefined,
-        onUpdate = undefined,
-        onAnimationStart = undefined,
-        onAnimationComplete = undefined,
-        onLayoutAnimationComplete = undefined,
+        onViewportBoxUpdate: $$Props['onViewportBoxUpdate'] = undefined,
+        onBeforeLayoutMeasure: $$Props['onBeforeLayoutMeasure'] = undefined,
+        onLayoutMeasure: $$Props['onLayoutMeasure'] = undefined,
+        onUpdate: $$Props['onUpdate'] = undefined,
+        onAnimationStart: $$Props['onAnimationStart'] = undefined,
+        onAnimationComplete: $$Props['onAnimationComplete'] = undefined,
+        onLayoutAnimationComplete: $$Props['onLayoutAnimationComplete'] = undefined,
         //GestureHandlers
         // PanHandlers
-        onPan = undefined,
-        onPanStart = undefined,
-        onPanSessionStart = undefined,
-        onPanEnd = undefined,
+        onPan: $$Props['onPan'] = undefined,
+        onPanStart: $$Props['onPanStart'] = undefined,
+        onPanSessionStart: $$Props['onPanSessionStart'] = undefined,
+        onPanEnd: $$Props['onPanEnd'] = undefined,
         // TapHandlers
-        onTap = undefined,
-        onTapStart = undefined,
-        onTapCancel = undefined,
-        whileTap = undefined,
+        onTap: $$Props['onTap'] = undefined,
+        onTapStart: $$Props['onTapStart'] = undefined,
+        onTapCancel: $$Props['onTapCancel'] = undefined,
+        whileTap: $$Props['whileTap'] = undefined,
         //HoverHandlers
-        whileHover = undefined,
-        onHoverStart = undefined,
-        onHoverEnd = undefined,
+        whileHover: $$Props['whileHover'] = undefined,
+        onHoverStart: $$Props['onHoverStart'] = undefined,
+        onHoverEnd: $$Props['onHoverEnd'] = undefined,
         //FocusHandlers
-        whileFocus = undefined,
+        whileFocus: $$Props['whileFocus'] = undefined,
         //DraggableProps
-        drag = undefined,
-        whileDrag = undefined,
-        dragDirectionLock = undefined,
-        dragPropagation = undefined,
-        dragConstraints = undefined,
-        dragElastic = undefined,
-        dragMomentum = undefined,
-        dragTransition = undefined,
-        dragControls = undefined,
-        dragListener = undefined,
-        onMeasureDragConstraints = undefined,
-        _dragX = undefined,
-        _dragY = undefined,
+        drag: $$Props['drag'] = undefined,
+        whileDrag: $$Props['whileDrag']  = undefined,
+        dragDirectionLock: $$Props['dragDirectionLock'] = undefined,
+        dragPropagation: $$Props['dragPropagation'] = undefined,
+        dragConstraints: $$Props['dragConstraints'] = undefined,
+        dragElastic: $$Props['dragElastic'] = undefined,
+        dragMomentum: $$Props['dragMomentum'] = undefined,
+        dragTransition: $$Props['dragTransition'] = undefined,
+        dragControls: $$Props['dragControls'] = undefined,
+        dragListener: $$Props['dragListener'] = undefined,
+        onMeasureDragConstraints: $$Props['onMeasureDragConstraints'] = undefined,
+        _dragX: $$Props['_dragX'] = undefined,
+        _dragY: $$Props['_dragY'] = undefined,
         //DragHandlers
-        onDragStart = undefined,
-        onDragEnd = undefined,
-        onDrag = undefined,
-        onDirectionLock = undefined,
-        onDragTransitionEnd = undefined,
+        onDragStart: $$Props['onDragStart'] = undefined,
+        onDragEnd: $$Props['onDragEnd'] = undefined,
+        onDrag: $$Props['onDrag'] = undefined,
+        onDirectionLock: $$Props['onDirectionLock'] = undefined,
+        onDragTransitionEnd: $$Props['onDragTransitionEnd'] = undefined,
         // LayoutProps
-        layout = undefined,
-        layoutId = undefined,
+        layout: $$Props['layout'] = undefined,
+        layoutId: $$Props['layoutId'] = undefined,
         //MotionAdvancedProps
-        custom = undefined,
-        inherit = undefined,
-        update = undefined;
-*/
-    //layout=undefined;
+        custom: $$Props['custom'] = undefined,
+        inherit: $$Props['inherit'] = undefined,
+
+        // **internal***
+        isSVG = false,
+        update = undefined,
+        forwardMotionProps = false,
+        externalRef = undefined,
+        targetEl = undefined;
+
+
     $: motionProps = $$restProps/*{
         initial,
         style,
