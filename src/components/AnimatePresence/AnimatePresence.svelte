@@ -1,9 +1,9 @@
-<script>
-    /** 
+<!--
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
-*/
-
+ -->
+<script lang="ts" generics="T extends {key:any} ? T : { key: 1}">
+    import { AnimatePresenceProps } from './index.js';
     import { getContext } from "svelte";
     import {
         SharedLayoutContext,
@@ -11,14 +11,16 @@ Copyright (c) 2018 Framer B.V.
     } from "../../context/SharedLayoutContext.js";
     import PresenceChild from "./PresenceChild.svelte";
 
-    export let list = undefined,
-        custom = undefined,
-        initial = true,
-        onExitComplete = undefined,
-        exitBeforeEnter = undefined,
-        presenceAffectsLayout = true,
-        show = undefined,
-        isCustom=false;
+    type $$Props = AnimatePresenceProps<T>;
+
+    export let list: $$Props['list'] = undefined,
+        custom: $$Props['custom'] = undefined,
+        initial: $$Props['initial'] = true,
+        onExitComplete: $$Props['onExitComplete'] = undefined,
+        exitBeforeEnter: $$Props['exitBeforeEnter'] = undefined,
+        presenceAffectsLayout: $$Props['presenceAffectsLayout'] = true,
+        show: $$Props['show'] = undefined,
+        isCustom: $$Props['isCustom'] =false;
 
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
