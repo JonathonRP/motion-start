@@ -2,12 +2,51 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { PresenceContextProps } from "../../context/PresenceContext";
-import { Readable } from 'svelte/store'
+import type { PresenceContextProps } from "../../context/PresenceContext";
+import type { Readable } from 'svelte/store'
+
+import { PresenceContext } from '../../context/PresenceContext.js';
+import { derived, get, readable } from 'svelte/store';
+
+import { getContext, onMount} from "svelte";
+
 export declare type SafeToRemove = () => void;
 declare type AlwaysPresent = [true, null];
 declare type Present = [true];
 declare type NotPresent = [false, SafeToRemove];
+
+let counter = 0;
+const incrementId = () => counter++;
+
+function isPresent(context: PresenceContextProps) {
+    return context === null ? true : context.isPresent
+}
+
+/**
+ * Similar to `usePresence`, except `useIsPresent` simply returns whether or not the component is present.
+ * There is no `safeToRemove` function.
+ *
+ * ```jsx
+ * import { useIsPresent } from "framer-motion"
+ *
+ * export const Component = () => {
+ *   const isPresent = useIsPresent()
+ *
+ *   useEffect(() => {
+ *     !isPresent && console.log("I've been removed!")
+ *   }, [isPresent])
+ *
+ *   return <div />
+ * }
+ * ```
+ *
+ * @public
+ */
+export const useIsPresent = (isCustom=false): Readable<boolean> => {
+    let presenceContext = getContext(PresenceContext) || PresenceContext(isCustom);
+    return derived(presenceContext, $v => $v === null ? true : $v.isPresent)
+}
+
 /**
  * When a component is the child of `AnimatePresence`, it can use `usePresence`
  * to access information about whether it's still present in the React tree.
@@ -30,53 +69,7 @@ declare type NotPresent = [false, SafeToRemove];
  *
  * @public
  */
-export declare function usePresence(): Readable<AlwaysPresent | Present | NotPresent>;
-/**
- * Similar to `usePresence`, except `useIsPresent` simply returns whether or not the component is present.
- * There is no `safeToRemove` function.
- *
- * ```jsx
- * import { useIsPresent } from "framer-motion"
- *
- * export const Component = () => {
- *   const isPresent = useIsPresent()
- *
- *   useEffect(() => {
- *     !isPresent && console.log("I've been removed!")
- *   }, [isPresent])
- *
- *   return <div />
- * }
- * ```
- *
- * @public
- */
-export declare function useIsPresent(): Readable<boolean>;
-export declare function isPresent(context: PresenceContextProps | null): boolean;
-
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { PresenceContext } from '../../context/PresenceContext.js';
-import { derived, get, readable } from 'svelte/store';
-
-import { getContext, onMount} from "svelte";
-
-let counter = 0;
-const incrementId = () => counter++;
-
-function isPresent(context) {
-    return context === null ? true : context.isPresent
-}
-
-export const useIsPresent = (isCustom=false) => {
-    let presenceContext = getContext(PresenceContext) || PresenceContext(isCustom);
-    return derived(presenceContext, $v => $v === null ? true : $v.isPresent)
-}
-
-export const usePresence = (isCustom=false) => {
+export const usePresence = (isCustom=false): Readable<AlwaysPresent | Present | NotPresent> => {
 
     const context = getContext(PresenceContext)||PresenceContext(isCustom);
     const id = get(context) === null ? undefined : incrementId();
@@ -95,5 +88,3 @@ export const usePresence = (isCustom=false) => {
             [true]
     )
 }
-
-export { isPresent };
