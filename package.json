@@ -1,10 +1,10 @@
 {
   "name": "svelte-motion",
-  "version": "0.12.2",
+  "version": "0.13.0",
   "description": "Svelte animation library based on the React library framer-motion.",
   "main": "src/index.js",
   "scripts": {
-    "test": "vitest --typecheck.only",
+    "test": "vitest --typecheck.only --ui",
     "build:svelte": "svelte-package --input ./src && publint --strict"
   },
   "author": "Michael Lucht <micha-lmxt@gradientdescent.de> (https://svelte-motion.gradientdescent.de)",
@@ -22,11 +22,12 @@
     "@sveltejs/package": "^2.3.1",
     "@tsconfig/svelte": "^5.0.4",
     "publint": "^0.2.7",
-    "svelte": "5.0.0-next.94",
-    "tsc": "2.0.4",
-    "typescript": "5.4.3",
-    "vite": "^5.2.8",
-    "vitest": "1.4.0"
+    "svelte": "5.0.0-next.108",
+    "typescript": "^5.4.5",
+    "vite": "latest",
+    "vitest": "latest",
+    "@vitest/ui": "latest",
+    "@types/node": "^20.11.5"
   },
   "peerDependencies": {
     "svelte": ">=3.35.0 || ^4.0.0 || ^5.0.0 || ^5.0.0-next.0"
