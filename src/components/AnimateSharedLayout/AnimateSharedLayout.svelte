@@ -1,10 +1,8 @@
-<script>
-    /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
-    import { Presence } from "./types";
+<script lang="ts">
+    import type { Presence, SharedLayoutProps } from "./index";
     import { createBatcher } from "./utils/batcher";
     import { SharedLayoutContext } from "../../context/SharedLayoutContext";
 
@@ -15,9 +13,12 @@ Copyright (c) 2018 Framer B.V.
     import { writable } from "svelte/store";
     import { MotionContext } from "../../context/MotionContext/index.js";
     import { snapshotViewportBox } from "../../render/dom/projection/utils";
-import { setDomContext } from "../../context/DOMcontext";
+    import { setDomContext } from "../../context/DOMcontext";
 
-    export let type = undefined,isCustom=false;
+    type $$Props = SharedLayoutProps;
+
+    export let type: $$Props['type'] = undefined,
+        isCustom = false;
 
     const context = getContext(MotionContext) || MotionContext(isCustom);
 

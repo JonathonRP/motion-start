@@ -2,12 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { SyncLayoutBatcher } from "../types";
-/**
- * Create a batcher to process VisualElements
- */
-export declare function createBatcher(): SyncLayoutBatcher;
-
+import type { SyncLayoutBatcher } from "../types";
 
 /** 
 based on framer-motion@4.1.15,
@@ -30,7 +25,7 @@ var defaultHandler = {
 /**
  * Create a batcher to process VisualElements
  */
-function createBatcher() {
+function createBatcher(): SyncLayoutBatcher {
     var queue = new Set();
     return {
         add: function (child) { return queue.add(child); },

@@ -3,13 +3,13 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { FeatureBundle } from "../../motion/features/types";
+import type { FeatureBundle } from "../../motion/features/types";
 export declare type LazyFeatureBundle = () => Promise<FeatureBundle>;
 /**
  * @public
  */
 export interface LazyProps {
-    children?: React.ReactNode;
+    // children?: React.ReactNode;
     /**
      * Can be used to provide a feature bundle synchronously or asynchronously.
      *

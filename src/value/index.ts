@@ -125,7 +125,7 @@ export class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    constructor(init: V, startStopNotifier: ()=>()=>void) {
+    constructor(init: V, startStopNotifier?: ()=>()=>void) {
         this.prev = this.current = init;
         this.canTrackVelocity = isFloat(this.current);
         
@@ -406,7 +406,7 @@ var isFloat = function (value: string) {
 /**
  * @internal
  */
-export function motionValue<V>(init: V, startStopNotifier: () => () => void): MotionValue<V> {
+export function motionValue<V>(init: V, startStopNotifier?: () => () => void): MotionValue<V> {
     return new MotionValue(init, startStopNotifier);
 }
 
