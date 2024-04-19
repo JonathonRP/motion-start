@@ -10,7 +10,10 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
   test: {
     /* for example, use global to avoid globals imports (describe, test, expect): */
-    globals: true,
+    // globals: true,
+    // typecheck: {
+    //   enabled: true,
+    // },
   },
   plugins: [
     svelte({ emitCss: false })
