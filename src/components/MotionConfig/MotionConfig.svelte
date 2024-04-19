@@ -1,19 +1,20 @@
-<script>
-    /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
+<script lang="ts">
+    import type { MotionConfigProps } from "./index.js";
     import { getContext, setContext } from "svelte";
     import { writable, get} from "svelte/store";
-import { setDomContext } from "../../context/DOMcontext.js";
+    import { setDomContext } from "../../context/DOMcontext.js";
     import { MotionConfigContext } from "../../context/MotionConfigContext.js";
     import {provideScaleCorrection} from '../../context/ScaleCorrectionProvider.svelte'
-    import { scaleCorrection } from './MotionConfigScaleCorrection.js'
+    import { scaleCorrection } from './MotionConfigScaleCorrection.js';
 
-    export let transformPagePoint = undefined,
-        isStatic = undefined,
-        transition = undefined,
+    type $$Props = MotionConfigProps;
+
+    export let transformPagePoint: $$Props['transformPagePoint'] = undefined,
+        isStatic: $$Props['isStatic'] = undefined,
+        transition: $$Props['transition'] = undefined,
         isCustom = false;
     const mcc = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
     /**

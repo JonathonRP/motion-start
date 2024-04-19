@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../../../render/types";
+import type { VisualElement } from "../../../render/types";
 export declare type LeadAndFollow = [
     VisualElement | undefined,
     VisualElement | undefined
@@ -16,7 +16,6 @@ export interface LayoutStack {
     animate(element: VisualElement, crossfade: boolean): void;
     updateLeadAndFollow(): void;
 }
-export declare function layoutStack(): LayoutStack;
 
 
 /** 
@@ -29,7 +28,7 @@ import { Presence } from '../types.js';
 import { elementDragControls } from '../../../gestures/drag/VisualElementDragControls.js';
 import { createCrossfader } from './crossfader.js';
 
-function layoutStack() {
+function layoutStack(): LayoutStack {
     var stack = new Set();
     var state = { leadIsExiting: false };
     var prevState = __assign({}, state);

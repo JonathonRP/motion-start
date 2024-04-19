@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../../../render/types";
-export declare function resetRotate(child: VisualElement): void;
+import type { VisualElement } from "../../../render/types";
 
 
 /** 
@@ -13,7 +12,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { transformAxes } from '../../../render/html/utils/transform.js';
 
-function resetRotate(child) {
+function resetRotate(child: VisualElement): void {
     // If there's no detected rotation values, we can early return without a forced render.
     var hasRotate = false;
     // Keep a record of all the values we've reset

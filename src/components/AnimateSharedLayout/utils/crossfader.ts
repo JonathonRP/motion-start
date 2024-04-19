@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { PlaybackControls } from "popmotion";
-import { ResolvedValues, VisualElement } from "../../../render/types";
-import { Transition } from "../../../types";
+import type { PlaybackControls } from "popmotion";
+import type { ResolvedValues, VisualElement } from "../../../render/types";
+import type { Transition } from "../../../types";
 export interface Crossfader {
     isActive(): boolean;
     getCrossfadeState(element: VisualElement): ResolvedValues | undefined;
@@ -22,7 +22,6 @@ export interface CrossfadeAnimationOptions {
     crossfadeOpacity?: boolean;
     preserveFollowOpacity?: boolean;
 }
-export declare function createCrossfader(): Crossfader;
 
 
 /** 
@@ -37,7 +36,7 @@ import { animate } from '../../../animation/animate.js';
 import { getValueTransition } from '../../../animation/utils/transitions.js';
 import { motionValue } from '../../../value/index.js';
 
-function createCrossfader() {
+function createCrossfader(): Crossfader {
     /**
      * The current state of the crossfade as a value between 0 and 1
      */

@@ -1,15 +1,17 @@
-<script>
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
-import { onMount } from "svelte";
-import { writable } from "svelte/store";
-import { setDomContext } from "../../context/DOMcontext";
+<script lang="ts">
+    import type { LazyProps } from "./index.js";
+    import { onMount } from "svelte";
+    import { writable } from "svelte/store";
+    import { setDomContext } from "../../context/DOMcontext";
 
     import { LazyContext } from "../../context/LazyContext";
     import { loadFeatures } from "../../motion/features/definitions";
+
+    type $$Props = LazyProps
+
     /**
      * Used in conjunction with the `m` component to reduce bundle size.
      *
@@ -45,12 +47,13 @@ import { setDomContext } from "../../context/DOMcontext";
      *
      * @public
      */
-        export let features,
-            strict=false,
-            isCustom=false;
+    export let features: $$Props['features'],
+        strict: $$Props['strict'] = false,
+        isCustom=false;
+        
     let _ = !isLazyBundle(features);
     let loadedRenderer = undefined
-        /**
+    /**
      * If this is a synchronous load, load features immediately
      */
      $: if (!isLazyBundle(features,_)) {
