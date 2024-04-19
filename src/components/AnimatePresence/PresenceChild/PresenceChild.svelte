@@ -1,9 +1,6 @@
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 <script context="module">
-    /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-
     let presenceId = 0;
     function getPresenceId() {
         const id = presenceId;
@@ -15,18 +12,22 @@ Copyright (c) 2018 Framer B.V.
     }
 </script>
 
-<script>
+<script lang="ts">
     import { afterUpdate, setContext, tick } from "svelte";
-import { setDomContext } from "../../context/DOMcontext.js";
-    import { PresenceContext } from "../../context/PresenceContext.js";
-    export let isPresent,
-        onExitComplete = undefined,
-        initial,
-        custom = undefined,
-        presenceAffectsLayout,
-        isCustom;
+    import { setDomContext } from "../../../context/DOMcontext.js";
+    import { PresenceContext } from "../../../context/PresenceContext.js";
+    import type { PresenceChildProps } from "./index.js";
 
-    const presenceChildren = new newChildrenMap();
+    type $$Props = PresenceChildProps;
+
+    export let isPresent: $$Props['isPresent'],
+        onExitComplete: $$Props['onExitComplete'] = undefined,
+        initial: $$Props['initial'] = undefined,
+        custom: $$Props['custom'] = undefined,
+        presenceAffectsLayout: $$Props['presenceAffectsLayout'],
+        isCustom: $$Props['isCustom'];
+
+    const presenceChildren = newChildrenMap();
     const id = getPresenceId();
 
     $: refresh = presenceAffectsLayout ? undefined : isPresent;
