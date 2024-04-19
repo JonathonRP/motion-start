@@ -1,24 +1,24 @@
 <!--based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.-->
-<script lang="ts" generics="T extends {key:any} ? T : { key: 1}">
-    import { AnimatePresenceProps } from './index.js';
+<script lang="ts" generics="T extends {key:any}">
+    import type { ConditionalGeneric, AnimatePresenceProps } from './index.js';
     import { getContext } from "svelte";
     import {
         SharedLayoutContext,
         isSharedLayout,
     } from "../../context/SharedLayoutContext.js";
-    import PresenceChild from "./PresenceChild.svelte";
+    import PresenceChild from "./PresenceChild/PresenceChild.svelte";
 
-    type $$Props = AnimatePresenceProps<T>;
+    type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
     export let list: $$Props['list'] = undefined,
         custom: $$Props['custom'] = undefined,
         initial: $$Props['initial'] = true,
         onExitComplete: $$Props['onExitComplete'] = undefined,
         exitBeforeEnter: $$Props['exitBeforeEnter'] = undefined,
-        presenceAffectsLayout: $$Props['presenceAffectsLayout'] = true,
+        presenceAffectsLayout = true,
         show: $$Props['show'] = undefined,
-        isCustom: $$Props['isCustom'] =false;
+        isCustom = false;
 
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];

@@ -41,4 +41,6 @@ export type { AnimatePresenceProps } from "./types.js";
  *
  * @public
  */
+export type ConditionalGeneric<T> = T extends {key:any} ? T : { key: 1}; // Better handling of defaults and the optional list prop
 export { default as AnimatePresence } from './AnimatePresence.svelte';
+export { PresenceChild } from './PresenceChild/index.js';
