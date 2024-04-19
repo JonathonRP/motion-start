@@ -11,7 +11,7 @@ export interface VisualState<Instance, RenderState> {
     mount?: (instance: Instance) => void;
 }
 
-type UseVisualState<Instance, RenderState> = (props: MotionProps, isStatic: boolean) => VisualState<Instance, RenderState>;
+export type UseVisualState<Instance, RenderState> = (props: MotionProps, isStatic: boolean) => VisualState<Instance, RenderState>;
 export interface UseVisualStateConfig<Instance, RenderState> {
     scrapeMotionValuesFromProps: ScrapeMotionValuesFromProps;
     createRenderState: () => RenderState;
@@ -19,4 +19,4 @@ export interface UseVisualStateConfig<Instance, RenderState> {
 }
 export declare const makeUseVisualState: <I, RS>(config: UseVisualStateConfig<I, RS>) => UseVisualState<I, RS>;
 
-export {default as UseVisualState} from './UseVisualState.svelte';
+// export {default as UseVisualState} from './UseVisualState.svelte';
