@@ -160,14 +160,15 @@ Copyright (c) 2018 Framer B.V.
     }
 </script>
 
-{#each childrenToRender as child (getChildKey(child))
-}<PresenceChild
+{#each childrenToRender as child (getChildKey(child))}
+    <PresenceChild
         isPresent={child.present}
         initial={initial ? undefined : false}
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
-        {isCustom}
-    ><slot item={child.item} 
-    /></PresenceChild
-    >{/each}
+        {isCustom}>
+        
+        <slot item={child.item} />
+    </PresenceChild>
+{/each}
