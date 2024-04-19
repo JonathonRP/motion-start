@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { SvelteComponent } from "svelte";
-import { AnimatePresenceProps } from "./types.js";
+export type { AnimatePresenceProps } from "./types.js";
 /**
  * `AnimatePresence` enables the animation of components that have been removed from the tree.
  *         
@@ -42,8 +41,4 @@ import { AnimatePresenceProps } from "./types.js";
  *
  * @public
  */
-export type ConditionalGeneric<T> = T extends {key:any} ? T : { key: 1}; // Better handling of defaults and the optional list prop
-export declare class AnimatePresence<T extends {key:any}> extends SvelteComponent<AnimatePresenceProps<T> & ATypedSvelteComponent, {}, {default:{ item: ConditionalGeneric<T> }}>{}
-
-
-export {default as AnimatePresence} from './AnimatePresence.svelte';
+export { default as AnimatePresence } from './AnimatePresence.svelte';
