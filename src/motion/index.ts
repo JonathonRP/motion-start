@@ -3,10 +3,11 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import * as React from "react";
-import { MotionProps } from "./types";
-import { RenderComponent, FeatureBundle } from "./features/types";
-import { CreateVisualElement } from "../render/types";
+export type { MotionProps } from "./types";
+import type { RenderComponent, FeatureBundle } from "./features/types";
+import type { CreateVisualElement } from "../render/types";
 import { UseVisualState } from "./utils/use-visual-state";
+
 export interface MotionComponentConfig<Instance, RenderState> {
     preloadedFeatures?: FeatureBundle;
     createVisualElement?: CreateVisualElement<Instance>;
@@ -14,6 +15,15 @@ export interface MotionComponentConfig<Instance, RenderState> {
     useVisualState: UseVisualState<Instance, RenderState>;
     Component: string | React.ComponentType;
 }
+
+
+/** 
+based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V.
+*/
+import Motion from './Motion.svelte';
+import { loadFeatures } from "./features/definitions"
+
 /**
  * Create a `motion` component.
  *
@@ -25,17 +35,7 @@ export interface MotionComponentConfig<Instance, RenderState> {
  *
  * @internal
  */
-export declare function createMotionComponent<Props extends {}, Instance, RenderState>({ preloadedFeatures, createVisualElement, useRender, useVisualState, Component, }: MotionComponentConfig<Instance, RenderState>): React.ForwardRefExoticComponent<React.PropsWithoutRef<Props & MotionProps> & React.RefAttributes<Instance>>;
-
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import Motion from './Motion.svelte';
-import { loadFeatures } from "./features/definitions"
-
-export const createMotionComponent = (
+export const createMotionComponent = <Props extends {}, Instance, RenderState>(
     {
         preloadedFeatures,
         createVisualElement,
@@ -43,8 +43,8 @@ export const createMotionComponent = (
         visualStateConfig,
         Component,
 
-    }
-) => {
+    }: MotionComponentConfig<Instance, RenderState>
+): React.ForwardRefExoticComponent<React.PropsWithoutRef<Props & MotionProps> & React.RefAttributes<Instance>> => {
     preloadedFeatures && loadFeatures(preloadedFeatures)
     return class MotionComponent extends Motion {
         constructor(options) {

@@ -2,15 +2,16 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
+import type { AnimationControls } from "../animation/types";
+import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from "../types";
+import type { DraggableProps } from "../gestures/drag/types";
+import type { LayoutProps } from "./features/layout/types";
+import type { ResolvedValues } from "../render/types";
+import type { VisualElementLifecycles } from "../render/utils/lifecycles";
+import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from "../gestures/types";
 import { MotionValue } from "../value";
-import { AnimationControls } from "../animation/types";
-import { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from "../types";
-import { DraggableProps } from "../gestures/drag/types";
-import { LayoutProps } from "./features/layout/types";
-import { ResolvedValues } from "../render/types";
-import { VisualElementLifecycles } from "../render/utils/lifecycles";
-import { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from "../gestures/types";
+
 export declare type MotionStyleProp = string | number | MotionValue;
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.
