@@ -1,4 +1,4 @@
-export const getDomContext = (name,el) => {
+export const getDomContext = (name: string, el: any) => {
     if (!el || !window){
         return undefined;
     }
@@ -11,7 +11,7 @@ export const getDomContext = (name,el) => {
     return undefined;
 }
 
-export const setDomContext = (name,el,value) => {
+export const setDomContext = (name: string, el: any, value: any) => {
     if (el && window){
         if (!el.motionDomContext){
             el.motionDomContext = new Map();

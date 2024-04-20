@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VariantLabels } from "../motion/types";
-import { Writable } from 'svelte/store'
+import type { VariantLabels } from "../motion/types";
+import type { Writable } from 'svelte/store'
 /**
  * @public
  */
@@ -15,10 +15,6 @@ export interface PresenceContextProps {
     initial?: false | VariantLabels;
     custom?: any;
 }
-/**
- * @public
- */
-export declare const PresenceContext: () => Writable<PresenceContextProps | null>
 
 import { writable } from "svelte/store";
 import { getDomContext } from "./DOMcontext";
@@ -27,4 +23,4 @@ import { getDomContext } from "./DOMcontext";
 /**
  * @public
  */
-export const PresenceContext = (c)=> getDomContext("Presence",c)||writable(null);
+export const PresenceContext = (c?: any): Writable<PresenceContextProps | null> => getDomContext("Presence",c)||writable(null);
