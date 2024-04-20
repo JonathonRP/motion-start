@@ -2,35 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Transition, PermissiveTransitionDefinition, ResolvedValueTarget } from "../../types";
-import { AnimationOptions } from "popmotion";
+import type { Transition, PermissiveTransitionDefinition, ResolvedValueTarget } from "../../types";
+import type { AnimationOptions } from "popmotion";
 import { MotionValue } from "../../value";
-/**
- * Decide whether a transition is defined on a given Transition.
- * This filters out orchestration options and returns true
- * if any options are left.
- */
-export declare function isTransitionDefined({ when, delay, delayChildren, staggerChildren, staggerDirection, repeat, repeatType, repeatDelay, from, ...transition }: Transition): boolean;
-/**
- * Convert Framer Motion's Transition type into Popmotion-compatible options.
- */
-export declare function convertTransitionToAnimationOptions<T>({ ease, times, yoyo, flip, loop, ...transition }: PermissiveTransitionDefinition): AnimationOptions<T>;
-/**
- * Get the delay for a value by checking Transition with decreasing specificity.
- */
-export declare function getDelayFromTransition(transition: Transition, key: string): any;
-export declare function hydrateKeyframes(options: PermissiveTransitionDefinition): PermissiveTransitionDefinition;
-export declare function getPopmotionAnimationOptions(transition: PermissiveTransitionDefinition, options: any, key: string): any;
-export declare function isZero(value: string | number): boolean;
-export declare function getZeroUnit(potentialUnitType: string | number): string | number;
-export declare function getValueTransition(transition: Transition, key: string): any;
-/**
- * Start animation on a MotionValue. This function is an interface between
- * Framer Motion and Popmotion
- *
- * @internal
- */
-export declare function startAnimation(key: string, value: MotionValue, target: ResolvedValueTarget, transition?: Transition): Promise<void>;
 
 
 /** 
@@ -52,7 +26,7 @@ import { getAnimatableNone } from '../../render/dom/value-types/animatable-none.
  * This filters out orchestration options and returns true
  * if any options are left.
  */
-function isTransitionDefined(_a) {
+function isTransitionDefined(_a: Transition) {
     _a.when; _a.delay; _a.delayChildren; _a.staggerChildren; _a.staggerDirection; _a.repeat; _a.repeatType; _a.repeatDelay; _a.from; var transition = __rest(_a, ["when", "delay", "delayChildren", "staggerChildren", "staggerDirection", "repeat", "repeatType", "repeatDelay", "from"]);
     return !!Object.keys(transition).length;
 }
@@ -60,7 +34,7 @@ var legacyRepeatWarning = false;
 /**
  * Convert Framer Motion's Transition type into Popmotion-compatible options.
  */
-function convertTransitionToAnimationOptions(_a) {
+function convertTransitionToAnimationOptions<T>(_a: PermissiveTransitionDefinition): AnimationOptions<T> {
     var ease = _a.ease, times = _a.times, yoyo = _a.yoyo, flip = _a.flip, loop = _a.loop, transition = __rest(_a, ["ease", "times", "yoyo", "flip", "loop"]);
     var options = __assign({}, transition);
     if (times)
@@ -114,19 +88,19 @@ function convertTransitionToAnimationOptions(_a) {
 /**
  * Get the delay for a value by checking Transition with decreasing specificity.
  */
-function getDelayFromTransition(transition, key) {
+function getDelayFromTransition(transition: Transition, key: keyof Transition) {
     var _a;
     var valueTransition = getValueTransition(transition, key) || {};
     return (_a = valueTransition.delay) !== null && _a !== void 0 ? _a : 0;
 }
-function hydrateKeyframes(options) {
+function hydrateKeyframes(options: PermissiveTransitionDefinition) {
     if (Array.isArray(options.to) && options.to[0] === null) {
         options.to = __spreadArray([], __read(options.to));
         options.to[0] = options.from;
     }
     return options;
 }
-function getPopmotionAnimationOptions(transition, options, key) {
+function getPopmotionAnimationOptions(transition: PermissiveTransitionDefinition, options: any, key: string) {
     var _a;
     if (Array.isArray(options.to)) {
         (_a = transition.duration) !== null && _a !== void 0 ? _a : (transition.duration = 0.8);
@@ -143,7 +117,7 @@ function getPopmotionAnimationOptions(transition, options, key) {
 /**
  *
  */
-function getAnimation(key, value, target, transition, onComplete) {
+function getAnimation(key: string, value: MotionValue, target: ResolvedValueTarget, transition: Transition, onComplete) {
     var _a;
     var valueTransition = getValueTransition(transition, key);
     var origin = (_a = valueTransition.from) !== null && _a !== void 0 ? _a : value.get();
@@ -199,19 +173,20 @@ function getAnimation(key, value, target, transition, onComplete) {
         ? set
         : start;
 }
-function isZero(value) {
+function isZero(value: string | number) {
     return (value === 0 ||
         (typeof value === "string" &&
             parseFloat(value) === 0 &&
             value.indexOf(" ") === -1));
 }
-function getZeroUnit(potentialUnitType) {
+function getZeroUnit(potentialUnitType: string | number) {
     return typeof potentialUnitType === "number"
         ? 0
         : getAnimatableNone("", potentialUnitType);
 }
-function getValueTransition(transition, key) {
-    return transition[key] || transition["default"] || transition;
+function getValueTransition(transition: Transition, key: string) {
+    let tran = transition as any
+    return tran[key] || tran["default"] || tran;
 }
 /**
  * Start animation on a MotionValue. This function is an interface between
@@ -219,7 +194,7 @@ function getValueTransition(transition, key) {
  *
  * @internal
  */
-function startAnimation(key, value, target, transition) {
+function startAnimation(key: string, value: MotionValue, target: ResolvedValueTarget, transition?: Transition) {
     if (transition === void 0) { transition = {}; }
     return value.start(function (onComplete) {
         var delayTimer;

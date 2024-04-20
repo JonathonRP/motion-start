@@ -1,9 +1,8 @@
-<script context="module">
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
+<script lang="ts" context="module">
+import type { EventListenerWithPointInfo } from './event-info';
 import {UseDomEvent} from "./use-dom-event"
 import {
     supportsPointerEvents,
@@ -28,22 +27,19 @@ const touchEventNames = {
     pointerup: "touchend",
     pointercancel: "touchcancel",
 }
-function getPointerEventName(name) {
+function getPointerEventName(name: string) {
     if (supportsPointerEvents()) {
         return name
     } else if (supportsTouchEvents()) {
-        return touchEventNames[name]
+        return (touchEventNames as any)[name]
     } else if (supportsMouseEvents()) {
-        return mouseEventNames[name]
+        return (mouseEventNames as any)[name]
     }
 
     return name
 }
 export function addPointerEvent(
-    target,
-    eventName,
-    handler,
-    options
+    target: EventTarget, eventName: string, handler: EventListenerWithPointInfo, options?: AddEventListenerOptions
 ) {
     return addDomEvent(
         target,
@@ -53,18 +49,23 @@ export function addPointerEvent(
     )
 }
 </script>
-<script>
-import { wrapHandler } from "./event-info";
-import { addDomEvent } from "./use-dom-event";
+<script lang="ts">
+    import type { UsePointerEventProps } from "./use-pointer-event";
+    import { wrapHandler } from "./event-info";
+    import { addDomEvent } from "./use-dom-event";
 
-    export let ref,
-        eventName,
-        handler=undefined,
-        options=undefined;
+    type $$Props = UsePointerEventProps;
+
+    export let ref: $$Props['ref'],
+        eventName: $$Props['eventName'],
+        handler: $$Props['handler'] = undefined,
+        options: $$Props['options'] = undefined;
 </script>
-<UseDomEvent {ref}  
-eventName={getPointerEventName(eventName)}
-handler={handler && wrapHandler(handler, eventName === "pointerdown")}
-{options}>
+
+<UseDomEvent {ref}
+    eventName={getPointerEventName(eventName)}
+    handler={handler && wrapHandler(handler, eventName === "pointerdown")}
+    {options}>
+    
     <slot/>
 </UseDomEvent>

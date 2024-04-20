@@ -2,27 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { PopmotionTransitionProps, ValueTarget, SingleTarget } from "../../types";
-export declare const underDampedSpring: () => {
-    type: string;
-    stiffness: number;
-    damping: number;
-    restDelta: number;
-    restSpeed: number;
-};
-export declare const criticallyDampedSpring: (to: SingleTarget) => {
-    type: string;
-    stiffness: number;
-    damping: number;
-    restDelta: number;
-    restSpeed: number;
-};
-export declare const linearTween: () => {
-    type: string;
-    ease: string;
-    duration: number;
-};
-export declare const getDefaultTransition: (valueKey: string, to: ValueTarget) => PopmotionTransitionProps;
+import type { PopmotionTransitionProps, ValueTarget, SingleTarget, KeyframesTarget } from "../../types";
 
 
 /** 
@@ -40,7 +20,7 @@ var underDampedSpring = function () { return ({
     restDelta: 0.5,
     restSpeed: 10,
 }); };
-var criticallyDampedSpring = function (to) { return ({
+var criticallyDampedSpring = function (to: SingleTarget) { return ({
     type: "spring",
     stiffness: 550,
     damping: to === 0 ? 2 * Math.sqrt(550) : 30,
@@ -52,7 +32,7 @@ var linearTween = function () { return ({
     ease: "linear",
     duration: 0.3,
 }); };
-var keyframes = function (values) { return ({
+var keyframes = function (values: KeyframesTarget) { return ({
     type: "keyframes",
     duration: 0.8,
     values: values,
@@ -73,14 +53,16 @@ var defaultTransitions = {
     color: linearTween,
     default: criticallyDampedSpring,
 };
-var getDefaultTransition = function (valueKey, to) {
-    var transitionFactory;
+
+// TODO: need to bring closer to Transition - then can use keyof typeof defaultTransitions.
+var getDefaultTransition = function (valueKey: string, to: ValueTarget): PopmotionTransitionProps {
+    var transitionFactory: (v: any) => any;
     if (isKeyframesTarget(to)) {
         transitionFactory = keyframes;
     }
     else {
         transitionFactory =
-            defaultTransitions[valueKey] || defaultTransitions.default;
+            (defaultTransitions as any)[valueKey] || defaultTransitions.default;
     }
     return __assign({ to: to }, transitionFactory(to));
 };

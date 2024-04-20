@@ -2,9 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { FeatureComponents, FeatureDefinitions } from "./types";
-export declare const featureDefinitions: FeatureDefinitions;
-export declare function loadFeatures(features: FeatureComponents): void;
+import type { FeatureComponents, FeatureDefinitions } from "./types";
 
 
 /** 
@@ -38,8 +36,8 @@ var featureDefinitions = {
         "onPanEnd",
     ]),
     layoutAnimation: createDefinition(["layout", "layoutId"]),
-};
-function loadFeatures(features) {
+} satisfies FeatureDefinitions;
+function loadFeatures(features: FeatureComponents): void {
     for (var key in features) {
         var Component = features[key];
         if (Component !== null){

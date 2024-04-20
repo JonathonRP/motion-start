@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { AnimationControls } from "../types";
-export declare function isAnimationControls(v?: unknown): v is AnimationControls;
+import type { AnimationControls } from "../types";
 
 
 /** 
@@ -11,8 +10,8 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 
-var isAnimationControls = function (v) {
-    return typeof v === "object" && typeof (v).start === "function"
+const isAnimationControls = (v?: any): v is AnimationControls => {
+    return typeof v === "object" && typeof (v)?.start === "function"
 };
 
 export { isAnimationControls };

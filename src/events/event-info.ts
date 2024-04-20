@@ -2,11 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { EventInfo } from "./types";
+import type { EventInfo } from "./types";
 export declare type EventListenerWithPointInfo = (e: MouseEvent | TouchEvent | PointerEvent, info: EventInfo) => void;
-export declare function extractEventInfo(event: MouseEvent | TouchEvent | PointerEvent, pointType?: "page" | "client"): EventInfo;
-export declare function getViewportPointFromEvent(event: MouseEvent | TouchEvent | PointerEvent): EventInfo;
-export declare const wrapHandler: (handler: EventListenerWithPointInfo, shouldFilterPrimaryPointer?: boolean) => EventListener;
 
 
 /** 
@@ -31,23 +28,23 @@ function filterPrimaryPointer(eventHandler) {
     };
 }
 var defaultPagePoint = { pageX: 0, pageY: 0 };
-function pointFromTouch(e, pointType) {
+function pointFromTouch(e: TouchEvent, pointType?: "page" | "client") {
     if (pointType === void 0) { pointType = "page"; }
     var primaryTouch = e.touches[0] || e.changedTouches[0];
-    var point = primaryTouch || defaultPagePoint;
+    var point = primaryTouch as any || defaultPagePoint as any;
     return {
         x: point[pointType + "X"],
         y: point[pointType + "Y"],
     };
 }
-function pointFromMouse(point, pointType) {
+function pointFromMouse(point: any, pointType?: "page" | "client") {
     if (pointType === void 0) { pointType = "page"; }
     return {
         x: point[pointType + "X"],
         y: point[pointType + "Y"],
     };
 }
-function extractEventInfo(event, pointType) {
+function extractEventInfo(event: MouseEvent | TouchEvent | PointerEvent, pointType?: "page" | "client"): EventInfo {
     if (pointType === void 0) { pointType = "page"; }
     return {
         point: isTouchEvent(event)
@@ -55,10 +52,10 @@ function extractEventInfo(event, pointType) {
             : pointFromMouse(event, pointType),
     };
 }
-function getViewportPointFromEvent(event) {
+function getViewportPointFromEvent(event: MouseEvent | TouchEvent | PointerEvent) {
     return extractEventInfo(event, "client");
 }
-var wrapHandler = function (handler, shouldFilterPrimaryPointer) {
+var wrapHandler = function (handler: EventListenerWithPointInfo, shouldFilterPrimaryPointer?: boolean): EventListener {
     if (shouldFilterPrimaryPointer === void 0) { shouldFilterPrimaryPointer = false; }
     var listener = function (event) {
         return handler(event, extractEventInfo(event));

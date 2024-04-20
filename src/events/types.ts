@@ -2,8 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { RefObject } from "react";
-import { Point2D } from "../types/geometry";
+import type { RefObject } from "react";
+import type { Point2D } from "../types/geometry";
+
 /** @public */
 export interface EventInfo {
     point: Point2D;

@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { TargetAndTransition, TargetResolver, Transition } from "../types";
-import { VisualElement } from "../render/types";
+import type { TargetAndTransition, TargetResolver, Transition } from "../types";
+import type { VisualElement } from "../render/types";
 /**
  * @public
  */
