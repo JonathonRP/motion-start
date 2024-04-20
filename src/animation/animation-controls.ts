@@ -2,11 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { AnimationControls } from "./types";
-/**
- * @public
- */
-export declare function animationControls(startStopNotifier?: ()=>()=>void): AnimationControls;
+import type { AnimationControls } from "./types";
 
 
 /** 
@@ -22,7 +18,7 @@ import { setValues } from '../render/utils/setters.js';
 /**
  * @public
  */
-function animationControls(startStopNotifier) {
+function animationControls(startStopNotifier?: () => () => void ) {
     /**
      * Track whether the host component has mounted.
      */
@@ -31,12 +27,12 @@ function animationControls(startStopNotifier) {
      * Pending animations that are started before a component is mounted.
      * TODO: Remove this as animations should only run in effects
      */
-    var pendingAnimations = [];
+    var pendingAnimations: any[] = [];
     /**
      * A collection of linked component animation controls.
      */
-    var subscribers = new Set();
-    var stopNotification;
+    var subscribers = new Set<any>();
+    var stopNotification: undefined | (() => void);
     var controls = {
         subscribe: function (visualElement) {
             if (subscribers.size === 0){
@@ -58,7 +54,7 @@ function animationControls(startStopNotifier) {
              * we can ditch this.
              */
             if (hasMounted) {
-                var animations_1 = [];
+                var animations_1: any[] = [];
                 subscribers.forEach(function (visualElement) {
                     animations_1.push(animateVisualElement(visualElement, definition, {
                         transitionOverride: transitionOverride,
@@ -97,7 +93,7 @@ function animationControls(startStopNotifier) {
                 controls.stop();
             };
         },
-    };
+    } as AnimationControls;
     return controls;
 }
 

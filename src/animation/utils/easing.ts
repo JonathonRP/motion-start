@@ -2,9 +2,10 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Easing } from "../../types";
-export declare const easingDefinitionToFunction: (definition: Easing) => import("../../types").EasingFunction;
-export declare const isEasingArray: (ease: any) => ease is Easing[];
+// import type { EasingFunction } from "svelte/transition"; future idea, maybe use svelte built in easing function...
+import type { Easing, EasingFunction } from "../../types";
+// export declare const easingDefinitionToFunction: (definition: Easing) => import("../../types").EasingFunction;
+// export declare const isEasingArray: (ease: any) => ease is Easing[];
 
 
 
@@ -33,7 +34,7 @@ var easingLookup = {
     bounceInOut: bounceInOut,
     bounceOut: bounceOut,
 };
-var easingDefinitionToFunction = function (definition) {
+var easingDefinitionToFunction = function (definition: Easing): EasingFunction {
     if (Array.isArray(definition)) {
         // If cubic bezier definition, create bezier curve
         //invariant(definition.length === 4, "Cubic bezier arrays must contain four numerical values.");
@@ -47,7 +48,7 @@ var easingDefinitionToFunction = function (definition) {
     }
     return definition;
 };
-var isEasingArray = function (ease) {
+const isEasingArray = (ease: any): ease is Easing[] => {
     return Array.isArray(ease) && typeof ease[0] !== "number";
 };
 

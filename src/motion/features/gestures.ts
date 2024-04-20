@@ -2,9 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { FeatureComponents } from "./types";
-export declare const gestureAnimations: FeatureComponents;
-
+import type { FeatureComponents } from "./types";
 
 /** 
 based on framer-motion@4.0.3,
@@ -21,6 +19,6 @@ const gestureAnimations = {
     tap: UseTapGesture,
     focus: UseFocusGesture,
     hover: UseHoverGesture,
-};
+} satisfies FeatureComponents;
 
 export { gestureAnimations };

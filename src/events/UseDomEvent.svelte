@@ -1,10 +1,9 @@
-<script context="module">
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
-    export function addDomEvent(target, eventName, handler, options) {
+<script lang="ts" context="module">
+
+    export function addDomEvent(target: EventTarget, eventName: string, handler: EventListener, options?: AddEventListenerOptions) {
         
         target.addEventListener(eventName, handler, options);
         return function () {
@@ -14,9 +13,11 @@ Copyright (c) 2018 Framer B.V.
     
 </script>
 
-<script>
-import { onDestroy } from "svelte";
+<script lang="ts">
+    import type { UseDomEventProps } from "./use-dom-event";
+    import { onDestroy } from "svelte";
 
+    type $$Props = UseDomEventProps;
 
     /**
      * Attaches an event listener directly to the provided DOM element.
@@ -39,10 +40,10 @@ import { onDestroy } from "svelte";
      *
      * @public
      */
-    export let ref,
-        eventName,
-            handler=undefined,
-            options=undefined;
+    export let ref: $$Props['ref'],
+            eventName: $$Props['eventName'],
+            handler: $$Props['handler'] = undefined,
+            options: $$Props['options'] = undefined;
     let cleanup = ()=>{};
     const effect = ()=>{
         cleanup();

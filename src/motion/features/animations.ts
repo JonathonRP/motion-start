@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { FeatureComponents } from "./types";
-export declare const animations: FeatureComponents;
+import type { FeatureComponents } from "./types";
 
 
 /** 
@@ -19,5 +18,5 @@ import Exit from './Exit.svelte';
 const animations = {
     animation: AnimationState,
     exit:Exit
-}
+} satisfies FeatureComponents
 export { animations };
