@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Writable } from "svelte/store";
-import { Transition } from "../types";
-import { TransformPoint2D } from "../types/geometry";
+import type { Writable } from "svelte/store";
+import type { Transition } from "../types";
+import type { TransformPoint2D } from "../types/geometry";
 /**
  * @public
  */
@@ -30,7 +30,7 @@ export interface MotionConfigContextObject {
 /**
  * @public
  */
-export declare const MotionConfigContext: () => Writable<MotionConfigContextObject>
+// export declare const MotionConfigContext: () => Writable<MotionConfigContextObject>
 
 
 import { writable } from "svelte/store";
@@ -40,7 +40,7 @@ import { getDomContext } from "./DOMcontext";
 /**
  * @public
  */
-var MotionConfigContext = (c)=> getDomContext("MotionConfig",c)||writable({
+var MotionConfigContext = (c?: any): Writable<MotionConfigContextObject> => getDomContext("MotionConfig",c)||writable({
     transformPagePoint: function (p) { return p; },
     isStatic: false,
 });

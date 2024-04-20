@@ -2,9 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionContextProps } from ".";
-import { MotionProps } from "../../motion/types";
-export declare function getCurrentTreeVariants(props: MotionProps, context: MotionContextProps): MotionContextProps;
+import type { MotionContextProps } from ".";
+import type { MotionProps } from "../../motion/types";
 
 
 /** 
@@ -14,7 +13,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { checkIfControllingVariants, isVariantLabel } from '../../render/utils/variants.js';
 
-function getCurrentTreeVariants(props, context) {
+function getCurrentTreeVariants(props: MotionProps, context: MotionContextProps) {
     if (checkIfControllingVariants(props)) {
         var initial = props.initial, animate = props.animate;
         return {
