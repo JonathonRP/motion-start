@@ -20,4 +20,4 @@ export declare function useConstant<T>(init: Init<T>): T;
  * you can ensure that initialisers don't execute twice or more.
  */
 
-export { default as UseConstant } from './UseConstant.svelte';
+// export { default as UseConstant } from './UseConstant.svelte';

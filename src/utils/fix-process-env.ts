@@ -13,7 +13,7 @@ const fix = ()=>{
     }
     
     if (!window.process){
-        window.process={}
+        window.process = <any>{}
     }
     window.process.env={};
     return true;    

@@ -2,13 +2,12 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export declare function shallowCompare(next: any[], prev: any[] | null): boolean;
 
 /** 
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-function shallowCompare(next, prev) {
+function shallowCompare(next: any[], prev: any[] | null) {
     if (!Array.isArray(prev))
         return false;
     var prevLength = prev.length;

@@ -2,71 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Axis, AxisBox2D, BoxDelta, Point2D } from "../../types/geometry";
-import { ResolvedValues, VisualElement } from "../../render/types";
-/**
- * Reset an axis to the provided origin box.
- *
- * This is a mutative operation.
- */
-export declare function resetAxis(axis: Axis, originAxis: Axis): void;
-/**
- * Reset a box to the provided origin box.
- *
- * This is a mutative operation.
- */
-export declare function resetBox(box: AxisBox2D, originBox: AxisBox2D): void;
-/**
- * Scales a point based on a factor and an originPoint
- */
-export declare function scalePoint(point: number, scale: number, originPoint: number): number;
-/**
- * Applies a translate/scale delta to a point
- */
-export declare function applyPointDelta(point: number, translate: number, scale: number, originPoint: number, boxScale?: number): number;
-/**
- * Applies a translate/scale delta to an axis
- */
-export declare function applyAxisDelta(axis: Axis, translate: number | undefined, scale: number | undefined, originPoint: number, boxScale?: number): void;
-/**
- * Applies a translate/scale delta to a box
- */
-export declare function applyBoxDelta(box: AxisBox2D, { x, y }: BoxDelta): void;
-/**
- * Apply a transform to an axis from the latest resolved motion values.
- * This function basically acts as a bridge between a flat motion value map
- * and applyAxisDelta
- */
-export declare function applyAxisTransforms(final: Axis, axis: Axis, transforms: ResolvedValues, [key, scaleKey, originKey]: string[]): void;
-/**
- * Apply a transform to a box from the latest resolved motion values.
- */
-export declare function applyBoxTransforms(finalBox: AxisBox2D, box: AxisBox2D, transforms: ResolvedValues): void;
-/**
- * Remove a delta from a point. This is essentially the steps of applyPointDelta in reverse
- */
-export declare function removePointDelta(point: number, translate: number, scale: number, originPoint: number, boxScale?: number): number;
-/**
- * Remove a delta from an axis. This is essentially the steps of applyAxisDelta in reverse
- */
-export declare function removeAxisDelta(axis: Axis, translate?: number, scale?: number, origin?: number, boxScale?: number): void;
-/**
- * Remove a transforms from an axis. This is essentially the steps of applyAxisTransforms in reverse
- * and acts as a bridge between motion values and removeAxisDelta
- */
-export declare function removeAxisTransforms(axis: Axis, transforms: ResolvedValues, [key, scaleKey, originKey]: string[]): void;
-/**
- * Remove a transforms from an box. This is essentially the steps of applyAxisBox in reverse
- * and acts as a bridge between motion values and removeAxisDelta
- */
-export declare function removeBoxTransforms(box: AxisBox2D, transforms: ResolvedValues): void;
-/**
- * Apply a tree of deltas to a box. We do this to calculate the effect of all the transforms
- * in a tree upon our box before then calculating how to project it into our desired viewport-relative box
- *
- * This is the final nested loop within updateLayoutDelta for future refactoring
- */
-export declare function applyTreeDeltas(box: AxisBox2D, treeScale: Point2D, treePath: VisualElement[]): void;
+import type { Axis, AxisBox2D, BoxDelta, Point2D } from "../../types/geometry";
+import type { ResolvedValues, VisualElement } from "../../render/types";
+
 
 
 /** 
@@ -83,7 +21,7 @@ import { isDraggable } from '../../render/utils/is-draggable.js';
  *
  * This is a mutative operation.
  */
-function resetAxis(axis, originAxis) {
+function resetAxis(axis: Axis, originAxis: Axis) {
     axis.min = originAxis.min;
     axis.max = originAxis.max;
 }
@@ -92,14 +30,14 @@ function resetAxis(axis, originAxis) {
  *
  * This is a mutative operation.
  */
-function resetBox(box, originBox) {
+function resetBox(box: AxisBox2D, originBox: AxisBox2D) {
     resetAxis(box.x, originBox.x);
     resetAxis(box.y, originBox.y);
 }
 /**
  * Scales a point based on a factor and an originPoint
  */
-function scalePoint(point, scale, originPoint) {
+function scalePoint(point: number, scale: number, originPoint: number) {
     var distanceFromOrigin = point - originPoint;
     var scaled = scale * distanceFromOrigin;
     return originPoint + scaled;
@@ -107,7 +45,7 @@ function scalePoint(point, scale, originPoint) {
 /**
  * Applies a translate/scale delta to a point
  */
-function applyPointDelta(point, translate, scale, originPoint, boxScale) {
+function applyPointDelta(point: number, translate: number, scale: number, originPoint: number, boxScale?: number) {
     if (boxScale !== undefined) {
         point = scalePoint(point, boxScale, originPoint);
     }
@@ -116,7 +54,7 @@ function applyPointDelta(point, translate, scale, originPoint, boxScale) {
 /**
  * Applies a translate/scale delta to an axis
  */
-function applyAxisDelta(axis, translate, scale, originPoint, boxScale) {
+function applyAxisDelta(axis: Axis, translate: number | undefined, scale: number | undefined, originPoint: number, boxScale?: number) {
     if (translate === void 0) { translate = 0; }
     if (scale === void 0) { scale = 1; }
     axis.min = applyPointDelta(axis.min, translate, scale, originPoint, boxScale);
@@ -125,8 +63,7 @@ function applyAxisDelta(axis, translate, scale, originPoint, boxScale) {
 /**
  * Applies a translate/scale delta to a box
  */
-function applyBoxDelta(box, _a) {
-    var x = _a.x, y = _a.y;
+function applyBoxDelta(box: AxisBox2D, { x, y }: BoxDelta) {
     applyAxisDelta(box.x, x.translate, x.scale, x.originPoint);
     applyAxisDelta(box.y, y.translate, y.scale, y.originPoint);
 }
@@ -135,8 +72,7 @@ function applyBoxDelta(box, _a) {
  * This function basically acts as a bridge between a flat motion value map
  * and applyAxisDelta
  */
-function applyAxisTransforms(final, axis, transforms, _a) {
-    var _b = __read(_a, 3), key = _b[0], scaleKey = _b[1], originKey = _b[2];
+function applyAxisTransforms(final: Axis, axis: Axis, transforms: ResolvedValues, [key, scaleKey, originKey]: string[]) {
     // Copy the current axis to the final axis before mutation
     final.min = axis.min;
     final.max = axis.max;
@@ -153,14 +89,14 @@ var yKeys = ["y", "scaleY", "originY"];
 /**
  * Apply a transform to a box from the latest resolved motion values.
  */
-function applyBoxTransforms(finalBox, box, transforms) {
+function applyBoxTransforms(finalBox: AxisBox2D, box: AxisBox2D, transforms: ResolvedValues) {
     applyAxisTransforms(finalBox.x, box.x, transforms, xKeys);
     applyAxisTransforms(finalBox.y, box.y, transforms, yKeys);
 }
 /**
  * Remove a delta from a point. This is essentially the steps of applyPointDelta in reverse
  */
-function removePointDelta(point, translate, scale, originPoint, boxScale) {
+function removePointDelta(point: number, translate: number, scale: number, originPoint: number, boxScale?: number) {
     point -= translate;
     point = scalePoint(point, 1 / scale, originPoint);
     if (boxScale !== undefined) {
@@ -171,7 +107,7 @@ function removePointDelta(point, translate, scale, originPoint, boxScale) {
 /**
  * Remove a delta from an axis. This is essentially the steps of applyAxisDelta in reverse
  */
-function removeAxisDelta(axis, translate, scale, origin, boxScale) {
+function removeAxisDelta(axis: Axis, translate?: number, scale?: number, origin?: number, boxScale?: number) {
     if (translate === void 0) { translate = 0; }
     if (scale === void 0) { scale = 1; }
     if (origin === void 0) { origin = 0.5; }
@@ -183,15 +119,14 @@ function removeAxisDelta(axis, translate, scale, origin, boxScale) {
  * Remove a transforms from an axis. This is essentially the steps of applyAxisTransforms in reverse
  * and acts as a bridge between motion values and removeAxisDelta
  */
-function removeAxisTransforms(axis, transforms, _a) {
-    var _b = __read(_a, 3), key = _b[0], scaleKey = _b[1], originKey = _b[2];
+function removeAxisTransforms(axis: Axis, transforms: ResolvedValues, [key, scaleKey, originKey]: string[]) {
     removeAxisDelta(axis, transforms[key], transforms[scaleKey], transforms[originKey], transforms.scale);
 }
 /**
  * Remove a transforms from an box. This is essentially the steps of applyAxisBox in reverse
  * and acts as a bridge between motion values and removeAxisDelta
  */
-function removeBoxTransforms(box, transforms) {
+function removeBoxTransforms(box: AxisBox2D, transforms: ResolvedValues) {
     removeAxisTransforms(box.x, transforms, xKeys);
     removeAxisTransforms(box.y, transforms, yKeys);
 }
@@ -201,7 +136,7 @@ function removeBoxTransforms(box, transforms) {
  *
  * This is the final nested loop within updateLayoutDelta for future refactoring
  */
-function applyTreeDeltas(box, treeScale, treePath) {
+function applyTreeDeltas(box: AxisBox2D, treeScale: Point2D, treePath: VisualElement[]) {
     var treeLength = treePath.length;
     if (!treeLength)
         return;
