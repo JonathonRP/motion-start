@@ -2,9 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionStyle } from "../../motion/types";
-import { VisualElement } from "../types";
-export declare function updateMotionValuesFromProps(element: VisualElement, next: MotionStyle, prev: MotionStyle): MotionStyle;
+import type { MotionStyle } from "../../motion/types";
+import type { VisualElement } from "../types";
 
 
 /** 
@@ -14,7 +13,7 @@ Copyright (c) 2018 Framer B.V.
 import { motionValue } from '../../value/index.js';
 import { isMotionValue } from '../../value/utils/is-motion-value.js';
 
-function updateMotionValuesFromProps(element, next, prev) {
+function updateMotionValuesFromProps(element: VisualElement, next: MotionStyle, prev: MotionStyle) {
     var _a;
     for (var key in next) {
         var nextValue = next[key];

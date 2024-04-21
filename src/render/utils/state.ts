@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { AxisBox2D, BoxDelta, Point2D } from "../../types/geometry.js";
+import type { AxisBox2D, BoxDelta, Point2D } from "../../types/geometry.js";
 /**
  * Represents the size and position we want to project a given visual
  * element into.
@@ -38,7 +38,6 @@ export interface TargetProjection {
      */
     targetFinal: AxisBox2D;
 }
-export declare const createProjectionState: () => TargetProjection;
 /**
  * Data about the element's current layout. Contains the latest measurements
  * as well as the latest calculations of how to project from this layout
@@ -84,8 +83,6 @@ export interface LayoutState {
      */
     deltaTransform: string;
 }
-export declare function createLayoutState(): LayoutState;
-export declare const zeroLayout: LayoutState;
 
 
 /** 
@@ -99,7 +96,7 @@ var createProjectionState = function () { return ({
     isTargetLocked: false,
     target: axisBox(),
     targetFinal: axisBox(),
-}); };
+} as TargetProjection); };
 function createLayoutState() {
     return {
         isHydrated: false,
@@ -109,7 +106,7 @@ function createLayoutState() {
         delta: delta(),
         deltaFinal: delta(),
         deltaTransform: "",
-    };
+    } as LayoutState;
 }
 var zeroLayout = createLayoutState();
 

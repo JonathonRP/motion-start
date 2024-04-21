@@ -3,10 +3,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-/**
- * @public
- */
-export declare const m: (<Props>(Component: string | import("react").ComponentType<Props>, customMotionComponentConfig?: import("./motion-proxy").CustomMotionComponentConfig) => import("./motion-proxy").CustomDomComponent<Props>) & import("../html/types").HTMLMotionComponents & import("../svg/types").SVGMotionComponents;
 
 
 /** 
@@ -20,7 +16,7 @@ import {createMotionClass} from './create-motion-class.js';
 /**
  * @public
  */
-var m = /*@__PURE__*/ //createMotionProxy([MeasureLayout]);
+var m: (<Props>(Component: string | import("react").ComponentType<Props>, customMotionComponentConfig?: import("./motion-proxy").CustomMotionComponentConfig) => import("./motion-proxy").CustomDomComponent<Props>) & import("../html/types").HTMLMotionComponents & import("../svg/types").SVGMotionComponents = /*@__PURE__*/ //createMotionProxy([MeasureLayout]);
     createMotionClass({...layoutAnimations})
 
 export { m as M };

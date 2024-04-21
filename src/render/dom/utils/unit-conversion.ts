@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Target, TargetWithKeyframes } from "../../../types";
-import { VisualElement } from "../../types";
-export declare enum BoundingBoxDimension {
+import type { Target, TargetWithKeyframes } from "../../../types";
+import type { VisualElement } from "../../types";
+enum BoundingBoxDimension {
     width = "width",
     height = "height",
     left = "left",
@@ -12,18 +12,6 @@ export declare enum BoundingBoxDimension {
     top = "top",
     bottom = "bottom"
 }
-/**
- * Convert value types for x/y/width/height/top/left/bottom/right
- *
- * Allows animation between `'auto'` -> `'100%'` or `0` -> `'calc(50% - 10vw)'`
- *
- * @internal
- */
-export declare function unitConversion(visualElement: VisualElement, target: TargetWithKeyframes, origin?: Target, transitionEnd?: Target): {
-    target: TargetWithKeyframes;
-    transitionEnd?: Target;
-};
-
 
 /** 
 based on framer-motion@4.0.3,
@@ -60,15 +48,6 @@ var setAndResetVelocity = function (value, to) {
 var isNumOrPxType = function (v) {
     return v === number || v === px;
 };
-var BoundingBoxDimension;
-(function (BoundingBoxDimension) {
-    BoundingBoxDimension["width"] = "width";
-    BoundingBoxDimension["height"] = "height";
-    BoundingBoxDimension["left"] = "left";
-    BoundingBoxDimension["right"] = "right";
-    BoundingBoxDimension["top"] = "top";
-    BoundingBoxDimension["bottom"] = "bottom";
-})(BoundingBoxDimension || (BoundingBoxDimension = {}));
 var getPosFromMatrix = function (matrix, pos) {
     return parseFloat(matrix.split(", ")[pos]);
 };
@@ -267,7 +246,10 @@ var checkAndConvertChangedValueTypes = function (visualElement, target, origin, 
  *
  * @internal
  */
-function unitConversion(visualElement, target, origin, transitionEnd) {
+function unitConversion(visualElement: VisualElement, target: TargetWithKeyframes, origin?: Target, transitionEnd?: Target): {
+    target: TargetWithKeyframes;
+    transitionEnd?: Target;
+} {
     return hasPositionalKey(target)
         ? checkAndConvertChangedValueTypes(visualElement, target, origin, transitionEnd)
         : { target: target, transitionEnd: transitionEnd };

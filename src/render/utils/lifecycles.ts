@@ -2,11 +2,11 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { SharedLayoutAnimationConfig } from "../../components/AnimateSharedLayout/types";
-import { MotionProps } from "../../motion/types";
-import { AxisBox2D, BoxDelta } from "../../types/geometry";
-import { ResolvedValues } from "../types";
-import { AnimationDefinition } from "./animation";
+import type { SharedLayoutAnimationConfig } from "../../components/AnimateSharedLayout/types";
+import type { MotionProps } from "../../motion/types";
+import type { AxisBox2D, BoxDelta } from "../../types/geometry";
+import type { ResolvedValues } from "../types";
+import type { AnimationDefinition } from "./animation";
 export declare type LayoutMeasureListener = (layout: AxisBox2D, prevLayout: AxisBox2D) => void;
 export declare type BeforeLayoutMeasureListener = (layout: AxisBox2D) => void;
 export declare type LayoutUpdateListener = (layout: AxisBox2D, prevLayout: AxisBox2D, config?: SharedLayoutAnimationConfig) => void;
@@ -117,7 +117,6 @@ export interface LifecycleManager {
     clearAllListeners: () => void;
     updatePropListeners: (props: MotionProps) => void;
 }
-export declare function createLifecycles(): LifecycleManager;
 
 
 /** 
@@ -167,7 +166,7 @@ function createLifecycles() {
             return manager.notify.apply(manager, __spreadArray([], __read(args)));
         };
     });
-    return lifecycles;
+    return lifecycles as LifecycleManager;
 }
 
 export { createLifecycles };

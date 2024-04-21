@@ -2,15 +2,14 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../types";
-export declare function isDraggable(visualElement: VisualElement): boolean | undefined;
+import type { VisualElement } from "../types";
 
 
 /** 
 based on framer-motion@4.1.11,
 Copyright (c) 2018 Framer B.V.
 */
-function isDraggable(visualElement) {
+function isDraggable(visualElement: VisualElement) {
     var _a = visualElement.getProps(), drag = _a.drag, _dragX = _a._dragX;
     return drag && !_dragX;
 }

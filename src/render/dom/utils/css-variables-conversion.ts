@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Target, TargetWithKeyframes } from "../../../types";
-import { VisualElement } from "../../types";
+import type { Target, TargetWithKeyframes } from "../../../types";
+import type { VisualElement } from "../../types";
 /**
  * Parse Framer's special CSS variable format into a CSS token and a fallback.
  *
@@ -13,17 +13,14 @@ import { VisualElement } from "../../types";
  *
  * @param current
  */
-export declare const cssVariableRegex: RegExp;
-export declare function parseCSSVariable(current: string): string[] | undefined[];
+// export declare const cssVariableRegex: RegExp;
+// export declare function parseCSSVariable(current: string): string[] | undefined[];
 /**
  * Resolve CSS variables from
  *
  * @internal
  */
-export declare function resolveCSSVariables(visualElement: VisualElement, { ...target }: TargetWithKeyframes, transitionEnd: Target | undefined): {
-    target: TargetWithKeyframes;
-    transitionEnd?: Target;
-};
+// export declare function resolveCSSVariables(): ;
 
 
 /** 
@@ -46,7 +43,7 @@ function isCSSVariable(value) {
  * @param current
  */
 var cssVariableRegex = /var\((--[a-zA-Z0-9-_]+),? ?([a-zA-Z0-9 ()%#.,-]+)?\)/;
-function parseCSSVariable(current) {
+function parseCSSVariable(current: string): string[] | undefined[] {
     var match = cssVariableRegex.exec(current);
     if (!match)
         return [,];
@@ -79,9 +76,10 @@ function getVariableValue(current, element, depth) {
  *
  * @internal
  */
-function resolveCSSVariables(visualElement, _a, transitionEnd) {
-    var _b;
-    var target = __rest(_a, []);
+function resolveCSSVariables(visualElement: VisualElement, { ...target }: TargetWithKeyframes, transitionEnd: Target | undefined): {
+    target: TargetWithKeyframes;
+    transitionEnd?: Target;
+} {
     var element = visualElement.getInstance();
     if (!(element instanceof HTMLElement))
         return { target: target, transitionEnd: transitionEnd };

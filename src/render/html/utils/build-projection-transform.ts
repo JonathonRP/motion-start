@@ -2,21 +2,11 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { BoxDelta, Point2D } from "../../../types/geometry";
-import { ResolvedValues } from "../../types";
-import { LayoutState } from "../../utils/state";
+import type { BoxDelta, Point2D } from "../../../types/geometry";
+import type { ResolvedValues } from "../../types";
+import type { LayoutState } from "../../utils/state";
 export declare type BuildProjectionTransform = (box: BoxDelta, treeScale: Point2D, transform?: ResolvedValues) => string;
 export declare type BuildProjectionTransformOrigin = (layout: LayoutState) => string;
-/**
- * Build a transform style that takes a calculated delta between the element's current
- * space on screen and projects it into the desired space.
- */
-export declare function buildLayoutProjectionTransform({ x, y }: BoxDelta, treeScale: Point2D, latestTransform?: ResolvedValues): string;
-/**
- * Take the calculated delta origin and apply it as a transform string.
- */
-export declare function buildLayoutProjectionTransformOrigin({ deltaFinal, }: LayoutState): string;
-export declare const identityProjection: string;
 
 
 /** 
@@ -29,8 +19,7 @@ import { zeroLayout } from '../../utils/state.js';
  * Build a transform style that takes a calculated delta between the element's current
  * space on screen and projects it into the desired space.
  */
-function buildLayoutProjectionTransform(_a, treeScale, latestTransform) {
-    var x = _a.x, y = _a.y;
+function buildLayoutProjectionTransform({ x, y }: BoxDelta, treeScale: Point2D, latestTransform?: ResolvedValues): string {
     /**
      * The translations we use to calculate are always relative to the viewport coordinate space.
      * But when we apply scales, we also scale the coordinate space of an element and its children.
@@ -55,8 +44,7 @@ function buildLayoutProjectionTransform(_a, treeScale, latestTransform) {
 /**
  * Take the calculated delta origin and apply it as a transform string.
  */
-function buildLayoutProjectionTransformOrigin(_a) {
-    var deltaFinal = _a.deltaFinal;
+function buildLayoutProjectionTransformOrigin({ deltaFinal, }: LayoutState) {
     return deltaFinal.x.origin * 100 + "% " + deltaFinal.y.origin * 100 + "% 0";
 }
 var identityProjection = buildLayoutProjectionTransform(zeroLayout.delta, zeroLayout.treeScale, { x: 1, y: 1 });

@@ -1,10 +1,11 @@
 <svelte:options runes={true}/>
 <script lang="ts">
-    import { SvelteHTMLElements } from "svelte/elements";
+    import type { SvelteHTMLElements } from "svelte/elements";
+    import type { Snippet } from "svelte";
+    import type { MotionProps } from "../../motion";
     import Motion from "../../motion/Motion.svelte";
-    import { Snippet, SvelteComponent } from "svelte";
 
-    let {___tag, class: className, children, ...restProps}: {___tag: keyof SvelteHTMLElements, children: Snippet, class: string } = $props();
+    let {___tag, class: className, children, ...restProps}: {___tag: keyof SvelteHTMLElements, children: Snippet, class: string } & MotionProps = $props();
 </script>
 
 <Motion {...restProps} let:props let:motion>

@@ -16,28 +16,27 @@ import { useMotionValue } from "./use-motion-value.js"
  *
  * @public
  */
-export const useVelocity = (value : MotionValue<number>): MotionValue<number> & { reset: (value: MotionValue<number>) => void } => {
+export const useVelocity = (value : MotionValue<number>) => {
     let val = value;
     let cleanup: () => void;
-    
-    const velocity = useMotionValue(value.getVelocity(),()=>{
-        cleanup?.();
-        cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
-            velocity.set(newVelocity);
-        })
-        return ()=>{
-            cleanup?.()     
-        }
-    });
 
-    
-    const reset = (value: MotionValue<number>): void => {
+    const reset = (value: MotionValue<number>) => {
         cleanup?.();
         val = value
         cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
             velocity.set(newVelocity);
         })
     }
+    
+    const velocity = useMotionValue(value.getVelocity(), () => {
+        cleanup?.();
+        cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
+            velocity.set(newVelocity);
+        })
+        return () => {
+            cleanup?.()     
+        }
+    }) as MotionValue<number> & { reset: typeof reset };
 
     velocity.reset = reset;
 

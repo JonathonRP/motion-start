@@ -2,29 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { SpringOptions } from "popmotion";
+import type { SpringOptions } from "popmotion";
 import { MotionValue } from "../value";
-/**
- * Creates a `MotionValue` that, when `set`, will use a spring animation to animate to its new state.
- *
- * It can either work as a stand-alone `MotionValue` by initialising it with a value, or as a subscriber
- * to another `MotionValue`.
- *
- * @remarks
- *
- * ```jsx
- * const x = useSpring(0, { stiffness: 300 })
- * const y = useSpring(x, { damping: 10 })
- * ```
- *
- * @param inputValue - `MotionValue` or number. If provided a `MotionValue`, when the input `MotionValue` changes, the created `MotionValue` will spring towards that value.
- * @param springConfig - Configuration options for the spring.
- * @returns `MotionValue & { reset: (_: any, config: SpringOptions) => void }`
- *
- * @public
- */
-export declare function useSpring(source: MotionValue | number, config?: SpringOptions):
-    MotionValue<any> & { reset: (_: any, config: SpringOptions) => void };
 
 /** 
 based on framer-motion@4.1.16,
@@ -33,8 +12,8 @@ Copyright (c) 2018 Framer B.V.
 
 import { fixed } from '../utils/fix-process-env';
 import { getContext } from "svelte"
-import { MotionConfigContext } from "../context/MotionConfigContext"
-import { get } from 'svelte/store';
+import { MotionConfigContext, type MotionConfigContextObject } from "../context/MotionConfigContext"
+import { get, type Writable } from 'svelte/store';
 import { useMotionValue } from "./use-motion-value";
 import { isMotionValue } from "./utils/is-motion-value";
 import { animate } from "popmotion"
@@ -58,16 +37,16 @@ import { animate } from "popmotion"
  *
  * @public
  */
-export const useSpring = (source, config = {}, isCustom=false) => {
+export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
 
-    const mcc = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+    const mcc: Writable<MotionConfigContextObject> = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
 
-    let activeSpringAnimation = null;
+    let activeSpringAnimation: { stop: () => void } | null = null;
 
-    let value = useMotionValue(isMotionValue(source) ? source.get() : source);
+    let value = useMotionValue(isMotionValue(source) ? source.get() : source) as MotionValue<any> & { reset: (_: any, config: SpringOptions) => void };
 
-    let cleanup;
-    const update = (_source, _config) => {
+    let cleanup: () => void;
+    const update = (_source: typeof source, _config: typeof config) => {
         value.attach((v, set) => {
 
 

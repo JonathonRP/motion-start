@@ -4,16 +4,16 @@ Copyright (c) 2018 Framer B.V.
 */
 import * as React from "react";
 import { startAnimation } from "../animation/utils/transitions";
-import { Presence, SharedLayoutAnimationConfig } from "../components/AnimateSharedLayout/types";
-import { Crossfader } from "../components/AnimateSharedLayout/utils/crossfader";
-import { MotionProps } from "../motion/types";
-import { VisualState } from "../motion/utils/use-visual-state";
-import { TargetAndTransition, Transition, Variant } from "../types";
-import { AxisBox2D, Point2D } from "../types/geometry";
+import { Presence, type SharedLayoutAnimationConfig } from "../components/AnimateSharedLayout/types";
+import type { Crossfader } from "../components/AnimateSharedLayout/utils/crossfader";
+import type { MotionProps } from "../motion/types";
+import type { VisualState } from "../motion/utils/use-visual-state";
+import type { TargetAndTransition, Transition, Variant } from "../types";
+import type { AxisBox2D, Point2D } from "../types/geometry";
 import { MotionValue } from "../value";
-import { AnimationState } from "./utils/animation-state";
-import { LifecycleManager } from "./utils/lifecycles";
-import { LayoutState, TargetProjection } from "./utils/state";
+import type { AnimationState } from "./utils/animation-state";
+import type { LifecycleManager } from "./utils/lifecycles";
+import type { LayoutState, TargetProjection } from "./utils/state";
 import { FlatTree } from "./utils/flat-tree";
 
 export interface MotionPoint {

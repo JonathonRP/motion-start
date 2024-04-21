@@ -3,10 +3,22 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import { MotionValue } from "../value";
-import { TransformOptions } from "../utils/transform";
-export declare type InputRange = number[];
-declare type SingleTransformer<I, O> = (input: I) => O;
-declare type MultiTransformer<I, O> = (input: I[]) => O;
+import type { TransformOptions } from "../utils/transform";
+
+import { transform } from "../utils/transform"
+import { useCombineMotionValues } from "./use-combine-values"
+
+export type InputRange = number[];
+type SingleTransformer<I, O> = (input: I) => O;
+type MultiTransformer<I, O> = (input: I[]) => O;
+type Transformer<I, O> =
+    | SingleTransformer<I, O>
+    /**
+     * Ideally, this would be typed <I, O> in all instances, but to type this
+     * more accurately requires the tuple support in TypeScript 4:
+     * https://gist.github.com/InventingWithMonster/c4d23752a0fae7888596c4ff6d92733a
+     */
+    | MultiTransformer<string | number, O>
 /**
  * Create a `MotionValue` that transforms the output of another `MotionValue` by mapping it from one range of values into another.
  *
@@ -55,7 +67,7 @@ declare type MultiTransformer<I, O> = (input: I[]) => O;
  *
  * @public
  */
-export declare function useTransform<I, O>(value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>): 
+export function useTransform<I, O>(value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>): 
     MotionValue<O> & { reset: (value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>) => void };
 /**
  * Create a `MotionValue` that transforms the output of another `MotionValue` through a function.
@@ -80,7 +92,7 @@ export declare function useTransform<I, O>(value: MotionValue<number>, inputRang
  *
  * @public
  */
-export declare function useTransform<I, O>(input: MotionValue<I>, transformer: SingleTransformer<I, O>): 
+export function useTransform<I, O>(input: MotionValue<I>, transformer: SingleTransformer<I, O>): 
     MotionValue<O> & { reset: (input: MotionValue<I>, transformer: SingleTransformer<I, O>) => void};
 /**
  * Pass an array of `MotionValue`s and a function to combine them. In this example, `z` will be the `x` multiplied by `y`.
@@ -105,9 +117,13 @@ export declare function useTransform<I, O>(input: MotionValue<I>, transformer: S
  *
  * @public
  */
-export declare function useTransform<I, O>(input: MotionValue<string | number>[], transformer: MultiTransformer<I, O>):
-    MotionValue<O> & { reset: (input: MotionValue<string | number>[], transformer: MultiTransformer<I, O>) => void };
-
+// export function useTransform<I, O>(input: MotionValue<string | number>[], transformer: MultiTransformer<I, O>):
+//     MotionValue<O> & { reset: (input: MotionValue<string | number>[], transformer: MultiTransformer<I, O>) => void };
+// export function useTransform<I, O>(
+// 	input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[],
+// 	transformer: MultiTransformer<I, O>
+// ): MotionValue<O> & { reset: (input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[], transformer: MultiTransformer<I, O>) => void };
+// export function useTransform<I, O>(transformer: () => O): MotionValue<O>;
 /**
  * Pass an array of `MotionValue`s and a function to combine them. In this example, `z` will be the `x` multiplied by `y`.
  *
@@ -128,32 +144,33 @@ export declare function useTransform<I, O>(input: MotionValue<string | number>[]
  * @public
  */
 export function useTransform<I, O>(
-	input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[],
-	transformer: MultiTransformer<I, O>
-): MotionValue<O>;
-export function useTransform<I, O>(transformer: () => O): MotionValue<O>;
+    input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<string | number>[]
+        | (() => O),
+    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+    outputRange?: O[],
+    options?: TransformOptions<O>
+): any {
 
-import { transform } from "../utils/transform"
-import { useCombineMotionValues } from "./use-combine-values"
-
-export const useTransform = (
-    input,
-    inputRangeOrTransformer,
-    outputRange,
-    options
-) => {
-
-    let latest = [];
+    const latest = <I[]>[];
 
     const update = (
-        input,
-        inputRangeOrTransformer,
-        outputRange,
-        options
+        input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<string | number>[]
+        | (() => O),
+        inputRangeOrTransformer?: InputRange | Transformer<I,O>,
+        outputRange?: O[],
+        options?: TransformOptions<O>
     ) => {
         const transformer = typeof inputRangeOrTransformer === "function"
             ? inputRangeOrTransformer
-            : transform(inputRangeOrTransformer, outputRange, options);
+            : transform(inputRangeOrTransformer!, outputRange!, options);
         const values = Array.isArray(input) ? input : [input];
         const _transformer = Array.isArray(input) ? transformer :
             ([latest]) =>
@@ -172,15 +189,20 @@ export const useTransform = (
     const comb = useCombineMotionValues(...update(input,
         inputRangeOrTransformer,
         outputRange,
-        options));
+        options)) as any;
 
     comb.updateInner = comb.reset;
 
     comb.reset = (
-        input,
-        inputRangeOrTransformer,
-        outputRange,
-        options
+        input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<string | number>[]
+        | (() => O),
+        inputRangeOrTransformer?: InputRange | Transformer<I,O>,
+        outputRange?: O[],
+        options?: TransformOptions<O>
     ) => comb.updateInner(
         ...update(
             input,
@@ -191,4 +213,4 @@ export const useTransform = (
     )
     return comb;
 }
-//export { default as UseTransform } from './UseTransform.svelte';
+// export { default as UseTransform } from './UseTransform.svelte';

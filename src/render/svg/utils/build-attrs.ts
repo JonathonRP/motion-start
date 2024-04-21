@@ -2,16 +2,12 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { DOMVisualElementOptions } from "../../dom/types";
-import { ResolvedValues } from "../../types";
-import { MotionProps } from "../../../motion/types";
-import { LayoutState, TargetProjection } from "../../utils/state";
-import { SVGRenderState } from "../types";
-import { BuildProjectionTransform, BuildProjectionTransformOrigin } from "../../html/utils/build-projection-transform";
-/**
- * Build SVG visual attrbutes, like cx and style.transform
- */
-export declare function buildSVGAttrs(state: SVGRenderState, { attrX, attrY, originX, originY, pathLength, pathSpacing, pathOffset, ...latest }: ResolvedValues, projection: TargetProjection | undefined, layoutState: LayoutState | undefined, options: DOMVisualElementOptions, transformTemplate?: MotionProps["transformTemplate"], buildProjectionTransform?: BuildProjectionTransform, buildProjectionTransformOrigin?: BuildProjectionTransformOrigin): void;
+import type { DOMVisualElementOptions } from "../../dom/types";
+import type { ResolvedValues } from "../../types";
+import type { MotionProps } from "../../../motion/types";
+import type { LayoutState, TargetProjection } from "../../utils/state";
+import type { SVGRenderState } from "../types";
+import type { BuildProjectionTransform, BuildProjectionTransformOrigin } from "../../html/utils/build-projection-transform";
 
 
 /** 
@@ -26,10 +22,10 @@ import { buildSVGPath } from './path.js';
 /**
  * Build SVG visual attrbutes, like cx and style.transform
  */
-function buildSVGAttrs(state, _a, projection, layoutState, options, transformTemplate, buildProjectionTransform, buildProjectionTransformOrigin) {
-    var attrX = _a.attrX, attrY = _a.attrY, originX = _a.originX, originY = _a.originY, pathLength = _a.pathLength, _b = _a.pathSpacing, pathSpacing = _b === void 0 ? 1 : _b, _c = _a.pathOffset, pathOffset = _c === void 0 ? 0 : _c, 
-    // This is object creation, which we try to avoid per-frame.
-    latest = __rest(_a, ["attrX", "attrY", "originX", "originY", "pathLength", "pathSpacing", "pathOffset"]);
+function buildSVGAttrs(state: SVGRenderState, { attrX, attrY, originX, originY, pathLength, pathSpacing, pathOffset, ...latest }: ResolvedValues, projection: TargetProjection | undefined, layoutState: LayoutState | undefined, options: DOMVisualElementOptions, transformTemplate?: MotionProps["transformTemplate"], buildProjectionTransform?: BuildProjectionTransform, buildProjectionTransformOrigin?: BuildProjectionTransformOrigin) {
+    // var attrX = _a.attrX, attrY = _a.attrY, originX = _a.originX, originY = _a.originY, pathLength = _a.pathLength, _b = _a.pathSpacing, pathSpacing = _b === void 0 ? 1 : _b, _c = _a.pathOffset, pathOffset = _c === void 0 ? 0 : _c, 
+    // // This is object creation, which we try to avoid per-frame.
+    // latest = __rest(_a, ["attrX", "attrY", "originX", "originY", "pathLength", "pathSpacing", "pathOffset"]);
     buildHTMLStyles(state, latest, projection, layoutState, options, transformTemplate, buildProjectionTransform, buildProjectionTransformOrigin);
     state.attrs = state.style;
     state.style = {};

@@ -2,13 +2,14 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { RefObject } from "react";
-import { AnyPointerEvent, PanInfo } from "../../gestures/PanSession";
-import { DraggableProps } from "./types";
-import { TransformPoint2D, AxisBox2D, Point2D } from "../../types/geometry";
-import { VisualElement } from "../../render/types";
-import { MotionProps } from "../../motion/types";
-export declare const elementDragControls: WeakMap<VisualElement<any, any>, VisualElementDragControls>;
+import type { RefObject } from "react";
+import type { AnyPointerEvent, PanInfo } from "../../gestures/PanSession";
+import type { DraggableProps } from "./types";
+import type { TransformPoint2D, AxisBox2D, Point2D } from "../../types/geometry";
+import type { VisualElement } from "../../render/types";
+import type { MotionProps } from "../../motion/types";
+
+
 interface DragControlConfig {
     visualElement: VisualElement;
 }
@@ -170,7 +171,7 @@ import { calcRelativeOffset } from '../../motion/features/layout/utils.js';
 import { flushLayout, batchLayout } from '../../render/dom/utils/batch-layout.js';
 import { flushSync } from 'framesync';
 
-var elementDragControls = new WeakMap();
+var elementDragControls: WeakMap<VisualElement<any, any>, VisualElementDragControls> = new WeakMap();
 /**
  *
  */

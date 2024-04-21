@@ -4,12 +4,12 @@ Copyright (c) 2018 Framer B.V.
 */
 import { visualElement } from ".."
 import { isMotionValue } from "../../value/utils/is-motion-value"
-import { htmlConfig } from "./html-visual-element"
-import { buildSVGAttrs } from "./utils/build-svg-attrs"
+import { htmlConfig } from "../html/visual-element"
+import { buildSVGAttrs } from "../svg/utils/build-attrs"
 import { camelToDash } from "./utils/camel-to-dash"
-import { camelCaseAttributes } from "./utils/svg-camel-case-attrs"
-import { isTransformProp } from "./utils/transform"
-import { getDefaultValueType } from "./utils/value-types"
+import { camelCaseAttributes } from "../svg/utils/camel-case-attrs"
+import { isTransformProp } from "../html/utils/transform"
+import { getDefaultValueType } from "./value-types/defaults";
 
 const zeroDimensions = {
     x: 0,

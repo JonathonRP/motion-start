@@ -2,7 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export declare function getAnimatableNone(key: string, value: string): any;
 
 
 /** 
@@ -13,7 +12,7 @@ import {fixed} from '../../../utils/fix-process-env.js';
 import { filter, complex } from 'style-value-types';
 import { getDefaultValueType } from './defaults.js';
 
-function getAnimatableNone(key, value) {
+function getAnimatableNone(key:string, value:string) {
     var _a;
     var defaultValueType = getDefaultValueType(key);
     if (defaultValueType !== filter)

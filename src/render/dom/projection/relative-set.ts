@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../../types";
-export declare function setCurrentViewportBox(visualElement: VisualElement): void;
+import type { VisualElement } from "../../types";
 
 
 /** 
@@ -13,7 +12,7 @@ Copyright (c) 2018 Framer B.V.
 import { calcRelativeOffset } from '../../../motion/features/layout/utils.js';
 import { eachAxis } from '../../../utils/each-axis.js';
 
-function setCurrentViewportBox(visualElement) {
+function setCurrentViewportBox(visualElement: VisualElement) {
     var projectionParent = visualElement.getProjectionParent();
     if (!projectionParent) {
         visualElement.rebaseProjectionTarget();

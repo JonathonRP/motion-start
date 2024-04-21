@@ -2,11 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { ValueType } from "style-value-types";
-/**
- * ValueType for "auto"
- */
-export declare const auto: ValueType;
+import type { ValueType } from "style-value-types";
 
 
 /** 
@@ -20,6 +16,6 @@ Copyright (c) 2018 Framer B.V.
 var auto = {
     test: function (v) { return v === "auto"; },
     parse: function (v) { return v; },
-};
+} as ValueType;
 
 export { auto };

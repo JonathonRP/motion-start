@@ -1,19 +1,19 @@
-<script>
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
+
+<script lang="ts">
     import { getContext } from "svelte";
-    import { get } from 'svelte/store';
-    import { MotionContext } from './index.js';
+    import { get, type Writable } from 'svelte/store';
+    import { MotionContext, type MotionContextProps } from './index.js';
     import { getCurrentTreeVariants } from './utils.js';
 
-    export let props, 
-        isStatic,
-        isCustom;
-        let mc = getContext(MotionContext)||MotionContext(isCustom);
-        let {initial, animate} = getCurrentTreeVariants(props, get(mc));
-        $: ({initial,animate} = getCurrentTreeVariants(props, $mc));
+    export let props: any, 
+        isStatic: any,
+        isCustom: any = undefined;
+
+    let mc: Writable<MotionContextProps> = getContext(MotionContext)||MotionContext(isCustom);
+    let {initial, animate} = getCurrentTreeVariants(props, get(mc));
+    $: ({initial,animate} = getCurrentTreeVariants(props, $mc));
 
     const variantLabelsAsDependency = (prop) => {
         return Array.isArray(prop) ? prop.join(" ") : prop;

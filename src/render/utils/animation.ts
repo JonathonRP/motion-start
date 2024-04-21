@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VariantLabels } from "../../motion/types";
-import { Target, TargetAndTransition, TargetResolver, TargetWithKeyframes, Transition } from "../../types";
-import { VisualElement } from "../types";
+import type { VariantLabels } from "../../motion/types";
+import type { Target, TargetAndTransition, TargetResolver, TargetWithKeyframes, Transition } from "../../types";
+import type { VisualElement } from "../types";
 import { AnimationType } from "./types";
 export declare type AnimationDefinition = VariantLabels | TargetAndTransition | TargetResolver;
 export declare type AnimationOptions = {
@@ -17,12 +17,6 @@ export declare type MakeTargetAnimatable = (visualElement: VisualElement, target
     target: TargetWithKeyframes;
     transitionEnd?: Target;
 };
-/**
- * @internal
- */
-export declare function animateVisualElement(visualElement: VisualElement, definition: AnimationDefinition, options?: AnimationOptions): Promise<void>;
-export declare function stopAnimation(visualElement: VisualElement): void;
-export declare function sortByTreeOrder(a: VisualElement, b: VisualElement): number;
 
 
 /** 
@@ -37,8 +31,7 @@ import { resolveVariant } from './variants.js';
 /**
  * @internal
  */
-function animateVisualElement(visualElement, definition, options) {
-    if (options === void 0) { options = {}; }
+function animateVisualElement(visualElement: VisualElement, definition: AnimationDefinition, options: AnimationOptions = {}) {
     visualElement.notifyAnimationStart();
     var animation;
     if (Array.isArray(definition)) {
@@ -58,9 +51,9 @@ function animateVisualElement(visualElement, definition, options) {
     }
     return animation.then(function () {
         return visualElement.notifyAnimationComplete(definition);
-    });
+    }) as Promise<void>;
 }
-function animateVariant(visualElement, variant, options) {
+function animateVariant(visualElement: VisualElement, variant, options: AnimationOptions = {}) {
     var _a;
     if (options === void 0) { options = {}; }
     var resolved = resolveVariant(visualElement, variant, options.custom);
@@ -104,7 +97,7 @@ function animateVariant(visualElement, variant, options) {
 /**
  * @internal
  */
-function animateTarget(visualElement, definition, _a) {
+function animateTarget(visualElement: VisualElement, definition: AnimationDefinition, _a) {
     var _b;
     var _c = _a === void 0 ? {} : _a, _d = _c.delay, delay = _d === void 0 ? 0 : _d, transitionOverride = _c.transitionOverride, type = _c.type;
     var _e = visualElement.makeTargetAnimatable(definition), _f = _e.transition, transition = _f === void 0 ? visualElement.getDefaultTransition() : _f, transitionEnd = _e.transitionEnd, target = __rest(_e, ["transition", "transitionEnd"]);
@@ -150,10 +143,10 @@ function animateChildren(visualElement, variant, delayChildren, staggerChildren,
     });
     return Promise.all(animations);
 }
-function stopAnimation(visualElement) {
+function stopAnimation(visualElement: VisualElement) {
     visualElement.forEachValue(function (value) { return value.stop(); });
 }
-function sortByTreeOrder(a, b) {
+function sortByTreeOrder(a: VisualElement, b: VisualElement) {
     return a.sortNodePosition(b);
 }
 /**

@@ -3,35 +3,6 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import { MotionValue } from ".";
-/**
- * Combine multiple motion values into a new one using a string template literal.
- *
- * ```jsx
- * <script>
- *   import {
- *       motion,
- *       useSpring,
- *       useMotionValue,
- *       useMotionTemplate
- *   } from "svelte-motion"
- *
- * 
- *   const shadowX = useSpring(0)
- *   const shadowY = useMotionValue(0)
- *   const shadow = useMotionTemplate`drop-shadow(${shadowX}px ${shadowY}px 20px rgba(0,0,0,0.3))`
- * </script>
- * 
- * <Motion style={{ filter: shadow }} use:motion>
- *  <div let:motion/>
- * </Motion>
- * 
- * ```
- *
- * @public
- */
-export declare function useMotionTemplate(fragments: TemplateStringsArray, ...values: MotionValue[]):
-    MotionValue<string> & { reset: (fragments: TemplateStringsArray, ...values: MotionValue[]) => void };
-
 
 import { useCombineMotionValues } from "./use-combine-values"
 
@@ -58,7 +29,7 @@ import { useCombineMotionValues } from "./use-combine-values"
  * @public
  */
 
-export const useMotionTemplate = (fragments, ...values) => {
+export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: MotionValue[]) => {
     /**
     * Create a function that will build a string from the latest motion values.
     */
@@ -74,13 +45,13 @@ export const useMotionTemplate = (fragments, ...values) => {
 
         return output
     }
-    const value = useCombineMotionValues(values, buildValue);
+    const value = useCombineMotionValues(values, buildValue) as any;
     value.resetInner = value.reset;
 
-    value.reset = (f, ...vs) => {
+    value.reset = (f: TemplateStringsArray, ...vs: MotionValue[]) => {
         numFragments = f.length;
         value.resetInner(vs,buildValue)
     }
 
-    return value;
+    return value as MotionValue<string> & { reset: (fragments: TemplateStringsArray, ...values: MotionValue[]) => void };
 }

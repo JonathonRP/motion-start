@@ -1,12 +1,12 @@
-<script context="module">
+<script lang="ts" context="module">
     /** 
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
     export function copyRawValuesOnly(
-    target,
-    source,
-    props
+    target: ResolvedValues, source: {
+    [key: string]: string | number | MotionValue;
+}, props: MotionProps
 ) {
     for (const key in source) {
         if (!isMotionValue(source[key]) && !isForcedMotionValue(key, props)) {
@@ -15,10 +15,12 @@ Copyright (c) 2018 Framer B.V.
     }
 }
 </script>
-<script>
+<script lang="ts">
     import { isMotionValue } from "../../value/utils/is-motion-value";
     import { isForcedMotionValue } from "../../motion/utils/is-forced-motion-value";
     import UseInitialMotionValues from "./UseInitialMotionValues.svelte";
+    import type { MotionValue, MotionProps } from "../..";
+    import type { ResolvedValues } from "../types";
     export let visualState, 
         props,isStatic;
     $: (styleProp = props.style || {});

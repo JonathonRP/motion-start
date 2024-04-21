@@ -2,12 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../../types";
-/**
- * Returns a boolean stating whether or not we converted the projection
- * to relative projection.
- */
-export declare function convertToRelativeProjection(visualElement: VisualElement, isLayoutDrag?: boolean): boolean;
+import type { VisualElement } from "../../types";
 
 
 /** 
@@ -23,7 +18,7 @@ import { removeBoxTransforms } from '../../../utils/geometry/delta-apply.js';
  * Returns a boolean stating whether or not we converted the projection
  * to relative projection.
  */
-function convertToRelativeProjection(visualElement, isLayoutDrag) {
+function convertToRelativeProjection(visualElement: VisualElement, isLayoutDrag?: boolean) {
     if (isLayoutDrag === void 0) { isLayoutDrag = true; }
     var projectionParent = visualElement.getProjectionParent();
     if (!projectionParent)

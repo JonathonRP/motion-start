@@ -3,8 +3,6 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import { MotionValue } from ".";
-export declare function useCombineMotionValues<R>(values: MotionValue[], combineValues: () => R): 
-    MotionValue<R> & { reset: ( values:MotionValue[], combineValues:()=>R ) => void };
 
 /** 
 based on framer-motion@4.0.3,
@@ -13,9 +11,9 @@ Copyright (c) 2018 Framer B.V.
 import sync from 'framesync';
 import { motionValue } from '.';
 
-export const useCombineMotionValues = (values, combineValues) => {
+export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: () => R) => {
 
-  let subscriptions = [];
+  let subscriptions: Function[] = <any>[];
   let vals = values;
 
   
@@ -30,7 +28,7 @@ export const useCombineMotionValues = (values, combineValues) => {
     unsubscribe()
     subscribe()
     return unsubscribe;
-  });
+  }) as MotionValue<R> & { reset: ( values:MotionValue[], combineValues:()=>R ) => void };
 
   let updateValue = () => {
     value.set(combineValues());
@@ -52,4 +50,4 @@ export const useCombineMotionValues = (values, combineValues) => {
 
   return value;
 }
-//export { default as UseCombineMotionValues } from "./UseCombineValues.svelte";
+// export { default as UseCombineMotionValues } from "./UseCombineValues.svelte";

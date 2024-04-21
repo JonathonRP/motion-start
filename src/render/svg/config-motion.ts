@@ -2,9 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionComponentConfig } from "../../motion";
-import { SVGRenderState } from "./types";
-export declare const svgMotionConfig: Partial<MotionComponentConfig<SVGElement, SVGRenderState>>;
+import type { MotionComponentConfig } from "../../motion";
+import type { SVGRenderState } from "./types";
 
 /** 
 based on framer-motion@4.0.3,
@@ -43,7 +42,7 @@ var svgMotionConfig = {
             // TODO: Replace with direct assignment
             renderSVG(instance, renderState);
         },
-    }
+    } as Partial<MotionComponentConfig<SVGElement, SVGRenderState>>
 function isPath(element) {
     return element.tagName === "path";
 }

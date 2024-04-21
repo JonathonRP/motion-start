@@ -15,7 +15,7 @@ import { writable } from 'svelte/store';
 import { createBatcher } from '../components/AnimateSharedLayout/utils/batcher.js';
 import { getDomContext } from './DOMcontext.js';
 
-var SharedLayoutContext = (custom?: any):  Writable<SyncLayoutBatcher | SharedLayoutSyncMethods> => getDomContext("SharedLayout",custom)||writable(createBatcher());
+var SharedLayoutContext = (custom?: any): Writable<SyncLayoutBatcher | SharedLayoutSyncMethods> => getDomContext("SharedLayout",custom)||writable(createBatcher());
 
 /**
  * @internal

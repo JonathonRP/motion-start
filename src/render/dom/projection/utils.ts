@@ -2,18 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../../types";
-export declare function collectProjectingAncestors(visualElement: VisualElement, ancestors?: VisualElement[]): VisualElement<any, any>[];
-export declare function collectProjectingChildren(visualElement: VisualElement): VisualElement[];
-/**
- * Update the layoutState by measuring the DOM layout. This
- * should be called after resetting any layout-affecting transforms.
- */
-export declare function updateLayoutMeasurement(visualElement: VisualElement): void;
-/**
- * Record the viewport box as it was before an expected mutation/re-render
- */
-export declare function snapshotViewportBox(visualElement: VisualElement): void;
+import type { VisualElement } from "../../types";
 
 
 /** 
@@ -25,11 +14,11 @@ import sync from 'framesync';
 import { copyAxisBox } from '../../../utils/geometry/index.js';
 import { compareByDepth } from '../../utils/compare-by-depth.js';
 
-function isProjecting(visualElement) {
+function isProjecting(visualElement: VisualElement) {
     var isEnabled = visualElement.projection.isEnabled;
     return isEnabled || visualElement.shouldResetTransform();
 }
-function collectProjectingAncestors(visualElement, ancestors) {
+function collectProjectingAncestors(visualElement: VisualElement, ancestors?: VisualElement[]) {
     if (ancestors === void 0) { ancestors = []; }
     var parent = visualElement.parent;
     if (parent)
@@ -38,8 +27,8 @@ function collectProjectingAncestors(visualElement, ancestors) {
         ancestors.push(visualElement);
     return ancestors;
 }
-function collectProjectingChildren(visualElement) {
-    var children = [];
+function collectProjectingChildren(visualElement: VisualElement) {
+    var children = <VisualElement[]>[];
     var addChild = function (child) {
         if (isProjecting(child))
             children.push(child);
@@ -52,7 +41,7 @@ function collectProjectingChildren(visualElement) {
  * Update the layoutState by measuring the DOM layout. This
  * should be called after resetting any layout-affecting transforms.
  */
-function updateLayoutMeasurement(visualElement) {
+function updateLayoutMeasurement(visualElement: VisualElement) {
     if (visualElement.shouldResetTransform())
         return;
     var layoutState = visualElement.getLayoutState();
@@ -66,7 +55,7 @@ function updateLayoutMeasurement(visualElement) {
 /**
  * Record the viewport box as it was before an expected mutation/re-render
  */
-function snapshotViewportBox(visualElement,nc) {
+function snapshotViewportBox(visualElement: VisualElement, nc?: any) {
     if (visualElement.shouldResetTransform())
         return;
     if (!nc) visualElement.prevViewportBox = visualElement.measureViewportBox(false);

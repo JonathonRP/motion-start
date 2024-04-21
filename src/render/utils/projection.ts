@@ -2,9 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { ResolvedValues, VisualElement } from "../types";
-import { LayoutState, TargetProjection } from "./state";
-export declare function updateLayoutDeltas({ delta, layout, layoutCorrected, treeScale }: LayoutState, { target }: TargetProjection, treePath: VisualElement[], transformOrigin: ResolvedValues): void;
+import type { ResolvedValues, VisualElement } from "../types";
+import type { LayoutState, TargetProjection } from "./state";
 
 /** 
 based on framer-motion@4.0.3,
@@ -13,9 +12,7 @@ Copyright (c) 2018 Framer B.V.
 import { resetBox, applyTreeDeltas } from '../../utils/geometry/delta-apply.js';
 import { updateBoxDelta } from '../../utils/geometry/delta-calc.js';
 
-function updateLayoutDeltas(_a, _b, treePath, transformOrigin) {
-    var delta = _a.delta, layout = _a.layout, layoutCorrected = _a.layoutCorrected, treeScale = _a.treeScale;
-    var target = _b.target;
+function updateLayoutDeltas({ delta, layout, layoutCorrected, treeScale }: LayoutState, { target }: TargetProjection, treePath: VisualElement[], transformOrigin: ResolvedValues) {
     /**
      * Reset the corrected box with the latest values from box, as we're then going
      * to perform mutative operations on it.
