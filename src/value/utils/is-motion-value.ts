@@ -2,14 +2,13 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from "../";
-export declare const isMotionValue: (value: any) => value is MotionValue<any>;
+import type { MotionValue } from "../";
 
 /** 
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-var isMotionValue = function (value) {
+var isMotionValue = function (value: any): value is MotionValue {
     return value !== null && typeof value === "object" && value.getVelocity;
 };
 

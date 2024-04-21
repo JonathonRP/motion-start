@@ -2,17 +2,15 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export declare function addUniqueItem<T>(arr: T[], item: T): void;
-export declare function removeItem<T>(arr: T[], item: T): void;
 
 /** 
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-function addUniqueItem(arr, item) {
+function addUniqueItem<T>(arr: T[], item: T) {
     arr.indexOf(item) === -1 && arr.push(item);
 }
-function removeItem(arr, item) {
+function removeItem<T>(arr: T[], item: T) {
     var index = arr.indexOf(item);
     index > -1 && arr.splice(index, 1);
 }

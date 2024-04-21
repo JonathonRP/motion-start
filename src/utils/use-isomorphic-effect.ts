@@ -5,4 +5,4 @@ Copyright (c) 2018 Framer B.V.
 import { useEffect } from "react";
 export declare const useIsomorphicLayoutEffect: typeof useEffect;
 
-export { default as UseIsomorphicLayoutEffect } from './UseIsomorphicLayoutEffect.svelte';
+// export { default as UseIsomorphicLayoutEffect } from './UseIsomorphicLayoutEffect.svelte';
