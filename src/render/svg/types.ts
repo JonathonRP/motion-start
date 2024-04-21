@@ -2,11 +2,11 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { ResolvedValues } from "../types";
-import { SVGAttributes } from "react";
-import { MakeMotion, MotionProps } from "../../motion/types";
-import { SVGElements } from "./supported-elements";
-import { ForwardRefComponent, HTMLRenderState } from "../html/types";
+import type { ResolvedValues } from "../types";
+import type { SVGAttributes } from "react";
+import type { MakeMotion, MotionProps } from "../../motion/types";
+import type { SVGElements } from "./supported-elements";
+import type { ForwardRefComponent, HTMLRenderState } from "../html/types";
 export interface SVGRenderState extends HTMLRenderState {
     /**
      * Measured dimensions of the SVG element to be used to calculate a transform-origin.

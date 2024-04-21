@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
     import type { MotionProps } from "./index.js";
-    import { MotionConfigContext } from "../context/MotionConfigContext";
+    import { MotionConfigContext, type MotionConfigContextObject } from "../context/MotionConfigContext";
     import { UseVisualElement } from "./utils/use-visual-element";
     import { UseFeatures } from "./features/use-features";
     import MotionContextProvider from "../context/MotionContext/MotionContextProvider.svelte";
@@ -16,6 +16,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { UseVisualState } from "./utils/use-visual-state.js";
     import { useMotionRef } from "./utils/use-motion-ref.js";
     import ScaleCorrectionProvider from "../context/ScaleCorrectionProvider.svelte";
+    import type { Writable } from "svelte/store";
 
     type $$Props = MotionProps;
 
@@ -163,7 +164,7 @@ Copyright (c) 2018 Framer B.V. -->
      * If this component or any ancestor is static, we disable hardware acceleration
      * and don't load any additional functionality.
      */
-    const a = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+    const a: Writable<MotionConfigContextObject> = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
     $: ({ isStatic } = $a || {});
    
     let mounted = false;

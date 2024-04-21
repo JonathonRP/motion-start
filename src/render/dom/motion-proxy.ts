@@ -3,8 +3,8 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import * as React from "react";
-import { MotionProps } from "../../motion/types.js";
-import { MotionComponentConfig } from "../../motion/index.js";
+import type { MotionProps } from "../../motion/types.js";
+import type { MotionComponentConfig } from "../../motion/index.js";
 /**
  * I'd rather the return type of `custom` to be implicit but this throws
  * incorrect relative paths in the exported types and API Extractor throws
@@ -31,7 +31,7 @@ export declare type CreateConfig = <Instance, RenderState, Props>(Component: str
  *
  * @public
  */
-export declare function createMotionProxy(createConfig: CreateConfig): (<Props>(Component: string | React.ComponentType<Props>, customMotionComponentConfig?: CustomMotionComponentConfig) => CustomDomComponent<Props>) & import("../html/types").HTMLMotionComponents & import("../svg/types").SVGMotionComponents;
+// export declare function createMotionProxy(createConfig: CreateConfig): (<Props>(Component: string | React.ComponentType<Props>, customMotionComponentConfig?: CustomMotionComponentConfig) => CustomDomComponent<Props>) & import("../html/types").HTMLMotionComponents & import("../svg/types").SVGMotionComponents;
 
 
 /** 
@@ -40,7 +40,6 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { SvelteHTMLElements } from 'svelte/elements';
 import type { ComponentType, Snippet, SvelteComponent } from 'svelte';
-import type { MotionProps } from '../../motion/types.js';
 import { isSVGComponent } from './utils/is-svg-component.js';
 import Mo from './M.svelte';
 

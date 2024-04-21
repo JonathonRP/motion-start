@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { TransformPoint2D } from "../../types/geometry";
-import { HTMLMotionComponents } from "../html/types";
-import { SVGMotionComponents } from "../svg/types";
+import type { TransformPoint2D } from "../../types/geometry";
+import type { HTMLMotionComponents } from "../html/types";
+import type { SVGMotionComponents } from "../svg/types";
 export interface DOMVisualElementOptions {
     /**
      * A function that can map a page point between spaces. Used by Framer

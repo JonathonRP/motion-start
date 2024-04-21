@@ -2,15 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { ResolvedValues } from "../../types";
-/**
- * Build SVG path properties. Uses the path's measured length to convert
- * our custom pathLength, pathSpacing and pathOffset into stroke-dashoffset
- * and stroke-dasharray attributes.
- *
- * This function is mutative to reduce per-frame GC.
- */
-export declare function buildSVGPath(attrs: ResolvedValues, totalLength: number, length: number, spacing?: number, offset?: number, useDashCase?: boolean): void;
+import type { ResolvedValues } from "../../types";
 
 
 /** 
@@ -39,7 +31,7 @@ var camelKeys = {
  *
  * This function is mutative to reduce per-frame GC.
  */
-function buildSVGPath(attrs, totalLength, length, spacing, offset, useDashCase) {
+function buildSVGPath(attrs: ResolvedValues, totalLength: number, length: number, spacing?: number, offset?: number, useDashCase?: boolean) {
     if (spacing === void 0) { spacing = 1; }
     if (offset === void 0) { offset = 0; }
     if (useDashCase === void 0) { useDashCase = true; }

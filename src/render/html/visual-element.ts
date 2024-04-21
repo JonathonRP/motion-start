@@ -2,12 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { HTMLRenderState } from "./types";
-import { VisualElementConfig } from "../types";
-import { DOMVisualElementOptions } from "../dom/types";
-export declare function getComputedStyle(element: HTMLElement): CSSStyleDeclaration;
-export declare const htmlConfig: VisualElementConfig<HTMLElement, HTMLRenderState, DOMVisualElementOptions>;
-export declare const htmlVisualElement: ({ parent, props, presenceId, blockInitialAnimation, visualState, }: import("../types").VisualElementOptions<HTMLElement, any>, options?: DOMVisualElementOptions) => import("../types").VisualElement<HTMLElement, any>;
+import type { HTMLRenderState } from "./types";
+import type { VisualElementConfig } from "../types";
+import type { DOMVisualElementOptions } from "../dom/types";
 
 
 /** 
@@ -27,7 +24,7 @@ import { renderHTML } from './utils/render.js';
 import { getDefaultValueType } from '../dom/value-types/defaults.js';
 import { buildLayoutProjectionTransformOrigin, buildLayoutProjectionTransform } from './utils/build-projection-transform.js';
 
-function getComputedStyle(element) {
+function getComputedStyle(element: HTMLElement) {
     return window.getComputedStyle(element);
 }
 var htmlConfig = {
@@ -125,7 +122,7 @@ var htmlConfig = {
             : undefined);
     },
     render: renderHTML,
-};
+} as VisualElementConfig<HTMLElement, HTMLRenderState, DOMVisualElementOptions>;
 var htmlVisualElement = visualElement(htmlConfig);
 
 export { getComputedStyle, htmlConfig, htmlVisualElement };

@@ -3,9 +3,9 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import { SvelteComponent } from "svelte";
-import { DOMMotionComponents } from "./types.js";
-import { CustomMotionComponentConfig} from './motion-proxy.js'
-import { MotionProps } from "../../motion/types.js";
+import type { DOMMotionComponents } from "./types.js";
+import type { CustomMotionComponentConfig} from './motion-proxy.js'
+import type { MotionProps } from "../../motion/types.js";
 
 export declare interface IsSVG{
     /** set to true if the component receiving the motion action is an svg-element like `circle` or `path`. Should not be set to true for `svg` tags. */
@@ -17,24 +17,24 @@ export declare interface IsSVG{
  *
  * @public
  */
-export declare class Motion extends SvelteComponent<
-    CustomMotionComponentConfig & MotionProps & IsSVG,
-    ATypedSvelteComponent,
-    {
-        default: { 
-            /** Pass down unused props from the Motion component */
-            props:object, 
-            /**
-             * Motion action to be passed to the child which should be animated.
-             * 
-             * ```jsx
-             * <Motion let:motion>
-             *     <div use:motion/>
-             * </Motion>
-             */
-            motion: import('svelte/action').Action };
-    }
->{}
+// export declare class Motion extends SvelteComponent<
+//     CustomMotionComponentConfig & MotionProps & IsSVG,
+//     ATypedSvelteComponent,
+//     {
+//         default: { 
+//             /** Pass down unused props from the Motion component */
+//             props:object, 
+//             /**
+//              * Motion action to be passed to the child which should be animated.
+//              * 
+//              * ```jsx
+//              * <Motion let:motion>
+//              *     <div use:motion/>
+//              * </Motion>
+//              */
+//             motion: import('svelte/action').Action };
+//     }
+// >{}
 /**
  * Create a DOM `motion` component with the provided string. This is primarily intended
  * as a full alternative to `motion` for consumers who have to support environments that don't
@@ -50,8 +50,8 @@ export declare class Motion extends SvelteComponent<
  *
  * @public
  */
-export declare function createDomMotionComponent<T extends keyof DOMMotionComponents>(key: T): DOMMotionComponents[T];
-export declare const M : {[key:string] : Motion}
+// export declare function createDomMotionComponent;
+export declare const M : {[key:string] : typeof motion}
 
 /** 
 based on framer-motion@4.0.3,
@@ -88,7 +88,7 @@ var motion = /*@__PURE__*/ //createMotionProxy(allMotionFeatures);
  *
  * @public
  */
-function createDomMotionComponent(key) {
+function createDomMotionComponent<T extends keyof DOMMotionComponents>(key: T): DOMMotionComponents[T] {
     var config = {
         createVisualElement: createDomVisualElement(key),
         //useRender: createUseRender(key, false),

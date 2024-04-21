@@ -2,12 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MakeTargetAnimatable } from "../../utils/animation";
-/**
- * Parse a DOM variant to make it animatable. This involves resolving CSS variables
- * and ensuring animations like "20%" => "calc(50vw)" are performed in pixels.
- */
-export declare const parseDomVariant: MakeTargetAnimatable;
+import type { MakeTargetAnimatable } from "../../utils/animation";
 
 
 /** 
@@ -21,7 +16,7 @@ import { unitConversion } from './unit-conversion.js';
  * Parse a DOM variant to make it animatable. This involves resolving CSS variables
  * and ensuring animations like "20%" => "calc(50vw)" are performed in pixels.
  */
-var parseDomVariant = function (visualElement, target, origin, transitionEnd) {
+var parseDomVariant: MakeTargetAnimatable = function (visualElement, target, origin, transitionEnd) {
     var resolved = resolveCSSVariables(visualElement, target, transitionEnd);
     target = resolved.target;
     transitionEnd = resolved.transitionEnd;

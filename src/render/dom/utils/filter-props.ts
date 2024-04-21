@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionProps } from "../../../motion/types";
-export declare function filterProps(props: MotionProps, isDom: boolean, forwardMotionProps: boolean): {};
+import type { MotionProps } from "../../../motion/types";
 
 
 /** 
@@ -41,7 +40,7 @@ try {
 catch (_a) {
     // We don't need to actually do anything here - the fallback is the existing `isPropValid`.
 }
-function filterProps(props, isDom, forwardMotionProps) {
+function filterProps(props: MotionProps, isDom: boolean, forwardMotionProps: boolean) {
     var filteredProps = {};
     for (var key in props) {
         if (shouldForward(key) ||

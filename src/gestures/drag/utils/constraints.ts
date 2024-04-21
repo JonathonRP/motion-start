@@ -2,54 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Axis, AxisBox2D, BoundingBox2D, Point2D } from "../../../types/geometry";
-import { DragElastic, ResolvedConstraints } from "../types";
-/**
- * Apply constraints to a point. These constraints are both physical along an
- * axis, and an elastic factor that determines how much to constrain the point
- * by if it does lie outside the defined parameters.
- */
-export declare function applyConstraints(point: number, { min, max }: Partial<Axis>, elastic?: Axis): number;
-/**
- * Calculates a min projection point based on a pointer, pointer progress
- * within the drag target, and constraints.
- *
- * For instance if an element was 100px width, we were dragging from 0.25
- * along this axis, the pointer is at 200px, and there were no constraints,
- * we would calculate a min projection point of 175px.
- */
-export declare function calcConstrainedMinPoint(point: number, length: number, progress: number, constraints?: Partial<Axis>, elastic?: Axis): number;
-/**
- * Calculate constraints in terms of the viewport when defined relatively to the
- * measured axis. This is measured from the nearest edge, so a max constraint of 200
- * on an axis with a max value of 300 would return a constraint of 500 - axis length
- */
-export declare function calcRelativeAxisConstraints(axis: Axis, min?: number, max?: number): Partial<Axis>;
-/**
- * Calculate constraints in terms of the viewport when
- * defined relatively to the measured bounding box.
- */
-export declare function calcRelativeConstraints(layoutBox: AxisBox2D, { top, left, bottom, right }: Partial<BoundingBox2D>): ResolvedConstraints;
-/**
- * Calculate viewport constraints when defined as another viewport-relative axis
- */
-export declare function calcViewportAxisConstraints(layoutAxis: Axis, constraintsAxis: Axis): {
-    min: number;
-    max: number;
-};
-/**
- * Calculate viewport constraints when defined as another viewport-relative box
- */
-export declare function calcViewportConstraints(layoutBox: AxisBox2D, constraintsBox: AxisBox2D): {
-    x: {
-        min: number;
-        max: number;
-    };
-    y: {
-        min: number;
-        max: number;
-    };
-};
+import type { Axis, AxisBox2D, BoundingBox2D, Point2D } from "../../../types/geometry";
+import type { DragElastic, ResolvedConstraints } from "../types";
+
 /**
  * Calculate the relative progress of one constraints box relative to another.
  * Imagine a page scroll bar. At the top, this would return 0, at the bottom, 1.
@@ -59,21 +14,7 @@ export declare function calcViewportConstraints(layoutBox: AxisBox2D, constraint
  * a smaller viewport like a scrollable view.
  */
 export declare function calcProgressWithinConstraints(layoutBox: AxisBox2D, constraintsBox: AxisBox2D): Point2D;
-/**
- * Calculate the an axis position based on two axes and a progress value.
- */
-export declare function calcPositionFromProgress(axis: Axis, constraints: Axis, progress: number): Axis;
-/**
- * Rebase the calculated viewport constraints relative to the layout.min point.
- */
-export declare function rebaseAxisConstraints(layout: Axis, constraints: Partial<Axis>): Partial<Axis>;
-export declare const defaultElastic = 0.35;
-/**
- * Accepts a dragElastic prop and returns resolved elastic values for each axis.
- */
-export declare function resolveDragElastic(dragElastic: DragElastic): AxisBox2D;
-export declare function resolveAxisElastic(dragElastic: DragElastic, minLabel: string, maxLabel: string): Axis;
-export declare function resolvePointElastic(dragElastic: DragElastic, label: string): number;
+
 
 
 /** 
@@ -89,8 +30,7 @@ import { mix } from 'popmotion';
  * axis, and an elastic factor that determines how much to constrain the point
  * by if it does lie outside the defined parameters.
  */
-function applyConstraints(point, _a, elastic) {
-    var min = _a.min, max = _a.max;
+function applyConstraints(point: number, { min, max }: Partial<Axis>, elastic?: Axis) {
     if (min !== undefined && point < min) {
         // If we have a min point defined, and this is outside of that, constrain
         point = elastic ? mix(min, point, elastic.min) : Math.max(point, min);
@@ -109,7 +49,7 @@ function applyConstraints(point, _a, elastic) {
  * along this axis, the pointer is at 200px, and there were no constraints,
  * we would calculate a min projection point of 175px.
  */
-function calcConstrainedMinPoint(point, length, progress, constraints, elastic) {
+function calcConstrainedMinPoint(point: number, length: number, progress: number, constraints?: Partial<Axis>, elastic?: Axis) {
     // Calculate a min point for this axis and apply it to the current pointer
     var min = point - length * progress;
     return constraints ? applyConstraints(min, constraints, elastic) : min;
@@ -119,29 +59,28 @@ function calcConstrainedMinPoint(point, length, progress, constraints, elastic) 
  * measured axis. This is measured from the nearest edge, so a max constraint of 200
  * on an axis with a max value of 300 would return a constraint of 500 - axis length
  */
-function calcRelativeAxisConstraints(axis, min, max) {
+function calcRelativeAxisConstraints(axis: Axis, min?: number, max?: number) {
     return {
         min: min !== undefined ? axis.min + min : undefined,
         max: max !== undefined
             ? axis.max + max - (axis.max - axis.min)
             : undefined,
-    };
+    } as Partial<Axis>;
 }
 /**
  * Calculate constraints in terms of the viewport when
  * defined relatively to the measured bounding box.
  */
-function calcRelativeConstraints(layoutBox, _a) {
-    var top = _a.top, left = _a.left, bottom = _a.bottom, right = _a.right;
+function calcRelativeConstraints(layoutBox: AxisBox2D, { top, left, bottom, right }: Partial<BoundingBox2D>) {
     return {
         x: calcRelativeAxisConstraints(layoutBox.x, left, right),
         y: calcRelativeAxisConstraints(layoutBox.y, top, bottom),
-    };
+    } as ResolvedConstraints;
 }
 /**
  * Calculate viewport constraints when defined as another viewport-relative axis
  */
-function calcViewportAxisConstraints(layoutAxis, constraintsAxis) {
+function calcViewportAxisConstraints(layoutAxis: Axis, constraintsAxis: Axis) {
     var _a;
     var min = constraintsAxis.min - layoutAxis.min;
     var max = constraintsAxis.max - layoutAxis.max;
@@ -159,7 +98,7 @@ function calcViewportAxisConstraints(layoutAxis, constraintsAxis) {
 /**
  * Calculate viewport constraints when defined as another viewport-relative box
  */
-function calcViewportConstraints(layoutBox, constraintsBox) {
+function calcViewportConstraints(layoutBox: AxisBox2D, constraintsBox: AxisBox2D) {
     return {
         x: calcViewportAxisConstraints(layoutBox.x, constraintsBox.x),
         y: calcViewportAxisConstraints(layoutBox.y, constraintsBox.y),
@@ -168,16 +107,16 @@ function calcViewportConstraints(layoutBox, constraintsBox) {
 /**
  * Calculate the an axis position based on two axes and a progress value.
  */
-function calcPositionFromProgress(axis, constraints, progress) {
+function calcPositionFromProgress(axis: Axis, constraints: Axis, progress: number) {
     var axisLength = axis.max - axis.min;
     var min = mix(constraints.min, constraints.max - axisLength, progress);
-    return { min: min, max: min + axisLength };
+    return { min: min, max: min + axisLength } as Axis;
 }
 /**
  * Rebase the calculated viewport constraints relative to the layout.min point.
  */
-function rebaseAxisConstraints(layout, constraints) {
-    var relativeConstraints = {};
+function rebaseAxisConstraints(layout: Axis, constraints: Partial<Axis>) {
+    var relativeConstraints: Partial<Axis> = {};
     if (constraints.min !== undefined) {
         relativeConstraints.min = constraints.min - layout.min;
     }
@@ -186,11 +125,11 @@ function rebaseAxisConstraints(layout, constraints) {
     }
     return relativeConstraints;
 }
-var defaultElastic = 0.35;
+const defaultElastic = 0.35;
 /**
  * Accepts a dragElastic prop and returns resolved elastic values for each axis.
  */
-function resolveDragElastic(dragElastic) {
+function resolveDragElastic(dragElastic: DragElastic) {
     if (dragElastic === false) {
         dragElastic = 0;
     }
@@ -200,19 +139,19 @@ function resolveDragElastic(dragElastic) {
     return {
         x: resolveAxisElastic(dragElastic, "left", "right"),
         y: resolveAxisElastic(dragElastic, "top", "bottom"),
-    };
+    } as AxisBox2D;
 }
-function resolveAxisElastic(dragElastic, minLabel, maxLabel) {
+function resolveAxisElastic(dragElastic: DragElastic, minLabel: string, maxLabel: string) {
     return {
         min: resolvePointElastic(dragElastic, minLabel),
         max: resolvePointElastic(dragElastic, maxLabel),
-    };
+    } as Axis;
 }
-function resolvePointElastic(dragElastic, label) {
+function resolvePointElastic(dragElastic: DragElastic, label: string): number {
     var _a;
     return typeof dragElastic === "number"
         ? dragElastic
-        : (_a = dragElastic[label]) !== null && _a !== void 0 ? _a : 0;
+        : (_a = (dragElastic as any)[label]) !== null && _a !== void 0 ? _a : 0;
 }
 
 export { applyConstraints, calcConstrainedMinPoint, calcPositionFromProgress, calcRelativeAxisConstraints, calcRelativeConstraints, calcViewportAxisConstraints, calcViewportConstraints, defaultElastic, rebaseAxisConstraints, resolveAxisElastic, resolveDragElastic, resolvePointElastic };

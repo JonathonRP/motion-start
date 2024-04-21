@@ -2,21 +2,21 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { DOMVisualElementOptions } from "../../dom/types";
-import { MotionProps } from "../../../motion/types";
-import { HTMLRenderState, TransformOrigin } from "../types";
+import type { DOMVisualElementOptions } from "../../dom/types";
+import type { MotionProps } from "../../../motion/types";
+import type { HTMLRenderState, TransformOrigin } from "../types";
 /**
  * Build a CSS transform style from individual x/y/scale etc properties.
  *
  * This outputs with a default order of transforms/scales/rotations, this can be customised by
  * providing a transformTemplate function.
  */
-export declare function buildTransform({ transform, transformKeys }: HTMLRenderState, { enableHardwareAcceleration, allowTransformNone, }: DOMVisualElementOptions, transformIsDefault: boolean, transformTemplate?: MotionProps["transformTemplate"]): string;
+// export declare function buildTransform(): string;
 /**
  * Build a transformOrigin style. Uses the same defaults as the browser for
  * undefined origins.
  */
-export declare function buildTransformOrigin({ originX, originY, originZ, }: TransformOrigin): string;
+// export declare function buildTransformOrigin(): string;
 
 /** 
 based on framer-motion@4.0.3,
@@ -36,9 +36,7 @@ var translateAlias = {
  * This outputs with a default order of transforms/scales/rotations, this can be customised by
  * providing a transformTemplate function.
  */
-function buildTransform(_a, _b, transformIsDefault, transformTemplate) {
-    var transform = _a.transform, transformKeys = _a.transformKeys;
-    var _c = _b.enableHardwareAcceleration, enableHardwareAcceleration = _c === void 0 ? true : _c, _d = _b.allowTransformNone, allowTransformNone = _d === void 0 ? true : _d;
+function buildTransform({ transform, transformKeys }: HTMLRenderState, { enableHardwareAcceleration, allowTransformNone, }: DOMVisualElementOptions, transformIsDefault: boolean, transformTemplate?: MotionProps["transformTemplate"]) {
     // The transform string we're going to build into.
     var transformString = "";
     // Transform keys into their default order - this will determine the output order.
@@ -74,8 +72,7 @@ function buildTransform(_a, _b, transformIsDefault, transformTemplate) {
  * Build a transformOrigin style. Uses the same defaults as the browser for
  * undefined origins.
  */
-function buildTransformOrigin(_a) {
-    var _b = _a.originX, originX = _b === void 0 ? "50%" : _b, _c = _a.originY, originY = _c === void 0 ? "50%" : _c, _d = _a.originZ, originZ = _d === void 0 ? 0 : _d;
+function buildTransformOrigin({ originX = "50%", originY = "50%", originZ = 0, }: TransformOrigin) {
     return originX + " " + originY + " " + originZ;
 }
 

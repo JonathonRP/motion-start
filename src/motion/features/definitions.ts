@@ -39,9 +39,9 @@ var featureDefinitions = {
 } satisfies FeatureDefinitions;
 function loadFeatures(features: FeatureComponents): void {
     for (var key in features) {
-        var Component = features[key];
+        var Component = (features as any)[key];
         if (Component !== null){
-            featureDefinitions[key].Component = Component;
+            (featureDefinitions as any)[key].Component = Component;
         }
     }
 }

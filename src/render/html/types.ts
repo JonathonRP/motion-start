@@ -2,10 +2,10 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { ResolvedValues } from "../types";
-import { DetailedHTMLFactory, ForwardRefExoticComponent, HTMLAttributes, PropsWithoutRef, ReactHTML, RefAttributes } from "react";
-import { MotionProps } from "../../motion/types";
-import { HTMLElements } from "./supported-elements";
+import type { ResolvedValues } from "../types";
+import type { DetailedHTMLFactory, ForwardRefExoticComponent, HTMLAttributes, PropsWithoutRef, ReactHTML, RefAttributes } from "react";
+import type { MotionProps } from "../../motion/types";
+import type { HTMLElements } from "./supported-elements";
 export interface TransformOrigin {
     originX?: number | string;
     originY?: number | string;

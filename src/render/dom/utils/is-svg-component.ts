@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { ComponentType } from "react";
-export declare function isSVGComponent(Component: string | ComponentType): boolean;
+import type { ComponentType } from "react";
 
 
 /** 
@@ -12,7 +11,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import { lowercaseSVGElements } from '../../svg/lowercase-elements.js';
 
-function isSVGComponent(Component) {
+function isSVGComponent(Component: string | ComponentType) {
     if (
     /**
      * If it's not a string, it's a custom React component. Currently we only support

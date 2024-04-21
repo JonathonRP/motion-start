@@ -2,11 +2,11 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { EventInfo } from "../events/types";
-import { VariantLabels } from "../motion/types";
-import { TargetAndTransition } from "../types";
-import { Point2D } from "../types/geometry";
-import { PanInfo } from "./PanSession";
+import type { EventInfo } from "../events/types";
+import type { VariantLabels } from "../motion/types";
+import type { TargetAndTransition } from "../types";
+import type { Point2D } from "../types/geometry";
+import type { PanInfo } from "./PanSession";
 export declare type RemoveEvent = () => void;
 /**
  * @public

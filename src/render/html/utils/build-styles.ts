@@ -2,13 +2,12 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionProps } from "../../../motion/types";
-import { HTMLRenderState } from "../types";
-import { ResolvedValues } from "../../types";
-import { LayoutState, TargetProjection } from "../../utils/state";
-import { DOMVisualElementOptions } from "../../dom/types";
-import { BuildProjectionTransform, BuildProjectionTransformOrigin } from "./build-projection-transform";
-export declare function buildHTMLStyles(state: HTMLRenderState, latestValues: ResolvedValues, projection: TargetProjection | undefined, layoutState: LayoutState | undefined, options: DOMVisualElementOptions, transformTemplate?: MotionProps["transformTemplate"], buildProjectionTransform?: BuildProjectionTransform, buildProjectionTransformOrigin?: BuildProjectionTransformOrigin): void;
+import type { MotionProps } from "../../../motion/types";
+import type { HTMLRenderState } from "../types";
+import type { ResolvedValues } from "../../types";
+import type { LayoutState, TargetProjection } from "../../utils/state";
+import type { DOMVisualElementOptions } from "../../dom/types";
+import type { BuildProjectionTransform, BuildProjectionTransformOrigin } from "./build-projection-transform";
 
 
 /** 
@@ -22,7 +21,7 @@ import { isTransformProp, isTransformOriginProp } from './transform.js';
 import { getValueAsType } from '../../dom/value-types/get-as-type.js';
 import { numberValueTypes } from '../../dom/value-types/number.js';
 
-function buildHTMLStyles(state, latestValues, projection, layoutState, options, transformTemplate, buildProjectionTransform, buildProjectionTransformOrigin) {
+function buildHTMLStyles(state: HTMLRenderState, latestValues: ResolvedValues, projection: TargetProjection | undefined, layoutState: LayoutState | undefined, options: DOMVisualElementOptions, transformTemplate?: MotionProps["transformTemplate"], buildProjectionTransform?: BuildProjectionTransform, buildProjectionTransformOrigin?: BuildProjectionTransformOrigin) {
     var _a;
     var style = state.style, vars = state.vars, transform = state.transform, transformKeys = state.transformKeys, transformOrigin = state.transformOrigin;
     // Empty the transformKeys array. As we're throwing out refs to its items

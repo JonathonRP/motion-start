@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionComponentConfig } from "../../motion";
-import { HTMLRenderState } from "./types";
-export declare const htmlMotionConfig: Partial<MotionComponentConfig<HTMLElement, HTMLRenderState>>;
+import type { MotionComponentConfig } from "../../motion";
+import type { HTMLRenderState } from "./types";
+// export declare const htmlMotionConfig: ;
 
 
 /** 
@@ -17,6 +17,6 @@ import { createHtmlRenderState } from './utils/create-render-state.js';
 var htmlMotionConfig = {
         scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
         createRenderState: createHtmlRenderState,   
-};
+} as Partial<MotionComponentConfig<HTMLElement, HTMLRenderState>>;
 
 export { htmlMotionConfig };

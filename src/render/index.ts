@@ -2,9 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement, VisualElementConfig, VisualElementOptions } from "./types";
-export declare const visualElement: <Instance, MutableState, Options>({ treeType, build, getBaseTarget, makeTargetAnimatable, measureViewportBox, render: renderInstance, readValueFromInstance, resetTransform, restoreTransform, removeValueFromRenderState, sortNodePosition, scrapeMotionValuesFromProps, }: VisualElementConfig<Instance, MutableState, Options>) => ({ parent, props, presenceId, blockInitialAnimation, visualState, }: VisualElementOptions<Instance, any>, options?: Options) => VisualElement<Instance, any>;
-
+import type { VisualElement, VisualElementConfig, VisualElementOptions } from "./types";
 
 /** 
 based on framer-motion@4.1.1,
@@ -32,11 +30,9 @@ import { checkIfControllingVariants, checkIfVariantNode, isVariantLabel } from '
 import { setCurrentViewportBox } from './dom/projection/relative-set.js';
 import { isDraggable } from './utils/is-draggable.js';
 
-var visualElement = function (_a) {
-    var _b = _a.treeType, treeType = _b === void 0 ? "" : _b, build = _a.build, getBaseTarget = _a.getBaseTarget, makeTargetAnimatable = _a.makeTargetAnimatable, measureViewportBox = _a.measureViewportBox, renderInstance = _a.render, readValueFromInstance = _a.readValueFromInstance, resetTransform = _a.resetTransform, restoreTransform = _a.restoreTransform, removeValueFromRenderState = _a.removeValueFromRenderState, sortNodePosition = _a.sortNodePosition, scrapeMotionValuesFromProps = _a.scrapeMotionValuesFromProps;
-    return function (_a, options) {
-        var parent = _a.parent, props = _a.props, presenceId = _a.presenceId, blockInitialAnimation = _a.blockInitialAnimation, visualState = _a.visualState;
-        if (options === void 0) { options = {}; }
+var visualElement = function <Instance, MutableState, Options>({ treeType, build, getBaseTarget, makeTargetAnimatable, measureViewportBox, render: renderInstance, readValueFromInstance, resetTransform, restoreTransform, removeValueFromRenderState, sortNodePosition, scrapeMotionValuesFromProps, }: VisualElementConfig<Instance, MutableState, Options>) {
+    return function ({ parent, props, presenceId, blockInitialAnimation, visualState, }: VisualElementOptions<Instance, any>, options?: Options) {
+        if (options === void 0) { options = <Options>{}; }
         var latestValues = visualState.latestValues, renderState = visualState.renderState;
         /**
          * The instance of the render-specific node that will be hydrated by the
@@ -218,7 +214,7 @@ var visualElement = function (_a) {
          */
         var isControllingVariants = checkIfControllingVariants(props);
         var isVariantNode = checkIfVariantNode(props);
-        var element = __assign(__assign({ treeType: treeType, 
+        var element: VisualElement<Instance, any> = __assign(__assign({ treeType: treeType, 
             /**
              * This is a mirror of the internal instance prop, which keeps
              * VisualElement type-compatible with React's RefObject.

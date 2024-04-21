@@ -2,39 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { Axis } from "../../../types/geometry";
-import { LayoutState, TargetProjection } from "../../utils/state";
-export declare function pixelsToPercent(pixels: number, axis: Axis): number;
-/**
- * We always correct borderRadius as a percentage rather than pixels to reduce paints.
- * For example, if you are projecting a box that is 100px wide with a 10px borderRadius
- * into a box that is 200px wide with a 20px borderRadius, that is actually a 10%
- * borderRadius in both states. If we animate between the two in pixels that will trigger
- * a paint each time. If we animate between the two in percentage we'll avoid a paint.
- */
-export declare function correctBorderRadius(latest: string | number, _layoutState: LayoutState, { target }: TargetProjection): string;
-export declare function correctBoxShadow(latest: string, { delta, treeScale }: LayoutState): string;
-export declare const defaultScaleCorrectors: {
-    borderRadius: {
-        applyTo: string[];
-        process: typeof correctBorderRadius;
-    };
-    borderTopLeftRadius: {
-        process: typeof correctBorderRadius;
-    };
-    borderTopRightRadius: {
-        process: typeof correctBorderRadius;
-    };
-    borderBottomLeftRadius: {
-        process: typeof correctBorderRadius;
-    };
-    borderBottomRightRadius: {
-        process: typeof correctBorderRadius;
-    };
-    boxShadow: {
-        process: typeof correctBoxShadow;
-    };
-};
+import type { Axis } from "../../../types/geometry";
+import type { LayoutState, TargetProjection } from "../../utils/state";
 
 
 /** 
@@ -47,7 +16,7 @@ import { complex, px } from 'style-value-types';
 import { mix } from 'popmotion';
 import { cssVariableRegex } from '../utils/css-variables-conversion.js';
 
-function pixelsToPercent(pixels, axis) {
+function pixelsToPercent(pixels: number, axis: Axis) {
     return (pixels / (axis.max - axis.min)) * 100;
 }
 /**
@@ -57,8 +26,7 @@ function pixelsToPercent(pixels, axis) {
  * borderRadius in both states. If we animate between the two in pixels that will trigger
  * a paint each time. If we animate between the two in percentage we'll avoid a paint.
  */
-function correctBorderRadius(latest, _layoutState, _a) {
-    var target = _a.target;
+function correctBorderRadius(latest: string | number, _layoutState: LayoutState, { target }: TargetProjection) {
     /**
      * If latest is a string, if it's a percentage we can return immediately as it's
      * going to be stretched appropriately. Otherwise, if it's a pixel, convert it to a number.
@@ -80,8 +48,7 @@ function correctBorderRadius(latest, _layoutState, _a) {
     return x + "% " + y + "%";
 }
 var varToken = "_$css";
-function correctBoxShadow(latest, _a) {
-    var delta = _a.delta, treeScale = _a.treeScale;
+function correctBoxShadow(latest: string, { delta, treeScale }: LayoutState) {
     var original = latest;
     /**
      * We need to first strip and store CSS variables from the string.
@@ -146,6 +113,26 @@ var defaultScaleCorrectors = {
     boxShadow: {
         process: correctBoxShadow,
     },
+} as {
+    borderRadius: {
+        applyTo: string[];
+        process: typeof correctBorderRadius;
+    };
+    borderTopLeftRadius: {
+        process: typeof correctBorderRadius;
+    };
+    borderTopRightRadius: {
+        process: typeof correctBorderRadius;
+    };
+    borderBottomLeftRadius: {
+        process: typeof correctBorderRadius;
+    };
+    borderBottomRightRadius: {
+        process: typeof correctBorderRadius;
+    };
+    boxShadow: {
+        process: typeof correctBoxShadow;
+    };
 };
 
 export { correctBorderRadius, correctBoxShadow, defaultScaleCorrectors, pixelsToPercent };

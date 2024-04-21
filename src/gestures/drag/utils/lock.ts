@@ -3,9 +3,6 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 export declare type Lock = (() => void) | false;
-export declare function createLock(name: string): () => Lock;
-export declare function getGlobalLock(drag: boolean | "x" | "y" | "lockDirection"): Lock;
-export declare function isDragActive(): boolean;
 
 
 /** 
@@ -13,9 +10,9 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 
-function createLock(name) {
-    var lock = null;
-    return function () {
+function createLock(name: string) {
+    var lock: string | null = null;
+    return function (): Lock {
         var openLock = function () {
             lock = null;
         };
@@ -29,8 +26,8 @@ function createLock(name) {
 }
 var globalHorizontalLock = createLock("dragHorizontal");
 var globalVerticalLock = createLock("dragVertical");
-function getGlobalLock(drag) {
-    var lock = false;
+function getGlobalLock(drag: boolean | "x" | "y" | "lockDirection") {
+    var lock: Lock = false;
     if (drag === "y") {
         
         lock = globalVerticalLock();

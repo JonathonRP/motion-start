@@ -2,10 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-/**
- * Convert camelCase to dash-case properties.
- */
-export declare const camelToDash: (str: string) => string;
 
 
 /** 
@@ -17,7 +13,7 @@ var REPLACE_TEMPLATE = "$1-$2";
 /**
  * Convert camelCase to dash-case properties.
  */
-var camelToDash = function (str) {
+var camelToDash = function (str: string) {
     return str.replace(CAMEL_CASE_PATTERN, REPLACE_TEMPLATE).toLowerCase();
 };
 

@@ -3,7 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import * as React from "react";
-import { VisualElementDragControls, DragControlOptions } from "./VisualElementDragControls";
+import { VisualElementDragControls, type DragControlOptions } from "./VisualElementDragControls";
 /**
  * Can manually trigger a drag gesture on one or more `drag`-enabled `motion` components.
  *

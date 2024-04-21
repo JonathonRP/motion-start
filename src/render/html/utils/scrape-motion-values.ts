@@ -2,8 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionProps } from "../../../motion/types";
-export declare function scrapeMotionValuesFromProps(props: MotionProps): {};
+import type { MotionProps } from "../../../motion/types";
 
 
 /** 
@@ -13,7 +12,7 @@ Copyright (c) 2018 Framer B.V.
 import { isForcedMotionValue } from '../../../motion/utils/is-forced-motion-value.js';
 import { isMotionValue } from '../../../value/utils/is-motion-value.js';
 
-function scrapeMotionValuesFromProps(props) {
+function scrapeMotionValuesFromProps(props: MotionProps) {
     var style = props.style;
     var newValues = {};
     for (var key in style) {

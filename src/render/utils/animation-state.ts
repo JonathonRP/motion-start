@@ -2,10 +2,10 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VariantLabels } from "../../motion/types";
-import { TargetAndTransition } from "../../types";
-import { VisualElement } from "../types";
-import { AnimationOptions } from "./animation";
+import type { VariantLabels } from "../../motion/types";
+import type { TargetAndTransition } from "../../types";
+import type { VisualElement } from "../types";
+import type { AnimationOptions } from "./animation";
 import { AnimationType } from "./types";
 export interface AnimationState {
     animateChanges: (options?: AnimationOptions, type?: AnimationType) => Promise<any>;
@@ -17,9 +17,9 @@ export interface AnimationState {
     };
 }
 export declare type AnimationList = string[] | TargetAndTransition[];
-export declare const variantPriorityOrder: AnimationType[];
-export declare function createAnimationState(visualElement: VisualElement): AnimationState;
-export declare function variantsHaveChanged(prev: any, next: any): boolean;
+// export declare const variantPriorityOrder: AnimationType[];
+// export declare function createAnimationState(visualElement: VisualElement): AnimationState;
+// export declare function variantsHaveChanged(prev: any, next: any): boolean;
 export interface AnimationTypeState {
     isActive: boolean;
     protectedKeys: {
@@ -44,7 +44,6 @@ import { isAnimationControls } from '../../animation/utils/is-animation-controls
 import { isKeyframesTarget } from '../../animation/utils/is-keyframes-target.js';
 import { shallowCompare } from '../../utils/shallow-compare.js';
 import { animateVisualElement } from './animation.js';
-import { AnimationType } from './types.js';
 import { isVariantLabels, resolveVariant, isVariantLabel } from './variants.js';
 
 var variantPriorityOrder = [
@@ -57,7 +56,7 @@ var variantPriorityOrder = [
 ];
 var reversePriorityOrder = __spreadArray([], __read(variantPriorityOrder)).reverse();
 var numAnimationTypes = variantPriorityOrder.length;
-function animateList(visualElement) {
+function animateList(visualElement: VisualElement) {
     return function (animations) {
         return Promise.all(animations.map(function (_a) {
             var animation = _a.animation, options = _a.options;
@@ -65,7 +64,7 @@ function animateList(visualElement) {
         }));
     };
 }
-function createAnimationState(visualElement) {
+function createAnimationState(visualElement: VisualElement) {
     var animate = animateList(visualElement);
     var state = createState();
     var allAnimatedKeys = {};
@@ -341,9 +340,9 @@ function createAnimationState(visualElement) {
         setActive: setActive,
         setAnimateFunction: setAnimateFunction,
         getState: function () { return state; },
-    };
+    } as AnimationState;
 }
-function variantsHaveChanged(prev, next) {
+function variantsHaveChanged(prev: any, next: any) {
     if (typeof next === "string") {
         return next !== prev;
     }
@@ -352,8 +351,7 @@ function variantsHaveChanged(prev, next) {
     }
     return false;
 }
-function createTypeState(isActive) {
-    if (isActive === void 0) { isActive = false; }
+function createTypeState(isActive: boolean = false) {
     return {
         isActive: isActive,
         protectedKeys: {},

@@ -2,13 +2,13 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { RefObject } from "react";
-import { PanInfo } from "../PanSession";
-import { Inertia, TargetAndTransition } from "../../types";
-import { Axis, BoundingBox2D } from "../../types/geometry";
+import type { RefObject } from "react";
+import type { PanInfo } from "../PanSession";
+import type { Inertia, TargetAndTransition } from "../../types";
+import type { Axis, BoundingBox2D } from "../../types/geometry";
 import { DragControls } from "./use-drag-controls";
 import { MotionValue } from "../../value";
-import { VariantLabels } from "../../motion/types";
+import type { VariantLabels } from "../../motion/types";
 export declare type DragHandler = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
 export declare type DragElastic = boolean | number | Partial<BoundingBox2D>;
 export interface ResolvedConstraints {
