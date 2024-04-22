@@ -86,13 +86,19 @@ Copyright (c) 2018 Framer B.V.
     }
 </script>
 
-<script>
+<script lang="ts" generics="Instance, RenderState">
+    import type { UseVisualStateConfig } from "./use-visual-state";
+
+    import type { MotionProps } from "..";
+
     import { getContext } from "svelte";
     import {get}from 'svelte/store';
     import { PresenceContext } from "../../context/PresenceContext";
     import {MotionContext} from "../../context/MotionContext/index.js";
 
-    export let config, props, isStatic, isCustom;
+    type $$Props = { config: UseVisualStateConfig<Instance, RenderState>, props: MotionProps, isStatic: boolean };
+
+    export let config: $$Props['config'], props: $$Props['props'], isStatic: $$Props['isStatic'], isCustom;
 
     const context = getContext(MotionContext) || MotionContext(isCustom);
     const presenceContext = getContext(PresenceContext) || PresenceContext(isCustom);

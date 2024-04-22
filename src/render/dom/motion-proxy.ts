@@ -86,16 +86,16 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 						return new target(...args);
 					},
                     // support svelte 5
-					apply(target, thisArg, args) {
-						if (!args[1]) {
-							args[1] = { as: key, isSVG: type };
-						} else {
-							args[1].as = key;
-							args[1].isSVG = type;
-						}
+					// apply(target, thisArg, args) {
+					// 	if (!args[1]) {
+					// 		args[1] = { as: key, isSVG: type };
+					// 	} else {
+					// 		args[1].as = key;
+					// 		args[1].isSVG = type;
+					// 	}
 
-						return target(...args);
-					},
+					// 	return target(...args);
+					// },
 				});
 			},
 		}

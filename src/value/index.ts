@@ -27,8 +27,6 @@ export type StartAnimation = (complete: () => void) => (() => void) | undefined;
  * @public
  */
 export class MotionValue<V = any> implements Writable<V> {
-    _this = this;
-
     /**
      * Subscribe method to make MotionValue compatible with Svelte store. Returns a unsubscribe function.
      * Same as onChange.
@@ -354,12 +352,11 @@ export class MotionValue<V = any> implements Writable<V> {
      * @internal
      */
     start(animation: StartAnimation): Promise<void> {
-        var _this = this;
         this.stop();
-        return new Promise(function (resolve) {
-            _this.hasAnimated = true;
-            _this.stopAnimation = animation(resolve);
-        }).then(function () { return _this.clearAnimation(); });
+        return new Promise((resolve) => {
+            this.hasAnimated = true;
+            this.stopAnimation = animation(resolve);
+        }).then(() => { return this.clearAnimation(); });
     }
     /**
      * Stop the currently active animation.

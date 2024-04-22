@@ -111,9 +111,14 @@ interface PanSessionHandlers {
     onMove: PanHandler;
     onEnd: PanHandler;
     onSessionEnd: PanHandler;
+    // TODO: future feature
+    // resumeAnimation: () => void
 }
 interface PanSessionOptions {
     transformPagePoint?: TransformPoint2D;
+    // TODO: future feature
+    // contextWindow?: (Window & typeof globalThis) | null
+    // dragSnapToOrigin?: boolean
 }
 
 interface TimestampedPoint extends Point2D {
@@ -127,7 +132,7 @@ export class PanSession {
     /**
      * @internal
      */
-    private history: TimestampedPoint[];
+    private history!: TimestampedPoint[];
     /**
      * @internal
      */
@@ -151,7 +156,7 @@ export class PanSession {
     /**
      * @internal
      */
-    private removeListeners: Function;
+    private removeListeners!: Function;
 
     // TODO: future implementation of newer features
     // /**
@@ -167,7 +172,7 @@ export class PanSession {
     // private contextWindow: PanSessionOptions["contextWindow"] = window
 
 
-    constructor(event: AnyPointerEvent, handlers: Partial<PanSessionHandlers>, { transformPagePoint }: PanSessionOptions = {}) {
+    constructor(event: PointerEvent, handlers: Partial<PanSessionHandlers>, { transformPagePoint }: PanSessionOptions = {}) {
         // If we have more than one touch, don't start detecting this gesture
         if (isTouchEvent(event) && event.touches.length > 1)
             return;
@@ -177,7 +182,7 @@ export class PanSession {
         var initialInfo = transformPoint(info, this.transformPagePoint);
         var point = initialInfo.point;
         var timestamp = getFrameData().timestamp;
-        this.history = [__assign(__assign({}, point), { timestamp: timestamp })];
+        this.history = [{...point, timestamp}];
         var onSessionStart = handlers.onSessionStart;
         onSessionStart &&
             onSessionStart(event, getPanInfo(initialInfo, this.history));
