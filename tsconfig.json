@@ -108,6 +108,7 @@
     "verbatimModuleSyntax": true,
     "declaration": true,
     "declarationMap": true,
+    "types": ["vitest/globals"]
   },
   "include": ["src", "tests"],
   "exclude": ["node_modules"]

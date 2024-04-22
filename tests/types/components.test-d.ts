@@ -12,7 +12,7 @@ describe('test components type - svelte 4', () => {
     })
 
     it('should have Svelte legacy component type for M', () => {
-        assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new M({target: new Element }));
+        assertType<SvelteComponent<CustomMotionComponentConfig & MotionProps & IsSVG, {}, {default: { props:object, motion: import('svelte/action').Action }}>>(new M['div']({target: new Element }));
     })
 
     it('should have Svelte legacy component type for AnimatePresence', () => {

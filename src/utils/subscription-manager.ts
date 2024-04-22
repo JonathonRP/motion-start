@@ -3,30 +3,13 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 declare type GenericHandler = (...args: any) => void;
-export declare class SubscriptionManager<Handler extends GenericHandler> {
-    private subscriptions;
-    add(handler: Handler): () => void;
-    notify(a?: Parameters<Handler>[0], b?: Parameters<Handler>[1], c?: Parameters<Handler>[2]): void;
-    getSize(): number;
-    clear(): void;
-}
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { addUniqueItem, removeItem } from './array.js';
-
-var SubscriptionManager = /** @class */ (function () {
-    function SubscriptionManager() {
-        this.subscriptions = [];
-    }
-    SubscriptionManager.prototype.add = function (handler) {
-        var _this = this;
+class SubscriptionManager<Handler extends GenericHandler> {
+    private subscriptions: Function[] = [];
+    add(handler: Handler) {
         addUniqueItem(this.subscriptions, handler);
-        return function () { return removeItem(_this.subscriptions, handler); };
-    };
-    SubscriptionManager.prototype.notify = function (a, b, c) {
+        return () => { return removeItem(this.subscriptions, handler); };
+    }
+    notify(a?: Parameters<Handler>[0], b?: Parameters<Handler>[1], c?: Parameters<Handler>[2]) {
         var numSubscriptions = this.subscriptions.length;
         if (!numSubscriptions)
             return;
@@ -46,14 +29,20 @@ var SubscriptionManager = /** @class */ (function () {
                 handler && handler(a, b, c);
             }
         }
-    };
-    SubscriptionManager.prototype.getSize = function () {
+    }
+    getSize() {
         return this.subscriptions.length;
-    };
-    SubscriptionManager.prototype.clear = function () {
+    }
+    clear() {
         this.subscriptions.length = 0;
-    };
-    return SubscriptionManager;
-}());
+    }
+}
+
+/** 
+based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V.
+*/
+import { addUniqueItem, removeItem } from './array.js';
+
 
 export { SubscriptionManager };

@@ -30,7 +30,8 @@ import { checkIfControllingVariants, checkIfVariantNode, isVariantLabel } from '
 import { setCurrentViewportBox } from './dom/projection/relative-set.js';
 import { isDraggable } from './utils/is-draggable.js';
 
-var visualElement = function <Instance, MutableState, Options>({ treeType, build, getBaseTarget, makeTargetAnimatable, measureViewportBox, render: renderInstance, readValueFromInstance, resetTransform, restoreTransform, removeValueFromRenderState, sortNodePosition, scrapeMotionValuesFromProps, }: VisualElementConfig<Instance, MutableState, Options>) {
+// TODO: make abstract class - future plans to match latest FramerMotion
+var visualElement = function <Instance = unknown, MutableState = unknown, Options extends {} = {}>({ treeType, build, getBaseTarget, makeTargetAnimatable, measureViewportBox, render: renderInstance, readValueFromInstance, resetTransform, restoreTransform, removeValueFromRenderState, sortNodePosition, scrapeMotionValuesFromProps, }: VisualElementConfig<Instance, MutableState, Options>) {
     return function ({ parent, props, presenceId, blockInitialAnimation, visualState, }: VisualElementOptions<Instance, any>, options?: Options) {
         if (options === void 0) { options = <Options>{}; }
         var latestValues = visualState.latestValues, renderState = visualState.renderState;
