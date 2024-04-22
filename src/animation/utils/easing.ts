@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-// import type { EasingFunction } from "svelte/transition"; future idea, maybe use svelte built in easing function...
+// TODO: import type { EasingFunction } from "svelte/transition"; future idea, maybe use svelte built in easing function...
 import type { Easing, EasingFunction } from "../../types";
 // export declare const easingDefinitionToFunction: (definition: Easing) => import("../../types").EasingFunction;
 // export declare const isEasingArray: (ease: any) => ease is Easing[];
