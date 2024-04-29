@@ -2,7 +2,8 @@
   "name": "svelte-motion",
   "version": "0.13.0",
   "description": "Svelte animation library based on the React library framer-motion.",
-  "main": "src/index.js",
+  "main": "src/index.ts",
+  "files": ["./src"],
   "scripts": {
     "test": "vitest --typecheck.only --ui",
     "build": "svelte-package --input ./src && publint --strict"
@@ -18,11 +19,11 @@
   },
   "devDependencies": {
     "@emotion/is-prop-valid": "^1.2.2",
-    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@sveltejs/package": "^2.3.1",
     "@tsconfig/svelte": "^5.0.4",
     "publint": "^0.2.7",
-    "svelte": "5.0.0-next.111",
+    "svelte": "5.0.0-next.117",
     "typescript": "^5.4.5",
     "vite": "latest",
     "vitest": "latest",

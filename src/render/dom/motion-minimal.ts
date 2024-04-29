@@ -16,7 +16,7 @@ import {createMotionClass} from './create-motion-class.js';
 /**
  * @public
  */
-var m: (<Props>(Component: string | import("react").ComponentType<Props>, customMotionComponentConfig?: import("./motion-proxy").CustomMotionComponentConfig) => import("./motion-proxy").CustomDomComponent<Props>) & import("../html/types").HTMLMotionComponents & import("../svg/types").SVGMotionComponents = /*@__PURE__*/ //createMotionProxy([MeasureLayout]);
-    createMotionClass({...layoutAnimations})
+var m = /*@__PURE__*/ //createMotionProxy([MeasureLayout]);
+    createMotionClass({...layoutAnimations}) as unknown as (<Props>(Component: string | import("react").ComponentType<Props>, customMotionComponentConfig?: import("./motion-proxy").CustomMotionComponentConfig) => import("./motion-proxy").CustomDomComponent<Props>) & import("../html/types").HTMLMotionComponents & import("../svg/types").SVGMotionComponents
 
 export { m as M };
