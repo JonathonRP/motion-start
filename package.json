@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "vitest --typecheck.only --ui",
-    "build:svelte": "svelte-package --input ./src && publint --strict"
+    "build": "svelte-package --input ./src && publint --strict"
   },
   "author": "Michael Lucht <micha-lmxt@gradientdescent.de> (https://svelte-motion.gradientdescent.de)",
   "license": "MIT",
