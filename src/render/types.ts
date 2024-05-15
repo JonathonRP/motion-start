@@ -2,7 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import * as React from "react";
 import { startAnimation } from "../animation/utils/transitions";
 import { Presence, type SharedLayoutAnimationConfig } from "../components/AnimateSharedLayout/types";
 import type { Crossfader } from "../components/AnimateSharedLayout/utils/crossfader";
@@ -12,9 +11,9 @@ import type { TargetAndTransition, Transition, Variant } from "../types";
 import type { AxisBox2D, Point2D } from "../types/geometry";
 import { MotionValue } from "../value";
 import type { AnimationState } from "./utils/animation-state";
+import { FlatTree } from "./utils/flat-tree";
 import type { LifecycleManager } from "./utils/lifecycles";
 import type { LayoutState, TargetProjection } from "./utils/state";
-import { FlatTree } from "./utils/flat-tree";
 
 export interface MotionPoint {
     x: MotionValue<number>;

@@ -10,9 +10,9 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { __spreadArray, __read } from 'tslib';
-//import { invariant } from 'hey-listen';
-import { stopAnimation, animateVisualElement } from '../render/utils/animation.js';
+import { __read, __spreadArray } from 'tslib';
+// import { invariant } from '../utils/errors.js';
+import { animateVisualElement, stopAnimation } from '../render/utils/animation.js';
 import { setValues } from '../render/utils/setters.js';
 
 /**
@@ -98,3 +98,4 @@ function animationControls(startStopNotifier?: () => () => void ) {
 }
 
 export { animationControls };
+

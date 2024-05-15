@@ -2,11 +2,10 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import * as React from "react";
-export type { MotionProps } from "./types";
-import type { RenderComponent, FeatureBundle } from "./features/types";
 import type { CreateVisualElement } from "../render/types";
+import type { FeatureBundle, RenderComponent } from "./features/types";
 import type { UseVisualState } from "./utils/use-visual-state";
+export type { MotionProps } from "./types";
 
 export interface MotionComponentConfig<Instance, RenderState> {
     preloadedFeatures?: FeatureBundle;
@@ -22,7 +21,7 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 import Motion from './Motion.svelte';
-import { loadFeatures } from "./features/definitions"
+import { loadFeatures } from "./features/definitions";
 import type { MotionProps } from "./types";
 
 /**

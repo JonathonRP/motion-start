@@ -2,56 +2,55 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-    import type { MotionConfigProps } from "./index.js";
-    import { getContext, setContext } from "svelte";
-    import { writable, get} from "svelte/store";
-    import { setDomContext } from "../../context/DOMcontext.js";
-    import { MotionConfigContext } from "../../context/MotionConfigContext.js";
-    import {provideScaleCorrection} from '../../context/ScaleCorrectionProvider.svelte'
-    import { scaleCorrection } from './MotionConfigScaleCorrection.js';
+  import { getContext, setContext } from "svelte";
+  import { get, writable, type Writable } from "svelte/store";
+  import { setDomContext } from "../../context/DOMcontext.js";
+  import {
+    MotionConfigContext,
+    type MotionConfigContextObject,
+  } from "../../context/MotionConfigContext.js";
+  import { provideScaleCorrection } from "../../context/ScaleCorrectionProvider.svelte";
+  import { scaleCorrection } from "./MotionConfigScaleCorrection.js";
+  import type { MotionConfigProps } from "./index.js";
 
-    type $$Props = MotionConfigProps;
+  type $$Props = MotionConfigProps;
 
-    export let transformPagePoint: $$Props['transformPagePoint'] = undefined,
-        isStatic: $$Props['isStatic'] = undefined,
-        transition: $$Props['transition'] = undefined,
-        isCustom = false;
-    const mcc = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
-    /**
-     * Inherit props from any parent MotionConfig components
-     */
-    let config = { ...get(mcc), ...{ transformPagePoint, isStatic, transition } }
-    $: config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
-  
-    // need to inform child layouts, or problems with scroll occur
-    provideScaleCorrection();
-    /**
-     * Don't allow isStatic to change between renders as it affects how many hooks
-     * motion components fire.
-     */
-    //config.isStatic = useConstant(() => config.isStatic)
+  export let transformPagePoint: $$Props["transformPagePoint"] = undefined,
+    isStatic: $$Props["isStatic"] = undefined,
+    transition: $$Props["transition"] = undefined,
+    isCustom = false;
+  const mcc: Writable<MotionConfigContextObject> =
+    getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+  /**
+   * Inherit props from any parent MotionConfig components
+   */
+  let config = { ...get(mcc), ...{ transformPagePoint, isStatic, transition } };
+  $: config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
 
-    /**
-     * Creating a new config context object will re-render every `motion` component
-     * every time it renders. So we only want to create a new one sparingly.
-     */
-    $: (transitionDependency =
-        typeof config.transition === "object"
-            ? config.transition.toString()
-            : "");
+  // need to inform child layouts, or problems with scroll occur
+  provideScaleCorrection();
+  /**
+   * Don't allow isStatic to change between renders as it affects how many hooks
+   * motion components fire.
+   */
+  //config.isStatic = useConstant(() => config.isStatic)
 
-    let context = writable(config);
-    setContext(MotionConfigContext, context);
-    setDomContext("Motion",isCustom,context);
-    const memo = () => config;
-    const scaleCorrector = scaleCorrection()
-    $: {
-        context.set(memo(transitionDependency, config.transformPagePoint))
-        scaleCorrector.update();
-    }
+  /**
+   * Creating a new config context object will re-render every `motion` component
+   * every time it renders. So we only want to create a new one sparingly.
+   */
+  $: transitionDependency =
+    typeof config.transition === "object" ? config.transition.toString() : "";
+
+  let context = writable(config);
+  setContext(MotionConfigContext, context);
+  setDomContext("Motion", isCustom, context);
+  const memo = () => config;
+  const scaleCorrector = scaleCorrection();
+  $: {
+    context.set(memo(transitionDependency, config.transformPagePoint));
+    scaleCorrector.update();
+  }
 </script>
 
-
 <slot />
-
-

@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { VisualElement } from "../../render/types";
-import { Transition } from "../../types";
-import { AxisBox2D } from "../../types/geometry";
+import type { VisualElement } from "../../render/types";
+import type { Transition } from "../../types";
+import type { AxisBox2D } from "../../types/geometry";
 import { MotionValue } from "../../value";
 /**
  * @public
@@ -92,19 +92,20 @@ Copyright (c) 2018 Framer B.V.
 /**
  * @public
  */
-var Presence;
-(function (Presence) {
-    Presence[Presence["Entering"] = 0] = "Entering";
-    Presence[Presence["Present"] = 1] = "Present";
-    Presence[Presence["Exiting"] = 2] = "Exiting";
-})(Presence || (Presence = {}));
-/**
- * @public
- */
-var VisibilityAction;
-(function (VisibilityAction) {
-    VisibilityAction[VisibilityAction["Hide"] = 0] = "Hide";
-    VisibilityAction[VisibilityAction["Show"] = 1] = "Show";
-})(VisibilityAction || (VisibilityAction = {}));
+// var Presence;
+// (function (Presence) {
+//     Presence[Presence["Entering"] = 0] = "Entering";
+//     Presence[Presence["Present"] = 1] = "Present";
+//     Presence[Presence["Exiting"] = 2] = "Exiting";
+// })(Presence || (Presence = {}));
+// /**
+//  * @public
+//  */
+// var VisibilityAction;
+// (function (VisibilityAction) {
+//     VisibilityAction[VisibilityAction["Hide"] = 0] = "Hide";
+//     VisibilityAction[VisibilityAction["Show"] = 1] = "Show";
+// })(VisibilityAction || (VisibilityAction = {}));
 
-export { Presence, VisibilityAction };
+// export { Presence, VisibilityAction };
+

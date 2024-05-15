@@ -13,10 +13,9 @@ import type { Easing, EasingFunction } from "../../types";
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../utils/fix-process-env';
+import { anticipate, backIn, backInOut, backOut, bounceIn, bounceInOut, bounceOut, circIn, circInOut, circOut, cubicBezier, easeIn, easeInOut, easeOut, linear } from 'popmotion';
 import { __read } from 'tslib';
-import { cubicBezier, linear, easeIn, easeInOut, easeOut, circIn, circInOut, circOut, backIn, backInOut, backOut, anticipate, bounceIn, bounceInOut, bounceOut } from 'popmotion';
-//import { invariant } from 'hey-listen';
+// import { invariant } from '../../utils/errors.js';
 
 var easingLookup = {
     linear: linear,
@@ -53,3 +52,4 @@ const isEasingArray = (ease: any): ease is Easing[] => {
 };
 
 export { easingDefinitionToFunction, isEasingArray };
+

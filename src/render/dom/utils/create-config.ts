@@ -3,9 +3,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import * as React from "react";
-import type { FeatureComponents } from "../../../motion/features/types";
 import type { MotionComponentConfig } from "../../../motion";
+import type { FeatureComponents } from "../../../motion/features/types";
 import type { HTMLRenderState } from "../../html/types";
 import type { SVGRenderState } from "../../svg/types";
 import type { CreateVisualElement } from "../../types";
@@ -17,10 +16,10 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 import { __assign } from 'tslib';
-import { isSVGComponent } from './is-svg-component.js';
-import { createUseRender } from '../use-render.js';
-import { svgMotionConfig } from '../../svg/config-motion.js';
 import { htmlMotionConfig } from '../../html/config-motion.js';
+import { svgMotionConfig } from '../../svg/config-motion.js';
+import { createUseRender } from '../use-render.js';
+import { isSVGComponent } from './is-svg-component.js';
 
 function createDomMotionConfig<Props>(Component: string | React.ComponentType<Props>, { forwardMotionProps }: CustomMotionComponentConfig, preloadedFeatures?: FeatureComponents, createVisualElement?: CreateVisualElement<any>) {
     var baseConfig = isSVGComponent(Component)
@@ -31,3 +30,4 @@ function createDomMotionConfig<Props>(Component: string | React.ComponentType<Pr
 }
 
 export { createDomMotionConfig };
+

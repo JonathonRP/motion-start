@@ -27,8 +27,8 @@ import type { VisualElement } from "../../types";
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { __rest, __assign, __read } from 'tslib';
-//import { invariant } from 'hey-listen';
+import { __assign, __read } from 'tslib';
+// import { invariant } from '../../../utils/errors.js';
 
 function isCSSVariable(value) {
     return typeof value === "string" && value.startsWith("var(--");
@@ -118,3 +118,4 @@ function resolveCSSVariables(visualElement: VisualElement, { ...target }: Target
 }
 
 export { cssVariableRegex, parseCSSVariable, resolveCSSVariables };
+

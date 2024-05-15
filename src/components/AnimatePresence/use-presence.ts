@@ -2,13 +2,13 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+import type { Readable } from 'svelte/store';
 import type { PresenceContextProps } from "../../context/PresenceContext";
-import type { Readable } from 'svelte/store'
 
-import { PresenceContext } from '../../context/PresenceContext.js';
 import { derived, get, readable } from 'svelte/store';
+import { PresenceContext } from '../../context/PresenceContext.js';
 
-import { getContext, onMount} from "svelte";
+import { getContext, onMount } from "svelte";
 
 export declare type SafeToRemove = () => void;
 declare type AlwaysPresent = [true, null];
@@ -18,7 +18,7 @@ declare type NotPresent = [false, SafeToRemove];
 let counter = 0;
 const incrementId = () => counter++;
 
-function isPresent(context: PresenceContextProps) {
+export function isPresent(context: PresenceContextProps) {
     return context === null ? true : context.isPresent
 }
 

@@ -4,10 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { RefObject } from "react";
 import type { PanInfo } from "../../gestures/PanSession";
-import type { DraggableProps, ResolvedConstraints } from "./types";
-import type { TransformPoint2D, AxisBox2D, Point2D } from "../../types/geometry";
-import type { VisualElement } from "../../render/types";
 import type { MotionProps } from "../../motion/types";
+import type { VisualElement } from "../../render/types";
+import type { AxisBox2D, Point2D, TransformPoint2D } from "../../types/geometry";
+import type { DraggableProps, ResolvedConstraints } from "./types";
 import type { Lock } from "./utils/lock.js";
 
 
@@ -28,28 +28,27 @@ export declare function expectsResolvedDragConstraints({ dragConstraints, onMeas
 based on framer-motion@4.1.15,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../utils/fix-process-env.js';
-import { __rest, __assign, __spreadArray, __read } from 'tslib';
-import { invariant } from 'hey-listen';
-import { PanSession } from '../PanSession.js';
-import { getGlobalLock } from './utils/lock.js';
-import { isRefObject } from '../../utils/is-ref-object.js';
-import { addPointerEvent } from '../../events/use-pointer-event.js';
-import { addDomEvent } from '../../events/use-dom-event.js';
-import { getViewportPointFromEvent } from '../../events/event-info.js';
-import { axisBox, convertAxisBoxToBoundingBox, convertBoundingBoxToAxisBox } from '../../utils/geometry/index.js';
-import { eachAxis } from '../../utils/each-axis.js';
-import { calcRelativeConstraints, resolveDragElastic, rebaseAxisConstraints, calcViewportConstraints, applyConstraints, calcConstrainedMinPoint, calcPositionFromProgress, defaultElastic } from './utils/constraints.js';
-import { getBoundingBox } from '../../render/dom/projection/measure.js';
-import { calcOrigin } from '../../utils/geometry/delta-calc.js';
-import { startAnimation } from '../../animation/utils/transitions.js';
-import { AnimationType } from '../../render/utils/types.js';
-import { collectProjectingAncestors, updateLayoutMeasurement, collectProjectingChildren } from '../../render/dom/projection/utils.js';
-import { progress } from 'popmotion';
-import { convertToRelativeProjection } from '../../render/dom/projection/convert-to-relative.js';
-import { calcRelativeOffset } from '../../motion/features/layout/utils.js';
-import { flushLayout, batchLayout } from '../../render/dom/utils/batch-layout.js';
 import { flushSync } from 'framesync';
+import { progress } from 'popmotion';
+import { __assign, __read, __spreadArray } from 'tslib';
+import { startAnimation } from '../../animation/utils/transitions.js';
+import { getViewportPointFromEvent } from '../../events/event-info.js';
+import { addDomEvent } from '../../events/use-dom-event.js';
+import { addPointerEvent } from '../../events/use-pointer-event.js';
+import { calcRelativeOffset } from '../../motion/features/layout/utils.js';
+import { convertToRelativeProjection } from '../../render/dom/projection/convert-to-relative.js';
+import { getBoundingBox } from '../../render/dom/projection/measure.js';
+import { collectProjectingAncestors, collectProjectingChildren, updateLayoutMeasurement } from '../../render/dom/projection/utils.js';
+import { batchLayout, flushLayout } from '../../render/dom/utils/batch-layout.js';
+import { AnimationType } from '../../render/utils/types.js';
+import { eachAxis } from '../../utils/each-axis.js';
+import { invariant } from '../../utils/errors.js';
+import { calcOrigin } from '../../utils/geometry/delta-calc.js';
+import { axisBox, convertAxisBoxToBoundingBox, convertBoundingBoxToAxisBox } from '../../utils/geometry/index.js';
+import { isRefObject } from '../../utils/is-ref-object.js';
+import { PanSession } from '../PanSession.js';
+import { applyConstraints, calcConstrainedMinPoint, calcPositionFromProgress, calcRelativeConstraints, calcViewportConstraints, defaultElastic, rebaseAxisConstraints, resolveDragElastic } from './utils/constraints.js';
+import { getGlobalLock } from './utils/lock.js';
 
 var elementDragControls: WeakMap<VisualElement<any, any>, VisualElementDragControls> = new WeakMap();
 /**
@@ -630,3 +629,4 @@ function getCurrentDirection(offset: Point2D, lockThreshold = 10) {
 }
 
 export { VisualElementDragControls, elementDragControls };
+
