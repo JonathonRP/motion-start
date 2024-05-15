@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Transition, PermissiveTransitionDefinition, ResolvedValueTarget } from "../../types";
 import type { AnimationOptions } from "popmotion";
+import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } from "../../types";
 import { MotionValue } from "../../value";
 
 
@@ -11,15 +11,14 @@ import { MotionValue } from "../../value";
 based on framer-motion@4.1.15,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../utils/fix-process-env.js';
-import { __assign, __rest, __spreadArray, __read } from 'tslib';
-import { inertia, animate } from 'popmotion';
-import { secondsToMilliseconds } from '../../utils/time-conversion.js';
-import { isEasingArray, easingDefinitionToFunction } from './easing.js';
-import { isAnimatable } from './is-animatable.js';
-import { getDefaultTransition } from './default-transitions.js';
-import { warning } from 'hey-listen';
+import { animate, inertia } from 'popmotion';
+import { __assign, __read, __rest, __spreadArray } from 'tslib';
 import { getAnimatableNone } from '../../render/dom/value-types/animatable-none.js';
+import { warning } from '../../utils/errors.js';
+import { secondsToMilliseconds } from '../../utils/time-conversion.js';
+import { getDefaultTransition } from './default-transitions.js';
+import { easingDefinitionToFunction, isEasingArray } from './easing.js';
+import { isAnimatable } from './is-animatable.js';
 
 /**
  * Decide whether a transition is defined on a given Transition.
@@ -216,3 +215,4 @@ function startAnimation(key: string, value: MotionValue, target: ResolvedValueTa
 }
 
 export { convertTransitionToAnimationOptions, getDelayFromTransition, getPopmotionAnimationOptions, getValueTransition, getZeroUnit, hydrateKeyframes, isTransitionDefined, isZero, startAnimation };
+

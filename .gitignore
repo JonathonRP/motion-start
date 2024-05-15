@@ -1,3 +1,5 @@
 /node_modules/
 /dist/
 /types/tsdoc-metadata.json
+/.pnpm-store/
+/.svelte-kit/
