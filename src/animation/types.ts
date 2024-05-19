@@ -2,16 +2,16 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { TargetAndTransition, TargetResolver, Transition } from "../types";
 import type { VisualElement } from "../render/types";
+import type { TargetAndTransition, TargetResolver, Transition } from "../types";
 /**
  * @public
  */
-export declare type ControlsAnimationDefinition = string | string[] | TargetAndTransition | TargetResolver;
+export type ControlsAnimationDefinition = string | string[] | TargetAndTransition | TargetResolver;
 /**
  * @public
  */
-export declare type PendingAnimations = {
+export type PendingAnimations = {
     animation: [ControlsAnimationDefinition, Transition | undefined];
     resolve: () => void;
 };

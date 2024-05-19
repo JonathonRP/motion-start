@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-declare type Job = () => void;
-declare type JobSetter = (job: Job) => void;
-declare type ReadWrites = (read: JobSetter, write: JobSetter) => void;
+type Job = () => void;
+type JobSetter = (job: Job) => void;
+type ReadWrites = (read: JobSetter, write: JobSetter) => void;
 
 /** 
 based on framer-motion@4.1.15,
@@ -74,3 +74,4 @@ function flushLayout() {
 var executeJob = function (job) { return job(); };
 
 export { batchLayout, flushLayout, layoutState };
+

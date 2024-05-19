@@ -4,9 +4,9 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { RefObject } from "react";
 import type { EventListenerWithPointInfo } from "./event-info";
-export declare function usePointerEvent(ref: RefObject<Element>, eventName: string, handler?: EventListenerWithPointInfo | undefined, options?: AddEventListenerOptions): void;
+export type usePointerEvent = (ref: RefObject<Element>, eventName: string, handler?: EventListenerWithPointInfo | undefined, options?: AddEventListenerOptions) => void;
 
-export declare interface UsePointerEventProps {
+export interface UsePointerEventProps {
     /**
      * Ref object that's been provided to the element you want to bind the listener to.
      */
@@ -25,4 +25,5 @@ export declare interface UsePointerEventProps {
     options?: AddEventListenerOptions
 }
 
-export { addPointerEvent, default as UsePointerEvent } from './UsePointerEvent.svelte';
+export { default as UsePointerEvent, addPointerEvent } from './UsePointerEvent.svelte';
+

@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-declare type GenericHandler = (...args: any) => void;
+type GenericHandler = (...args: any) => void;
 class SubscriptionManager<Handler extends GenericHandler> {
     private subscriptions: Function[] = [];
     add(handler: Handler) {
@@ -46,3 +46,4 @@ import { addUniqueItem, removeItem } from './array.js';
 
 
 export { SubscriptionManager };
+

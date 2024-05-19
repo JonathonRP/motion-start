@@ -11,11 +11,11 @@ import type { MotionProps } from "../../motion/types.js";
  *
  * @internal
  */
-export declare type CustomDomComponent<Props> = React.ForwardRefExoticComponent<React.PropsWithoutRef<Props & MotionProps> & React.RefAttributes<SVGElement | HTMLElement>>;
+export type CustomDomComponent<Props> = React.ForwardRefExoticComponent<React.PropsWithoutRef<Props & MotionProps> & React.RefAttributes<SVGElement | HTMLElement>>;
 export interface CustomMotionComponentConfig {
     forwardMotionProps?: boolean;
 }
-export declare type CreateConfig = <Instance, RenderState, Props>(Component: string | React.ComponentType<Props>, config: CustomMotionComponentConfig) => MotionComponentConfig<Instance, RenderState>;
+export type CreateConfig = <Instance, RenderState, Props>(Component: string | React.ComponentType<Props>, config: CustomMotionComponentConfig) => MotionComponentConfig<Instance, RenderState>;
 /**
  * Convert any React component into a `motion` component. The provided component
  * **must** use `React.forwardRef` to the underlying DOM component you want to animate.

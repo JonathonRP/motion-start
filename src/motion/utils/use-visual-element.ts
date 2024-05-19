@@ -7,7 +7,7 @@ import type { CreateVisualElement, VisualElement } from "../../render/types";
 import type { VisualState } from "./use-visual-state";
 
 
-export declare function useVisualElement<Instance, RenderState>(Component: string | React.ComponentType, visualState: VisualState<Instance, RenderState>, props: MotionProps, createVisualElement?: CreateVisualElement<Instance>): VisualElement<Instance> | undefined;
+export type useVisualElement = <Instance, RenderState>(Component: string | React.ComponentType, visualState: VisualState<Instance, RenderState>, props: MotionProps, createVisualElement?: CreateVisualElement<Instance>) => VisualElement<Instance> | undefined;
 
 export { default as UseVisualElement } from './UseVisualElement.svelte';
 

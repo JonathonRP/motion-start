@@ -7,16 +7,16 @@ import type { MotionProps } from "../../motion/types";
 import type { AxisBox2D, BoxDelta } from "../../types/geometry";
 import type { ResolvedValues } from "../types";
 import type { AnimationDefinition } from "./animation";
-export declare type LayoutMeasureListener = (layout: AxisBox2D, prevLayout: AxisBox2D) => void;
-export declare type BeforeLayoutMeasureListener = (layout: AxisBox2D) => void;
-export declare type LayoutUpdateListener = (layout: AxisBox2D, prevLayout: AxisBox2D, config?: SharedLayoutAnimationConfig) => void;
-export declare type UpdateListener = (latest: ResolvedValues) => void;
-export declare type AnimationStartListener = () => void;
-export declare type AnimationCompleteListener = (definition: AnimationDefinition) => void;
-export declare type LayoutAnimationCompleteListener = () => void;
-export declare type SetAxisTargetListener = () => void;
-export declare type RenderListener = () => void;
-export declare type OnViewportBoxUpdate = (box: AxisBox2D, delta: BoxDelta) => void;
+export type LayoutMeasureListener = (layout: AxisBox2D, prevLayout: AxisBox2D) => void;
+export type BeforeLayoutMeasureListener = (layout: AxisBox2D) => void;
+export type LayoutUpdateListener = (layout: AxisBox2D, prevLayout: AxisBox2D, config?: SharedLayoutAnimationConfig) => void;
+export type UpdateListener = (latest: ResolvedValues) => void;
+export type AnimationStartListener = () => void;
+export type AnimationCompleteListener = (definition: AnimationDefinition) => void;
+export type LayoutAnimationCompleteListener = () => void;
+export type SetAxisTargetListener = () => void;
+export type RenderListener = () => void;
+export type OnViewportBoxUpdate = (box: AxisBox2D, delta: BoxDelta) => void;
 /**
  * TODO: Make more of these lifecycle events available as props
  */

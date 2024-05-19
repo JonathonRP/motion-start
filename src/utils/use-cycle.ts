@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Writable } from 'svelte/store'
-declare type Cycle = (i?: number) => void;
-declare type CycleState<T> = [T, Cycle];
+import type { Writable } from 'svelte/store';
+type Cycle = (i?: number) => void;
+type CycleState<T> = [T, Cycle];
 
 
 /** 
@@ -58,7 +58,6 @@ Copyright (c) 2018 Framer B.V.
  * @public
  */
 // export { default as UseCycle } from './UseCycle.svelte';
-import { fixed } from './fix-process-env';
 import { wrap } from "popmotion";
 import { writable } from 'svelte/store';
 

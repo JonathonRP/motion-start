@@ -4,20 +4,19 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { CSSProperties } from "react";
 import type { AnimationControls } from "../animation/types";
-import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from "../types";
 import type { DraggableProps } from "../gestures/drag/types";
-import type { LayoutProps } from "./features/layout/types";
-import type { ResolvedValues } from "../render/types";
+import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from "../gestures/types";
 import type { VisualElementLifecycles } from "../render/utils/lifecycles";
-import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from "../gestures/types";
+import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from "../types";
 import { MotionValue } from "../value";
+import type { LayoutProps } from "./features/layout/types";
 
-export declare type MotionStyleProp = string | number | MotionValue;
+export type MotionStyleProp = string | number | MotionValue;
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.
  * @public
  */
-export declare type VariantLabels = string | string[];
+export type VariantLabels = string | string[];
 export interface TransformProperties {
     x?: string | number;
     y?: string | number;
@@ -60,20 +59,20 @@ export interface CustomStyles {
     shadow?: string;
     image?: string;
 }
-export declare type MakeMotion<T> = MakeCustomValueType<{
+export type MakeMotion<T> = MakeCustomValueType<{
     [K in keyof T]: T[K] | MotionValue<number> | MotionValue<string> | MotionValue<any>;
 }>;
-export declare type MotionCSS = MakeMotion<Omit<CSSProperties, "rotate" | "scale" | "perspective">>;
+export type MotionCSS = MakeMotion<Omit<CSSProperties, "rotate" | "scale" | "perspective">>;
 /**
  * @public
  */
-export declare type MotionTransform = MakeMotion<TransformProperties>;
+export type MotionTransform = MakeMotion<TransformProperties>;
 
 /**
  * @public
  */
-export declare type MotionStyle = MotionCSS & MotionTransform & MakeMotion<SVGPathProperties> /* & MakeCustomValueType<CustomStyles>*/;
-export declare type OnUpdate = (v: Target) => void;
+export type MotionStyle = MotionCSS & MotionTransform & MakeMotion<SVGPathProperties> /* & MakeCustomValueType<CustomStyles>*/;
+export type OnUpdate = (v: Target) => void;
 /**
  * @public
  */
@@ -88,7 +87,7 @@ export interface RelayoutInfo {
 /**
  * @public
  */
-export declare type ResolveLayoutTransition = (info: RelayoutInfo) => Transition | boolean;
+export type ResolveLayoutTransition = (info: RelayoutInfo) => Transition | boolean;
 /**
  * @public
  */
@@ -276,4 +275,4 @@ export interface MotionProps extends AnimationProps, VisualElementLifecycles, Pa
      */
     transformTemplate?(transform: TransformProperties, generatedTransform: string): string;
 }
-export declare type TransformTemplate = (transform: TransformProperties, generatedTransform: string) => string;
+export type TransformTemplate = (transform: TransformProperties, generatedTransform: string) => string;

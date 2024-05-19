@@ -3,7 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { MotionProps } from "../..";
-export declare function isForcedMotionValue(key: string, { layout, layoutId }: MotionProps): boolean;
+export type isForcedMotionValue = (key: string, { layout, layoutId }: MotionProps) => boolean;
 
 
 /**
@@ -13,3 +13,4 @@ export declare function isForcedMotionValue(key: string, { layout, layoutId }: M
 
 
 export { default as UseFeatures } from './UseFeatures.svelte';
+

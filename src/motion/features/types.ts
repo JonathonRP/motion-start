@@ -2,16 +2,16 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+import type { CreateVisualElement, VisualElement } from "../../render/types";
 import type { MotionProps } from "../types";
 import type { VisualState } from "../utils/use-visual-state";
-import type { CreateVisualElement, VisualElement } from "../../render/types";
 /**
  * @public
  */
 export interface FeatureProps extends MotionProps {
     visualElement: VisualElement;
 }
-export declare type FeatureNames = {
+export type FeatureNames = {
     animation: true;
     exit: true;
     drag: true;
@@ -22,7 +22,7 @@ export declare type FeatureNames = {
     layoutAnimation: true;
     measureLayout: true;
 };
-export declare type FeatureComponent = React.ComponentType<FeatureProps>;
+export type FeatureComponent = React.ComponentType<FeatureProps>;
 /**
  * @public
  */
@@ -44,8 +44,8 @@ export interface FeatureComponents {
 export interface FeatureBundle extends FeatureComponents {
     renderer: CreateVisualElement<any>;
 }
-export declare type LazyFeatureBundle = () => Promise<FeatureBundle>;
-export declare type FeatureDefinitions = {
+export type LazyFeatureBundle = () => Promise<FeatureBundle>;
+export type FeatureDefinitions = {
     [K in keyof FeatureNames]: FeatureDefinition;
 };
-export declare type RenderComponent<Instance, RenderState> = (Component: string | React.ComponentType, props: MotionProps, ref: React.Ref<Instance>, visualState: VisualState<Instance, RenderState>, isStatic: boolean) => any;
+export type RenderComponent<Instance, RenderState> = (Component: string | React.ComponentType, props: MotionProps, ref: React.Ref<Instance>, visualState: VisualState<Instance, RenderState>, isStatic: boolean) => any;

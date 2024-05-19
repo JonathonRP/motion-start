@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ResolvedValues } from "../types";
 import type { DetailedHTMLFactory, ForwardRefExoticComponent, HTMLAttributes, PropsWithoutRef, ReactHTML, RefAttributes } from "react";
 import type { MotionProps } from "../../motion/types";
+import type { ResolvedValues } from "../types";
 import type { HTMLElements } from "./supported-elements";
 export interface TransformOrigin {
     originX?: number | string;
@@ -41,24 +41,24 @@ export interface HTMLRenderState {
 /**
  * @public
  */
-export declare type ForwardRefComponent<T, P> = ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
+export type ForwardRefComponent<T, P> = ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
 /**
  * Support for React component props
  */
-declare type UnwrapFactoryAttributes<F> = F extends DetailedHTMLFactory<infer P, any> ? P : never;
-declare type UnwrapFactoryElement<F> = F extends DetailedHTMLFactory<any, infer P> ? P : never;
-declare type HTMLAttributesWithoutMotionProps<Attributes extends HTMLAttributes<Element>, Element extends HTMLElement> = {
+type UnwrapFactoryAttributes<F> = F extends DetailedHTMLFactory<infer P, any> ? P : never;
+type UnwrapFactoryElement<F> = F extends DetailedHTMLFactory<any, infer P> ? P : never;
+type HTMLAttributesWithoutMotionProps<Attributes extends HTMLAttributes<Element>, Element extends HTMLElement> = {
     [K in Exclude<keyof Attributes, keyof MotionProps>]?: Attributes[K];
 };
 /**
  * @public
  */
-export declare type HTMLMotionProps<TagName extends keyof ReactHTML> = HTMLAttributesWithoutMotionProps<UnwrapFactoryAttributes<ReactHTML[TagName]>, UnwrapFactoryElement<ReactHTML[TagName]>> & MotionProps;
+export type HTMLMotionProps<TagName extends keyof ReactHTML> = HTMLAttributesWithoutMotionProps<UnwrapFactoryAttributes<ReactHTML[TagName]>, UnwrapFactoryElement<ReactHTML[TagName]>> & MotionProps;
 /**
  * Motion-optimised versions of React's HTML components.
  *
  * @public
  */
-export declare type HTMLMotionComponents = {
+export type HTMLMotionComponents = {
     [K in HTMLElements]: ForwardRefComponent<UnwrapFactoryElement<ReactHTML[K]>, HTMLMotionProps<K>>;
 };

@@ -2,12 +2,12 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { SvelteComponent } from "svelte";
+// import { SvelteComponent } from "svelte";
 import type { DOMMotionComponents } from "./types.js";
-import type { CustomMotionComponentConfig} from './motion-proxy.js'
-import type { MotionProps } from "../../motion/types.js";
+// import type { CustomMotionComponentConfig} from './motion-proxy.js'
+// import type { MotionProps } from "../../motion/types.js";
 
-export declare interface IsSVG{
+export interface IsSVG{
     /** set to true if the component receiving the motion action is an svg-element like `circle` or `path`. Should not be set to true for `svg` tags. */
     isSVG?:boolean
 }
@@ -51,16 +51,16 @@ export declare interface IsSVG{
  * @public
  */
 // export declare function createDomMotionComponent;
-export declare const M : {[key:string] : typeof motion}
+export const M : {[key:string] : typeof motion}
 
 /** 
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { createDomVisualElement } from './create-visual-element.js';
 import { createMotionComponent } from '../../motion/index.js';
-import {createMotionClass} from './create-motion-class.js';
-import {featureBundle} from './featureBundle.js';
+import { createMotionClass } from './create-motion-class.js';
+import { createDomVisualElement } from './create-visual-element.js';
+import { featureBundle } from './featureBundle.js';
 //import { createMotionProxy } from './motion-proxy.js';
 
 
@@ -99,4 +99,5 @@ function createDomMotionComponent<T extends keyof DOMMotionComponents>(key: T): 
     return createMotionComponent(config);
 }
 
-export { createDomMotionComponent, motion as Motion };
+export { motion as Motion, createDomMotionComponent };
+

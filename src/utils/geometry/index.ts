@@ -2,12 +2,12 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { BoundingBox2D, TransformPoint2D, AxisBox2D, Axis, BoxDelta } from "../../types/geometry";
+import type { Axis, AxisBox2D, BoundingBox2D, BoxDelta, TransformPoint2D } from "../../types/geometry";
 
 /**
  * Calculate the center point of the provided axis
  */
-export declare function calcAxisCenter({ min, max }: Axis): number;
+export type calcAxisCenter = ({ min, max }: Axis) => number;
 
 /** 
 based on framer-motion@4.1.15,
@@ -80,3 +80,4 @@ function delta(): BoxDelta {
 }
 
 export { axisBox, convertAxisBoxToBoundingBox, convertBoundingBoxToAxisBox, copyAxisBox, delta, transformBoundingBox };
+

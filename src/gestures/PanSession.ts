@@ -8,17 +8,16 @@ import type { Point2D, TransformPoint2D } from "../types/geometry";
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../utils/fix-process-env.js';
-import { __assign } from 'tslib';
-import { isMouseEvent, isTouchEvent } from './utils/event-type.js';
-import { extractEventInfo } from '../events/event-info.js';
-import sync, { getFrameData, cancelSync } from 'framesync';
-import { secondsToMilliseconds } from '../utils/time-conversion.js';
-import { addPointerEvent } from '../events/use-pointer-event.js';
+import sync, { cancelSync, getFrameData } from 'framesync';
 import { distance, pipe } from 'popmotion';
+import { __assign } from 'tslib';
+import { extractEventInfo } from '../events/event-info.js';
 import type { EventInfo } from "../events/types";
+import { addPointerEvent } from '../events/use-pointer-event.js';
+import { secondsToMilliseconds } from '../utils/time-conversion.js';
+import { isMouseEvent, isTouchEvent } from './utils/event-type.js';
 
-export declare type AnyPointerEvent = MouseEvent | TouchEvent | PointerEvent;
+export type AnyPointerEvent = MouseEvent | TouchEvent | PointerEvent;
 
 /**
  * Passed in to pan event handlers like `onPan` the `PanInfo` object contains
@@ -104,7 +103,7 @@ export interface PanInfo {
      */
     velocity: Point2D;
 }
-export declare type PanHandler = (event: Event, info: PanInfo) => void;
+export type PanHandler = (event: Event, info: PanInfo) => void;
 interface PanSessionHandlers {
     onSessionStart: PanHandler;
     onStart: PanHandler;

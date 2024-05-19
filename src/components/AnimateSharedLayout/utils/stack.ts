@@ -3,7 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VisualElement } from "../../../render/types";
-export declare type LeadAndFollow = [
+export type LeadAndFollow = [
     VisualElement | undefined,
     VisualElement | undefined
 ];
@@ -24,8 +24,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { __assign } from 'tslib';
-import { Presence } from '../types.js';
 import { elementDragControls } from '../../../gestures/drag/VisualElementDragControls.js';
+import { Presence } from '../types.js';
 import { createCrossfader } from './crossfader.js';
 
 function layoutStack(): LayoutStack {
@@ -157,3 +157,4 @@ function layoutStack(): LayoutStack {
 }
 
 export { layoutStack };
+

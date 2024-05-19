@@ -3,14 +3,14 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { RefObject } from "react";
-import type { PanInfo } from "../PanSession";
+import type { VariantLabels } from "../../motion/types";
 import type { Inertia, TargetAndTransition } from "../../types";
 import type { Axis, BoundingBox2D } from "../../types/geometry";
-import { DragControls } from "./use-drag-controls";
 import { MotionValue } from "../../value";
-import type { VariantLabels } from "../../motion/types";
-export declare type DragHandler = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
-export declare type DragElastic = boolean | number | Partial<BoundingBox2D>;
+import type { PanInfo } from "../PanSession";
+import { DragControls } from "./use-drag-controls";
+export type DragHandler = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
+export type DragElastic = boolean | number | Partial<BoundingBox2D>;
 export interface ResolvedConstraints {
     x: Partial<Axis>;
     y: Partial<Axis>;
@@ -109,7 +109,7 @@ export interface DragHandlers {
 /**
  * @public
  */
-export declare type InertiaOptions = Partial<Omit<Inertia, "velocity" | "type">>;
+export type InertiaOptions = Partial<Omit<Inertia, "velocity" | "type">>;
 /**
  * @public
  */

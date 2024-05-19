@@ -10,10 +10,10 @@ import { PresenceContext } from '../../context/PresenceContext.js';
 
 import { getContext, onMount } from "svelte";
 
-export declare type SafeToRemove = () => void;
-declare type AlwaysPresent = [true, null];
-declare type Present = [true];
-declare type NotPresent = [false, SafeToRemove];
+export type SafeToRemove = () => void;
+type AlwaysPresent = [true, null];
+type Present = [true];
+type NotPresent = [false, SafeToRemove];
 
 let counter = 0;
 const incrementId = () => counter++;

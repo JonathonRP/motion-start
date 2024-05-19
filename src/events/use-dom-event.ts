@@ -3,7 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VisualElement } from "../index.js";
-export declare interface UseDomEventProps {
+export interface UseDomEventProps {
     /**
      * Ref object that's been provided to the element you want to bind the listener to.
      */
@@ -44,4 +44,5 @@ export declare interface UseDomEventProps {
  *
  * @public
  */
-export { addDomEvent, default as UseDomEvent } from './UseDomEvent.svelte';
+export { default as UseDomEvent, addDomEvent } from './UseDomEvent.svelte';
+

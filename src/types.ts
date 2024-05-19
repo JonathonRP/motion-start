@@ -3,35 +3,35 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { CSSProperties, SVGAttributes } from "react";
-import type { TransformProperties, SVGPathProperties } from "./motion/types.js";
+import type { SVGPathProperties, TransformProperties } from "./motion/types.js";
 /**
  * @public
  */
-export declare type ResolvedKeyframesTarget = [null, ...number[]] | number[] | [null, ...string[]] | string[];
+export type ResolvedKeyframesTarget = [null, ...number[]] | number[] | [null, ...string[]] | string[];
 /**
  * @public
  */
-export declare type KeyframesTarget = ResolvedKeyframesTarget | [null, ...CustomValueType[]] | CustomValueType[];
+export type KeyframesTarget = ResolvedKeyframesTarget | [null, ...CustomValueType[]] | CustomValueType[];
 /**
  * @public
  */
-export declare type ResolvedSingleTarget = string | number;
+export type ResolvedSingleTarget = string | number;
 /**
  * @public
  */
-export declare type SingleTarget = ResolvedSingleTarget | CustomValueType;
+export type SingleTarget = ResolvedSingleTarget | CustomValueType;
 /**
  * @public
  */
-export declare type ResolvedValueTarget = ResolvedSingleTarget | ResolvedKeyframesTarget;
+export type ResolvedValueTarget = ResolvedSingleTarget | ResolvedKeyframesTarget;
 /**
  * @public
  */
-export declare type ValueTarget = SingleTarget | KeyframesTarget;
+export type ValueTarget = SingleTarget | KeyframesTarget;
 /**
  * @public
  */
-export declare type Props = {
+export type Props = {
     [key: string]: any;
 };
 /**
@@ -65,7 +65,7 @@ export declare type Props = {
  *
  * @public
  */
-export declare type EasingFunction = (v: number) => number;
+export type EasingFunction = (v: number) => number;
 /**
  * The easing function to use. Set as one of:
  *
@@ -75,7 +75,7 @@ export declare type EasingFunction = (v: number) => number;
  *
  * @public
  */
-export declare type Easing = [number, number, number, number] | "linear" | "easeIn" | "easeOut" | "easeInOut" | "circIn" | "circOut" | "circInOut" | "backIn" | "backOut" | "backInOut" | "anticipate" | EasingFunction;
+export type Easing = [number, number, number, number] | "linear" | "easeIn" | "easeOut" | "easeInOut" | "circIn" | "circOut" | "circInOut" | "backIn" | "backOut" | "backInOut" | "anticipate" | EasingFunction;
 /**
  * Options for orchestrating the timing of animations.
  *
@@ -1001,18 +1001,18 @@ export interface None {
 /**
  * @public
  */
-export declare type PopmotionTransitionProps = Tween | Spring | Keyframes | Inertia | Just;
+export type PopmotionTransitionProps = Tween | Spring | Keyframes | Inertia | Just;
 /**
  * @public
  */
-export declare type PermissiveTransitionDefinition = {
+export type PermissiveTransitionDefinition = {
     [key: string]: any;
 };
 /**
  * @public
  */
-export declare type TransitionDefinition = Tween | Spring | Keyframes | Inertia | Just | None | PermissiveTransitionDefinition;
-export declare type TransitionMap = Orchestration & {
+export type TransitionDefinition = Tween | Spring | Keyframes | Inertia | Just | None | PermissiveTransitionDefinition;
+export type TransitionMap = Orchestration & {
     [key: string]: TransitionDefinition;
 };
 /**
@@ -1020,30 +1020,30 @@ export declare type TransitionMap = Orchestration & {
  *
  * @public
  */
-export declare type Transition = (Orchestration & Repeat & TransitionDefinition) | (Orchestration & Repeat & TransitionMap);
-export declare type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-declare type CSSPropertiesWithoutTransitionOrSingleTransforms = Omit<CSSProperties, "transition" | "rotate" | "scale" | "perspective">;
-declare type TargetProperties = CSSPropertiesWithoutTransitionOrSingleTransforms & SVGAttributes<SVGElement> & TransformProperties /*& CustomStyles*/ & SVGPathProperties;
+export type Transition = (Orchestration & Repeat & TransitionDefinition) | (Orchestration & Repeat & TransitionMap);
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type CSSPropertiesWithoutTransitionOrSingleTransforms = Omit<CSSProperties, "transition" | "rotate" | "scale" | "perspective">;
+type TargetProperties = CSSPropertiesWithoutTransitionOrSingleTransforms & SVGAttributes<SVGElement> & TransformProperties /*& CustomStyles*/ & SVGPathProperties;
 /**
  * @public
  */
-export declare type MakeCustomValueType<T> = {
+export type MakeCustomValueType<T> = {
     [K in keyof T]: T[K] | CustomValueType;
 };
 /**
  * @public
  */
-export declare type Target = MakeCustomValueType<TargetProperties>;
+export type Target = MakeCustomValueType<TargetProperties>;
 /**
  * @public
  */
-export declare type MakeKeyframes<T> = {
+export type MakeKeyframes<T> = {
     [K in keyof T]: T[K] | T[K][] | [null, ...T[K][]];
 };
 /**
  * @public
  */
-export declare type TargetWithKeyframes = MakeKeyframes<Target>;
+export type TargetWithKeyframes = MakeKeyframes<Target>;
 /**
  * An object that specifies values to animate to. Each value may be set either as
  * a single value, or an array of values.
@@ -1064,19 +1064,19 @@ export declare type TargetWithKeyframes = MakeKeyframes<Target>;
  *
  * @public
  */
-export declare type TargetAndTransition = TargetWithKeyframes & {
+export type TargetAndTransition = TargetWithKeyframes & {
     transition?: Transition;
     transitionEnd?: Target;
 };
-export declare type TargetResolver = (custom: any, current: Target, velocity: Target) => TargetAndTransition;
+export type TargetResolver = (custom: any, current: Target, velocity: Target) => TargetAndTransition;
 /**
  * @public
  */
-export declare type Variant = TargetAndTransition | TargetResolver;
+export type Variant = TargetAndTransition | TargetResolver;
 /**
  * @public
  */
-export declare type Variants = {
+export type Variants = {
     [key: string]: Variant;
 };
 /**

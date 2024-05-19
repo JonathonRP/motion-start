@@ -2,11 +2,11 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ResolvedValues } from "../types";
 import type { SVGAttributes } from "react";
 import type { MakeMotion, MotionProps } from "../../motion/types";
-import type { SVGElements } from "./supported-elements";
 import type { ForwardRefComponent, HTMLRenderState } from "../html/types";
+import type { ResolvedValues } from "../types";
+import type { SVGElements } from "./supported-elements";
 export interface SVGRenderState extends HTMLRenderState {
     /**
      * Measured dimensions of the SVG element to be used to calculate a transform-origin.
@@ -22,7 +22,7 @@ export interface SVGRenderState extends HTMLRenderState {
      */
     totalPathLength?: number;
 }
-export declare type SVGDimensions = {
+export type SVGDimensions = {
     x: number;
     y: number;
     width: number;
@@ -34,8 +34,8 @@ interface SVGAttributesWithoutMotionProps<T> extends Pick<SVGAttributes<T>, Excl
  * Blanket-accept any SVG attribute as a `MotionValue`
  * @public
  */
-export declare type SVGAttributesAsMotionValues<T> = MakeMotion<SVGAttributesWithoutMotionProps<T>>;
-declare type UnwrapSVGFactoryElement<F> = F extends React.SVGProps<infer P> ? P : never;
+export type SVGAttributesAsMotionValues<T> = MakeMotion<SVGAttributesWithoutMotionProps<T>>;
+type UnwrapSVGFactoryElement<F> = F extends React.SVGProps<infer P> ? P : never;
 /**
  * @public
  */
@@ -46,6 +46,6 @@ export interface SVGMotionProps<T> extends SVGAttributesAsMotionValues<T>, Motio
  *
  * @public
  */
-export declare type SVGMotionComponents = {
+export type SVGMotionComponents = {
     [K in SVGElements]: ForwardRefComponent<UnwrapSVGFactoryElement<JSX.IntrinsicElements[K]>, SVGMotionProps<UnwrapSVGFactoryElement<JSX.IntrinsicElements[K]>>>;
 };

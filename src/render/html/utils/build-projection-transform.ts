@@ -5,8 +5,8 @@ Copyright (c) 2018 Framer B.V.
 import type { BoxDelta, Point2D } from "../../../types/geometry";
 import type { ResolvedValues } from "../../types";
 import type { LayoutState } from "../../utils/state";
-export declare type BuildProjectionTransform = (box: BoxDelta, treeScale: Point2D, transform?: ResolvedValues) => string;
-export declare type BuildProjectionTransformOrigin = (layout: LayoutState) => string;
+export type BuildProjectionTransform = (box: BoxDelta, treeScale: Point2D, transform?: ResolvedValues) => string;
+export type BuildProjectionTransformOrigin = (layout: LayoutState) => string;
 
 
 /** 
@@ -50,3 +50,4 @@ function buildLayoutProjectionTransformOrigin({ deltaFinal, }: LayoutState) {
 var identityProjection = buildLayoutProjectionTransform(zeroLayout.delta, zeroLayout.treeScale, { x: 1, y: 1 });
 
 export { buildLayoutProjectionTransform, buildLayoutProjectionTransformOrigin, identityProjection };
+

@@ -6,14 +6,14 @@ import type { VariantLabels } from "../../motion/types";
 import type { Target, TargetAndTransition, TargetResolver, TargetWithKeyframes, Transition } from "../../types";
 import type { VisualElement } from "../types";
 import { AnimationType } from "./types";
-export declare type AnimationDefinition = VariantLabels | TargetAndTransition | TargetResolver;
-export declare type AnimationOptions = {
+export type AnimationDefinition = VariantLabels | TargetAndTransition | TargetResolver;
+export type AnimationOptions = {
     delay?: number;
     transitionOverride?: Transition;
     custom?: any;
     type?: AnimationType;
 };
-export declare type MakeTargetAnimatable = (visualElement: VisualElement, target: TargetWithKeyframes, origin?: Target, transitionEnd?: Target) => {
+export type MakeTargetAnimatable = (visualElement: VisualElement, target: TargetWithKeyframes, origin?: Target, transitionEnd?: Target) => {
     target: TargetWithKeyframes;
     transitionEnd?: Target;
 };
@@ -23,7 +23,7 @@ export declare type MakeTargetAnimatable = (visualElement: VisualElement, target
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { __read, __rest, __assign } from 'tslib';
+import { __assign, __read, __rest } from 'tslib';
 import { startAnimation } from '../../animation/utils/transitions.js';
 import { setTarget } from './setters.js';
 import { resolveVariant } from './variants.js';
@@ -164,3 +164,4 @@ function shouldBlockAnimation(_a, key) {
 }
 
 export { animateVisualElement, sortByTreeOrder, stopAnimation };
+

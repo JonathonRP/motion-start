@@ -16,7 +16,7 @@ export interface AnimationState {
         [key: string]: AnimationTypeState;
     };
 }
-export declare type AnimationList = string[] | TargetAndTransition[];
+export type AnimationList = string[] | TargetAndTransition[];
 // export declare const variantPriorityOrder: AnimationType[];
 // export declare function createAnimationState(visualElement: VisualElement): AnimationState;
 // export declare function variantsHaveChanged(prev: any, next: any): boolean;
@@ -39,12 +39,12 @@ export interface AnimationTypeState {
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { __spreadArray, __read, __assign, __rest } from 'tslib';
+import { __assign, __read, __rest, __spreadArray } from 'tslib';
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
 import { isKeyframesTarget } from '../../animation/utils/is-keyframes-target.js';
 import { shallowCompare } from '../../utils/shallow-compare.js';
 import { animateVisualElement } from './animation.js';
-import { isVariantLabels, resolveVariant, isVariantLabel } from './variants.js';
+import { isVariantLabel, isVariantLabels, resolveVariant } from './variants.js';
 
 var variantPriorityOrder = [
     AnimationType.Animate,
@@ -372,3 +372,4 @@ function createState() {
 }
 
 export { createAnimationState, variantPriorityOrder, variantsHaveChanged };
+

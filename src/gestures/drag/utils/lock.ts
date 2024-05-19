@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export declare type Lock = (() => void) | false;
+export type Lock = (() => void) | false;
 
 
 /** 
@@ -66,3 +66,4 @@ function isDragActive() {
 }
 
 export { createLock, getGlobalLock, isDragActive };
+

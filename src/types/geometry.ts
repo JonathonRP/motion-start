@@ -70,7 +70,7 @@ export interface Point3D extends Point2D {
  *
  * @public
  */
-export declare type TransformPoint2D = (point: Point2D) => Point2D;
+export type TransformPoint2D = (point: Point2D) => Point2D;
 /**
  * The transform delta that, when applied to Axis a will visually transform it to Axis b
  * @public

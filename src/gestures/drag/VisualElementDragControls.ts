@@ -21,8 +21,8 @@ export interface DragControlOptions {
 interface DragControlsProps extends DraggableProps {
     transformPagePoint?: TransformPoint2D;
 }
-declare type DragDirection = "x" | "y";
-export declare function expectsResolvedDragConstraints({ dragConstraints, onMeasureDragConstraints, }: MotionProps): boolean;
+type DragDirection = "x" | "y";
+export type expectsResolvedDragConstraints = ({ dragConstraints, onMeasureDragConstraints, }: MotionProps) => boolean;
 
 /** 
 based on framer-motion@4.1.15,
