@@ -7,7 +7,7 @@ import type { VariantLabels } from "../motion/types";
 import type { TargetAndTransition } from "../types";
 import type { Point2D } from "../types/geometry";
 import type { PanInfo } from "./PanSession";
-export declare type RemoveEvent = () => void;
+export type RemoveEvent = () => void;
 /**
  * @public
  */
@@ -124,7 +124,7 @@ export interface TapHandlers {
      */
     whileTap?: VariantLabels | TargetAndTransition;
 }
-export declare type PanHandler = (event: Event, info: PanInfo) => void;
+export type PanHandler = (event: Event, info: PanInfo) => void;
 /**
  * @public
  */

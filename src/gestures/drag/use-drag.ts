@@ -8,7 +8,8 @@ import type { FeatureProps } from "../../motion/features/types";
  *
  * @internal
  */
-export declare function useDrag(props: FeatureProps): void;
+export type useDrag = (props: FeatureProps) => void;
 
 
 export { default as UseDrag } from './UseDrag.svelte';
+

@@ -18,7 +18,7 @@ export interface ScrollOffsets {
     xMaxOffset: number;
     yMaxOffset: number;
 }
-export declare type GetScrollOffsets = () => ScrollOffsets;
+export type GetScrollOffsets = () => ScrollOffsets;
 
 /** 
 based on framer-motion@4.0.3,
@@ -73,3 +73,4 @@ function createScrollUpdater(values: ScrollMotionValues, getOffsets: GetScrollOf
 }
 
 export { createScrollMotionValues, createScrollUpdater };
+

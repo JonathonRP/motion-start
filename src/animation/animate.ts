@@ -23,7 +23,7 @@ export interface AnimationPlaybackLifecycles<V> {
 /**
  * @public
  */
-export declare type AnimationOptions<V> = (Tween | Spring) & AnimationPlaybackLifecycles<V> & {
+export type AnimationOptions<V> = (Tween | Spring) & AnimationPlaybackLifecycles<V> & {
     delay?: number;
     type?: "tween" | "spring";
 };
@@ -75,3 +75,4 @@ function animate<V>(from: MotionValue<V> | V, to: ResolvedValueTarget, transitio
 }
 
 export { animate };
+

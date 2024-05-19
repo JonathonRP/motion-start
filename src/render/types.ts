@@ -125,11 +125,11 @@ export interface VisualElementConfig<Instance, RenderState, Options> {
     removeValueFromRenderState(key: string, renderState: RenderState): void;
     scrapeMotionValuesFromProps: ScrapeMotionValuesFromProps;
 }
-export declare type ScrapeMotionValuesFromProps = (props: MotionProps) => {
+export type ScrapeMotionValuesFromProps = (props: MotionProps) => {
     [key: string]: MotionValue | string | number;
 };
-export declare type UseRenderState<RenderState = any> = () => RenderState;
-export declare type VisualElementOptions<Instance, RenderState = any> = {
+export type UseRenderState<RenderState = any> = () => RenderState;
+export type VisualElementOptions<Instance, RenderState = any> = {
     visualState: VisualState<Instance, RenderState>;
     parent?: VisualElement<unknown>;
     variantParent?: VisualElement<unknown>;
@@ -138,7 +138,7 @@ export declare type VisualElementOptions<Instance, RenderState = any> = {
     props: MotionProps;
     blockInitialAnimation?: boolean;
 };
-export declare type CreateVisualElement<Instance> = (Component: string | React.ComponentType, options: VisualElementOptions<Instance>) => VisualElement<Instance>;
+export type CreateVisualElement<Instance> = (Component: string | React.ComponentType, options: VisualElementOptions<Instance>) => VisualElement<Instance>;
 /**
  * A generic set of string/number values
  */

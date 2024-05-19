@@ -27,7 +27,7 @@
     "@types/node": "^20.11.5",
     "@vitest/ui": "latest",
     "publint": "^0.2.7",
-    "svelte": "^5.0.0-next.0",
+    "svelte": "5.0.0-next.136",
     "typescript": "^5.4.5",
     "vite": "latest",
     "vitest": "latest"

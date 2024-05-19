@@ -7,7 +7,8 @@ import type { FeatureProps } from "../motion/features/types";
  * @param handlers -
  * @internal
  */
-export declare function useTapGesture({ onTap, onTapStart, onTapCancel, whileTap, visualElement, }: FeatureProps): void;
+export type useTapGesture = ({ onTap, onTapStart, onTapCancel, whileTap, visualElement, }: FeatureProps) => void;
 
 
 export { default as UseTapGesture } from './UseTapGesture.svelte';
+

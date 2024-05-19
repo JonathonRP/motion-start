@@ -13,7 +13,7 @@ import type { DragElastic, ResolvedConstraints } from "../types";
  * This also handles flipped constraints, for instance a draggable container within
  * a smaller viewport like a scrollable view.
  */
-export declare function calcProgressWithinConstraints(layoutBox: AxisBox2D, constraintsBox: AxisBox2D): Point2D;
+export type calcProgressWithinConstraints = (layoutBox: AxisBox2D, constraintsBox: AxisBox2D) => Point2D;
 
 
 
@@ -21,9 +21,8 @@ export declare function calcProgressWithinConstraints(layoutBox: AxisBox2D, cons
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../../utils/fix-process-env';
-import { __read } from 'tslib';
 import { mix } from 'popmotion';
+import { __read } from 'tslib';
 
 /**
  * Apply constraints to a point. These constraints are both physical along an
@@ -155,3 +154,4 @@ function resolvePointElastic(dragElastic: DragElastic, label: string): number {
 }
 
 export { applyConstraints, calcConstrainedMinPoint, calcPositionFromProgress, calcRelativeAxisConstraints, calcRelativeConstraints, calcViewportAxisConstraints, calcViewportConstraints, defaultElastic, rebaseAxisConstraints, resolveAxisElastic, resolveDragElastic, resolvePointElastic };
+

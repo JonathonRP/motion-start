@@ -9,7 +9,7 @@ import { MotionValue } from "../../value";
 /**
  * @public
  */
-export declare enum Presence {
+export enum Presence {
     Entering = 0,
     Present = 1,
     Exiting = 2
@@ -17,7 +17,7 @@ export declare enum Presence {
 /**
  * @public
  */
-export declare enum VisibilityAction {
+export enum VisibilityAction {
     Hide = 0,
     Show = 1
 }
