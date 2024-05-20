@@ -51,7 +51,7 @@ export interface IsSVG{
  * @public
  */
 // export declare function createDomMotionComponent;
-export const M : {[key:string] : typeof motion}
+export type M = {[key:string] : typeof motion}
 
 /** 
 based on framer-motion@4.0.3,
