@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Writable } from 'svelte/store'
+import type { Writable, Readable } from 'svelte/store'
 
 
 /** 
@@ -63,7 +63,7 @@ function initPrefersReducedMotion() {
 *
 * @public
 */
-export const useReducedMotion = ()=>{
+export const useReducedMotion = () => {
     !prefersReducedMotion && initPrefersReducedMotion()
 
     return derived(prefersReducedMotion,$v=>$v)    

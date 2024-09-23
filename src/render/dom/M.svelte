@@ -5,13 +5,12 @@
     import type { MotionProps } from "../../motion";
     import Motion from "../../motion/Motion.svelte";
 
-    // let {___tag, class: className, children, ...restProps}: {___tag: keyof SvelteHTMLElements, children: Snippet, class: string } & MotionProps = $props();
-    export let __tag: keyof SvelteHTMLElements;
+    // let {as, class: className, children, ...restProps}: {as: keyof SvelteHTMLElements, children: Snippet, class: string } & MotionProps = $props();
+    export let ___tag: keyof SvelteHTMLElements;
 </script>
 
 <Motion {...$$restProps} let:props let:motion>
-    <svelte:element this={__tag} class={props.class} use:motion {...props}>
-        <slot/>
+    <svelte:element this={___tag} class={props.class} use:motion {...props}>
+        <slot />
     </svelte:element>
 </Motion>
-

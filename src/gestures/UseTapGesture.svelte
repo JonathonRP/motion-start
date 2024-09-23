@@ -1,78 +1,77 @@
-<script>
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-    import {fixed} from '../utils/fix-process-env';
-    import { isNodeOrChild } from "./utils/is-node-or-child";
-    import { pipe } from "popmotion";
-    import { isDragActive } from "./drag/utils/lock";
-    import { onDestroy } from "svelte";
-    import {UsePointerEvent, addPointerEvent } from "../events/use-pointer-event";
-    import { AnimationType } from "../render/utils/types";
-    export let props, visualElement;
-    
-    $: ({ onTap, onTapStart, onTapCancel, whileTap } = props);
-    $: hasPressListeners = onTap || onTapStart || onTapCancel || whileTap;
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
-    let isPressing = false;
-    let cancelPointerEndListeners = null;
+<script lang="ts">
+  import { pipe } from "popmotion";
+  import { onDestroy } from "svelte";
+  import {
+    UsePointerEvent,
+    addPointerEvent,
+  } from "../events/use-pointer-event.js";
+  import { AnimationType } from "../render/utils/types.js";
+  import { isDragActive } from "./drag/utils/lock.js";
+  import { isNodeOrChild } from "./utils/is-node-or-child.js";
 
-    function removePointerEndListener() {
-        cancelPointerEndListeners?.();
-        cancelPointerEndListeners = null;
-    }
+  export let props, visualElement;
 
-    function checkPointerEnd() {
-        removePointerEndListener();
-        isPressing = false;
-        visualElement.animationState?.setActive(AnimationType.Tap, false);
-        return !isDragActive();
-    }
+  $: ({ onTap, onTapStart, onTapCancel, whileTap } = props);
+  $: hasPressListeners = onTap || onTapStart || onTapCancel || whileTap;
 
-    function onPointerUp(event, info) {
-        
-        if (!checkPointerEnd()) return;
+  let isPressing = false;
+  let cancelPointerEndListeners = null;
 
-        /**
-         * We only count this as a tap gesture if the event.target is the same
-         * as, or a child of, this component's element
-         */
-        !isNodeOrChild(visualElement.getInstance(), event.target)
-            ? onTapCancel?.(event, info)
-            : onTap?.(event, info);
-    }
+  function removePointerEndListener() {
+    cancelPointerEndListeners?.();
+    cancelPointerEndListeners = null;
+  }
 
-    function onPointerCancel(event, info) {
-        if (!checkPointerEnd()) return;
+  function checkPointerEnd() {
+    removePointerEndListener();
+    isPressing = false;
+    visualElement.animationState?.setActive(AnimationType.Tap, false);
+    return !isDragActive();
+  }
 
-        onTapCancel?.(event, info);
-    }
+  function onPointerUp(event, info) {
+    if (!checkPointerEnd()) return;
 
-    function onPointerDown(event, info) {
-        
-        
+    /**
+     * We only count this as a tap gesture if the event.target is the same
+     * as, or a child of, this component's element
+     */
+    !isNodeOrChild(visualElement.getInstance(), event.target)
+      ? onTapCancel?.(event, info)
+      : onTap?.(event, info);
+  }
 
-        if (isPressing) return;
-        removePointerEndListener();
-        isPressing = true;
+  function onPointerCancel(event, info) {
+    if (!checkPointerEnd()) return;
 
-        cancelPointerEndListeners = pipe(
-            addPointerEvent(window, "pointerup", onPointerUp),
-            addPointerEvent(window, "pointercancel", onPointerCancel)
-        );
+    onTapCancel?.(event, info);
+  }
 
-        onTapStart?.(event, info);
+  function onPointerDown(event, info) {
+    if (isPressing) return;
+    removePointerEndListener();
+    isPressing = true;
 
-        visualElement.animationState?.setActive(AnimationType.Tap, true);
-    }
+    cancelPointerEndListeners = pipe(
+      addPointerEvent(window, "pointerup", onPointerUp),
+      addPointerEvent(window, "pointercancel", onPointerCancel)
+    );
 
-    onDestroy(removePointerEndListener);
+    onTapStart?.(event, info);
+
+    visualElement.animationState?.setActive(AnimationType.Tap, true);
+  }
+
+  onDestroy(removePointerEndListener);
 </script>
 
 <UsePointerEvent
-    ref={visualElement}
-    eventName="pointerdown"
-    handler={hasPressListeners ? onPointerDown : undefined}>
-    <slot />
+  ref={visualElement}
+  eventName="pointerdown"
+  handler={hasPressListeners ? onPointerDown : undefined}
+>
+  <slot />
 </UsePointerEvent>

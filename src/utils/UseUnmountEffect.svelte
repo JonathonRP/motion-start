@@ -1,11 +1,11 @@
-<script>
-    /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { onDestroy } from "svelte";
-    export let callback = ()=>{};
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
-    onDestroy(()=>callback())
+<script lang="ts">
+    import { onDestroy } from "svelte";
+    export let callback = () => {};
+
+    onDestroy(() => callback());
 </script>
-<slot/>
+
+<slot />

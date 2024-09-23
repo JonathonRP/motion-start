@@ -39,13 +39,14 @@ export const createMotionComponent = <Props extends {}, Instance, RenderState>(
     {
         preloadedFeatures,
         createVisualElement,
-        forwardMotionProps,
-        visualStateConfig,
+        useRender: forwardMotionProps,
+        useVisualState: visualStateConfig,
         Component,
 
     }: MotionComponentConfig<Instance, RenderState>
 ): React.ForwardRefExoticComponent<React.PropsWithoutRef<Props & MotionProps> & React.RefAttributes<Instance>> => {
-    preloadedFeatures && loadFeatures(preloadedFeatures)
+    preloadedFeatures && loadFeatures(preloadedFeatures);
+
     return class MotionComponent extends Motion {
         constructor(options) {
             const props = options.props;

@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script context="module" lang="ts">
+<script module lang="ts">
   export const ssr = false;
 </script>
 
@@ -54,7 +54,7 @@ Copyright (c) 2018 Framer B.V. -->
       ? $layoutGroupId + "-" + props.layoutId
       : props.layoutId;
 
-  let visualElementRef = undefined;
+  let visualElementRef: any = undefined;
   /**
    * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
    */

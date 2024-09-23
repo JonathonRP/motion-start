@@ -9,10 +9,10 @@ import type { SVGRenderState } from "./types";
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
+import { buildSVGAttrs } from './utils/build-attrs.js';
+import { createSvgRenderState } from './utils/create-render-state.js';
 import { renderSVG } from './utils/render.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
-import { createSvgRenderState } from './utils/create-render-state.js';
-import { buildSVGAttrs } from './utils/build-attrs.js';
 
 var svgMotionConfig = {
         scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
@@ -42,9 +42,10 @@ var svgMotionConfig = {
             // TODO: Replace with direct assignment
             renderSVG(instance, renderState);
         },
-    } as Partial<MotionComponentConfig<SVGElement, SVGRenderState>>
+    } satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>
 function isPath(element) {
     return element.tagName === "path";
 }
 
 export { svgMotionConfig };
+

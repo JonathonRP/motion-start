@@ -4,8 +4,8 @@
 
 // Configure Vitest (https://vitest.dev/config/)
 
-import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   test: {
@@ -16,6 +16,6 @@ export default defineConfig({
     },
   },
   plugins: [
-    svelte({ emitCss: false })
+    svelte(),
   ]
 })

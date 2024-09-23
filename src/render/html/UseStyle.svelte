@@ -1,8 +1,7 @@
-<script lang="ts" context="module">
-  /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
+
+<script lang="ts" module>
   export function copyRawValuesOnly(
     target: ResolvedValues,
     source: {
@@ -19,7 +18,7 @@ Copyright (c) 2018 Framer B.V.
 </script>
 
 <script lang="ts">
-  import type { MotionProps, MotionValue } from "../..";
+  import type { MotionProps, MotionValue } from "../../index.js";
   import { isForcedMotionValue } from "../../motion/utils/is-forced-motion-value.js";
   import { isMotionValue } from "../../value/utils/is-motion-value.js";
   import type { ResolvedValues } from "../types.js";
@@ -44,5 +43,5 @@ Copyright (c) 2018 Framer B.V.
 </script>
 
 <UseInitialMotionValues {props} {visualState} {isStatic} let:styles={s1}>
-  <slot styles={toStyle(s1, props, style)} />
+  <slot styles={toStyle({ s1, props, style })} />
 </UseInitialMotionValues>

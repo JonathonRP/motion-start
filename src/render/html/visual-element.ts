@@ -2,27 +2,27 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { HTMLRenderState } from "./types";
-import type { VisualElementConfig } from "../types";
 import type { DOMVisualElementOptions } from "../dom/types";
+import type { VisualElementConfig } from "../types";
+import type { HTMLRenderState } from "./types";
 
 
 /** 
 based on framer-motion@4.1.15,
 Copyright (c) 2018 Framer B.V.
 */
-import { __rest, __assign } from 'tslib';
-import { visualElement } from '../index.js';
-import { getOrigin, checkTargetForNewValues } from '../utils/setters.js';
+import { __assign, __rest } from 'tslib';
 import { getBoundingBox } from '../dom/projection/measure.js';
-import { buildHTMLStyles } from './utils/build-styles.js';
 import { isCSSVariable } from '../dom/utils/is-css-variable.js';
 import { parseDomVariant } from '../dom/utils/parse-dom-variant.js';
-import { isTransformProp } from './utils/transform.js';
-import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
-import { renderHTML } from './utils/render.js';
 import { getDefaultValueType } from '../dom/value-types/defaults.js';
-import { buildLayoutProjectionTransformOrigin, buildLayoutProjectionTransform } from './utils/build-projection-transform.js';
+import { visualElement } from '../index.js';
+import { checkTargetForNewValues, getOrigin } from '../utils/setters.js';
+import { buildLayoutProjectionTransform, buildLayoutProjectionTransformOrigin } from './utils/build-projection-transform.js';
+import { buildHTMLStyles } from './utils/build-styles.js';
+import { renderHTML } from './utils/render.js';
+import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
+import { isTransformProp } from './utils/transform.js';
 
 function getComputedStyle(element: HTMLElement) {
     return window.getComputedStyle(element);
@@ -123,6 +123,7 @@ var htmlConfig = {
     },
     render: renderHTML,
 } as VisualElementConfig<HTMLElement, HTMLRenderState, DOMVisualElementOptions>;
-var htmlVisualElement = visualElement(htmlConfig);
+var htmlVisualElement = visualElement<HTMLElement>(htmlConfig);
 
 export { getComputedStyle, htmlConfig, htmlVisualElement };
+

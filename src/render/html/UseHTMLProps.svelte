@@ -1,38 +1,33 @@
-<script>
-    /** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-    import UseStyle from "./UseStyle.svelte";
+<!-- based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V. -->
 
-    export let props,
-        visualState,
-        isStatic;
+<script lang="ts">
+  import UseStyle from "./UseStyle.svelte";
 
-    
-    const getHTMLProps = (style, props) => {
-        let htmlProps={};
-        if (Boolean(props.drag)) {
-            
-            // Disable the ghost element when a user drags
-            htmlProps.draggable = false;
+  export let props, visualState, isStatic;
 
-            // Disable text selection
-            style.userSelect = style.WebkitUserSelect = style.WebkitTouchCallout =
-                "none";
+  const getHTMLProps = (style, props) => {
+    let htmlProps = {};
+    if (Boolean(props.drag)) {
+      // Disable the ghost element when a user drags
+      htmlProps.draggable = false;
 
-            // Disable scrolling on the draggable direction
-            style.touchAction =
-                props.drag === true
-                    ? "none"
-                    : `pan-${props.drag === "x" ? "y" : "x"}`;
-        }
+      // Disable text selection
+      style.userSelect =
+        style.WebkitUserSelect =
+        style.WebkitTouchCallout =
+          "none";
 
-        htmlProps.style = style;
-        return htmlProps;
-    };
+      // Disable scrolling on the draggable direction
+      style.touchAction =
+        props.drag === true ? "none" : `pan-${props.drag === "x" ? "y" : "x"}`;
+    }
+
+    htmlProps.style = style;
+    return htmlProps;
+  };
 </script>
 
 <UseStyle let:styles {visualState} {props} {isStatic}>
-    <slot visualProps={getHTMLProps(styles,props)} />
+  <slot visualProps={getHTMLProps(styles, props)} />
 </UseStyle>
