@@ -1,6 +1,6 @@
 {
-  "name": "svelte-motion",
-  "version": "0.13.0",
+  "name": "motion-start",
+  "version": "0.0.1",
   "description": "Svelte animation library based on the React library framer-motion.",
   "main": "src/index.ts",
   "files": [
@@ -12,7 +12,7 @@
     "test:coverage": "vitest run --coverage --ui",
     "build": "svelte-package --input ./src && publint --strict"
   },
-  "author": "Michael Lucht <micha-lmxt@gradientdescent.de> (https://svelte-motion.gradientdescent.de)",
+  "author": "JonathonRP",
   "license": "MIT",
   "dependencies": {
     "@types/react": "^18.3.5",
