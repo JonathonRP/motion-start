@@ -1,4 +1,4 @@
-# Svelte Motion
+# Motion Start
 
 An animation library based on [framer-motion](https://www.framer.com/motion/). 
 
@@ -7,7 +7,19 @@ An animation library based on [framer-motion](https://www.framer.com/motion/).
 ## Installation
 
 ```bash
-npm install --save-dev svelte-motion
+npm install --save-dev motion-start
+```
+
+```bash
+pnpm install --save-dev motion-start
+```
+
+```bash
+yarn install --save-dev motion-start
+```
+
+```bash
+bun install --save-dev motion-start
 ```
 
 ## Usage
@@ -15,7 +27,7 @@ npm install --save-dev svelte-motion
 Corresponding to a `MotionDiv` in framer-motion is this:
 
 ```javascript
-import { Motion } from 'svelte-motion'
+import { Motion } from 'motion-start'
 
 <Motion let:motion><div use:motion/></Motion>
 ```
