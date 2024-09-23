@@ -11,7 +11,7 @@
 		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": false,
-			"version": "22.0.0"
+			"version": "20.12.0"
 		}
 	},
 
