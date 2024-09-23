@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
-    import type { ConditionalGeneric, AnimatePresenceProps } from './index.js';
+    import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
     import { getContext } from "svelte";
     import {
         SharedLayoutContext,
@@ -12,13 +12,13 @@ Copyright (c) 2018 Framer B.V. -->
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
-    export let list: $$Props['list'] = undefined,
-        custom: $$Props['custom'] = undefined,
-        initial: $$Props['initial'] = true,
-        onExitComplete: $$Props['onExitComplete'] = undefined,
-        exitBeforeEnter: $$Props['exitBeforeEnter'] = undefined,
+    export let list: $$Props["list"] = undefined,
+        custom: $$Props["custom"] = undefined,
+        initial: $$Props["initial"] = true,
+        onExitComplete: $$Props["onExitComplete"] = undefined,
+        exitBeforeEnter: $$Props["exitBeforeEnter"] = undefined,
         presenceAffectsLayout = true,
-        show: $$Props['show'] = undefined,
+        show: $$Props["show"] = undefined,
         isCustom = false;
 
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
@@ -27,7 +27,7 @@ Copyright (c) 2018 Framer B.V. -->
     const layoutContext =
         getContext(SharedLayoutContext) || SharedLayoutContext(isCustom);
 
-    $: (isl = isSharedLayout($layoutContext));
+    $: isl = isSharedLayout($layoutContext);
 
     $: forceRender = () => {
         if (isl) {
@@ -55,11 +55,17 @@ Copyright (c) 2018 Framer B.V. -->
     };
     $: updateChildLookup(filteredChildren, allChildren);
 
-    let childrenToRender = [
+    let childrenToRender: {
+        present: boolean;
+        item: any;
+        key: any;
+        onExit: undefined | (() => void);
+    }[] = [
         ...filteredChildren.map((v) => ({
             present: true,
             item: v,
             key: v.key,
+            onExit: undefined,
         })),
     ];
 
@@ -70,6 +76,7 @@ Copyright (c) 2018 Framer B.V. -->
                 present: true,
                 item: v,
                 key: v.key,
+                onExit: undefined,
             })),
         ];
 
@@ -111,7 +118,7 @@ Copyright (c) 2018 Framer B.V. -->
 
                 // Remove this child from the present children
                 const removeIndex = presentChildren.findIndex(
-                    (presentChild) => presentChild.key === key
+                    (presentChild) => presentChild.key === key,
                 );
 
                 if (removeIndex < 0) {
@@ -166,8 +173,8 @@ Copyright (c) 2018 Framer B.V. -->
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
-        {isCustom}>
-        
+        {isCustom}
+    >
         <slot item={child.item} />
     </PresenceChild>
 {/each}

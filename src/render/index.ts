@@ -8,30 +8,29 @@ import type { VisualElement, VisualElementConfig, VisualElementOptions } from ".
 based on framer-motion@4.1.1,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../utils/fix-process-env.js';
-import { __assign, __spreadArray, __read } from 'tslib';
 import sync, { cancelSync } from 'framesync';
 import { pipe } from 'popmotion';
+import { __assign, __read, __spreadArray } from 'tslib';
 import { Presence } from '../components/AnimateSharedLayout/types.js';
 import { eachAxis } from '../utils/each-axis.js';
-import { axisBox } from '../utils/geometry/index.js';
-import { removeBoxTransforms, applyBoxTransforms } from '../utils/geometry/delta-apply.js';
+import { applyBoxTransforms, removeBoxTransforms } from '../utils/geometry/delta-apply.js';
 import { calcRelativeBox, updateBoxDelta } from '../utils/geometry/delta-calc.js';
+import { axisBox } from '../utils/geometry/index.js';
 import { motionValue } from '../value/index.js';
 import { isMotionValue } from '../value/utils/is-motion-value.js';
+import { setCurrentViewportBox } from './dom/projection/relative-set.js';
 import { buildLayoutProjectionTransform } from './html/utils/build-projection-transform.js';
 import { variantPriorityOrder } from './utils/animation-state.js';
+import { FlatTree } from './utils/flat-tree.js';
+import { isDraggable } from './utils/is-draggable.js';
 import { createLifecycles } from './utils/lifecycles.js';
 import { updateMotionValuesFromProps } from './utils/motion-values.js';
 import { updateLayoutDeltas } from './utils/projection.js';
 import { createLayoutState, createProjectionState } from './utils/state.js';
-import { FlatTree } from './utils/flat-tree.js';
 import { checkIfControllingVariants, checkIfVariantNode, isVariantLabel } from './utils/variants.js';
-import { setCurrentViewportBox } from './dom/projection/relative-set.js';
-import { isDraggable } from './utils/is-draggable.js';
 
 // TODO: make abstract class - future plans to match latest FramerMotion
-var visualElement = function <Instance = unknown, MutableState = unknown, Options extends {} = {}>({ treeType, build, getBaseTarget, makeTargetAnimatable, measureViewportBox, render: renderInstance, readValueFromInstance, resetTransform, restoreTransform, removeValueFromRenderState, sortNodePosition, scrapeMotionValuesFromProps, }: VisualElementConfig<Instance, MutableState, Options>) {
+var visualElement = function <Instance = any, MutableState = any, Options extends {} = {}>({ treeType, build, getBaseTarget, makeTargetAnimatable, measureViewportBox, render: renderInstance, readValueFromInstance, resetTransform, restoreTransform, removeValueFromRenderState, sortNodePosition, scrapeMotionValuesFromProps, }: VisualElementConfig<Instance, MutableState, Options>) {
     return function ({ parent, props, presenceId, blockInitialAnimation, visualState, }: VisualElementOptions<Instance, any>, options?: Options) {
         if (options === void 0) { options = <Options>{}; }
         var latestValues = visualState.latestValues, renderState = visualState.renderState;
@@ -701,3 +700,4 @@ var variantProps = __spreadArray(["initial"], __read(variantPriorityOrder));
 var numVariantProps = variantProps.length;
 
 export { visualElement };
+

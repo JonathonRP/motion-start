@@ -7,36 +7,43 @@
     "./src"
   ],
   "scripts": {
-    "test": "vitest --typecheck.only --ui",
+    "test": "vitest --ui",
+    "test:types": "vitest --typecheck.only --ui",
+    "test:coverage": "vitest run --coverage --ui",
     "build": "svelte-package --input ./src && publint --strict"
   },
   "author": "Michael Lucht <micha-lmxt@gradientdescent.de> (https://svelte-motion.gradientdescent.de)",
   "license": "MIT",
   "dependencies": {
-    "@types/react": "^18.2.74",
+    "@types/react": "^18.3.5",
     "framesync": "^6.1.2",
     "popmotion": "^11.0.5",
     "style-value-types": "5.1.2",
-    "tslib": "^2.6.2"
+    "tslib": "^2.7.0"
   },
   "devDependencies": {
-    "@emotion/is-prop-valid": "^1.2.2",
-    "@sveltejs/package": "^2.3.1",
-    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.0",
+    "@emotion/is-prop-valid": "^1.3.0",
+    "@sveltejs/package": "^2.3.5",
+    "@sveltejs/vite-plugin-svelte": "4.0.0-next.7",
     "@tsconfig/svelte": "^5.0.4",
-    "@types/node": "^20.11.5",
+    "@types/node": "^20.16.5",
+    "@vitest/coverage-v8": "^1.6.0",
     "@vitest/ui": "latest",
-    "publint": "^0.2.7",
-    "svelte": "5.0.0-next.136",
-    "typescript": "^5.4.5",
-    "vite": "latest",
+    "csstype": "^3.1.3",
+    "publint": "^0.2.10",
+    "svelte": "5.0.0-next.252",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.5",
     "vitest": "latest"
   },
   "peerDependencies": {
     "svelte": ">=3.35.0 || ^4.0.0 || ^5.0.0 || ^5.0.0-next.0"
   },
   "type": "module",
-  "repository": "https://github.com/micha-lmxt/svelte-motion/",
+  "repository": {
+    "type": "git",
+    "ur": "https://github.com/micha-lmxt/svelte-motion/"
+  },
   "sideEffects": false,
   "keywords": [
     "svelte animation",

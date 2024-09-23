@@ -87,7 +87,7 @@ function convertTransitionToAnimationOptions<T>(_a: PermissiveTransitionDefiniti
 /**
  * Get the delay for a value by checking Transition with decreasing specificity.
  */
-function getDelayFromTransition(transition: Transition, key: keyof Transition) {
+function getDelayFromTransition(transition: Transition, key: keyof Transition | "layoutX" | "layoutY" | "" | string) {
     var _a;
     var valueTransition = getValueTransition(transition, key) || {};
     return (_a = valueTransition.delay) !== null && _a !== void 0 ? _a : 0;

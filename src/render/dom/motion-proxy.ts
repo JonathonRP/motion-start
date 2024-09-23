@@ -37,13 +37,13 @@ export type CreateConfig = <Instance, RenderState, Props>(Component: string | Re
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ComponentType, Snippet, SvelteComponent } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 import Mo from './M.svelte';
 import { isSVGComponent } from './utils/is-svg-component.js';
 
 type M<Element extends keyof SvelteHTMLElements> = MotionProps & {children: Snippet, class: string} & Omit<SvelteHTMLElements[Element], 'style'>;
-type motion<Element extends keyof SvelteHTMLElements> = ComponentType<SvelteComponent<M<Element>>>;
+type motion<Element extends keyof SvelteHTMLElements> = Component<M<Element>>;
 /**
  * Convert any React component into a `motion` component. The provided component
  * **must** use `React.forwardRef` to the underlying DOM component you want to animate.
@@ -74,9 +74,9 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 							args.push({});
 						}
 						if (!args[0]?.props) {
-							args[0].props = { as: key, isSVG: type };
+							args[0].props = { ___tag: key, isSVG: type };
 						} else {
-							args[0].props.as = key;
+							args[0].props.___tag = key;
 							args[0].props.isSVG = type;
 						}
 
@@ -85,16 +85,16 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 						return new target(...args);
 					},
                     // support svelte 5
-					// apply(target, thisArg, args) {
-					// 	if (!args[1]) {
-					// 		args[1] = { as: key, isSVG: type };
-					// 	} else {
-					// 		args[1].as = key;
-					// 		args[1].isSVG = type;
-					// 	}
+					apply(target, thisArg, args) {
+						if (!args[1]) {
+							args[1] = { ___tag: key, isSVG: type };
+						} else {
+							args[1].___tag = key;
+							args[1].isSVG = type;
+						}
 
-					// 	return target(...args);
-					// },
+						return target(...args);
+					},
 				});
 			},
 		}

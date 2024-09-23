@@ -2,6 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+import type { Component } from "svelte";
 import { startAnimation } from "../animation/utils/transitions";
 import { Presence, type SharedLayoutAnimationConfig } from "../components/AnimateSharedLayout/types";
 import type { Crossfader } from "../components/AnimateSharedLayout/utils/crossfader";
@@ -138,7 +139,7 @@ export type VisualElementOptions<Instance, RenderState = any> = {
     props: MotionProps;
     blockInitialAnimation?: boolean;
 };
-export type CreateVisualElement<Instance> = (Component: string | React.ComponentType, options: VisualElementOptions<Instance>) => VisualElement<Instance>;
+export type CreateVisualElement<Instance> = (Component: string | Component, options?: VisualElementOptions<Instance>) => VisualElement<Instance>;
 /**
  * A generic set of string/number values
  */

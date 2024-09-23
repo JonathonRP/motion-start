@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script context="module" lang="ts">
+<script module lang="ts">
   var createObject = function () {
     return {};
   };
@@ -31,25 +31,36 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { afterUpdate, onMount } from "svelte";
+  import { afterUpdate, getContext, onMount } from "svelte";
+  import type { Writable } from "svelte/store";
+  import { __assign, __rest } from "tslib";
+  import { ScaleCorrectionParentContext } from "../context/ScaleCorrectionProvider.svelte";
   import { UseVisualState } from "../motion/utils/use-visual-state.js";
+  import { visualElement } from "../render/index.js";
+  import { animateVisualElement } from "../render/utils/animation";
+  import {
+    checkTargetForNewValues,
+    getOrigin,
+  } from "../render/utils/setters.js";
   export let initialState;
 
   let animationState = initialState;
   const sve = stateVisualElement;
-  $: element = sve({ props: {} }, { visualState: state });
+  $: element = sve({ props: {}, visualState: state });
   onMount(() => {
     element.mount({});
     return () => element.unmount();
   });
   const _afterUpdate = () => {
     element.setProps({
-      onUpdate: (v) => setAnimationState({ ...v }),
+      onUpdate: (v) => (animationState = { ...v }),
     });
   };
 
   afterUpdate(_afterUpdate);
-  const scaleCorrectionParentContext = getContext(ScaleCorrectionParentContext);
+  const scaleCorrectionParentContext = getContext<Writable<Array<unknown>>>(
+    ScaleCorrectionParentContext
+  );
   scaleCorrectionParentContext.update((v) =>
     v.concat([
       {

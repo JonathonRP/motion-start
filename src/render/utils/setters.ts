@@ -12,16 +12,15 @@ import type { AnimationDefinition } from "./animation";
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../utils/fix-process-env.js';
-import { __rest, __assign, __spreadArray, __read } from 'tslib';
 import { complex } from 'style-value-types';
+import { __assign, __read, __rest, __spreadArray } from 'tslib';
+import type { VariantLabels } from "../../motion/types";
 import { isNumericalString } from '../../utils/is-numerical-string.js';
 import { resolveFinalValueInKeyframes } from '../../utils/resolve-value.js';
 import { motionValue } from '../../value/index.js';
 import { getAnimatableNone } from '../dom/value-types/animatable-none.js';
 import { findValueType } from '../dom/value-types/find.js';
 import { resolveVariant } from './variants.js';
-import type { VariantLabels } from "../../motion/types";
 
 export { checkTargetForNewValues, getOrigin, getOriginFromTransition, setTarget, setValues };
 
@@ -31,7 +30,7 @@ export { checkTargetForNewValues, getOrigin, getOriginFromTransition, setTarget,
  */
 function setMotionValue(visualElement: VisualElement, key: string, value: any) {
     if (visualElement.hasValue(key)) {
-        visualElement.getValue(key).set(value);
+        visualElement.getValue(key)?.set(value);
     }
     else {
         visualElement.addValue(key, motionValue(value));
@@ -714,7 +713,7 @@ function getOrigin(target: Target, transition: Transition, visualElement: Visual
         WebkitPaddingStart?: import("csstype").Property.PaddingInlineStart<string | number> | undefined;
         WebkitPerspective?: import("csstype").Property.Perspective<string | number> | undefined;
         WebkitPerspectiveOrigin?: import("csstype").Property.PerspectiveOrigin<string | number> | undefined;
-        WebkitPrintColorAdjust?: import("csstype").Property.ColorAdjust | undefined;
+        WebkitPrintColorAdjust?: import("csstype").Property.PrintColorAdjust | undefined;
         WebkitRubyPosition?: import("csstype").Property.RubyPosition | undefined;
         WebkitScrollSnapType?: import("csstype").Property.ScrollSnapType | undefined;
         WebkitShapeMargin?: import("csstype").Property.ShapeMargin<string | number> | undefined;

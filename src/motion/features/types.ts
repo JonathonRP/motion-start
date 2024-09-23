@@ -2,13 +2,15 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+import type { Component, SvelteComponent } from "svelte";
 import type { CreateVisualElement, VisualElement } from "../../render/types";
 import type { MotionProps } from "../types";
 import type { VisualState } from "../utils/use-visual-state";
 /**
  * @public
  */
-export interface FeatureProps extends MotionProps {
+export interface FeatureProps {
+    props: MotionProps;
     visualElement: VisualElement;
 }
 export type FeatureNames = {
@@ -22,7 +24,7 @@ export type FeatureNames = {
     layoutAnimation: true;
     measureLayout: true;
 };
-export type FeatureComponent = React.ComponentType<FeatureProps>;
+export type FeatureComponent = Component<SvelteComponent<FeatureProps>>;
 /**
  * @public
  */

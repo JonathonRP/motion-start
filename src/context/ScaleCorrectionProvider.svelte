@@ -1,12 +1,13 @@
-<script context="module" lang="ts">
+<script module lang="ts">
+  import type { Writable } from "svelte/store";
   import { getContext, setContext } from "svelte";
   import { writable } from "svelte/store";
   import { getDomContext, setDomContext } from "./DOMcontext.js";
-  export const ScaleCorrectionContext = (isCustom) =>
+  export const ScaleCorrectionContext = (isCustom?: any) =>
     getDomContext("ScaleCorrection", isCustom) || writable([]);
-  export const ScaleCorrectionParentContext = () => writable([]);
+  export const ScaleCorrectionParentContext = () => writable([] as unknown[]);
 
-  export const provideScaleCorrection = (isCustom) => {
+  export const provideScaleCorrection = (isCustom: any) => {
     const fromParent =
       getContext(ScaleCorrectionContext) || ScaleCorrectionContext(isCustom);
 
@@ -18,7 +19,7 @@
   };
 </script>
 
-<script>
+<script lang="ts">
   export let isCustom;
   provideScaleCorrection(isCustom);
 </script>

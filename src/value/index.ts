@@ -10,7 +10,7 @@ import { SubscriptionManager } from '../utils/subscription-manager.js';
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Writable, Unsubscriber } from 'svelte/store' 
+import type { Writable, Unsubscriber } from 'svelte/store'
 export type Transformer<T> = (v: T) => T;
 /**
  * @public

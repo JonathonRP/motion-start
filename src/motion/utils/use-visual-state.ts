@@ -18,6 +18,7 @@ export interface UseVisualStateConfig<Instance, RenderState> {
     createRenderState: () => RenderState;
     onMount?: (props: MotionProps, instance: Instance, visualState: VisualState<Instance, RenderState>) => void;
 }
-export type makeUseVisualState = <I, RS>(config: UseVisualStateConfig<I, RS>) => typeof UseVisualState;
+export type makeUseVisualState = <I, RS>(config: UseVisualStateConfig<I, RS>) => typeof UseVisualState<I, RS>;
 
 export { default as UseVisualState } from './UseVisualState.svelte';
+

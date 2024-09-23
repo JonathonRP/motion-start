@@ -23,12 +23,12 @@ Copyright (c) 2018 Framer B.V.
 /**
  * Components
  */
-export { Motion /*, createDomMotionComponent*/, Motion as MotionSVG, type M } from "./render/dom/motion.js";
-//export { m } from "./render/dom/motion-minimal";
 export { AnimatePresence } from "./components/AnimatePresence/index.js";
 export { AnimateSharedLayout } from "./components/AnimateSharedLayout/index.js";
 export { LazyMotion } from "./components/LazyMotion/index.js";
 export { MotionConfig } from "./components/MotionConfig/index.js";
+export { M } from "./render/dom/motion-proxy.js";
+export { Motion /*, createDomMotionComponent*/, Motion as MotionSVG } from "./render/dom/motion.js";
 /**
  * Features
  */
