@@ -10,8 +10,9 @@
     "test": "vitest --ui",
     "test:types": "vitest --typecheck.only --ui",
     "build": "svelte-package --input ./src && publint --strict",
-    "changeset:version": "npx changeset version && pnpm -r generate:version && git add --all",
-    "changeset:publish": "npx changeset publish"
+    "check": "pnpm build && svelte-check --tsconfig ./tsconfig.json",
+    "ci:version": "changeset version && pnpm -r generate:version && git add --all",
+    "ci:publish": "pnpm build && changeset publish"
   },
   "author": "JonathonRP",
   "license": "MIT",
