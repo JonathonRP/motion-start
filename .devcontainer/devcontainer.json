@@ -1,0 +1,92 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "motion-start",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {
+			"fisher": false
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": false,
+			"version": "22.0.0"
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [5000],
+	// "appPort": [5000]
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "corepack enable && corepack install && pnpm install",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"editor.fontLigatures": "'calt', 'ss01'",
+				"editor.formatOnType": false,
+				"editor.formatOnPaste": true,
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"quickfix.biome": "explicit",
+				},
+				"editor.formatOnSaveMode": "file",
+				"files.autoSave": "onFocusChange",
+				"svelte.enable-ts-plugin": true,
+				"svelte.plugin.svelte.defaultScriptLanguage": "ts",
+
+				"explorer.sortOrder": "filesFirst",
+				"workbench.editor.labelFormat": "short",
+
+				"html.format.enable": false,
+				"json.format.enable": false,
+
+				"[svelte]": {
+					"editor.defaultFormatter": "svelte.svelte-vscode"
+				},
+
+				"dotfiles.repository": "https://github.com/JonathonRP/.dotfiles",
+				"dotfiles.targetPath": "~/dotfiles",
+				"editor.fontFamily": "'JetBrains Mono', 'cascadia code', Consolas, 'Courier New', monospace",
+				"terminal.integrated.fontFamily": "'MesloLGM Nerd Font'",
+				"terminal.integrated.defaultProfile.linux": "fish",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash",
+						"icon": "terminal-bash"
+					},
+					"zsh": {
+						"path": "zsh"
+					},
+					"fish": {
+						"path": "fish",
+						"icon": "terminal-linux"
+					},
+					"tmux": {
+						"path": "tmux",
+						"icon": "terminal-tmux"
+					},
+					"pwsh": {
+						"path": "pwsh",
+						"icon": "terminal-powershell"
+					}
+				}
+			},
+
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"svelte.svelte-vscode",
+				"eamodio.gitlens",
+				"MylesMurphy.prettify-ts",
+				"YoavBls.pretty-ts-errors",
+				"mattpocock.ts-error-translator"
+			]
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
+}
