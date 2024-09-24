@@ -10,7 +10,6 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { __read, __spreadArray } from 'tslib';
 // import { invariant } from '../utils/errors.js';
 import { animateVisualElement, stopAnimation } from '../render/utils/animation.js';
 import { setValues } from '../render/utils/setters.js';
@@ -18,7 +17,7 @@ import { setValues } from '../render/utils/setters.js';
 /**
  * @public
  */
-function animationControls(startStopNotifier?: () => () => void ) {
+function animationControls(startStopNotifier?: () => () => void) {
     /**
      * Track whether the host component has mounted.
      */
@@ -35,13 +34,13 @@ function animationControls(startStopNotifier?: () => () => void ) {
     var stopNotification: undefined | (() => void);
     var controls = {
         subscribe: function (visualElement) {
-            if (subscribers.size === 0){
+            if (subscribers.size === 0) {
                 stopNotification = startStopNotifier?.();
             }
             subscribers.add(visualElement);
-            return function () { 
-                subscribers.delete(visualElement); 
-                if (subscribers.size===0){
+            return function () {
+                subscribers.delete(visualElement);
+                if (subscribers.size === 0) {
                     stopNotification?.()
                 }
             };
@@ -86,14 +85,14 @@ function animationControls(startStopNotifier?: () => () => void ) {
             hasMounted = true;
             pendingAnimations.forEach(function (_a) {
                 var animation = _a.animation, resolve = _a.resolve;
-                controls.start.apply(controls, __spreadArray([], __read(animation))).then(resolve);
+                controls.start.apply(controls, ...[animation]).then(resolve);
             });
             return function () {
                 hasMounted = false;
                 controls.stop();
             };
         },
-    } as AnimationControls;
+    } satisfies AnimationControls;
     return controls;
 }
 
