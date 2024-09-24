@@ -21,7 +21,8 @@ import { camelCaseAttributes } from './utils/camel-case-attrs.js';
 import { renderSVG } from './utils/render.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
 
-var svgVisualElement = visualElement<SVGElement>(__assign(__assign({}, htmlConfig), { getBaseTarget: function (props, key) {
+var svgVisualElement = visualElement<SVGElement>(__assign(__assign({}, htmlConfig), {
+    getBaseTarget: function (props, key) {
         return props[key];
     },
     readValueFromInstance: function (domElement, key) {
@@ -38,7 +39,8 @@ var svgVisualElement = visualElement<SVGElement>(__assign(__assign({}, htmlConfi
         buildSVGAttrs(renderState, latestValues, projection, layoutState, options, props.transformTemplate, isProjectionTranform ? buildLayoutProjectionTransform : undefined, isProjectionTranform
             ? buildLayoutProjectionTransformOrigin
             : undefined);
-    }, render: renderSVG }));
+    }, render: renderSVG
+}));
 
 export { svgVisualElement };
 

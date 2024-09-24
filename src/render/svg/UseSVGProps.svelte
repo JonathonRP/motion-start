@@ -15,7 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
       undefined,
       undefined,
       { enableHardwareAcceleration: false },
-      props.transformTemplate
+      props.transformTemplate,
     );
     return {
       ...state.attrs,

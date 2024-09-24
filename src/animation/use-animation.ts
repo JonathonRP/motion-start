@@ -55,13 +55,13 @@ import { animationControls } from "./animation-controls"
  *
  * @public
  */
-export const useAnimation = () =>{
+export const useAnimation = () => {
 
-    const controls =  animationControls(()=>{
+    const controls = animationControls(() => {
 
         const cleanup: any = {}
         tick().then(v => cleanup.clean = controls.mount());
-        return ()=>{
+        return () => {
             cleanup.clean?.();
         }
     });

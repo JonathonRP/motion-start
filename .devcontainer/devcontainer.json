@@ -80,6 +80,7 @@
 			"extensions": [
 				"svelte.svelte-vscode",
 				"eamodio.gitlens",
+				"biomejs.biome",
 				"MylesMurphy.prettify-ts",
 				"YoavBls.pretty-ts-errors",
 				"mattpocock.ts-error-translator"
