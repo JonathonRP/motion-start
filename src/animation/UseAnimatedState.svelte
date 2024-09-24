@@ -46,7 +46,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   let animationState = initialState;
   const sve = stateVisualElement;
-  $: element = sve({ props: {}, visualState: state });
+  $:( element = sve({ props: {}, visualState: state }));
   onMount(() => {
     element.mount({});
     return () => element.unmount();
