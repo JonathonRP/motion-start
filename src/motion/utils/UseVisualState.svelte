@@ -115,13 +115,13 @@ Copyright (c) 2018 Framer B.V. -->
     config: UseVisualStateConfig<Instance, RenderState>;
     props: MotionProps;
     isStatic: boolean;
-    isCustom?: any;
+    isCustom: any;
   };
 
   export let config: $$Props["config"],
     props: $$Props["props"],
     isStatic: $$Props["isStatic"],
-    isCustom;
+    isCustom: $$Props['isCustom'];
 
   const context: Writable<MotionContextProps> =
     getContext(MotionContext) || MotionContext(isCustom);

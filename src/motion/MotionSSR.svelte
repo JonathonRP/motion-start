@@ -96,7 +96,7 @@ Copyright (c) 2018 Framer B.V. -->
         externalRef = undefined,
         targetEl = undefined;
 
-    $: motionProps = $$restProps; /*{
+    $:( motionProps = $$restProps ); /*{
         initial,
         style,
         transformTemplate,
