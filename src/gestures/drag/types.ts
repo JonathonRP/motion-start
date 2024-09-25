@@ -2,7 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { RefObject } from "react";
 import type { VariantLabels } from "../../motion/types";
 import type { Inertia, TargetAndTransition } from "../../types";
 import type { Axis, BoundingBox2D } from "../../types/geometry";
@@ -184,7 +183,7 @@ export interface DraggableProps extends DragHandlers {
      * }
      * ```
      */
-    dragConstraints?: false | Partial<BoundingBox2D> | RefObject<Element>;
+    dragConstraints?: false | Partial<BoundingBox2D> | Element;
     /**
      * The degree of movement allowed outside constraints. 0 = no movement, 1 =
      * full movement.

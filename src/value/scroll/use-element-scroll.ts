@@ -13,8 +13,7 @@ import {
     createScrollMotionValues,
     createScrollUpdater,
 } from "./utils"
-import { addDomEvent } from "../../events/use-dom-event"
-import type { RefObject } from "react";
+import { addDomEvent } from "../../events/use-dom-event";
 
 
 const getElementScrollOffsets = (element) => () => {
@@ -26,20 +25,20 @@ const getElementScrollOffsets = (element) => () => {
     }
 }
 
-export const useElementScroll = (ref: RefObject<HTMLElement>) => {
+export const useElementScroll = (ref: HTMLElement) => {
 
     const values = <any>{}
 
     const setScroll = async () => {
-        if (typeof window === "undefined") return ()=>{}
+        if (typeof window === "undefined") return () => { }
 
         let times = 10
-        while ( (!ref || !ref.current) && !values.ref ){
-            if(times-- < 1){
-                return ()=>{};
+        while ((!ref || !ref.current) && !values.ref) {
+            if (times-- < 1) {
+                return () => { };
             };
-            
-            await new Promise(r=>setTimeout(()=>r(),200));
+
+            await new Promise(r => setTimeout(() => r(), 200));
         }
         const element = (ref && ref.current) ? ref : values.ref;
 
@@ -60,12 +59,12 @@ export const useElementScroll = (ref: RefObject<HTMLElement>) => {
             "resize",
             updateScrollValues
         )
-        return ()=>{
+        return () => {
             scrollListener && scrollListener()
             resizeListener && resizeListener()
         }
     }
-    Object.assign(values,createScrollMotionValues(setScroll));
+    Object.assign(values, createScrollMotionValues(setScroll));
 
     return values as ScrollMotionValues;
 }

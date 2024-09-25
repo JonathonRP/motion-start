@@ -217,7 +217,7 @@ Copyright (c) 2018 Framer B.V. -->
               ref={useMotionRef(
                 visualState,
                 context.visualElement,
-                externalRef
+                externalRef,
               )}
               {visualState}
               {isStatic}

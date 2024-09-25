@@ -2,8 +2,10 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { CSSProperties, SVGAttributes } from "react";
+import type { SVGAttributes } from "svelte/elements";
 import type { SVGPathProperties, TransformProperties } from "./motion/types.js";
+import type { CSSProperties } from "react";
+
 /**
  * @public
  */

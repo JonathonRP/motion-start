@@ -12,7 +12,7 @@ export interface MotionComponentConfig<Instance, RenderState> {
     createVisualElement?: CreateVisualElement<Instance>;
     useRender: RenderComponent<Instance, RenderState>;
     useVisualState: UseVisualState<Instance, RenderState>;
-    Component: string | React.ComponentType;
+    Component: string | Component;
 }
 
 
@@ -23,6 +23,8 @@ Copyright (c) 2018 Framer B.V.
 import Motion from './Motion.svelte';
 import { loadFeatures } from "./features/definitions";
 import type { MotionProps } from "./types";
+import type { Component, SvelteComponent } from "svelte";
+import { asClassComponent, createClassComponent } from "svelte/legacy";
 
 /**
  * Create a `motion` component.
@@ -44,21 +46,21 @@ export const createMotionComponent = <Props extends {}, Instance, RenderState>(
         Component,
 
     }: MotionComponentConfig<Instance, RenderState>
-): React.ForwardRefExoticComponent<React.PropsWithoutRef<Props & MotionProps> & React.RefAttributes<Instance>> => {
+): Component<Props & MotionProps> => {
     preloadedFeatures && loadFeatures(preloadedFeatures);
 
     return class MotionComponent extends Motion {
         constructor(options) {
             const props = options.props;
             options.props = {
-                props: props,
+                props,
                 defaultFeatures: preloadedFeatures,
-                createVisualElement: createVisualElement,
-                forwardMotionProps: forwardMotionProps,
-                Component: Component,
+                createVisualElement,
+                forwardMotionProps,
+                Component,
                 visualStateConfig
             }
-            super(options)
+            super({ component: Motion, ...options });
         }
-    }
+    } satisfies Component<Props & MotionProps>
 }

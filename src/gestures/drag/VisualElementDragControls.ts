@@ -2,7 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { RefObject } from "react";
 import type { PanInfo } from "../../gestures/PanSession";
 import type { MotionProps } from "../../motion/types";
 import type { VisualElement } from "../../render/types";
@@ -107,9 +106,9 @@ class VisualElementDragControls {
      * @internal
      */
     private cursorProgress: Point2D = {
-            x: 0.5,
-            y: 0.5,
-        };
+        x: 0.5,
+        y: 0.5,
+    };
     private originPoint: Point2D = { x: 0, y: 0 };
     private openGlobalLock: Lock | null = null;
     /**
@@ -227,7 +226,7 @@ class VisualElementDragControls {
             this.isDragging = true;
             this.currentDirection = null;
             // Fire onDragStart event
-            if(onDragStart) onDragStart(event, info);
+            if (onDragStart) onDragStart(event, info);
             const { animationState } = this.visualElement;
             animationState && animationState.setActive(AnimationType.Drag, true);
         };
@@ -294,7 +293,7 @@ class VisualElementDragControls {
             });
         }
     }
-    private resolveRefConstraints(layoutBox: AxisBox2D, constraints: RefObject<Element>) {
+    private resolveRefConstraints(layoutBox: AxisBox2D, constraints: Element) {
         const { transformPagePoint, onMeasureDragConstraints } = this.props;
         const constraintsElement = constraints.current as HTMLElement;
         invariant(constraintsElement !== null, "If `dragConstraints` is set as a React ref, that ref must be passed to another component's `ref` prop.");
@@ -476,8 +475,10 @@ class VisualElementDragControls {
              */
             var bounceStiffness = dragElastic ? 200 : 1000000;
             var bounceDamping = dragElastic ? 40 : 10000000;
-            var inertia = __assign(__assign({ type: "inertia", velocity: dragMomentum ? velocity[axis] : 0, bounceStiffness: bounceStiffness,
-                bounceDamping: bounceDamping, timeConstant: 750, restDelta: 1, restSpeed: 10 }, dragTransition), transition);
+            var inertia = __assign(__assign({
+                type: "inertia", velocity: dragMomentum ? velocity[axis] : 0, bounceStiffness: bounceStiffness,
+                bounceDamping: bounceDamping, timeConstant: 750, restDelta: 1, restSpeed: 10
+            }, dragTransition), transition);
             // If we're not animating on an externally-provided `MotionValue` we can use the
             // component's animation controls which will handle interactions with whileHover (etc),
             // otherwise we just have to animate the `MotionValue` itself.
