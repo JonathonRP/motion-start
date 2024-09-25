@@ -2,6 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+import type { RefObject } from "react";
 import type { ScrollMotionValues } from "./utils";
 
 
@@ -25,7 +26,7 @@ const getElementScrollOffsets = (element) => () => {
     }
 }
 
-export const useElementScroll = (ref: HTMLElement) => {
+export const useElementScroll = (ref: RefObject<HTMLElement>) => {
 
     const values = <any>{}
 

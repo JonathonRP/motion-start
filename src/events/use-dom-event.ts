@@ -7,7 +7,7 @@ export interface UseDomEventProps {
     /**
      * Ref object that's been provided to the element you want to bind the listener to.
      */
-    ref: {current:Node} | VisualElement<EventTarget>,
+    ref: { current: Node } | VisualElement<EventTarget>,
     /**
      * Name of the event you want listen for.
      */
