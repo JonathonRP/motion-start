@@ -214,39 +214,40 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
          */
         var isControllingVariants = checkIfControllingVariants(props);
         var isVariantNode = checkIfVariantNode(props);
-        var element: VisualElement<Instance, any> = __assign(__assign({ treeType: treeType, 
+        var element: VisualElement<Instance, any> = __assign(__assign({
+            treeType: treeType,
             /**
              * This is a mirror of the internal instance prop, which keeps
              * VisualElement type-compatible with React's RefObject.
              */
-            current: null, 
+            current: null,
             /**
              * The depth of this visual element within the visual element tree.
              */
-            depth: parent ? parent.depth + 1 : 0, parent: parent, children: new Set(), 
+            depth: parent ? parent.depth + 1 : 0, parent: parent, children: new Set(),
             /**
              * An ancestor path back to the root visual element. This is used
              * by layout projection to quickly recurse back up the tree.
              */
-            path: parent ? __spreadArray(__spreadArray([], __read(parent.path)), [parent]) : [], layoutTree: parent ? parent.layoutTree : new FlatTree(), 
+            path: parent ? __spreadArray(__spreadArray([], __read(parent.path)), [parent]) : [], layoutTree: parent ? parent.layoutTree : new FlatTree(),
             /**
              *
              */
             presenceId: presenceId,
-            projection: projection, 
+            projection: projection,
             /**
              * If this component is part of the variant tree, it should track
              * any children that are also part of the tree. This is essentially
              * a shadow tree to simplify logic around how to stagger over children.
              */
-            variantChildren: isVariantNode ? new Set() : undefined, 
+            variantChildren: isVariantNode ? new Set() : undefined,
             /**
              * Whether this instance is visible. This can be changed imperatively
              * by AnimateSharedLayout, is analogous to CSS's visibility in that
              * hidden elements should take up layout, and needs enacting by the configured
              * render function.
              */
-            isVisible: undefined, 
+            isVisible: undefined,
             /**
              * Normally, if a component is controlled by a parent's variants, it can
              * rely on that ancestor to trigger animations further down the tree.
@@ -255,12 +256,12 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
              *
              * TODO: This might be better replaced with a method isParentMounted
              */
-            manuallyAnimateOnMount: Boolean(parent === null || parent === void 0 ? void 0 : parent.isMounted()), 
+            manuallyAnimateOnMount: Boolean(parent === null || parent === void 0 ? void 0 : parent.isMounted()),
             /**
              * This can be set by AnimatePresence to force components that mount
              * at the same time as it to mount as if they have initial={false} set.
              */
-            blockInitialAnimation: blockInitialAnimation, 
+            blockInitialAnimation: blockInitialAnimation,
             /**
              * Determine whether this component has mounted yet. This is mostly used
              * by variant children to determine whether they need to trigger their
@@ -307,14 +308,14 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
                 if (!sortNodePosition || treeType !== other.treeType)
                     return 0;
                 return sortNodePosition(element.getInstance(), other.getInstance());
-            }, 
+            },
             /**
              * Returns the closest variant node in the tree starting from
              * this visual element.
              */
             getClosestVariantNode: function () {
                 return isVariantNode ? element : parent === null || parent === void 0 ? void 0 : parent.getClosestVariantNode();
-            }, 
+            },
             /**
              * A method that schedules an update to layout projections throughout
              * the tree. We inherit from the parent so there's only ever one
@@ -324,25 +325,25 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
                 ? parent.scheduleUpdateLayoutProjection
                 : function () {
                     return sync.preRender(element.updateTreeLayoutProjection, false, true);
-                }, 
+                },
             /**
              * Expose the latest layoutId prop.
              */
-            getLayoutId: function () { return props.layoutId; }, 
+            getLayoutId: function () { return props.layoutId; },
             /**
              * Returns the current instance.
              */
-            getInstance: function () { return instance; }, 
+            getInstance: function () { return instance; },
             /**
              * Get/set the latest static values.
              */
-            getStaticValue: function (key) { return latestValues[key]; }, setStaticValue: function (key, value) { return (latestValues[key] = value); }, 
+            getStaticValue: function (key) { return latestValues[key]; }, setStaticValue: function (key, value) { return (latestValues[key] = value); },
             /**
              * Returns the latest motion value state. Currently only used to take
              * a snapshot of the visual element - perhaps this can return the whole
              * visual state
              */
-            getLatestValues: function () { return latestValues; }, 
+            getLatestValues: function () { return latestValues; },
             /**
              * Set the visiblity of the visual element. If it's changed, schedule
              * a render to reflect these changes.
@@ -368,7 +369,7 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
             /**
              * Add a motion value and bind it to this visual element.
              */
-            addValue: function (key, value) {
+            addValue: function (key: string, value: any) {
                 // Remove existing value if it exists
                 if (element.hasValue(key))
                     element.removeValue(key);
@@ -379,40 +380,40 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
             /**
              * Remove a motion value and unbind any active subscriptions.
              */
-            removeValue: function (key) {
+            removeValue: function (key: string) {
                 var _a;
                 values.delete(key);
                 (_a = valueSubscriptions.get(key)) === null || _a === void 0 ? void 0 : _a();
                 valueSubscriptions.delete(key);
                 delete latestValues[key];
                 removeValueFromRenderState(key, renderState);
-            }, 
+            },
             /**
              * Check whether we have a motion value for this key
              */
-            hasValue: function (key) { return values.has(key); }, 
+            hasValue: function (key: string) { return values.has(key); },
             /**
              * Get a motion value for this key. If called with a default
              * value, we'll create one if none exists.
              */
-            getValue: function (key, defaultValue) {
+            getValue: function (key: string, defaultValue: any) {
                 var value = values.get(key);
                 if (value === undefined && defaultValue !== undefined) {
                     value = motionValue(defaultValue);
                     element.addValue(key, value);
                 }
                 return value;
-            }, 
+            },
             /**
              * Iterate over our motion values.
              */
-            forEachValue: function (callback) { return values.forEach(callback); }, 
+            forEachValue: function (callback) { return values.forEach(callback); },
             /**
              * If we're trying to animate to a previously unencountered value,
              * we need to check for it in our state and as a last resort read it
              * directly from the instance (which might have performance implications).
              */
-            readValue: function (key) { var _a; return (_a = latestValues[key]) !== null && _a !== void 0 ? _a : readValueFromInstance(instance, key, options); }, 
+            readValue: function (key) { var _a; return (_a = latestValues[key]) !== null && _a !== void 0 ? _a : readValueFromInstance(instance, key, options); },
             /**
              * Set the base target to later animate back to. This is currently
              * only hydrated on creation and when we first read a value.
@@ -431,7 +432,8 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
                         return target;
                 }
                 return baseTarget[key];
-            } }, lifecycles), { 
+            }
+        }, lifecycles), {
             /**
              * Build the renderer state based on the latest visual state.
              */
@@ -444,14 +446,14 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
              */
             scheduleRender: function () {
                 sync.render(render, false, true);
-            }, 
+            },
             /**
              * Synchronously fire render. It's prefered that we batch renders but
              * in many circumstances, like layout measurement, we need to run this
              * synchronously. However in those instances other measures should be taken
              * to batch reads/writes.
              */
-            syncRender: render, 
+            syncRender: render,
             /**
              * Update the provided props. Ensure any newly-added motion values are
              * added to our map, old ones removed, and listeners updated.
@@ -460,16 +462,16 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
                 props = newProps;
                 lifecycles.updatePropListeners(newProps);
                 prevMotionValues = updateMotionValuesFromProps(element, scrapeMotionValuesFromProps(props), prevMotionValues);
-            }, getProps: function () { return props; }, 
+            }, getProps: function () { return props; },
             // Variants ==============================
             /**
              * Returns the variant definition with a given name.
              */
-            getVariant: function (name) { var _a; return (_a = props.variants) === null || _a === void 0 ? void 0 : _a[name]; }, 
+            getVariant: function (name) { var _a; return (_a = props.variants) === null || _a === void 0 ? void 0 : _a[name]; },
             /**
              * Returns the defined default transition on this component.
              */
-            getDefaultTransition: function () { return props.transition; }, 
+            getDefaultTransition: function () { return props.transition; },
             /**
              * Used by child variant nodes to get the closest ancestor variant props.
              */
@@ -519,7 +521,7 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
                 return projection.isEnabled &&
                     projection.isHydrated &&
                     layoutState.isHydrated;
-            }, 
+            },
             /**
              * Start a layout animation on a given axis.
              */
@@ -621,7 +623,7 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
             notifyLayoutReady: function (config) {
                 setCurrentViewportBox(element);
                 element.notifyLayoutUpdate(layoutState.layout, element.prevViewportBox || layoutState.layout, config);
-            }, 
+            },
             /**
              * Temporarily reset the transform of the instance.
              */
@@ -684,9 +686,10 @@ var visualElement = function <Instance = any, MutableState = any, Options extend
                         (_a = element.layoutSafeToRemove) === null || _a === void 0 ? void 0 : _a.call(element);
                     }
                 }));
-            }, 
+            },
             // TODO: Clean this up
-            isPresent: true, presence: Presence.Entering });
+            isPresent: true, presence: Presence.Entering
+        });
         return element;
     };
 };

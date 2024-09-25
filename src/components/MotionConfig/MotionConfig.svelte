@@ -19,8 +19,9 @@ Copyright (c) 2018 Framer B.V. -->
     isStatic: $$Props["isStatic"] = undefined,
     transition: $$Props["transition"] = undefined,
     isCustom = false;
-  const mcc: Writable<MotionConfigContextObject> =
-    getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+  const mcc =
+    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
+    MotionConfigContext(isCustom);
   /**
    * Inherit props from any parent MotionConfig components
    */

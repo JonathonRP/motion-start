@@ -39,7 +39,7 @@ import { animate } from "popmotion"
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
 
-    const mcc: Writable<MotionConfigContextObject> = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+    const mcc = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
 
     let activeSpringAnimation: { stop: () => void } | null = null;
 
@@ -77,7 +77,7 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
     update(source, config);
 
     value.reset = update;
-    
+
     return value;
 }
 

@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V. -->
   const numFeatures = featureNames.length;
   export let visualElement, props;
 
-  let features = [];
+  let features = <any[]>[];
 
   // If this is a static component, or we're rendering on the server, we don't load
   // any feature components
@@ -16,7 +16,7 @@ Copyright (c) 2018 Framer B.V. -->
     features = [];
     for (let i = 0; i < numFeatures; i++) {
       const name = featureNames[i];
-      const { isEnabled, Component } = featureDefinitions[name];
+      const { isEnabled, Component } = (featureDefinitions as any)[name];
       /**
        * It might be possible in the future to use this moment to
        * dynamically request functionality. In initial tests this

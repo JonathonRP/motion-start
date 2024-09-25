@@ -7,8 +7,9 @@ Copyright (c) 2018 Framer B.V. -->
   import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
   export let props, isCustom;
   $: ({ layoutId } = props);
-  const layoutGroupId: Writable<string | null> =
-    getContext(LayoutGroupContext) || LayoutGroupContext(isCustom);
+  const layoutGroupId =
+    getContext<Writable<string | null>>(LayoutGroupContext) ||
+    LayoutGroupContext(isCustom);
 </script>
 
 <slot

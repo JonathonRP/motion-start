@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Readable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
 import type { PresenceContextProps } from "../../context/PresenceContext";
 
 import { derived, get, readable } from 'svelte/store';
@@ -11,9 +11,9 @@ import { PresenceContext } from '../../context/PresenceContext.js';
 import { getContext, onMount } from "svelte";
 
 export type SafeToRemove = () => void;
-type AlwaysPresent = [true, null];
-type Present = [true];
-type NotPresent = [false, SafeToRemove];
+export type AlwaysPresent = [true, null];
+export type Present = [true];
+export type NotPresent = [false, SafeToRemove];
 
 let counter = 0;
 const incrementId = () => counter++;
@@ -42,8 +42,8 @@ export function isPresent(context: PresenceContextProps) {
  *
  * @public
  */
-export const useIsPresent = (isCustom=false): Readable<boolean> => {
-    let presenceContext = getContext(PresenceContext) || PresenceContext(isCustom);
+export const useIsPresent = (isCustom = false): Readable<boolean> => {
+    let presenceContext = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
     return derived(presenceContext, $v => $v === null ? true : $v.isPresent)
 }
 
@@ -69,22 +69,22 @@ export const useIsPresent = (isCustom=false): Readable<boolean> => {
  *
  * @public
  */
-export const usePresence = (isCustom=false): Readable<AlwaysPresent | Present | NotPresent> => {
+export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
 
-    const context = getContext(PresenceContext)||PresenceContext(isCustom);
+    const context = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
     const id = get(context) === null ? undefined : incrementId();
-    onMount(()=>{
-        if (get(context)!==null){
-            get(context).register(id);
+    onMount(() => {
+        if (get(context) !== null) {
+            get(context).register(id!);
         }
     })
 
-    if (get(context) === null){
-        return readable([true,null]);
+    if (get(context) === null) {
+        return readable([true, null]) satisfies Readable<AlwaysPresent>;
     }
-    return derived(context,$v=>
-        (!$v.isPresent && $v.onExitComplete) ? 
-            [false, ()=>$v.onExitComplete?.(id)] :
-            [true]
-    )
+    return derived<typeof context, Present | NotPresent>(context, $v =>
+        (!$v.isPresent && $v.onExitComplete) ?
+            [false, () => $v.onExitComplete?.(id!)] satisfies NotPresent :
+            [true] satisfies Present
+    );
 }

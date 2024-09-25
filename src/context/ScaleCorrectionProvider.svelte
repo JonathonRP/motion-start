@@ -1,5 +1,4 @@
 <script module lang="ts">
-  import type { Writable } from "svelte/store";
   import { getContext, setContext } from "svelte";
   import { writable } from "svelte/store";
   import { getDomContext, setDomContext } from "./DOMcontext.js";

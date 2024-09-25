@@ -26,6 +26,7 @@ Copyright (c) 2018 Framer B.V. -->
     PresenceContext,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
+    import type { VisualElement } from "../../render/types.js";
 
   export let createVisualElement = undefined,
     props,
@@ -33,28 +34,35 @@ Copyright (c) 2018 Framer B.V. -->
     visualState,
     isCustom;
 
-  const config: Writable<MotionConfigContextObject> =
-    getContext(MotionConfigContext) || MotionConfigContext(isCustom);
-  const presenceContext: Writable<PresenceContextProps> =
-    getContext(PresenceContext) || PresenceContext(isCustom);
-  const lazyContext: Writable<LazyContextProps> =
-    getContext(LazyContext) || LazyContext(isCustom);
-  const mc: Writable<MotionContextProps> =
-    getContext(MotionContext) || MotionContext(isCustom);
+  const config =
+    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+
+  const presenceContext =
+    getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+
+  const lazyContext =
+    getContext<Writable<LazyContextProps>>(LazyContext) || LazyContext(isCustom);
+
+  const mc =
+    getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+
   let parent = get(mc).visualElement;
   $: parent = $mc.visualElement;
+
   const layoutGroupId: Writable<string | null> =
     getContext(LayoutGroupContext) || LayoutGroupContext(isCustom);
+
   let layoutId =
     $layoutGroupId && props.layoutId !== undefined
       ? $layoutGroupId + "-" + props.layoutId
       : props.layoutId;
+
   $: layoutId =
     $layoutGroupId && props.layoutId !== undefined
       ? $layoutGroupId + "-" + props.layoutId
       : props.layoutId;
 
-  let visualElementRef: any = undefined;
+  let visualElementRef: VisualElement | undefined = undefined;
   /**
    * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
    */
@@ -71,8 +79,9 @@ Copyright (c) 2018 Framer B.V. -->
       blockInitialAnimation: $presenceContext?.initial === false,
     });
   }
-  let visualElement = visualElementRef;
-  $: visualElement = visualElementRef;
+
+  let visualElement: VisualElement | undefined = visualElementRef;
+  $:(visualElement = visualElementRef);
 
   $: if (visualElement) {
     visualElement.setProps({
@@ -92,7 +101,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   afterUpdate(() => {
     tick().then(() => {
-      visualElement.animationState?.animateChanges();
+      visualElement?.animationState?.animateChanges();
     });
   });
 

@@ -10,9 +10,11 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 
-var createDefinition = function (propNames) { return ({
-    isEnabled: function (props) { return propNames.some(function (name) { return !!props[name]; }); },
-}); };
+var createDefinition = function (propNames: string[]) {
+    return ({
+        isEnabled: function (props: any) { return propNames.some(function (name) { return !!props[name]; }); },
+    });
+};
 var featureDefinitions = {
     measureLayout: createDefinition(["layout", "layoutId", "drag"]),
     animation: createDefinition([
@@ -40,7 +42,7 @@ var featureDefinitions = {
 function loadFeatures(features: FeatureComponents): void {
     for (var key in features) {
         var Component = (features as any)[key];
-        if (Component !== null){
+        if (Component !== null) {
             (featureDefinitions as any)[key].Component = Component;
         }
     }

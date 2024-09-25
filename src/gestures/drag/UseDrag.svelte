@@ -12,8 +12,9 @@ Copyright (c) 2018 Framer B.V. -->
 
   export let visualElement, props, isCustom;
 
-  const mcc: Writable<MotionConfigContextObject> =
-    getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+  const mcc =
+    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
+    MotionConfigContext(isCustom);
 
   let dragControls = new VisualElementDragControls({
     visualElement,

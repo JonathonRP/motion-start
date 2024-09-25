@@ -63,9 +63,9 @@ import { writable } from 'svelte/store';
 
 export const useCycle = <T>(...items: T[]) => {
     let index = 0;
-    const x = writable(items[index]) as Writable<T> & {
+    const x = (writable(items[index]) as any) satisfies Writable<T> & {
         /** Cycle through to next value or set the next value by index. */
-        next: ( index?: number ) => void
+        next: (index?: number) => void
     }
     const next = (i?: number) => {
         index = typeof i !== "number" ?
@@ -73,6 +73,6 @@ export const useCycle = <T>(...items: T[]) => {
             i;
         x.set(items[index])
     }
-    x.next=next;
+    x.next = next;
     return x;
 }

@@ -41,7 +41,7 @@ export class MotionValue<V = any> implements Writable<V> {
      * 
      * @public
      */
-    update(cb:(value: V) => V): void {
+    update(cb: (value: V) => V): void {
         this.set(cb(this.get()));
     }
     /**
@@ -123,10 +123,10 @@ export class MotionValue<V = any> implements Writable<V> {
      *
      * @internal
      */
-    constructor(init: V, startStopNotifier?: ()=>()=>void) {
+    constructor(init: V, startStopNotifier?: () => () => void) {
         this.prev = this.current = init;
         this.canTrackVelocity = isFloat(this.current);
-        
+
         if (startStopNotifier) {
             this.onSubscription = () => {
                 if (this.updateSubscribers.getSize() + this.velocityUpdateSubscribers.getSize() + this.renderSubscribers.getSize() === 0) {
@@ -396,7 +396,7 @@ export class MotionValue<V = any> implements Writable<V> {
     }
 }
 
-var isFloat = function (value: string) {
+var isFloat = function (value: any) {
     return !isNaN(parseFloat(value));
 };
 

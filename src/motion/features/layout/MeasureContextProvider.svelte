@@ -17,11 +17,14 @@ Copyright (c) 2018 Framer B.V. -->
   export let visualElement, props, isCustom;
 
   $: ({ update } = props);
-  const syncLayout: Writable<SyncLayoutBatcher | SharedLayoutSyncMethods> =
-    getContext(SharedLayoutContext) || SharedLayoutContext(isCustom);
+  const syncLayout =
+    getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
+      SharedLayoutContext,
+    ) || SharedLayoutContext(isCustom);
 
-  const framerSyncLayout: Writable<SyncLayoutBatcher> =
-    getContext(FramerTreeLayoutContext) || FramerTreeLayoutContext(isCustom);
+  const framerSyncLayout =
+    getContext<Writable<SyncLayoutBatcher>>(FramerTreeLayoutContext) ||
+    FramerTreeLayoutContext(isCustom);
 </script>
 
 <Measure

@@ -115,18 +115,18 @@ Copyright (c) 2018 Framer B.V. -->
     config: UseVisualStateConfig<Instance, RenderState>;
     props: MotionProps;
     isStatic: boolean;
-    isCustom: any;
+    isCustom?: any | undefined;
   };
 
   export let config: $$Props["config"],
     props: $$Props["props"],
     isStatic: $$Props["isStatic"],
-    isCustom: $$Props['isCustom'];
+    isCustom: $$Props['isCustom'] = undefined;
 
-  const context: Writable<MotionContextProps> =
-    getContext(MotionContext) || MotionContext(isCustom);
-  const presenceContext: Writable<PresenceContextProps> =
-    getContext(PresenceContext) || PresenceContext(isCustom);
+  const context =
+    getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+  const presenceContext =
+    getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
   let state = makeState(config, props, get(context), get(presenceContext));
   const ms = makeState;
   $: if (isStatic) {

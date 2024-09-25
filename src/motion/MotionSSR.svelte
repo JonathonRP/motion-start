@@ -23,11 +23,22 @@ Copyright (c) 2018 Framer B.V. -->
     import { loadFeatures } from "./features/definitions";
     import type { Writable } from "svelte/store";
     import type { VisualElement } from "../index.js";
+    import type { MotionContextProps } from "../context/MotionContext/index.js";
 
-    type $$Props = MotionProps;
+    type $$Props = MotionProps & {
+        isSVG?: boolean;
+        update?: any;
+        forwardMotionProps?: boolean;
+        externalRef?: any;
+        targetEl?: any;
+    };
 
     // component props
-    export let initial: $$Props["initial"] = undefined,
+    export let isSVG = false,
+        forwardMotionProps = false,
+        externalRef = undefined,
+        targetEl = undefined; /*
+        initial: $$Props["initial"] = undefined,
         style: $$Props["style"] = undefined,
         transformTemplate: $$Props["transformTemplate"] = undefined,
         transformValues = undefined,
@@ -95,6 +106,7 @@ Copyright (c) 2018 Framer B.V. -->
         forwardMotionProps = false,
         externalRef = undefined,
         targetEl = undefined;
+    */
 
     $: motionProps = $$restProps; /*{
         initial,
@@ -175,12 +187,16 @@ Copyright (c) 2018 Framer B.V. -->
      * If this component or any ancestor is static, we disable hardware acceleration
      * and don't load any additional functionality.
      */
-    const a: Writable<MotionConfigContextObject> =
-        getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+    const a =
+        getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
+        MotionConfigContext(isCustom);
 
     $: ({ isStatic } = $a || {});
     let mounted = false;
-    const setContext = (c: any, v: VisualElement<any, any>) => {
+    const setContext = (
+        c: MotionContextProps,
+        v: VisualElement | undefined,
+    ) => {
         c.visualElement = v;
         return v;
     };

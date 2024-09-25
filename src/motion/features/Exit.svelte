@@ -3,24 +3,34 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { getContext } from "svelte";
-  import { usePresence } from "../../components/AnimatePresence/use-presence.js";
-  import { PresenceContext } from "../../context/PresenceContext.js";
+  import {
+    usePresence,
+    type AlwaysPresent,
+    type NotPresent,
+    type Present,
+  } from "../../components/AnimatePresence/use-presence.js";
+  import {
+    PresenceContext,
+    type PresenceContextProps,
+  } from "../../context/PresenceContext.js";
   import { AnimationType } from "../../render/utils/types.js";
+  import type { Writable } from "svelte/store";
 
   export let props, visualElement, isCustom;
   $: ({ custom } = props);
 
   const presenceContext =
-    getContext(PresenceContext) || PresenceContext(isCustom);
+    getContext<Writable<PresenceContextProps>>(PresenceContext) ||
+    PresenceContext(isCustom);
   const presence = usePresence(isCustom);
 
-  const effect = (pres) => {
+  const effect = (pres: AlwaysPresent | Present | NotPresent) => {
     const [isPresent, onExitComplete] = pres;
 
     const animation = visualElement.animationState?.setActive(
       AnimationType.Exit,
       !isPresent,
-      { custom: $presenceContext?.custom ?? custom }
+      { custom: $presenceContext?.custom ?? custom },
     );
 
     !isPresent && animation?.then(onExitComplete);
