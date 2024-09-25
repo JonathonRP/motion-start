@@ -1,24 +1,24 @@
+import type { TransformOptions } from '../utils/transform';
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import { MotionValue } from "../value";
-import type { TransformOptions } from "../utils/transform";
+ based on framer-motion@4.1.17,
+ Copyright (c) 2018 Framer B.V.
+ */
+import type { MotionValue } from '../value';
 
-import { transform } from "../utils/transform"
-import { useCombineMotionValues } from "./use-combine-values"
+import { transform } from '../utils/transform';
+import { useCombineMotionValues } from './use-combine-values';
 
 export type InputRange = number[];
 type SingleTransformer<I, O> = (input: I) => O;
 type MultiTransformer<I, O> = (input: I[]) => O;
 type Transformer<I, O> =
-    | SingleTransformer<I, O>
-    /**
-     * Ideally, this would be typed <I, O> in all instances, but to type this
-     * more accurately requires the tuple support in TypeScript 4:
-     * https://gist.github.com/InventingWithMonster/c4d23752a0fae7888596c4ff6d92733a
-     */
-    | MultiTransformer<string | number, O>
+	| SingleTransformer<I, O>
+	/**
+	 * Ideally, this would be typed <I, O> in all instances, but to type this
+	 * more accurately requires the tuple support in TypeScript 4:
+	 * https://gist.github.com/InventingWithMonster/c4d23752a0fae7888596c4ff6d92733a
+	 */
+	| MultiTransformer<string | number, O>;
 /**
  * Create a `MotionValue` that transforms the output of another `MotionValue` by mapping it from one range of values into another.
  *
@@ -37,7 +37,7 @@ type Transformer<I, O> =
  *
  * Every value in the output range must be of the same type and in the same format.
  *
-  * @motion
+ * @motion
  *
  * ```jsx
  * <script>
@@ -46,8 +46,8 @@ type Transformer<I, O> =
  *   const opacityRange = [0, 1, 1, 0]
  *   const opacity = useTransform(x, xRange, opacityRange)
  * </script>
- * 
- * <Motion let:motion 
+ *
+ * <Motion let:motion
  *      animate={{ x: 200 }}
  *      style={{ opacity, x }}
  *  >
@@ -67,8 +67,14 @@ type Transformer<I, O> =
  *
  * @public
  */
-export function useTransform<I, O>(value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>): 
-    MotionValue<O> & { reset: (value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>) => void };
+export function useTransform<I, O>(
+	value: MotionValue<number>,
+	inputRange: InputRange,
+	outputRange: O[],
+	options?: TransformOptions<O>
+): MotionValue<O> & {
+	reset: (value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>) => void;
+};
 /**
  * Create a `MotionValue` that transforms the output of another `MotionValue` through a function.
  * In this example, `y` will always be double `x`.
@@ -80,7 +86,7 @@ export function useTransform<I, O>(value: MotionValue<number>, inputRange: Input
  *   const x = useMotionValue(10)
  *   const y = useTransform(x, value => value * 2)
  * </script>
- * 
+ *
  * <Motion let:motion style={{ x, y }}>
  *   <div use:motion/>
  * </Motion>
@@ -92,8 +98,10 @@ export function useTransform<I, O>(value: MotionValue<number>, inputRange: Input
  *
  * @public
  */
-export function useTransform<I, O>(input: MotionValue<I>, transformer: SingleTransformer<I, O>): 
-    MotionValue<O> & { reset: (input: MotionValue<I>, transformer: SingleTransformer<I, O>) => void};
+export function useTransform<I, O>(
+	input: MotionValue<I>,
+	transformer: SingleTransformer<I, O>
+): MotionValue<O> & { reset: (input: MotionValue<I>, transformer: SingleTransformer<I, O>) => void };
 /**
  * Pass an array of `MotionValue`s and a function to combine them. In this example, `z` will be the `x` multiplied by `y`.
  *
@@ -105,7 +113,7 @@ export function useTransform<I, O>(input: MotionValue<I>, transformer: SingleTra
  *   const y = useMotionValue(0)
  *   const z = useTransform([x, y], [latestX, latestY] => latestX * latestY)
  * </script>
- * 
+ *
  * <Motion let:motion style={{ x, y, z }}>
  *   return <div use:motion/>
  * </Motion>
@@ -144,73 +152,48 @@ export function useTransform<I, O>(input: MotionValue<I>, transformer: SingleTra
  * @public
  */
 export function useTransform<I, O>(
-    input:
-        | MotionValue<I>
-        | MotionValue<string>[]
-        | MotionValue<number>[]
-        | MotionValue<string | number>[]
-        | (() => O),
-    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
-    outputRange?: O[],
-    options?: TransformOptions<O>
+	input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
+	inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+	outputRange?: O[],
+	options?: TransformOptions<O>
 ): any {
+	let latest = <I[]>[];
 
-    const latest = <I[]>[];
+	const update = (
+		input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
+		inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+		outputRange?: O[],
+		options?: TransformOptions<O>
+	) => {
+		const transformer =
+			typeof inputRangeOrTransformer === 'function'
+				? inputRangeOrTransformer
+				: transform(inputRangeOrTransformer!, outputRange!, options);
+		const values = Array.isArray(input) ? input : [input];
+		const _transformer = Array.isArray(input) ? transformer : ([latest]) => transformer(latest);
+		return [
+			values,
+			() => {
+				latest.length = 0;
+				const numValues = values.length;
+				for (let i = 0; i < numValues; i++) {
+					latest[i] = values[i].get();
+				}
 
-    const update = (
-        input:
-        | MotionValue<I>
-        | MotionValue<string>[]
-        | MotionValue<number>[]
-        | MotionValue<string | number>[]
-        | (() => O),
-        inputRangeOrTransformer?: InputRange | Transformer<I,O>,
-        outputRange?: O[],
-        options?: TransformOptions<O>
-    ) => {
-        const transformer = typeof inputRangeOrTransformer === "function"
-            ? inputRangeOrTransformer
-            : transform(inputRangeOrTransformer!, outputRange!, options);
-        const values = Array.isArray(input) ? input : [input];
-        const _transformer = Array.isArray(input) ? transformer :
-            ([latest]) =>
-                transformer(latest);
-        return [values, () => {
-            latest.length = 0
-            const numValues = values.length
-            for (let i = 0; i < numValues; i++) {
-                latest[i] = values[i].get()
-            }
+				return _transformer(latest);
+			},
+		];
+	};
+	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options)) as any;
 
-            return _transformer(latest)
-        }]
+	comb.updateInner = comb.reset;
 
-    }
-    const comb = useCombineMotionValues(...update(input,
-        inputRangeOrTransformer,
-        outputRange,
-        options)) as any;
-
-    comb.updateInner = comb.reset;
-
-    comb.reset = (
-        input:
-        | MotionValue<I>
-        | MotionValue<string>[]
-        | MotionValue<number>[]
-        | MotionValue<string | number>[]
-        | (() => O),
-        inputRangeOrTransformer?: InputRange | Transformer<I,O>,
-        outputRange?: O[],
-        options?: TransformOptions<O>
-    ) => comb.updateInner(
-        ...update(
-            input,
-            inputRangeOrTransformer,
-            outputRange,
-            options
-        )
-    )
-    return comb;
+	comb.reset = (
+		input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
+		inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+		outputRange?: O[],
+		options?: TransformOptions<O>
+	) => comb.updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
+	return comb;
 }
 // export { default as UseTransform } from './UseTransform.svelte';

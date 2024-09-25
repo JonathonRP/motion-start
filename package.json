@@ -1,66 +1,55 @@
 {
-  "name": "motion-start",
-  "version": "0.0.1",
-  "description": "Svelte animation library based on the React library framer-motion.",
-  "main": "src/index.ts",
-  "files": [
-    "./src"
-  ],
-  "scripts": {
-    "test": "vitest --ui",
-    "test:types": "vitest --typecheck.only --ui",
-    "build": "svelte-package --input ./src && publint --strict",
-    "check": "pnpm build && svelte-check --tsconfig ./tsconfig.json",
-    "ci:version": "changeset version && pnpm -r generate:version && git add --all",
-    "ci:publish": "pnpm build && changeset publish"
-  },
-  "author": "JonathonRP",
-  "license": "MIT",
-  "dependencies": {
-    "@changesets/cli": "^2.27.8",
-    "@types/react": "^18.3.5",
-    "framesync": "^6.1.2",
-    "popmotion": "^11.0.5",
-    "style-value-types": "5.1.2",
-    "tslib": "^2.7.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.2",
-    "@emotion/is-prop-valid": "^1.3.0",
-    "@sveltejs/package": "^2.3.5",
-    "@sveltejs/vite-plugin-svelte": "4.0.0-next.7",
-    "@tsconfig/svelte": "^5.0.4",
-    "@types/node": "^20.16.5",
-    "@vitest/ui": "latest",
-    "csstype": "^3.1.3",
-    "publint": "^0.2.10",
-    "svelte": "5.0.0-next.252",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.5",
-    "vitest": "latest"
-  },
-  "peerDependencies": {
-    "svelte": ">=3.35.0 || ^4.0.0 || ^5.0.0 || ^5.0.0-next.0"
-  },
-  "type": "module",
-  "engines": {
-    "pnpm": ">=8.7.0",
-    "node": ">=20"
-  },
-  "packageManager": "pnpm@9.6.0",
-  "repository": {
-    "type": "git",
-    "ur": "https://github.com/JonathonRP/motion-start/"
-  },
-  "sideEffects": false,
-  "keywords": [
-    "svelte animation",
-    "svelte",
-    "animation",
-    "gestures",
-    "drag",
-    "spring",
-    "popmotion",
-    "framer-motion"
-  ]
+	"name": "motion-start",
+	"version": "0.0.1",
+	"description": "Svelte animation library based on the React library framer-motion.",
+	"main": "src/index.ts",
+	"files": ["./src"],
+	"scripts": {
+		"test": "bun --bun vitest --ui",
+		"test:types": "bun --bun vitest --typecheck.only --ui",
+		"build": "svelte-package --input ./src && publint --strict",
+		"check": "pnpm build && svelte-check --tsconfig ./tsconfig.json",
+		"ci:version": "changeset version && pnpm -r generate:version && git add --all",
+		"ci:publish": "pnpm build && changeset publish"
+	},
+	"author": "JonathonRP",
+	"license": "MIT",
+	"dependencies": {
+		"@changesets/cli": "^2.27.8",
+		"@types/react": "^18.3.9",
+		"framesync": "^6.1.2",
+		"popmotion": "^11.0.5",
+		"style-value-types": "5.1.2",
+		"tslib": "^2.7.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.2",
+		"@emotion/is-prop-valid": "^1.3.1",
+		"@sveltejs/package": "^2.3.5",
+		"@sveltejs/vite-plugin-svelte": "4.0.0-next.7",
+		"@tsconfig/svelte": "^5.0.4",
+		"@types/node": "^20.16.7",
+		"@vitest/ui": "latest",
+		"csstype": "^3.1.3",
+		"publint": "^0.2.11",
+		"svelte": "5.0.0-next.259",
+		"typescript": "^5.6.2",
+		"vite": "^5.4.8",
+		"vitest": "latest"
+	},
+	"peerDependencies": {
+		"svelte": ">=3.35.0 || ^4.0.0 || ^5.0.0 || ^5.0.0-next.0"
+	},
+	"type": "module",
+	"engines": {
+		"pnpm": ">=8.7.0",
+		"node": ">=20"
+	},
+	"packageManager": "pnpm@9.6.0",
+	"repository": {
+		"type": "git",
+		"ur": "https://github.com/JonathonRP/motion-start/"
+	},
+	"sideEffects": false,
+	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"]
 }
