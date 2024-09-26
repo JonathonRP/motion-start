@@ -1,5 +1,4 @@
 <script>
-    import ComponentView from "$lib/tags/ComponentView.svelte";
     import { Motion } from "$lib/motion-start";
 </script>
 

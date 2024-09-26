@@ -1,5 +1,5 @@
 <script>
-    import Box from "$lib/tags/Box.svelte";
+    import Box from "../Box.svelte";
     import { Motion, useTransform, useMotionValue } from "$lib/motion-start";
     let x = useMotionValue(0);
     let y = useMotionValue(0);

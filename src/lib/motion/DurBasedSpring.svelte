@@ -1,6 +1,6 @@
 <script>
-    import Box from "$lib/tags/Box.svelte";
-    import Button from "$lib/components/ui/button/button.svelte";
+    import Box from "../Box.svelte";
+    import Button from "../ui/button/button.svelte";
     import { Motion } from "$lib/motion-start";
     let i = 0;
 </script>

@@ -1,5 +1,5 @@
 <script>
-    import Box from "$lib/tags/Box.svelte";
+    import Box from "../Box.svelte";
 
     // Cycling through states
     import { Motion, useCycle } from "$lib/motion-start";
