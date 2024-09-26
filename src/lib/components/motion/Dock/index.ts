@@ -1,1 +1,2 @@
-export { default as NavBar } from './Navbar.svelte';
+export { default as Dock } from './Dock.svelte';
+export { default as DockIcon } from './DockIcon.svelte';

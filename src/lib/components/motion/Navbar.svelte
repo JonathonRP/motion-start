@@ -4,8 +4,7 @@
     //    Shadcn Components
     import * as Tooltip from "$lib/components/ui/tooltip";
     //   Major Components
-    import Dock from "./Dock.svelte";
-    import DockIcon from "./DockIcon.svelte";
+    import { Dock, DockIcon } from "./Dock";
 
     let navs = {
         navbar: [
