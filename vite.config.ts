@@ -4,18 +4,17 @@
 
 // Configure Vitest (https://vitest.dev/config/)
 
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  test: {
-    /* for example, use global to avoid globals imports (describe, test, expect): */
-    globals: true,
-    typecheck: {
-      enabled: true,
-    },
-  },
-  plugins: [
-    svelte(),
-  ]
-})
+	plugins: [tailwindcss(), sveltekit()],
+	test: {
+		/* for example, use global to avoid globals imports (describe, test, expect): */
+		globals: true,
+		typecheck: {
+			enabled: true,
+		},
+	},
+});

@@ -9,10 +9,11 @@
 		"ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {
 			"fisher": false
 		},
-		"ghcr.io/devcontainers/features/node:1": {
-			"nodeGypDependencies": false,
-			"version": "20.12.0"
-		}
+		// "ghcr.io/devcontainers/features/node:1": {
+		// 	"nodeGypDependencies": false,
+		// 	"version": "20.12.0"
+		// },
+		"ghcr.io/lumenpink/devcontainer-features/bun:0": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -20,7 +21,8 @@
 	// "appPort": [5000]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "corepack enable && corepack install && pnpm install",
+	// "postCreateCommand": "corepack enable && corepack install && pnpm install",
+	"postCreateCommand": "bun install",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -31,7 +33,7 @@
 				"editor.formatOnPaste": true,
 				"editor.formatOnSave": true,
 				"editor.codeActionsOnSave": {
-					"quickfix.biome": "explicit",
+					"quickfix.biome": "explicit"
 				},
 				"editor.formatOnSaveMode": "file",
 				"files.autoSave": "onFocusChange",
@@ -46,6 +48,9 @@
 
 				"[svelte]": {
 					"editor.defaultFormatter": "svelte.svelte-vscode"
+				},
+				"[javascript][typescript][json]": {
+					"editor.defaultFormatter": "biomejs.biome"
 				},
 
 				"dotfiles.repository": "https://github.com/JonathonRP/.dotfiles",
@@ -79,10 +84,14 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"svelte.svelte-vscode",
+				"Selemondev.vscode-shadcn-svelte",
 				"eamodio.gitlens",
+				"biomejs.biome",
+				"vitest.explorer",
 				"MylesMurphy.prettify-ts",
 				"YoavBls.pretty-ts-errors",
-				"mattpocock.ts-error-translator"
+				"mattpocock.ts-error-translator",
+				"Orta.vscode-twoslash-queries"
 			]
 		}
 	},

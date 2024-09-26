@@ -1,0 +1,33 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "full stack chrome",
+			"request": "launch",
+			"type": "node",
+			"runtimeArgs": ["--bun", "dev"],
+			"runtimeExecutable": "bun",
+			"console": "integratedTerminal",
+			"skipFiles": ["<node_internals>/**"],
+			"serverReadyAction": {
+				"pattern": "http://localhost:([0-9]+)",
+				"uriFormat": "http://localhost:%s/tests",
+				"action": "debugWithChrome"
+			}
+		},
+		{
+			"name": "full stack edge",
+			"request": "launch",
+			"type": "node",
+			"runtimeArgs": ["--bun", "dev"],
+			"runtimeExecutable": "bun",
+			"console": "integratedTerminal",
+			"skipFiles": ["<node_internals>/**"],
+			"serverReadyAction": {
+				"pattern": "http://localhost:([0-9]+)",
+				"uriFormat": "http://localhost:%s/tests",
+				"action": "debugWithEdge"
+			}
+		}
+	]
+}
