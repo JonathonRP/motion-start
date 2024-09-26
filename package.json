@@ -1,12 +1,15 @@
 {
 	"name": "motion-start",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Svelte animation library based on the React library framer-motion.",
-	"main": "src/index.ts",
-	"files": ["./src"],
+	"main": "dist/index.js",
+	"files": [
+		"./dist"
+	],
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && svelte-kit sync && svelte-package --input ./src/lib/motion-start && publint --strict",
+		"build": "vite build && bun --bun package",
+		"package": "svelte-kit sync && svelte-package --input ./src/lib/motion-start && publint --strict",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test": "vitest",
@@ -67,6 +70,17 @@
 		"ur": "https://github.com/JonathonRP/motion-start/"
 	},
 	"sideEffects": false,
-	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
-	"trustedDependencies": ["@biomejs/biome"]
+	"keywords": [
+		"svelte animation",
+		"svelte",
+		"animation",
+		"gestures",
+		"drag",
+		"spring",
+		"popmotion",
+		"framer-motion"
+	],
+	"trustedDependencies": [
+		"@biomejs/biome"
+	]
 }
