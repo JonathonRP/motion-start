@@ -5,10 +5,11 @@ Copyright (c) 2018 Framer B.V. -->
   import { getContext } from "svelte";
   import { writable, type Writable } from "svelte/store";
   import type { VisualElement } from "../../render/types";
-  import { getDomContext } from "../DOMcontext";
   import type { MotionContextProps } from "./index.js";
-  export const MotionContext = (c?: any): Writable<MotionContextProps> =>
-    getDomContext("Motion", c) || writable({});
+  import { getDomContext } from "../DOMcontext";
+
+  export const MotionContext = (c?: any) =>
+    getDomContext("Motion", c) || writable<MotionContextProps>({});
 
   export const useVisualElementContext = (c?: any) => {
     return (getContext(MotionContext) || MotionContext(c)) as

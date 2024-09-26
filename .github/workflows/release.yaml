@@ -1,18 +1,20 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [complete]
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
-jobs:
-  release:
-    permissions:
+permissions:
       contents: write # to create release (changesets/action)
       pull-requests: write # to create pull request (changesets/action)
-    name: Release
+
+jobs:
+  release:
+    if: ${{ github.event.workflow.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -33,7 +35,6 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: pnpm ci:version
           publish: pnpm ci:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
