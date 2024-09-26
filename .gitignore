@@ -1,6 +1,26 @@
-/node_modules/
-/dist/
-/types/tsdoc-metadata.json
-/.pnpm-store/
-/.svelte-kit/
+node_modules
+.pnpm-store
 bun.lockb
+pnpm-lock.yaml
+/types/tsdoc-metadata.json
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+/dist
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

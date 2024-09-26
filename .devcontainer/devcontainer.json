@@ -49,6 +49,9 @@
 				"[svelte]": {
 					"editor.defaultFormatter": "svelte.svelte-vscode"
 				},
+				"[javascript][typescript][json]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
 
 				"dotfiles.repository": "https://github.com/JonathonRP/.dotfiles",
 				"dotfiles.targetPath": "~/dotfiles",
@@ -81,11 +84,14 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"svelte.svelte-vscode",
+				"Selemondev.vscode-shadcn-svelte",
 				"eamodio.gitlens",
 				"biomejs.biome",
+				"vitest.explorer",
 				"MylesMurphy.prettify-ts",
 				"YoavBls.pretty-ts-errors",
-				"mattpocock.ts-error-translator"
+				"mattpocock.ts-error-translator",
+				"Orta.vscode-twoslash-queries"
 			]
 		}
 	},
