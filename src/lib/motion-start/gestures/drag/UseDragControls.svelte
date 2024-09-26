@@ -55,9 +55,7 @@ Copyright (c) 2018 Framer B.V. -->
     subscribe = (controls) => {
       var _this = this;
       this.componentControls.add(controls);
-      return function () {
-        return _this.componentControls.delete(controls);
-      };
+      return () => _this.componentControls.delete(controls);
     };
     /**
      * Start a drag gesture on every `motion` component that has this set of drag controls
@@ -75,21 +73,19 @@ Copyright (c) 2018 Framer B.V. -->
      * @public
      */
     start = (event, options) => {
-      this.componentControls.forEach(function (controls: any) {
+      this.componentControls.forEach((controls: any) => {
         controls.start(event.nativeEvent || event, options);
       });
     };
     updateConstraints = () => {
-      this.componentControls.forEach(function (controls: any) {
+      this.componentControls.forEach((controls: any) => {
         controls.prepareBoundingBox();
         controls.resolveDragConstraints();
       });
     };
   }
 
-  const createDragControls = function () {
-    return new DragControls();
-  };
+  const createDragControls = () => new DragControls();
 </script>
 
 <script lang="ts">
