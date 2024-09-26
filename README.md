@@ -31,19 +31,6 @@ yarn install --save-dev motion-start
 
 ```bash
 bun install --save-dev motion-start
-npm install --save-dev motion-start
-```
-
-```bash
-pnpm install --save-dev motion-start
-```
-
-```bash
-yarn install --save-dev motion-start
-```
-
-```bash
-bun install --save-dev motion-start
 ```
 
 ## Usage
