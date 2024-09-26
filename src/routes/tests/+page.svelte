@@ -20,7 +20,7 @@
         WhileDragEffect,
         WhileHoverEffect,
         WhileTapEffect,
-    } from "$lib/motion";
+    } from "$lib/components/motion";
 </script>
 
 <div class="grid gap-1 m-3 max-w-full">

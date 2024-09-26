@@ -1,5 +1,5 @@
 <script>
-    import { Navbar } from "$lib/motion";
+    import { Navbar } from "$lib/components/motion";
     import "../app.css";
     import { ModeWatcher, setMode } from "mode-watcher";
     setMode("dark");
