@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" module>
+<script lang="ts" context="module">
   import type { EventListenerWithPointInfo } from "./event-info.js";
   import { UseDomEvent } from "./use-dom-event.js";
   import {

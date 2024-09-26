@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" module>
+<script lang="ts" context="module">
   export function copyRawValuesOnly(
     target: ResolvedValues,
     source: {
@@ -32,7 +32,7 @@ Copyright (c) 2018 Framer B.V. -->
   const cRVO = copyRawValuesOnly;
   $: cRVO(style, styleProp, props);
 
-  const toStyle = (s1) => {
+  const toStyle = (s1: { s1: {}; props: any; style: {}; }) => {
     Object.assign(style, s1);
     if (props.transformValues) {
       style = props.transformValues(style);

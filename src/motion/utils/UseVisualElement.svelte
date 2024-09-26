@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script module lang="ts">
+<script lang="ts" context="module">
   export const ssr = false;
 </script>
 

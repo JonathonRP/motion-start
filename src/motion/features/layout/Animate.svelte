@@ -1,10 +1,10 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script module lang="ts">
+<script lang="ts" context="module">
   const progressTarget = 1000;
 
-  function hasMoved(a, b) {
+  function hasMoved(a: { x: any; y: any; }, b: { x: any; y: any; }) {
     return (
       !isZeroBox(a) &&
       !isZeroBox(b) &&
@@ -13,11 +13,11 @@ Copyright (c) 2018 Framer B.V. -->
   }
 
   const zeroAxis = { min: 0, max: 0 };
-  function isZeroBox(a) {
+  function isZeroBox(a: { x: any; y: any; }) {
     return axisIsEqual(a.x, zeroAxis) && axisIsEqual(a.y, zeroAxis);
   }
 
-  function axisIsEqual(a, b) {
+  function axisIsEqual(a: { min: any; max: any; }, b: { min: any; max: any; }) {
     return a.min === b.min && a.max === b.max;
   }
 
@@ -124,7 +124,7 @@ Copyright (c) 2018 Framer B.V. -->
     y: undefined,
   };
 
-  let unsubLayoutReady;
+  let unsubLayoutReady: () => void;
 
   let isAnimatingTree = false;
 
@@ -145,8 +145,8 @@ Copyright (c) 2018 Framer B.V. -->
   });
 
   const animateF = (
-    target,
-    origin,
+    target: { [x: string]: { max: any; }; x?: any; y?: any; },
+    origin: { [x: string]: any; x?: any; y?: any; },
     {
       originBox,
       targetBox,
@@ -232,9 +232,9 @@ Copyright (c) 2018 Framer B.V. -->
    * API to accept more custom animations like
    */
   const animateAxis = (
-    axis,
-    target,
-    origin,
+    axis: string,
+    target: Axis,
+    origin: Axis,
     { transition: _transition } = {}
   ) => {
     stopAxisAnimation[axis]?.();

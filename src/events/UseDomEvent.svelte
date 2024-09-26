@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" module>
+<script lang="ts" context="module">
   export function addDomEvent(
     target: EventTarget,
     eventName: string,
@@ -47,7 +47,7 @@ Copyright (c) 2018 Framer B.V. -->
     handler: $$Props["handler"] = undefined,
     options: $$Props["options"] = undefined;
   let cleanup = () => {};
-  const effect = () => {
+  const effect = (ref?:any, eventName?:any, handler?:any, options?:any) => {
     cleanup();
     if (!ref) {
       return () => {};

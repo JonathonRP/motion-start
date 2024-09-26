@@ -24,7 +24,7 @@ import Motion from './Motion.svelte';
 import { loadFeatures } from "./features/definitions";
 import type { MotionProps } from "./types";
 import type { Component, SvelteComponent } from "svelte";
-import { asClassComponent, createClassComponent } from "svelte/legacy";
+// import { asClassComponent, createClassComponent } from "svelte/legacy";
 
 /**
  * Create a `motion` component.

@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V. -->
   const numFeatures = featureNames.length;
   export let visualElement, props;
 
-  let features = <any[]>[];
+  let features: { Component: any; key: string; props: any; visualElement: any; }[] = [];
 
   // If this is a static component, or we're rendering on the server, we don't load
   // any feature components
