@@ -50,33 +50,6 @@
 				},
 				"[javascript][typescript][json]": {
 					"editor.defaultFormatter": "biomejs.biome"
-				},
-
-				"dotfiles.repository": "https://github.com/JonathonRP/.dotfiles",
-				"dotfiles.targetPath": "~/dotfiles",
-				"editor.fontFamily": "'JetBrains Mono', 'cascadia code', Consolas, 'Courier New', monospace",
-				"terminal.integrated.fontFamily": "'MesloLGM Nerd Font'",
-				"terminal.integrated.defaultProfile.linux": "fish",
-				"terminal.integrated.profiles.linux": {
-					"bash": {
-						"path": "bash",
-						"icon": "terminal-bash"
-					},
-					"zsh": {
-						"path": "zsh"
-					},
-					"fish": {
-						"path": "fish",
-						"icon": "terminal-linux"
-					},
-					"tmux": {
-						"path": "tmux",
-						"icon": "terminal-tmux"
-					},
-					"pwsh": {
-						"path": "pwsh",
-						"icon": "terminal-powershell"
-					}
 				}
 			},
 
