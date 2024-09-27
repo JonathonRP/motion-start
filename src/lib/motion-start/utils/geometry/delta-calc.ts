@@ -14,7 +14,7 @@ Copyright (c) 2018 Framer B.V.
 import {fixed} from '../fix-process-env';
 import { mix, distance, clamp, progress } from 'popmotion';
 
-var clampProgress = function (v) { return clamp(0, 1, v); };
+var clampProgress = function (v: number) { return clamp(0, 1, v); };
 /**
  * Returns true if the provided value is within maxDistance of the provided target
  */
@@ -23,7 +23,7 @@ function isNear(value: number, target?: number, maxDistance?: number) {
     if (maxDistance === void 0) { maxDistance = 0.01; }
     return distance(value, target) < maxDistance;
 }
-function calcLength(axis) {
+function calcLength(axis: Axis) {
     return axis.max - axis.min;
 }
 /**
@@ -74,7 +74,7 @@ function updateBoxDelta(delta: BoxDelta, source: AxisBox2D, target: AxisBox2D, o
  * Currently this only accepts numerical origins, measured as 0-1, but could
  * accept pixel values by comparing to the target axis.
  */
-function defaultOrigin(origin) {
+function defaultOrigin(origin: string | number) {
     return typeof origin === "number" ? origin : 0.5;
 }
 function calcRelativeAxis(target: Axis, relative: Axis, parent: Axis) {
@@ -82,8 +82,8 @@ function calcRelativeAxis(target: Axis, relative: Axis, parent: Axis) {
     target.max = target.min + calcLength(relative);
 }
 function calcRelativeBox(projection: TargetProjection, parentProjection: TargetProjection) {
-    calcRelativeAxis(projection.target.x, projection.relativeTarget.x, parentProjection.target.x);
-    calcRelativeAxis(projection.target.y, projection.relativeTarget.y, parentProjection.target.y);
+    calcRelativeAxis(projection.target.x, projection!.relativeTarget!.x, parentProjection.target.x);
+    calcRelativeAxis(projection.target.y, projection!.relativeTarget!.y, parentProjection.target.y);
 }
 
 export { calcOrigin, calcRelativeAxis, calcRelativeBox, isNear, updateAxisDelta, updateBoxDelta };

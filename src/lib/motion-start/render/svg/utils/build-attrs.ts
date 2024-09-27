@@ -51,7 +51,7 @@ function buildSVGAttrs(state: SVGRenderState, { attrX, attrY, originX, originY, 
         attrs.y = attrY;
     // Build SVG path if one has been measured
     if (totalPathLength !== undefined && pathLength !== undefined) {
-        buildSVGPath(attrs, totalPathLength, pathLength, pathSpacing, pathOffset, false);
+        buildSVGPath(attrs, totalPathLength, pathLength as number, pathSpacing as number, pathOffset as number, false);
     }
 }
 

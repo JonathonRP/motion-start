@@ -16,7 +16,7 @@ import {
 import { addDomEvent } from "../../events/use-dom-event"
 import { tick } from "svelte"
 
-let viewportScrollValues
+let viewportScrollValues: ScrollMotionValues
 
 
 function getViewportScrollOffsets() {

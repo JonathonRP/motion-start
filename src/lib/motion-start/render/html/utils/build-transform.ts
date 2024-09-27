@@ -48,6 +48,7 @@ function buildTransform({ transform, transformKeys }: HTMLRenderState, { enableH
     var numTransformKeys = transformKeys.length;
     for (var i = 0; i < numTransformKeys; i++) {
         var key = transformKeys[i];
+        //@ts-ignore
         transformString += (translateAlias[key] || key) + "(" + transform[key] + ") ";
         if (key === "z")
             transformHasZ = true;

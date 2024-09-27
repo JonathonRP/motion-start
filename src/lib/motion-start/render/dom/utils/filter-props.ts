@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import { isValidMotionProp } from '../../../motion/utils/valid-prop.js';
 
-var shouldForward = function (key) { return !isValidMotionProp(key); };
+var shouldForward = function (key: string) { return !isValidMotionProp(key); };
 /**
  * Emotion and Styled Components both allow users to pass through arbitrary props to their components
  * to dynamically generate CSS. They both use the `@emotion/is-prop-valid` package to determine which
@@ -46,6 +46,7 @@ function filterProps(props: MotionProps, isDom: boolean, forwardMotionProps: boo
         if (shouldForward(key) ||
             (forwardMotionProps === true && isValidMotionProp(key)) ||
             (!isDom && !isValidMotionProp(key))) {
+                //@ts-ignore
             filteredProps[key] = props[key];
         }
     }

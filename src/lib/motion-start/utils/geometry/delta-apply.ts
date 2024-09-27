@@ -77,8 +77,9 @@ function applyAxisTransforms(final: Axis, axis: Axis, transforms: ResolvedValues
     final.min = axis.min;
     final.max = axis.max;
     var axisOrigin = transforms[originKey] !== undefined ? transforms[originKey] : 0.5;
-    var originPoint = mix(axis.min, axis.max, axisOrigin);
+    var originPoint = mix(axis.min, axis.max, axisOrigin as number);
     // Apply the axis delta to the final axis
+    //@ts-ignore
     applyAxisDelta(final, transforms[key], transforms[scaleKey], originPoint, transforms.scale);
 }
 /**
@@ -120,6 +121,7 @@ function removeAxisDelta(axis: Axis, translate?: number, scale?: number, origin?
  * and acts as a bridge between motion values and removeAxisDelta
  */
 function removeAxisTransforms(axis: Axis, transforms: ResolvedValues, [key, scaleKey, originKey]: string[]) {
+    //@ts-ignore
     removeAxisDelta(axis, transforms[key], transforms[scaleKey], transforms[originKey], transforms.scale);
 }
 /**

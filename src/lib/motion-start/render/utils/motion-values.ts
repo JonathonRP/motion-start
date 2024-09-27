@@ -16,7 +16,8 @@ import { isMotionValue } from '../../value/utils/is-motion-value.js';
 function updateMotionValuesFromProps(element: VisualElement, next: MotionStyle, prev: MotionStyle) {
     var _a;
     for (var key in next) {
-        var nextValue = next[key];
+        //@ts-ignore
+        var nextValue = next[key];//@ts-ignore
         var prevValue = prev[key];
         if (isMotionValue(nextValue)) {
             /**
@@ -41,7 +42,7 @@ function updateMotionValuesFromProps(element: VisualElement, next: MotionStyle, 
             if (element.hasValue(key)) {
                 var existingValue = element.getValue(key);
                 // TODO: Only update values that aren't being animated or even looked at
-                !existingValue.hasAnimated && existingValue.set(nextValue);
+                existingValue?.hasAnimated && existingValue.set(nextValue);
             }
             else {
                 element.addValue(key, motionValue((_a = element.getStaticValue(key)) !== null && _a !== void 0 ? _a : nextValue));
@@ -49,7 +50,7 @@ function updateMotionValuesFromProps(element: VisualElement, next: MotionStyle, 
         }
     }
     // Handle removed values
-    for (var key in prev) {
+    for (var key in prev) {//@ts-ignore
         if (next[key] === undefined)
             element.removeValue(key);
     }

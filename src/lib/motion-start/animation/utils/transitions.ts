@@ -116,7 +116,7 @@ function getPopmotionAnimationOptions(transition: PermissiveTransitionDefinition
 /**
  *
  */
-function getAnimation(key: string, value: MotionValue, target: ResolvedValueTarget, transition: Transition, onComplete) {
+function getAnimation(key: string, value: MotionValue, target: ResolvedValueTarget, transition: Transition, onComplete: { (): void; (): void; }) {
     var _a;
     var valueTransition = getValueTransition(transition, key);
     var origin = (_a = valueTransition.from) !== null && _a !== void 0 ? _a : value.get();
@@ -144,13 +144,13 @@ function getAnimation(key: string, value: MotionValue, target: ResolvedValueTarg
             to: target,
             velocity: value.getVelocity(),
             onComplete: onComplete,
-            onUpdate: function (v) { return value.set(v); },
+            onUpdate: function (v: any) { return value.set(v); },
         };
         return valueTransition.type === "inertia" ||
             valueTransition.type === "decay"
             ? inertia(__assign(__assign({}, options), valueTransition))
             : animate(__assign(__assign({}, getPopmotionAnimationOptions(valueTransition, options, key)), {
-                onUpdate: function (v) {
+                onUpdate: function (v: any) {
                     var _a;
                     options.onUpdate(v);
                     (_a = valueTransition.onUpdate) === null || _a === void 0 ? void 0 : _a.call(valueTransition, v);
@@ -198,8 +198,8 @@ function getValueTransition(transition: Transition, key: string) {
 function startAnimation(key: string, value: MotionValue, target: ResolvedValueTarget, transition?: Transition) {
     if (transition === void 0) { transition = {}; }
     return value.start(function (onComplete) {
-        var delayTimer;
-        var controls;
+        var delayTimer: string | number | NodeJS.Timeout | undefined;
+        var controls: { stop: any; } | null | undefined;
         var animation = getAnimation(key, value, target, transition, onComplete);
         var delay = getDelayFromTransition(transition, key);
         var start = function () { return (controls = animation()); };

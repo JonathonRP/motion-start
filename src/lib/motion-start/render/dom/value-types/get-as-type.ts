@@ -13,7 +13,7 @@ Copyright (c) 2018 Framer B.V.
  * Provided a value and a ValueType, returns the value as that value type.
  */
 var getValueAsType = function (value: any, type?: ValueType | undefined) {
-    return type && typeof value === "number"
+    return type && typeof value === "number" //@ts-ignore
         ? type.transform(value)
         : value;
 };

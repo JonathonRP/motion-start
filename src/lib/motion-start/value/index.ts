@@ -371,7 +371,7 @@ export class MotionValue<V = any> implements Writable<V> {
 		this.stop();
 		return new Promise((resolve) => {
 			this.hasAnimated = true;
-			this.stopAnimation = animation(resolve);
+			this.stopAnimation = animation(resolve); //wierd
 		}).then(() => {
 			return this.clearAnimation();
 		});
@@ -413,7 +413,7 @@ export class MotionValue<V = any> implements Writable<V> {
 	};
 }
 
-var isFloat = (value: unknown) => !isNaN(Number.parseFloat(value));
+var isFloat = (value: unknown) => !isNaN(Number.parseFloat(value as string));
 
 /**
  * @internal

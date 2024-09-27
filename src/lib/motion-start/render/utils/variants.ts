@@ -26,16 +26,16 @@ function isVariantLabel(v: unknown): v is string | string[] {
 /**
  * Creates an object containing the latest state of every MotionValue on a VisualElement
  */
-function getCurrent(visualElement) {
-    var current = {};
-    visualElement.forEachValue(function (value, key) { return (current[key] = value.get()); });
+function getCurrent(visualElement: VisualElement<any, any>) {
+    var current = {};//@ts-ignore
+    visualElement.forEachValue(function (value: { get: () => any; }, key: string | number) { return (current[key] = value.get()); });
     return current;
 }
 /**
  * Creates an object containing the latest velocity of every MotionValue on a VisualElement
  */
-function getVelocity(visualElement) {
-    var velocity = {};
+function getVelocity(visualElement: VisualElement<any, any>) {
+    var velocity = {};//@ts-ignore
     visualElement.forEachValue(function (value, key) { return (velocity[key] = value.getVelocity()); });
     return velocity;
 }
@@ -59,7 +59,7 @@ function resolveVariant(visualElement: VisualElement, definition?: string | Targ
     return resolveVariantFromProps(props, definition, custom !== null && custom !== void 0 ? custom : props.custom, getCurrent(visualElement), getVelocity(visualElement));
 }
 function checkIfControllingVariants(props: MotionProps) {
-    var _a;
+    var _a;//@ts-ignore
     return (typeof ((_a = props.animate) === null || _a === void 0 ? void 0 : _a.start) === "function" ||
         isVariantLabel(props.initial) ||
         isVariantLabel(props.animate) ||

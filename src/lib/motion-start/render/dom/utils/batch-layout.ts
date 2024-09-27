@@ -16,7 +16,7 @@ var unresolvedJobs = new Set();
 var layoutState = {
     isMeasuringLayout: false,
 };
-function pushJob(stack, job, pointer) {
+function pushJob(stack: any[], job: any, pointer: number) {
     if (!stack[pointer])
         stack[pointer] = [];
     stack[pointer].push(job);
@@ -30,16 +30,17 @@ function flushLayout() {
         return;
     var pointer = 0;
     var reads = [[]];
-    var writes = [];
-    var setRead = function (job) { return pushJob(reads, job, pointer); };
-    var setWrite = function (job) {
-        pushJob(writes, job, pointer);
+    var writes: string | any[] = [];
+    var setRead = function (job: any) { return pushJob(reads, job, pointer); };
+    var setWrite = function (job: any) {
+        pushJob(writes as string[], job, pointer);
         pointer++;
     };
     /**
      * Resolve jobs into their array stacks
      */
     unresolvedJobs.forEach(function (callback) {
+        //@ts-ignore
         callback(setRead, setWrite);
         pointer = 0;
     });
@@ -71,7 +72,7 @@ function flushLayout() {
         writes[i] && writes[i].forEach(executeJob);
     }
 }
-var executeJob = function (job) { return job(); };
+var executeJob = function (job: () => any) { return job(); };
 
 export { batchLayout, flushLayout, layoutState };
 

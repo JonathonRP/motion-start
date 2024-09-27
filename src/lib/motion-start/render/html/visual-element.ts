@@ -38,6 +38,7 @@ var htmlConfig = {
             var computedStyle = getComputedStyle(domElement);
             return ((isCSSVariable(key)
                 ? computedStyle.getPropertyValue(key)
+                //@ts-ignore
                 : computedStyle[key]) || 0);
         }
     },
@@ -51,6 +52,7 @@ var htmlConfig = {
     },
     getBaseTarget: function (props, key) {
         var _a;
+        //@ts-ignore
         return (_a = props.style) === null || _a === void 0 ? void 0 : _a[key];
     },
     measureViewportBox: function (element, _a) {
@@ -73,6 +75,7 @@ var htmlConfig = {
         element.scheduleRender();
     },
     restoreTransform: function (instance, mutableState) {
+        //@ts-ignore
         instance.style.transform = mutableState.style.transform;
     },
     removeValueFromRenderState: function (key, _a) {
@@ -101,7 +104,9 @@ var htmlConfig = {
                 origin = transformValues(origin);
         }
         if (isMounted) {
+            //@ts-ignore
             checkTargetForNewValues(element, target, origin);
+            //@ts-ignore
             var parsed = parseDomVariant(element, target, origin, transitionEnd);
             transitionEnd = parsed.transitionEnd;
             target = parsed.target;

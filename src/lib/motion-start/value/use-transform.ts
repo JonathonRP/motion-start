@@ -157,7 +157,7 @@ export function useTransform<I, O>(
 	outputRange?: O[],
 	options?: TransformOptions<O>
 ): any {
-	let latest = <I[]>[];
+	let latest:I[] = [];
 
 	const update = (
 		input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
@@ -177,14 +177,14 @@ export function useTransform<I, O>(
 				latest.length = 0;
 				const numValues = values.length;
 				for (let i = 0; i < numValues; i++) {
-					latest[i] = values[i].get();
+					latest[i] = values[i].get(); //wierd
 				}
-
+				//@ts-ignore
 				return _transformer(latest);
 			},
 		];
 	};
-	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options)) as any;
+	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options)) as any; //wierd
 
 	comb.updateInner = comb.reset;
 

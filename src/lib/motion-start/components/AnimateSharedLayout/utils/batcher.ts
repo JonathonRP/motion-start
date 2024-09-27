@@ -20,7 +20,7 @@ import { Presence } from '../types.js';
  * Default handlers for batching VisualElements
  */
 var defaultHandler = {
-    layoutReady: function (child) { return child.notifyLayoutReady(); },
+    layoutReady: function (child: { notifyLayoutReady: () => any; }) { return child.notifyLayoutReady(); },
 };
 /**
  * Create a batcher to process VisualElements
@@ -32,7 +32,7 @@ function createBatcher(): SyncLayoutBatcher {
         flush: function (_a) {
             var _b = _a === void 0 ? defaultHandler : _a, layoutReady = _b.layoutReady, parent = _b.parent;
             batchLayout(function (read, write) {
-                var order = Array.from(queue).sort(compareByDepth);
+                var order = Array.from(queue).sort(compareByDepth); //wierd
                 var ancestors = parent
                     ? collectProjectingAncestors(parent)
                     : [];
@@ -89,7 +89,7 @@ function createBatcher(): SyncLayoutBatcher {
         },
     };
 }
-function assignProjectionToSnapshot(child) {
+function assignProjectionToSnapshot(child: { prevViewportBox: any; projection: { target: any; }; }) {
     child.prevViewportBox = child.projection.target;
 }
 

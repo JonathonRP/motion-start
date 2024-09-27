@@ -13,6 +13,7 @@ Copyright (c) 2018 Framer B.V.
 import { calcRelativeOffset } from '../../../motion/features/layout/utils.js';
 import { eachAxis } from '../../../utils/each-axis.js';
 import { removeBoxTransforms } from '../../../utils/geometry/delta-apply.js';
+import type { AxisBox2D } from "$lib/motion-start/types/geometry";
 
 /**
  * Returns a boolean stating whether or not we converted the projection
@@ -23,7 +24,7 @@ function convertToRelativeProjection(visualElement: VisualElement, isLayoutDrag?
     var projectionParent = visualElement.getProjectionParent();
     if (!projectionParent)
         return false;
-    var offset;
+    var offset: AxisBox2D;
     if (isLayoutDrag) {
         offset = calcRelativeOffset(projectionParent.projection.target, visualElement.projection.target);
         removeBoxTransforms(offset, projectionParent.getLatestValues());

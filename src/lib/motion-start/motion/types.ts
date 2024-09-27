@@ -217,6 +217,7 @@ export interface MotionAdvancedProps {
  * @public
  */
 export interface MotionProps extends AnimationProps, VisualElementLifecycles, PanHandlers, TapHandlers, HoverHandlers, FocusHandlers, DraggableProps, LayoutProps, MotionAdvancedProps {
+    transformValues: any;
     /**
      * Properties, variant label or array of variant labels to start in.
      *

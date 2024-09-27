@@ -144,29 +144,32 @@ function createLifecycles() {
     var propSubscriptions = {};
     var lifecycles = {
         clearAllListeners: function () { return managers.forEach(function (manager) { return manager.clear(); }); },
-        updatePropListeners: function (props) {
+        updatePropListeners: function (props: { [x: string]: any; }) {
             return names.forEach(function (name) {
                 var _a;
+                //@ts-ignore
                 (_a = propSubscriptions[name]) === null || _a === void 0 ? void 0 : _a.call(propSubscriptions);
                 var on = "on" + name;
                 var propListener = props[on];
-                if (propListener) {
+                if (propListener) {//@ts-ignore
                     propSubscriptions[name] = lifecycles[on](propListener);
                 }
             });
         },
     };
-    managers.forEach(function (manager, i) {
+    managers.forEach(function (manager, i) {//@ts-ignore
         lifecycles["on" + names[i]] = function (handler) { return manager.add(handler); };
+        //@ts-ignore
         lifecycles["notify" + names[i]] = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            //@ts-ignore
             return manager.notify.apply(manager, __spreadArray([], __read(args)));
         };
     });
-    return lifecycles as LifecycleManager;
+    return lifecycles as unknown as LifecycleManager;
 }
 
 export { createLifecycles };

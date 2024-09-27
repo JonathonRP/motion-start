@@ -10,6 +10,7 @@ import { camelToDash } from "./utils/camel-to-dash"
 import { camelCaseAttributes } from "../svg/utils/camel-case-attrs"
 import { isTransformProp } from "../html/utils/transform"
 import { getDefaultValueType } from "./value-types/defaults";
+import type { SVGRenderState } from "../svg/types"
 
 const zeroDimensions = {
     x: 0,
@@ -19,6 +20,7 @@ const zeroDimensions = {
 }
 
 export const svgMutableState = () => ({
+    //@ts-ignore
     ...htmlConfig.createRenderState(),
     attrs: {},
     dimensions: zeroDimensions,
@@ -26,8 +28,9 @@ export const svgMutableState = () => ({
 
 export const svgVisualElement = visualElement({
     ...(htmlConfig),
+    //@ts-ignore
     createRenderState: svgMutableState,
-    onMount(element, instance, mutableState) {
+    onMount(element: { scheduleRender: () => void }, instance:SVGGraphicsElement, mutableState:any) {
         try {
             mutableState.dimensions =
                 typeof (instance).getBBox === "function"
@@ -39,6 +42,7 @@ export const svgVisualElement = visualElement({
         }
 
         if (isPath(instance)) {
+            //@ts-ignore
             mutableState.totalPathLength = instance.getTotalLength()
         }
 
@@ -46,10 +50,12 @@ export const svgVisualElement = visualElement({
          * Ensure we render the element as soon as possible to reflect the measured dimensions.
          * Preferably this would happen synchronously but we put it in rAF to prevent layout thrashing.
          */
+        //@ts-ignore
         element.scheduleRender()
     },
 
     getBaseTarget(props, key) {
+        //@ts-ignore
         return props[key]
     },
 
@@ -65,10 +71,12 @@ export const svgVisualElement = visualElement({
         const newValues = htmlConfig.scrapeMotionValuesFromProps(props)
 
         for (let key in props) {
+            //@ts-ignore
             if (isMotionValue(props[key])) {
                 if (key === "x" || key === "y") {
                     key = "attr" + key.toUpperCase()
                 }
+                //@ts-ignore
                 newValues[key] = props[key]
             }
         }
@@ -86,7 +94,7 @@ export const svgVisualElement = visualElement({
         props
     ) {
         buildSVGAttrs(
-            renderState,
+            renderState as SVGRenderState,
             latestValues,
             projection,
             layoutState,
@@ -97,10 +105,11 @@ export const svgVisualElement = visualElement({
 
     render(element, mutableState) {
         htmlConfig.render(element, mutableState)
-
+        //@ts-ignore
         for (const key in mutableState.attrs) {
             element.setAttribute(
                 !camelCaseAttributes.has(key) ? camelToDash(key) : key,
+                //@ts-ignore
                 mutableState.attrs[key]
             )
         }
@@ -108,7 +117,7 @@ export const svgVisualElement = visualElement({
 })
 
 function isPath(
-    element
+    element: SVGGraphicsElement
 ){
     return element.tagName === "path"
 }

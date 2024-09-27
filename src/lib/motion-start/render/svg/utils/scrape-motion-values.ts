@@ -15,8 +15,10 @@ import { scrapeMotionValuesFromProps as scrapeMotionValuesFromProps$1 } from '..
 function scrapeMotionValuesFromProps(props: MotionProps) {
     var newValues = scrapeMotionValuesFromProps$1(props);
     for (var key in props) {
+        //@ts-ignore
         if (isMotionValue(props[key])) {
             var targetKey = key === "x" || key === "y" ? "attr" + key.toUpperCase() : key;
+            //@ts-ignore
             newValues[targetKey] = props[key];
         }
     }

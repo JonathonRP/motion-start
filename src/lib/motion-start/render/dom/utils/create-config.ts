@@ -18,10 +18,10 @@ Copyright (c) 2018 Framer B.V.
 import { __assign } from 'tslib';
 import { htmlMotionConfig } from '../../html/config-motion.js';
 import { svgMotionConfig } from '../../svg/config-motion.js';
-import { createUseRender } from '../use-render.js';
+import { createUseRender } from '../use-render.js'; //wierd
 import { isSVGComponent } from './is-svg-component.js';
 
-function createDomMotionConfig<Props>(Component: string | React.ComponentType<Props>, { forwardMotionProps }: CustomMotionComponentConfig, preloadedFeatures?: FeatureComponents, createVisualElement?: CreateVisualElement<any>) {
+function createDomMotionConfig(Component: string | React.ComponentType, { forwardMotionProps }: CustomMotionComponentConfig, preloadedFeatures?: FeatureComponents, createVisualElement?: CreateVisualElement<any>) {
     var baseConfig = isSVGComponent(Component)
         ? svgMotionConfig
         : htmlMotionConfig;

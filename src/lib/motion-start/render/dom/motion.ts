@@ -48,10 +48,12 @@ function createDomMotionComponent<T extends keyof DOMMotionComponents>(key: T): 
 	var config = {
 		createVisualElement: createDomVisualElement(key),
 		// useRender: createUseRender(key, false),
-		forwardMotionProps: key.forwardMotionProps,
-		Component: key.Component,
+		//@ts-ignore
+		forwardMotionProps: key.forwardMotionProps,//@ts-ignore
+		Component: key.Component,//@ts-ignore
 		defaultFeatures: allMotionFeatures,
 	};
+	//@ts-ignore
 	return createMotionComponent(config);
 }
 

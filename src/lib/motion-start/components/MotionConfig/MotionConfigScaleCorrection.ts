@@ -17,7 +17,7 @@ export const scaleCorrection = () => {
         const scc = get(scaleCorrectionContext);
 
         
-        scc.forEach((v, i) => {
+        scc.forEach((v: { afterU: (arg0: boolean) => void; }, i: any) => {
             v.afterU?.(true);
         });
     };

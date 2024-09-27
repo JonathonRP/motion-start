@@ -64,6 +64,7 @@ function buildHTMLStyles(state: HTMLRenderState, latestValues: ResolvedValues, p
                 transformIsNone = false;
         }
         else if (isTransformOriginProp(key)) {
+            //@ts-ignore
             transformOrigin[key] = valueAsType;
             // If this is a transform origin, flag and enable further transform-origin processing
             hasTransformOrigin = true;

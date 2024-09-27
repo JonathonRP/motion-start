@@ -12,6 +12,7 @@ import {fixed} from '../../../utils/fix-process-env.js';
 import { number, px, percent, degrees, vw, vh } from 'style-value-types';
 import { testValueType } from './test.js';
 import { auto } from './type-auto.js';
+import type { CustomValueType } from '$lib/motion-start/types.js';
 
 /**
  * A list of value types commonly used for dimensions
@@ -20,7 +21,7 @@ var dimensionValueTypes = [number, px, percent, degrees, vw, vh, auto];
 /**
  * Tests a dimensional value against the list of dimension ValueTypes
  */
-var findDimensionValueType = function (v) {
+var findDimensionValueType = function (v: string | number | CustomValueType | null) {
     return dimensionValueTypes.find(testValueType(v));
 };
 

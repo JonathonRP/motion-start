@@ -2,7 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionComponentConfig } from "../../motion";
+import type { MotionComponentConfig, MotionProps } from "../../motion";
+import type { TargetProjection } from "../utils/state";
 import type { SVGRenderState } from "./types";
 
 /** 
@@ -15,13 +16,14 @@ import { renderSVG } from './utils/render.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
 
 var svgMotionConfig = {
+        //@ts-ignore
         scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
         createRenderState: createSvgRenderState,
-        onMount: function (props, instance, _a) {
+        onMount: function (props:MotionProps, instance:SVGGraphicsElement, _a: { renderState: any; latestValues: any; }) {
             var renderState = _a.renderState, latestValues = _a.latestValues;
             try {
                 renderState.dimensions =
-                    typeof instance.getBBox ===
+                    typeof (instance as SVGGraphicsElement).getBBox ===
                         "function"
                         ? instance.getBBox()
                         : instance.getBoundingClientRect();
@@ -36,6 +38,7 @@ var svgMotionConfig = {
                 };
             }
             if (isPath(instance)) {
+                //@ts-ignore
                 renderState.totalPathLength = instance.getTotalLength();
             }
             buildSVGAttrs(renderState, latestValues, undefined, undefined, { enableHardwareAcceleration: false }, props.transformTemplate);
@@ -43,7 +46,7 @@ var svgMotionConfig = {
             renderSVG(instance, renderState);
         },
     } satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>
-function isPath(element) {
+function isPath(element: SVGGraphicsElement) {
     return element.tagName === "path";
 }
 

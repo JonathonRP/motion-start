@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { PlaybackControls } from "popmotion";
 import type { ResolvedValues, VisualElement } from "../../../render/types";
-import type { Transition } from "../../../types";
+import type { Inertia, Just, Keyframes, None, Orchestration, PermissiveTransitionDefinition, Repeat, ResolvedValueTarget, Spring, Transition, Tween } from "../../../types";
 export interface Crossfader {
     isActive(): boolean;
     getCrossfadeState(element: VisualElement): ResolvedValues | undefined;
@@ -57,19 +57,19 @@ function createCrossfader(): Crossfader {
     /**
      *
      */
-    var finalCrossfadeFrame = null;
+    var finalCrossfadeFrame: number | null = null;
     /**
      * Framestamp of the last frame we updated values at.
      */
     var prevUpdate = 0;
-    function startCrossfadeAnimation(target, transition) {
+    function startCrossfadeAnimation(target: ResolvedValueTarget, transition: (Orchestration & Repeat & Tween) | (Orchestration & Repeat & Spring) | (Orchestration & Repeat & Keyframes) | (Orchestration & Repeat & Inertia) | (Orchestration & Repeat & Just) | (Orchestration & Repeat & None) | (Orchestration & Repeat & PermissiveTransitionDefinition) | undefined) {
         var lead = options.lead, follow = options.follow;
         isActive = true;
         finalCrossfadeFrame = null;
         var hasUpdated = false;
         var onUpdate = function () {
             hasUpdated = true;
-            lead && lead.scheduleRender();
+            lead && lead.scheduleRender(); //wierd
             follow && follow.scheduleRender();
         };
         var onComplete = function () {

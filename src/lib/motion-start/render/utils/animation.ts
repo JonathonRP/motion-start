@@ -53,7 +53,7 @@ function animateVisualElement(visualElement: VisualElement, definition: Animatio
         return visualElement.notifyAnimationComplete(definition);
     }) as Promise<void>;
 }
-function animateVariant(visualElement: VisualElement, variant, options: AnimationOptions = {}) {
+function animateVariant(visualElement: VisualElement, variant: string | TargetAndTransition | TargetResolver, options: AnimationOptions = {}) {
     var _a;
     if (options === void 0) { options = {}; }
     var resolved = resolveVariant(visualElement, variant, options.custom);
@@ -66,14 +66,14 @@ function animateVariant(visualElement: VisualElement, variant, options: Animatio
      * Otherwise, we resolve a Promise immediately for a composable no-op.
      */
     var getAnimation = resolved
-        ? function () { return animateTarget(visualElement, resolved, options); }
+        ? function () { return animateTarget(visualElement, resolved as AnimationDefinition, options); }
         : function () { return Promise.resolve(); };
     /**
      * If we have children, create a callback that runs all their animations.
      * Otherwise, we resolve a Promise immediately for a composable no-op.
      */
     var getChildAnimations = ((_a = visualElement.variantChildren) === null || _a === void 0 ? void 0 : _a.size)
-        ? function (forwardDelay) {
+        ? function (forwardDelay: number | undefined) {
             if (forwardDelay === void 0) { forwardDelay = 0; }
             var _a = transition.delayChildren, delayChildren = _a === void 0 ? 0 : _a, staggerChildren = transition.staggerChildren, staggerDirection = transition.staggerDirection;
             return animateChildren(visualElement, variant, delayChildren + forwardDelay, staggerChildren, staggerDirection, options);
@@ -97,10 +97,10 @@ function animateVariant(visualElement: VisualElement, variant, options: Animatio
 /**
  * @internal
  */
-function animateTarget(visualElement: VisualElement, definition: AnimationDefinition, _a) {
+function animateTarget(visualElement: VisualElement, definition: AnimationDefinition, _a:any) {
     var _b;
     var _c = _a === void 0 ? {} : _a, _d = _c.delay, delay = _d === void 0 ? 0 : _d, transitionOverride = _c.transitionOverride, type = _c.type;
-    var _e = visualElement.makeTargetAnimatable(definition), _f = _e.transition, transition = _f === void 0 ? visualElement.getDefaultTransition() : _f, transitionEnd = _e.transitionEnd, target = __rest(_e, ["transition", "transitionEnd"]);
+    var _e = visualElement.makeTargetAnimatable(definition as TargetAndTransition), _f = _e.transition, transition = _f === void 0 ? visualElement.getDefaultTransition() : _f, transitionEnd = _e.transitionEnd, target = __rest(_e, ["transition", "transitionEnd"]);
     if (transitionOverride)
         transition = transitionOverride;
     var animations = [];
@@ -121,22 +121,22 @@ function animateTarget(visualElement: VisualElement, definition: AnimationDefini
         transitionEnd && setTarget(visualElement, transitionEnd);
     });
 }
-function animateChildren(visualElement, variant, delayChildren, staggerChildren, staggerDirection, options) {
+function animateChildren(visualElement: VisualElement<any, any>, variant: string | TargetAndTransition | TargetResolver, delayChildren: number | undefined, staggerChildren: number | undefined, staggerDirection: number | undefined, options: AnimationOptions) {
     if (delayChildren === void 0) { delayChildren = 0; }
     if (staggerChildren === void 0) { staggerChildren = 0; }
     if (staggerDirection === void 0) { staggerDirection = 1; }
-    var animations = [];
-    var maxStaggerDuration = (visualElement.variantChildren.size - 1) * staggerChildren;
+    var animations: any[] = [];
+    var maxStaggerDuration = (visualElement!.variantChildren!.size! - 1) * staggerChildren;
     var generateStaggerDuration = staggerDirection === 1
-        ? function (i) {
+        ? function (i: number | undefined) {
             if (i === void 0) { i = 0; }
             return i * staggerChildren;
         }
-        : function (i) {
+        : function (i: number | undefined) {
             if (i === void 0) { i = 0; }
             return maxStaggerDuration - i * staggerChildren;
         };
-    Array.from(visualElement.variantChildren)
+    Array.from(visualElement!.variantChildren!)
         .sort(sortByTreeOrder)
         .forEach(function (child, i) {
             animations.push(animateVariant(child, variant, __assign(__assign({}, options), { delay: delayChildren + generateStaggerDuration(i) })).then(function () { return child.notifyAnimationComplete(variant); }));
@@ -155,7 +155,7 @@ function sortByTreeOrder(a: VisualElement, b: VisualElement) {
  * posed problems if an animation was triggered by afterChildren and protectedKeys
  * had been set to true in the meantime.
  */
-function shouldBlockAnimation(_a, key) {
+function shouldBlockAnimation(_a: { protectedKeys: any; needsAnimating: any; }, key: string) {
 
     var protectedKeys = _a.protectedKeys, needsAnimating = _a.needsAnimating;
     var shouldBlock = protectedKeys.hasOwnProperty(key) && needsAnimating[key] !== true;

@@ -28,6 +28,7 @@ export interface BoundingBox3D extends BoundingBox2D {
  *
  * @public
  */
+
 export interface Axis {
     min: number;
     max: number;
@@ -42,9 +43,12 @@ export interface AxisBox2D {
     x: Axis;
     y: Axis;
 }
+
+export type AxisKey = keyof AxisBox2D 
 /**
  * @public
  */
+
 export interface AxisBox3D extends AxisBox2D {
     z: Axis;
 }

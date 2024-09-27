@@ -15,6 +15,7 @@ function renderHTML (element: HTMLElement, { style, vars }: HTMLRenderState) {
     Object.assign(element.style, style);
     // Loop over any CSS variables and assign those.
     for (var key in vars) {
+        //@ts-ignore
         element.style.setProperty(key, vars[key]);
     }
 }

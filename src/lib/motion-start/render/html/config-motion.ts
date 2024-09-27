@@ -15,6 +15,7 @@ import { createHtmlRenderState } from './utils/create-render-state.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
 
 var htmlMotionConfig = {
+        //@ts-ignore
         scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
         createRenderState: createHtmlRenderState,   
 } satisfies Partial<MotionComponentConfig<HTMLElement, HTMLRenderState>>;

@@ -27,21 +27,22 @@ import { __assign } from 'tslib';
 import { elementDragControls } from '../../../gestures/drag/VisualElementDragControls.js';
 import { Presence } from '../types.js';
 import { createCrossfader } from './crossfader.js';
+import type { Point2D } from "$lib/motion-start/types/geometry";
 
 function layoutStack(): LayoutStack {
     var stack = new Set();
     var state = { leadIsExiting: false };
     var prevState = __assign({}, state);
-    var prevValues;
-    var prevViewportBox;
-    var prevDragCursor;
+    var prevValues: any;
+    var prevViewportBox: undefined;
+    var prevDragCursor: Point2D | undefined;
     var crossfader = createCrossfader();
     var needsCrossfadeAnimation = false;
-    function getFollowViewportBox() {
+    function getFollowViewportBox() {//@ts-ignore
         return state.follow ? state.follow.prevViewportBox : prevViewportBox;
     }
     function getFollowLayout() {
-        var _a;
+        var _a;//@ts-ignore
         return (_a = state.follow) === null || _a === void 0 ? void 0 : _a.getLayoutState().layout;
     }
     return {
@@ -52,23 +53,23 @@ function layoutStack(): LayoutStack {
              * Hydrate new element with previous drag position if we have one
              */
             if (prevDragCursor)
-                element.prevDragCursor = prevDragCursor;
-            if (!state.lead)
+                element.prevDragCursor = prevDragCursor;//@ts-ignore
+            if (!state.lead)//@ts-ignore
                 state.lead = element;
         },
         remove: function (element) {
             stack.delete(element);
-        },
+        },//@ts-ignore
         getLead: function () { return state.lead; },
-        updateSnapshot: function () {
+        updateSnapshot: function () {//@ts-ignore
             if (!state.lead)
                 return;
             prevValues = crossfader.isActive()
                 ? crossfader.getLatestValues()
-                : state.lead.getLatestValues();
+                : state.lead.getLatestValues();//wierd
             prevViewportBox = state.lead.prevViewportBox;
             var dragControls = elementDragControls.get(state.lead);
-            if (dragControls && dragControls.isDragging) {
+            if (dragControls && dragControls.isDragging) {//@ts-ignore
                 prevDragCursor = dragControls.cursorProgress;
             }
         },

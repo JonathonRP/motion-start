@@ -3,7 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VariantLabels } from "../../motion/types";
-import type { TargetAndTransition } from "../../types";
+import type { TargetAndTransition, TargetResolver } from "../../types";
 import type { VisualElement } from "../types";
 import type { AnimationOptions } from "./animation";
 import { AnimationType } from "./types";
@@ -57,7 +57,7 @@ var variantPriorityOrder = [
 var reversePriorityOrder = __spreadArray([], __read(variantPriorityOrder)).reverse();
 var numAnimationTypes = variantPriorityOrder.length;
 function animateList(visualElement: VisualElement) {
-    return function (animations) {
+    return function (animations: any[]) {
         return Promise.all(animations.map(function (_a) {
             var animation = _a.animation, options = _a.options;
             return animateVisualElement(visualElement, animation, options);
@@ -73,7 +73,7 @@ function createAnimationState(visualElement: VisualElement) {
      * This function will be used to reduce the animation definitions for
      * each active animation type into an object of resolved values for it.
      */
-    var buildResolvedTypeValues = function (acc, definition) {
+    var buildResolvedTypeValues = function (acc: any, definition: TargetAndTransition | TargetResolver) {
         var resolved = resolveVariant(visualElement, definition);
         if (resolved) {
             resolved.transition; var transitionEnd = resolved.transitionEnd, target = __rest(resolved, ["transition", "transitionEnd"]);
@@ -81,14 +81,15 @@ function createAnimationState(visualElement: VisualElement) {
         }
         return acc;
     };
-    function isAnimated(key) {
+    function isAnimated(key: string | number) {
+        //@ts-ignore
         return allAnimatedKeys[key] !== undefined;
     }
     /**
      * This just allows us to inject mocked animation functions
      * @internal
      */
-    function setAnimateFunction(makeAnimator) {
+    function setAnimateFunction(makeAnimator: (arg0: VisualElement<any, any>) => (animations: any[]) => Promise<void[]>) {
         animate = makeAnimator(visualElement);
     }
     /**
@@ -101,7 +102,7 @@ function createAnimationState(visualElement: VisualElement) {
      * 3. Determine if any values have been removed from a type and figure out
      *    what to animate those to.
      */
-    function animateChanges(options, changedActiveType) {
+    function animateChanges(options: any, changedActiveType: any) {
         var _a;
         var props = visualElement.getProps();
         var context = visualElement.getVariantContext(true) || {};
@@ -109,7 +110,7 @@ function createAnimationState(visualElement: VisualElement) {
          * A list of animations that we'll build into as we iterate through the animation
          * types. This will get executed at the end of the function.
          */
-        var animations = [];
+        var animations: any[] = [];
         /**
          * Keep track of which values have been removed. Then, as we hit lower priority
          * animation types, we can check if they contain removed values and animate to that.
@@ -126,9 +127,9 @@ function createAnimationState(visualElement: VisualElement) {
          * variant animations, we want to ensure lower-priority variants are forced to animate.
          */
         var removedVariantIndex = Infinity;
-        var _loop_1 = function (i) {
-            var type = reversePriorityOrder[i];
-            var typeState = state[type];
+        var _loop_1 = function (i: number) {
+            var type = reversePriorityOrder[i];//@ts-ignore
+            var typeState = state[type];//@ts-ignore
             var prop = (_a = props[type]) !== null && _a !== void 0 ? _a : context[type];
             var propIsVariant = isVariantLabel(prop);
             /**
@@ -144,6 +145,7 @@ function createAnimationState(visualElement: VisualElement) {
              *
              * TODO: Can probably change this to a !isControllingVariants check
              */
+            //@ts-ignore
             var isInherited = prop === context[type] && prop !== props[type] && propIsVariant;
             /**
              *
@@ -205,7 +207,7 @@ function createAnimationState(visualElement: VisualElement) {
              */
             var _b = typeState.prevResolvedValues, prevResolvedValues = _b === void 0 ? {} : _b;
             var allKeys = __assign(__assign({}, prevResolvedValues), resolvedValues);
-            var markToAnimate = function (key) {
+            var markToAnimate = function (key: string) {
                 shouldAnimateType = true;
                 removedKeys.delete(key);
                 typeState.needsAnimating[key] = true;
@@ -307,8 +309,9 @@ function createAnimationState(visualElement: VisualElement) {
         if (removedKeys.size) {
             var fallbackAnimation_1 = {};
             removedKeys.forEach(function (key) {
-                var fallbackTarget = visualElement.getBaseTarget(key);
+                var fallbackTarget = visualElement.getBaseTarget(key as string);
                 if (fallbackTarget !== undefined) {
+                    //@ts-ignore
                     fallbackAnimation_1[key] = fallbackTarget;
                 }
             });
@@ -326,13 +329,15 @@ function createAnimationState(visualElement: VisualElement) {
     /**
      * Change whether a certain animation type is active.
      */
-    function setActive(type, isActive, options) {
+    function setActive(type: AnimationType, isActive: boolean, options: any) {
         var _a;
         // If the active state hasn't changed, we can safely do nothing here
+        //@ts-ignore
         if (state[type].isActive === isActive)
             return Promise.resolve();
         // Propagate active change to children
         (_a = visualElement.variantChildren) === null || _a === void 0 ? void 0 : _a.forEach(function (child) { var _a; return (_a = child.animationState) === null || _a === void 0 ? void 0 : _a.setActive(type, isActive); });
+        //@ts-ignore
         state[type].isActive = isActive;
         return animateChanges(options, type);
     }
@@ -353,7 +358,7 @@ function variantsHaveChanged(prev: any, next: any) {
     }
     return false;
 }
-function createTypeState(isActive: boolean = false) {
+function createTypeState(isActive: boolean = false): AnimationTypeState {
     return {
         isActive: isActive,
         protectedKeys: {},
@@ -362,13 +367,14 @@ function createTypeState(isActive: boolean = false) {
     };
 }
 function createState() {
-    var _a;
+    var _a
     return _a = {},
-        _a[AnimationType.Animate] = createTypeState(true),
-        _a[AnimationType.Hover] = createTypeState(),
-        _a[AnimationType.Tap] = createTypeState(),
-        _a[AnimationType.Drag] = createTypeState(),
-        _a[AnimationType.Focus] = createTypeState(),
+        // @ts-ignore
+        _a[AnimationType.Animate] = createTypeState(true),//@ts-ignore
+        _a[AnimationType.Hover] = createTypeState(),//@ts-ignore
+        _a[AnimationType.Tap] = createTypeState(),//@ts-ignore
+        _a[AnimationType.Drag] = createTypeState(),//@ts-ignore
+        _a[AnimationType.Focus] = createTypeState(),//@ts-ignore
         _a[AnimationType.Exit] = createTypeState(),
         _a;
 }

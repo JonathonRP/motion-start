@@ -10,5 +10,5 @@ export type useHTMLProps = (props: MotionProps, visualState: ResolvedValues, isS
 
 
 export { default as UseHTMLProps } from './UseHTMLProps.svelte';
-export { default as UseStyle, copyRawValuesOnly } from './UseStyle.svelte';
+export { default as UseStyle, copyRawValuesOnly } from './UseStyle.svelte';//wierd
 

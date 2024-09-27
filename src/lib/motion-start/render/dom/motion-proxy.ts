@@ -82,6 +82,7 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 
 						console.log(target, args);
 
+						//@ts-ignore
 						return new target(...args);
 					},
                     // support svelte 5
@@ -92,7 +93,7 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 							args[1].___tag = key;
 							args[1].isSVG = type;
 						}
-
+						//@ts-ignore
 						return target(...args);
 					},
 				});

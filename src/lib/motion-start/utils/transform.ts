@@ -88,7 +88,7 @@ function transform<T>(inputValue: number, inputRange: number[], outputRange: T[]
  *
  * @public
  */
-function transform<T>(inputRange: number[], outputRange: T[], options?: TransformOptions<T>): (inputValue: number) => T;
+function transform<T>(inputRange: number[], outputRange: T[], options?: TransformOptions<T>): (inputValue: number) => T; //wierd
 
 
 /** 

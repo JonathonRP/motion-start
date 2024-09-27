@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-
+import Typography from '@tailwindcss/typography'
 const config: Config = {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
 	theme: {
@@ -10,7 +10,10 @@ const config: Config = {
 				"2xl": "1400px"
 			}
 		},
-    }
+    },
+	plugins: [
+		Typography
+	]
 };
 
 export default config;

@@ -30,7 +30,7 @@ Copyright (c) 2018 Framer B.V.
 import { __assign, __read } from 'tslib';
 // import { invariant } from '../../../utils/errors.js';
 
-function isCSSVariable(value) {
+function isCSSVariable(value: string) {
     return typeof value === "string" && value.startsWith("var(--");
 }
 /**
@@ -51,7 +51,7 @@ function parseCSSVariable(current: string): string[] | undefined[] {
     return [token, fallback];
 }
 var maxDepth = 4;
-function getVariableValue(current, element, depth) {
+function getVariableValue(current: string, element: Element, depth?: number | undefined) {
     if (depth === void 0) { depth = 1; }
     //invariant(depth <= maxDepth, "Max CSS variable fallback depth detected in property \"" + current + "\". This may indicate a circular fallback dependency.");
     var _a = __read(parseCSSVariable(current), 2), token = _a[0], fallback = _a[1];
@@ -100,6 +100,7 @@ function resolveCSSVariables(visualElement: VisualElement, { ...target }: Target
     // Cycle through every target property and resolve CSS variables. Currently
     // we only read single-var properties like `var(--foo)`, not `calc(var(--foo) + 20px)`
     for (var key in target) {
+        //@ts-ignore
         var current = target[key];
         if (!isCSSVariable(current))
             continue;
@@ -107,11 +108,13 @@ function resolveCSSVariables(visualElement: VisualElement, { ...target }: Target
         if (!resolved)
             continue;
         // Clone target if it hasn't already been
+        //@ts-ignore
         target[key] = resolved;
         // If the user hasn't already set this key on `transitionEnd`, set it to the unresolved
         // CSS variable. This will ensure that after the animation the component will reflect
         // changes in the value of the CSS variable.
         if (transitionEnd)
+            //@ts-ignore
             (_b = transitionEnd[key]) !== null && _b !== void 0 ? _b : (transitionEnd[key] = current);
     }
     return { target: target, transitionEnd: transitionEnd };

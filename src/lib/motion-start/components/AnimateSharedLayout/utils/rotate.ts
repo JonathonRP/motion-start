@@ -27,6 +27,7 @@ function resetRotate(child: VisualElement): void {
             continue;
         hasRotate = true;
         // Record the rotation and then temporarily set it to 0
+        //@ts-ignore
         resetValues[key] = child.getStaticValue(key);
         child.setStaticValue(key, 0);
     }
@@ -37,7 +38,7 @@ function resetRotate(child: VisualElement): void {
     // set to 0.
     child.syncRender();
     // Put back all the values we reset
-    for (var key in resetValues) {
+    for (var key in resetValues) {//@ts-ignore
         child.setStaticValue(key, resetValues[key]);
     }
     // Schedule a render for the next frame. This ensures we won't visually

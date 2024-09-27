@@ -28,13 +28,13 @@ import { motionValue } from '../index.js';
 
 function createScrollMotionValues(startStopNotifier?: any): ScrollMotionValues {
     const hasListener = { x: false, y: false, xp: false, yp: false }
-    let stop
-    const jointNotifier = startStopNotifier ? (type) => ()=>{
+    let stop: Promise<any>
+    const jointNotifier = startStopNotifier ? (type: string | number) => ()=>{
         if (!hasListener.x && !hasListener.y && !hasListener.xp && !hasListener.yp) {
             stop = startStopNotifier();
-        }
+        }//@ts-ignore
         hasListener[type] = true;
-        return () => {
+        return () => {//@ts-ignore
             hasListener[type] = false;
             if (!hasListener.x && !hasListener.y && !hasListener.xp && !hasListener.yp) {
                 if (stop){
@@ -47,7 +47,7 @@ function createScrollMotionValues(startStopNotifier?: any): ScrollMotionValues {
     } : ()=>() => { }
 
     const smvs = {
-        scrollX: motionValue(0,jointNotifier("x")),
+        scrollX: motionValue(0,jointNotifier("x")),//wierd
         scrollY: motionValue(0,jointNotifier("y")),
         scrollXProgress: motionValue(0,jointNotifier("xp")),
         scrollYProgress: motionValue(0,jointNotifier("yp")),
@@ -55,7 +55,7 @@ function createScrollMotionValues(startStopNotifier?: any): ScrollMotionValues {
 
     return smvs;
 }
-function setProgress(offset, maxOffset, value) {
+function setProgress(offset: number, maxOffset: number, value: MotionValue<number>) {
     value.set(!offset || !maxOffset ? 0 : offset / maxOffset);
 }
 function createScrollUpdater(values: ScrollMotionValues, getOffsets: GetScrollOffsets) {

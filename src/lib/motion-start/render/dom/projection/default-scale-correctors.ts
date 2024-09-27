@@ -54,7 +54,7 @@ function correctBoxShadow(latest: string, { delta, treeScale }: LayoutState) {
      * We need to first strip and store CSS variables from the string.
      */
     var containsCSSVariables = latest.includes("var(");
-    var cssVariables = [];
+    var cssVariables:any[] = [];
     if (containsCSSVariables) {
         latest = latest.replace(cssVariableRegex, function (match) {
             cssVariables.push(match);
@@ -70,7 +70,8 @@ function correctBoxShadow(latest: string, { delta, treeScale }: LayoutState) {
     // Calculate the overall context scale
     var xScale = delta.x.scale * treeScale.x;
     var yScale = delta.y.scale * treeScale.y;
-    shadow[0 + offset] /= xScale;
+    //@ts-ignore
+    shadow[0 + offset] /= xScale;//@ts-ignore
     shadow[1 + offset] /= yScale;
     /**
      * Ideally we'd correct x and y scales individually, but because blur and
@@ -80,10 +81,10 @@ function correctBoxShadow(latest: string, { delta, treeScale }: LayoutState) {
      */
     var averageScale = mix(xScale, yScale, 0.5);
     // Blur
-    if (typeof shadow[2 + offset] === "number")
+    if (typeof shadow[2 + offset] === "number")//@ts-ignore
         shadow[2 + offset] /= averageScale;
     // Spread
-    if (typeof shadow[3 + offset] === "number")
+    if (typeof shadow[3 + offset] === "number")//@ts-ignore
         shadow[3 + offset] /= averageScale;
     var output = template(shadow);
     if (containsCSSVariables) {

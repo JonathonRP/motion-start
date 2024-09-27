@@ -77,7 +77,7 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
     if (!numNewValues)
         return;
     for (var i = 0; i < numNewValues; i++) {
-        var key = newValueKeys[i];
+        var key = newValueKeys[i];//@ts-ignore
         var targetValue = target[key];
         var value = null;
         /**
@@ -92,7 +92,7 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
          * first check if an origin value was explicitly defined in the transition as "from",
          * if not read the value from the DOM. As an absolute fallback, take the defined target value.
          */
-        if (value === null) {
+        if (value === null) {//@ts-ignore
             value = (_b = (_a = origin[key]) !== null && _a !== void 0 ? _a : visualElement.readValue(key)) !== null && _b !== void 0 ? _b : target[key];
         }
         /**
@@ -115,14 +115,14 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
 }
 function getOriginFromTransition(key: string, transition: Transition) {
     if (!transition)
-        return;
+        return;//@ts-ignore
     var valueTransition = transition[key] || transition["default"] || transition;
     return valueTransition.from;
 }
 function getOrigin(target: Target, transition: Transition, visualElement: VisualElement) {
     var _a, _b;
     var origin = {};
-    for (var key in target) {
+    for (var key in target) {//@ts-ignore
         origin[key] =
             (_a = getOriginFromTransition(key, transition)) !== null && _a !== void 0 ? _a : (_b = visualElement.getValue(key)) === null || _b === void 0 ? void 0 : _b.get();
     }
@@ -212,7 +212,7 @@ function getOrigin(target: Target, transition: Transition, visualElement: Visual
         caretColor?: import("csstype").Property.CaretColor | undefined;
         clear?: import("csstype").Property.Clear | undefined;
         clipPath?: import("csstype").Property.ClipPath | undefined;
-        color?: import("csstype").Property.Color | undefined;
+        color?: import("csstype").Property.Color | undefined;//@ts-ignore
         colorAdjust?: import("csstype").Property.ColorAdjust | undefined;
         columnCount?: import("csstype").Property.ColumnCount | undefined;
         columnFill?: import("csstype").Property.ColumnFill | undefined;

@@ -29,7 +29,7 @@ function collectProjectingAncestors(visualElement: VisualElement, ancestors?: Vi
 }
 function collectProjectingChildren(visualElement: VisualElement) {
     var children = <VisualElement[]>[];
-    var addChild = function (child) {
+    var addChild = function (child: VisualElement<any, any>) {
         if (isProjecting(child))
             children.push(child);
         child.children.forEach(addChild);

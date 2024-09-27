@@ -17,7 +17,7 @@ import {
 import { addDomEvent } from "../../events/use-dom-event";
 
 
-const getElementScrollOffsets = (element) => () => {
+const getElementScrollOffsets = (element: { scrollLeft: any; scrollTop: any; scrollWidth: number; offsetWidth: number; scrollHeight: number; offsetHeight: number; }) => () => {
     return {
         xOffset: element.scrollLeft,
         yOffset: element.scrollTop,
@@ -39,7 +39,7 @@ export const useElementScroll = (ref: RefObject<HTMLElement>) => {
                 return () => { };
             };
 
-            await new Promise(r => setTimeout(() => r(), 200));
+            await new Promise<void>(r => setTimeout(() => r(), 200));
         }
         const element = (ref && ref.current) ? ref : values.ref;
 

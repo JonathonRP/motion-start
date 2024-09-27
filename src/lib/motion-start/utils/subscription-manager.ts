@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 type GenericHandler = (...args: any) => void;
 class SubscriptionManager<Handler extends GenericHandler> {
-	private subscriptions: (() => void)[] = [];
+	private subscriptions: ((a?: any, b?: any, c?: any) => void)[] = [];
 	add = (handler: Handler) => {
 		addUniqueItem(this.subscriptions, handler);
 		return () => {
