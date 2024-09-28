@@ -1,10 +1,4 @@
-# Motion Start
 
-this is in alpha expect bugs and please report or make PRs to fix bugs.
-
-fyi this is svelte-motion ported to typescript currently.
-
-plan is to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future
 # Motion Start
 
 this is in alpha expect bugs and please report or make PRs to fix bugs.
