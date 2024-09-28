@@ -19,7 +19,7 @@ Copyright (c) 2018 Framer B.V. -->
   $: filteredProps = filterProps(
     props,
     typeof Component === "string",
-    forwardMotionProps
+    forwardMotionProps,
   );
   $: if (targetEl) {
     motion(targetEl);
