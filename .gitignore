@@ -1,7 +1,6 @@
 node_modules
 .pnpm-store
 bun.lockb
-pnpm-lock.yaml
 /types/tsdoc-metadata.json
 
 # Output
