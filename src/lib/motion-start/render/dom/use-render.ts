@@ -7,10 +7,10 @@ import type { HTMLRenderState } from '../html/types';
 import type { SVGRenderState } from '../svg/types';
 import UseRender from './UseRender.svelte';
 
-export function createUseRender(
-	forwardMotionProps?: boolean
-): RenderComponent<SVGElement, SVGRenderState> | RenderComponent<HTMLElement, HTMLRenderState> {
-	return UseRender({ props: { forwardMotionProps } });
+export function createUseRender(forwardMotionProps?: boolean) {
+	return UseRender({ props: { forwardMotionProps } }) satisfies
+		| RenderComponent<SVGElement, SVGRenderState>
+		| RenderComponent<HTMLElement, HTMLRenderState>;
 }
 
 export { default as UseRender } from './UseRender.svelte';
