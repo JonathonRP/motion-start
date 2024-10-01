@@ -31,7 +31,9 @@ function createDomMotionConfig(
 		useRender: createUseRender(forwardMotionProps),
 		createVisualElement,
 		Component,
-	}) satisfies MotionComponentConfig<SVGElement, SVGRenderState> | MotionComponentConfig<HTMLElement, HTMLRenderState>;
+	}) as any satisfies
+		| MotionComponentConfig<SVGElement, SVGRenderState>
+		| MotionComponentConfig<HTMLElement, HTMLRenderState>;
 }
 
 export { createDomMotionConfig };

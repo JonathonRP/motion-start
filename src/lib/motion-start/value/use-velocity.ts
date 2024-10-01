@@ -1,10 +1,9 @@
-
 /** 
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from "./index.js";
-import { useMotionValue } from "./use-motion-value.js"
+import type { MotionValue } from './index.js';
+import { useMotionValue } from './use-motion-value.js';
 /**
  * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.
  *
@@ -16,29 +15,29 @@ import { useMotionValue } from "./use-motion-value.js"
  *
  * @public
  */
-export const useVelocity = (value : MotionValue<number>) => {
-    let val = value;
-    let cleanup: () => void;
+export const useVelocity = (value: MotionValue<number>) => {
+	let val = value;
+	let cleanup: () => void;
 
-    const reset = (value: MotionValue<number>) => {
-        cleanup?.();
-        val = value
-        cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
-            velocity.set(newVelocity);
-        })
-    }
-    
-    const velocity = useMotionValue(value.getVelocity(), () => {
-        cleanup?.();
-        cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
-            velocity.set(newVelocity);
-        })
-        return () => {
-            cleanup?.()     
-        }
-    }) as MotionValue<number> & { reset: typeof reset };
+	const reset = (value: MotionValue<number>) => {
+		cleanup?.();
+		val = value;
+		cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
+			velocity.set(newVelocity);
+		});
+	};
 
-    velocity.reset = reset;
+	const velocity = useMotionValue(value.getVelocity(), () => {
+		cleanup?.();
+		cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
+			velocity.set(newVelocity);
+		});
+		return () => {
+			cleanup?.();
+		};
+	}) as MotionValue<number> & { reset: typeof reset };
 
-    return velocity;
-}
+	velocity.reset = reset;
+
+	return velocity;
+};

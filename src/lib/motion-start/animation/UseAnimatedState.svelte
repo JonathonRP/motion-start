@@ -2,28 +2,22 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script module lang="ts">
-  var createObject = function () {
-    return {};
-  };
+  var createObject = () => ({});
   var stateVisualElement = visualElement({
-    build: function () {},
+    build: () => {},
     measureViewportBox: axisBox,
-    resetTransform: function () {},
-    restoreTransform: function () {},
-    removeValueFromRenderState: function () {},
-    render: function () {},
+    resetTransform: () => {},
+    restoreTransform: () => {},
+    removeValueFromRenderState: () => {},
+    render: () => {},
     scrapeMotionValuesFromProps: createObject,
-    readValueFromInstance: function (_state, key, options) {
-      return options.initialState[key] || 0;
-    },
-    makeTargetAnimatable: function (element, _a) {
-      var transition = _a.transition,
-        transitionEnd = _a.transitionEnd,
-        target = __rest(_a, ["transition", "transitionEnd"]);
-      var origin = getOrigin(target, transition || {}, element);
+    readValueFromInstance: (_state, key, options) => (options as any).initialState[key] || 0,
+    makeTargetAnimatable: (element, _a) => {
+      var {transition, transitionEnd, ...target} = _a;
+      var origin = getOrigin(target as any, transition || {}, element);
       checkTargetForNewValues(element, target, origin);
-      return __assign(
-        { transition: transition, transitionEnd: transitionEnd },
+      return Object.assign(
+        { transition, transitionEnd },
         target
       );
     },
@@ -31,18 +25,19 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { afterUpdate, getContext, onMount } from "svelte";
   import type { Writable } from "svelte/store";
-  import { __assign, __rest } from "tslib";
+  import { afterUpdate, getContext, onMount } from "svelte";
   import { ScaleCorrectionParentContext } from "../context/ScaleCorrectionProvider.svelte";
   import { UseVisualState } from "../motion/utils/use-visual-state.js";
   import { visualElement } from "../render/index.js";
-  import { animateVisualElement } from "../render/utils/animation";
+  import { animateVisualElement, type AnimationDefinition } from "../render/utils/animation";
   import {
     checkTargetForNewValues,
     getOrigin,
   } from "../render/utils/setters.js";
-  export let initialState;
+    import type { VisualElementOptions } from "../render/types";
+
+  export let initialState: VisualElementOptions<any, any>;
 
   let animationState = initialState;
   const sve = stateVisualElement;
@@ -53,7 +48,7 @@ Copyright (c) 2018 Framer B.V. -->
   });
   const _afterUpdate = () => {
     element.setProps({
-      onUpdate: (v) => (animationState = { ...v }),
+      onUpdate: (v: VisualElementOptions<any, any>) => (animationState = { ...v }),
     });
   };
 
@@ -68,7 +63,7 @@ Copyright (c) 2018 Framer B.V. -->
       },
     ])
   );
-  let startAnimation = (animationDefinition) => {
+  let startAnimation = (animationDefinition: AnimationDefinition) => {
     return animateVisualElement(element, animationDefinition);
   };
 </script>

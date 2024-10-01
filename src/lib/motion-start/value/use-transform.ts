@@ -156,14 +156,18 @@ export function useTransform<I, O>(
 	inputRangeOrTransformer?: InputRange | Transformer<I, O>,
 	outputRange?: O[],
 	options?: TransformOptions<O>
-): any {
-	let latest:I[] = [];
+) {
+	type Input = typeof input;
+	type inputRangeOrTransformer = typeof inputRangeOrTransformer;
+	type OutputRange = typeof outputRange;
+	type Options = typeof options;
+	const latest: I & (string | number)[] & number & any[{}] = [] as any;
 
 	const update = (
-		input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
-		inputRangeOrTransformer?: InputRange | Transformer<I, O>,
-		outputRange?: O[],
-		options?: TransformOptions<O>
+		input: Input,
+		inputRangeOrTransformer?: inputRangeOrTransformer,
+		outputRange?: OutputRange,
+		options?: Options
 	) => {
 		const transformer =
 			typeof inputRangeOrTransformer === 'function'
@@ -177,23 +181,22 @@ export function useTransform<I, O>(
 				latest.length = 0;
 				const numValues = values.length;
 				for (let i = 0; i < numValues; i++) {
-					latest[i] = values[i].get(); //wierd
+					latest[i] = values[i].get();
 				}
-				//@ts-ignore
 				return _transformer(latest);
 			},
-		];
+		] as const;
 	};
-	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options)) as any; //wierd
+	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options));
 
-	comb.updateInner = comb.reset;
+	(comb as any).updateInner = comb.reset;
 
 	comb.reset = (
-		input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
-		inputRangeOrTransformer?: InputRange | Transformer<I, O>,
-		outputRange?: O[],
-		options?: TransformOptions<O>
-	) => comb.updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
+		input: Input,
+		inputRangeOrTransformer?: inputRangeOrTransformer,
+		outputRange?: OutputRange,
+		options?: Options
+	) => (comb as any).updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
 	return comb;
 }
 // export { default as UseTransform } from './UseTransform.svelte';
