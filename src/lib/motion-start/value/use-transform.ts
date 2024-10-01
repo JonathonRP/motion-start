@@ -174,13 +174,14 @@ export function useTransform<I, O>(
 				? inputRangeOrTransformer
 				: transform(inputRangeOrTransformer!, outputRange!, options);
 		const values = Array.isArray(input) ? input : [input];
-		const _transformer = Array.isArray(input) ? transformer : ([latest]) => transformer(latest);
+		const _transformer = Array.isArray(input) ? transformer : ([latest]: any[]) => transformer(latest);
 		return [
 			values,
 			() => {
 				latest.length = 0;
 				const numValues = values.length;
 				for (let i = 0; i < numValues; i++) {
+					// @ts-expect-error
 					latest[i] = values[i].get();
 				}
 				return _transformer(latest);
@@ -191,12 +192,8 @@ export function useTransform<I, O>(
 
 	(comb as any).updateInner = comb.reset;
 
-	comb.reset = (
-		input: Input,
-		inputRangeOrTransformer?: inputRangeOrTransformer,
-		outputRange?: OutputRange,
-		options?: Options
-	) => (comb as any).updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
+	comb.reset = (input, inputRangeOrTransformer?, outputRange?: OutputRange, options?: Options) =>
+		(comb as any).updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
 	return comb;
 }
 // export { default as UseTransform } from './UseTransform.svelte';

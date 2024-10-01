@@ -49,6 +49,7 @@ Copyright (c) 2018 Framer B.V. -->
   const memo = () => config;
   const scaleCorrector = scaleCorrection();
   $: {
+    // @ts-expect-error
     context.set(memo(transitionDependency, config.transformPagePoint));
     scaleCorrector.update();
   }

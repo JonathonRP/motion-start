@@ -6,7 +6,7 @@
     getDomContext("ScaleCorrection", isCustom) || writable([]);
   export const ScaleCorrectionParentContext = () => writable([] as unknown[]);
 
-  export const provideScaleCorrection = (isCustom: any) => {
+  export const provideScaleCorrection = (isCustom?: any) => {
     const fromParent =
       getContext(ScaleCorrectionContext) || ScaleCorrectionContext(isCustom);
 

@@ -5,6 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
   var createObject = () => ({});
   var stateVisualElement = visualElement({
     build: () => {},
+    // @ts-expect-error
     measureViewportBox: axisBox,
     resetTransform: () => {},
     restoreTransform: () => {},
@@ -41,12 +42,17 @@ Copyright (c) 2018 Framer B.V. -->
 
   let animationState = initialState;
   const sve = stateVisualElement;
+  
+  // @ts-expect-error
   $:( element = sve({ props: {}, visualState: state }));
   onMount(() => {
+    // @ts-expect-error
     element.mount({});
+    // @ts-expect-error
     return () => element.unmount();
   });
   const _afterUpdate = () => {
+    // @ts-expect-error
     element.setProps({
       onUpdate: (v: VisualElementOptions<any, any>) => (animationState = { ...v }),
     });
@@ -64,6 +70,7 @@ Copyright (c) 2018 Framer B.V. -->
     ])
   );
   let startAnimation = (animationDefinition: AnimationDefinition) => {
+    // @ts-expect-error
     return animateVisualElement(element, animationDefinition);
   };
 </script>
