@@ -3,6 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Point2D, TransformPoint2D } from '../types/geometry';
+import type { EventInfo } from '../events/types';
 
 /** 
 based on framer-motion@4.0.3,
@@ -10,9 +11,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import sync, { cancelSync, getFrameData } from 'framesync';
 import { distance, pipe } from 'popmotion';
-import { __assign } from 'tslib';
 import { extractEventInfo } from '../events/event-info.js';
-import type { EventInfo } from '../events/types';
 import { addPointerEvent } from '../events/use-pointer-event.js';
 import { secondsToMilliseconds } from '../utils/time-conversion.js';
 import { isMouseEvent, isTouchEvent } from './utils/event-type.js';
@@ -204,7 +203,7 @@ export class PanSession {
 		if (!isPanStarted && !isDistancePastThreshold) return;
 		var point = info.point;
 		var timestamp = getFrameData().timestamp;
-		this.history.push(__assign(__assign({}, point), { timestamp: timestamp }));
+		this.history.push(Object.assign(Object.assign({}, point), { timestamp: timestamp }));
 		var _a = this.handlers,
 			onStart = _a.onStart,
 			onMove = _a.onMove;

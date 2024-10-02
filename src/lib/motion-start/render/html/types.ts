@@ -42,7 +42,7 @@ export interface HTMLRenderState {
 /**
  * @public
  */
-export type ForwardRefComponent<T> = Snippet<[T]>;
+export type ForwardRefComponent<T, P> = Snippet<[T & P]>;
 
 /**
  * Motion-optimised versions of React's HTML components.

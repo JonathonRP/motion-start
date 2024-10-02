@@ -19,7 +19,6 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { __assign } from 'tslib';
 import { elementDragControls } from '../../../gestures/drag/VisualElementDragControls.js';
 import { Presence } from '../types.js';
 import { createCrossfader } from './crossfader.js';
@@ -28,7 +27,7 @@ import type { Point2D } from '$lib/motion-start/types/geometry';
 function layoutStack(): LayoutStack {
 	var stack = new Set();
 	var state = { leadIsExiting: false, lead: {} as VisualElement, follow: {} as VisualElement };
-	var prevState = __assign({}, state);
+	var prevState = Object.assign({}, state);
 	var prevValues: any;
 	var prevViewportBox: undefined;
 	var prevDragCursor: Point2D | undefined;
@@ -71,7 +70,7 @@ function layoutStack(): LayoutStack {
 		},
 		updateLeadAndFollow: () => {
 			var _a;
-			prevState = __assign({}, state);
+			prevState = Object.assign({}, state);
 			var lead;
 			var follow;
 			var order = Array.from(stack);

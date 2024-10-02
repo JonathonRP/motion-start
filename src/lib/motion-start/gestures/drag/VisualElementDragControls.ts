@@ -29,7 +29,6 @@ Copyright (c) 2018 Framer B.V.
 */
 import { flushSync } from 'framesync';
 import { progress } from 'popmotion';
-import { __assign, __read, __spreadArray } from 'tslib';
 import { startAnimation } from '../../animation/utils/transitions.js';
 import { getViewportPointFromEvent } from '../../events/event-info.js';
 import { addDomEvent } from '../../events/use-dom-event.js';
@@ -162,7 +161,7 @@ class VisualElementDragControls {
 			this.cancelLayout = batchLayout((read, write) => {
 				var ancestors = collectProjectingAncestors(_self.visualElement);
 				var children = collectProjectingChildren(_self.visualElement);
-				var tree = __spreadArray(__spreadArray([], __read(ancestors)), __read(children));
+				var tree = [...ancestors, ...children];
 				var hasManuallySetCursorOrigin = false;
 				/**
 				 * Apply a simple lock to the projection target. This ensures no animations
@@ -506,8 +505,8 @@ class VisualElementDragControls {
 			 */
 			var bounceStiffness = dragElastic ? 200 : 1000000;
 			var bounceDamping = dragElastic ? 40 : 10000000;
-			var inertia = __assign(
-				__assign(
+			var inertia = Object.assign(
+				Object.assign(
 					{
 						type: 'inertia',
 						velocity: dragMomentum ? velocity[axis] : 0,
