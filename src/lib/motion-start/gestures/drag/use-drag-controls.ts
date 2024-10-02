@@ -48,7 +48,7 @@ export class DragControls {
 	 *
 	 * @public
 	 */
-	start = (event: React.PointerEvent | PointerEvent, options?: DragControlOptions): void => {
+	start = (event: PointerEvent | { nativeEvent: PointerEvent }, options?: DragControlOptions): void => {
 		this.componentControls.forEach((controls) => {
 			controls.start('nativeEvent' in event ? event.nativeEvent : event, options);
 		});

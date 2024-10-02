@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { HTMLAttributes } from 'svelte/elements';
+import type { HTMLAttributes, SvelteHTMLElements } from 'svelte/elements';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 import type { HTMLElements } from './supported-elements';
@@ -42,7 +42,7 @@ export interface HTMLRenderState {
 /**
  * @public
  */
-export type ForwardRefComponent<T, P> = Snippet<[T & P]>;
+export type ForwardRefComponent<T extends Record<string, any>, P extends Record<string, any>> = Component<T & P>;
 
 /**
  * Motion-optimised versions of React's HTML components.
@@ -50,5 +50,5 @@ export type ForwardRefComponent<T, P> = Snippet<[T & P]>;
  * @public
  */
 export type HTMLMotionComponents = {
-	[K in HTMLElements]: Component<MotionProps>;
+	[K in HTMLElements]: ForwardRefComponent<MotionProps, SvelteHTMLElements[K]>;
 };

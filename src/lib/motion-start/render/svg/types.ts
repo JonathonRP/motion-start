@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { SVGAttributes } from 'svelte/elements';
+import type { SVGAttributes, SvelteHTMLElements } from 'svelte/elements';
 import type { MakeMotion, MotionProps } from '../../motion/types';
 import type { ForwardRefComponent, HTMLRenderState } from '../html/types';
 import type { ResolvedValues } from '../types';
@@ -35,7 +35,6 @@ interface SVGAttributesWithoutMotionProps<T extends EventTarget>
  * @public
  */
 export type SVGAttributesAsMotionValues<T extends EventTarget> = MakeMotion<SVGAttributesWithoutMotionProps<T>>;
-type UnwrapSVGFactoryElement<F> = F extends React.SVGProps<infer P> ? P : never;
 /**
  * @public
  */
@@ -46,8 +45,5 @@ export interface SVGMotionProps<T extends EventTarget> extends SVGAttributesAsMo
  * @public
  */
 export type SVGMotionComponents = {
-	[K in SVGElements]: ForwardRefComponent<
-		UnwrapSVGFactoryElement<JSX.IntrinsicElements[K]>,
-		SVGMotionProps<UnwrapSVGFactoryElement<JSX.IntrinsicElements[K]>>
-	>;
+	[K in SVGElements]: ForwardRefComponent<MotionProps, SvelteHTMLElements[K]>;
 };

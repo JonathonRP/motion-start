@@ -11,6 +11,10 @@ import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition
 import type { MotionValue } from '../value';
 import type { LayoutProps } from './features/layout/types';
 
+export type Ref<T> = (instance: T | null) => void | {
+	current: T | null;
+} | null;
+
 export type MotionStyleProp = string | number | MotionValue;
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.
