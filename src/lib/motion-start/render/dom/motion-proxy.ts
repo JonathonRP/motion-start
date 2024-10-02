@@ -46,11 +46,11 @@ import type { SvelteHTMLElements } from 'svelte/elements';
 import Mo from './M.svelte';
 import { isSVGComponent } from './utils/is-svg-component.js';
 
-type M<Element extends keyof SvelteHTMLElements> = MotionProps & { children: Snippet; class: string } & Omit<
+type Motion<Element extends keyof SvelteHTMLElements> = MotionProps & { children: Snippet; class: string } & Omit<
 		SvelteHTMLElements[Element],
 		'style'
 	>;
-type motion<Element extends keyof SvelteHTMLElements> = Component<M<Element>>;
+type motion<Element extends keyof SvelteHTMLElements> = Component<Motion<Element>>;
 /**
  * Convert any React component into a `motion` component. The provided component
  * **must** use `React.forwardRef` to the underlying DOM component you want to animate.
@@ -89,7 +89,7 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 
 						console.log(target, args);
 
-						//@ts-ignore
+						// @ts-expect-error
 						return new target(...args);
 					},
 					// support svelte 5
@@ -111,4 +111,4 @@ function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
 
 const M = createMotionProxy();
 
-export { type M, createMotionProxy };
+export { M, createMotionProxy };
