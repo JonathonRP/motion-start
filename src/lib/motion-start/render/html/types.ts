@@ -2,11 +2,12 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { HTMLAttributes, SvelteHTMLElements } from 'svelte/elements';
+import type { SvelteHTMLElements } from 'svelte/elements';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 import type { HTMLElements } from './supported-elements';
-import type { Component, Snippet } from 'svelte';
+import type { Component } from 'svelte';
+
 export interface TransformOrigin {
 	originX?: number | string;
 	originY?: number | string;
