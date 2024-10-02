@@ -8,6 +8,7 @@ import type { HTMLRenderState } from '../../html/types';
 import type { SVGRenderState } from '../../svg/types';
 import type { CreateVisualElement } from '../../types';
 import type { CustomMotionComponentConfig } from '../motion-proxy';
+import type { Component } from 'svelte';
 
 /** 
 based on framer-motion@4.0.3,
@@ -19,7 +20,7 @@ import { createUseRender } from '../use-render.js';
 import { isSVGComponent } from './is-svg-component.js';
 
 function createDomMotionConfig(
-	Component: string | React.ComponentType,
+	Component: string | Component,
 	{ forwardMotionProps }: CustomMotionComponentConfig,
 	preloadedFeatures?: FeatureComponents,
 	createVisualElement?: CreateVisualElement<any>
