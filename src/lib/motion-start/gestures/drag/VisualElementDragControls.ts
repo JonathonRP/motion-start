@@ -2,7 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { RefObject } from 'react';
 import type { PanInfo } from '../PanSession';
 import type { MotionProps } from '../../motion/types';
 import type { VisualElement } from '../../render/types';
@@ -305,7 +304,7 @@ class VisualElementDragControls {
 			});
 		}
 	};
-	private resolveRefConstraints = (layoutBox: AxisBox2D, constraints: RefObject<Element>) => {
+	private resolveRefConstraints = (layoutBox: AxisBox2D, constraints: { current: Element | null }) => {
 		const { transformPagePoint, onMeasureDragConstraints } = this.props;
 		const constraintsElement = constraints.current as HTMLElement;
 		invariant(
