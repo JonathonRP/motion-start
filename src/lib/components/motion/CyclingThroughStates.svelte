@@ -23,7 +23,7 @@
 </script>
 
 <Box cls="bg-slate-800 text-black">
-    <Motion
+    <Motion.div
         animate={{
             scale: $scale,
             backgroundColor: $backgroundColor,
@@ -40,9 +40,8 @@
                 stateText = "State 1";
             }
         }}
-        let:motion
-        ><div class="box" use:motion>
-            {stateText}
-        </div></Motion
+        class="box"
     >
+        {stateText}
+    </Motion.div>
 </Box>

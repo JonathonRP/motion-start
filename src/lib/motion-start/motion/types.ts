@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { CSSProperties } from 'react';
+import type { Properties } from 'csstype';
 import type { AnimationControls } from '../animation/types';
 import type { DraggableProps } from '../gestures/drag/types';
 import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types';
@@ -66,7 +66,7 @@ export interface CustomStyles {
 export type MakeMotion<T> = MakeCustomValueType<{
 	[K in keyof T]: T[K] | MotionValue<number> | MotionValue<string> | MotionValue<any>;
 }>;
-export type MotionCSS = MakeMotion<Omit<CSSProperties, 'rotate' | 'scale' | 'perspective'>>;
+export type MotionCSS = MakeMotion<Omit<Properties, 'rotate' | 'scale' | 'perspective'>>;
 /**
  * @public
  */

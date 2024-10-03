@@ -59,8 +59,7 @@
 				"useSortedClasses": {
 					"level": "warn",
 					"fix": "safe",
-					"options": {
-					}
+					"options": {}
 				}
 			},
 			"suspicious": {
@@ -136,4 +135,3 @@
 		}
 	]
 }
-

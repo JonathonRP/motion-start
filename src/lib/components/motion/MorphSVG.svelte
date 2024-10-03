@@ -1,6 +1,5 @@
 <script>
-    // import { Motion, M } from "svelte-motion";
-    import { Motion, M } from "$lib/motion-start";
+    import { Motion } from "$lib/motion-start";
 </script>
 
 <svg
@@ -12,9 +11,7 @@
     stroke-linecap="round"
     fill="transparent"
 >
-    <M.path />
-    <Motion
-        isSVG={true}
+    <Motion.path
         animate={{
             d: [
                 "M 40,40 Q 160,40 160,160",
@@ -31,8 +28,6 @@
             duration: 6,
             times: [0, 0.16, 0.33, 0.5, 0.66, 0.83],
         }}
-        let:motion
-    >
-        <path d="M 40,40 Q 160,40 160,160" use:motion />
-    </Motion>
+        d="M 40,40 Q 160,40 160,160"
+    />
 </svg>

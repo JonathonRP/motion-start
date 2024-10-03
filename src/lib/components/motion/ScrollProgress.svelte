@@ -19,53 +19,43 @@
     );
 </script>
 
-<Motion let:motion whileTap={{ cursor: "grabbing" }}>
-    <div
-        style="transform: translateZ(0);"
-        class="w-[150px] h-[150px] rounded-[30px] border border-primary overflow-hidden cursor-grab relative"
-        use:motion
+<!-- style={{ transform: "translateZ(0)" }} -->
+<Motion.div
+    whileTap={{ cursor: "grabbing" }}
+    class="w-[150px] h-[150px] rounded-[30px] border border-primary overflow-hidden cursor-grab relative"
+>
+    <Motion.div
+        style={{
+            width: 150,
+            height: useMotionValue(getHeight(items)),
+            y: scrollY,
+        }}
+        drag="y"
+        dragConstraints={{
+            top: -getHeight(items) + size,
+            bottom: 0,
+        }}
+        class="w-[150px]"
     >
-        <Motion
-            style={{
-                width: 150,
-                height: getHeight(items),
-                y: scrollY,
-            }}
-            drag="y"
-            dragConstraints={{
-                top: -getHeight(items) + size,
-                bottom: 0,
-            }}
-            let:motion
-        >
+        {#each items as item (item)}
             <div
-                style="height:{getHeight(items)}px;"
-                class="w-[150px]"
-                use:motion
+                style="border-radius:20px; height: {height}px; top:{(height +
+                    padding) *
+                    item}px; "
+                class="bg-[#fff] w-[150px] absolute flex justify-center items-center text-black"
             >
-                {#each items as item (item)}
-                    <div
-                        style="border-radius:20px; height: {height}px; top:{(height +
-                            padding) *
-                            item}px; "
-                        class="bg-[#fff] w-[150px] absolute flex justify-center items-center text-black"
-                    >
-                        {item}
-                    </div>
-                {/each}
+                {item}
             </div>
-        </Motion>
-    </div>
-</Motion>
-<Motion
+        {/each}
+    </Motion.div>
+</Motion.div>
+<Motion.div
     style={{
         width,
+        transformOrigin: "0%",
+        position: "absolute",
+        left: 25,
+        top: 10,
     }}
-    let:motion
->
-    <div
-        use:motion
-        style="transform-origin: 0%; position:absolute; left:25px; top:10px;"
-        class="h-[6px] bg-[#fff] rounded-full"
-    ></div>
-</Motion>
+    class="h-[6px] bg-[#fff] rounded-full"
+></Motion.div>

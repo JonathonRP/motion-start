@@ -43,14 +43,16 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
-import Mo from './M.svelte';
 import { isSVGComponent } from './utils/is-svg-component.js';
+import M from './M.svelte';
 
-type Motion<Element extends keyof SvelteHTMLElements> = MotionProps & { children: Snippet; class: string } & Omit<
-		SvelteHTMLElements[Element],
-		'style'
-	>;
-type motion<Element extends keyof SvelteHTMLElements> = Component<Motion<Element>>;
+type MotionComponent<Element extends keyof SvelteHTMLElements> = Component<
+	MotionProps & {
+		children?: Snippet;
+		class?: string;
+		el?: SvelteHTMLElements[Element]['this'];
+	} & Omit<SvelteHTMLElements[Element], 'style'>
+>;
 /**
  * Convert any React component into a `motion` component. The provided component
  * **must** use `React.forwardRef` to the underlying DOM component you want to animate.
@@ -65,50 +67,49 @@ type motion<Element extends keyof SvelteHTMLElements> = Component<Motion<Element
  *
  * @public
  */
-function createMotionProxy(): { [P in keyof SvelteHTMLElements]: motion<P> } {
-	return new Proxy(
-		{},
-		{
-			get(_target, key: string) {
-				let type = false;
-				if (key.toString().slice(0, 1) === key.toString().slice(0, 1).toLowerCase()) {
-					type = isSVGComponent(key);
-				}
+function createMotionProxy(): {
+	[P in keyof SvelteHTMLElements]: MotionComponent<P>;
+} {
+	return new Proxy({} as any, {
+		get(_target, key: string) {
+			let type = false;
+			if (key.toString().slice(0, 1) === key.toString().slice(0, 1).toLowerCase()) {
+				type = isSVGComponent(key);
+			}
 
-				return new Proxy(Mo, {
-					construct(target, args) {
-						if (!args || !args[0]) {
-							args.push({});
-						}
-						if (!args[0]?.props) {
-							args[0].props = { ___tag: key, isSVG: type };
-						} else {
-							args[0].props.___tag = key;
-							args[0].props.isSVG = type;
-						}
+			return new Proxy(M, {
+				construct(target, args) {
+					if (!args || !args[0]) {
+						args.push({});
+					}
+					if (!args[0]?.props) {
+						args[0].props = { ___tag: key, isSVG: type };
+					} else {
+						args[0].props.___tag = key;
+						args[0].props.isSVG = type;
+					}
 
-						console.log(target, args);
+					console.log(target, args);
 
-						// @ts-expect-error
-						return new target(...args);
-					},
-					// support svelte 5
-					apply(target, thisArg, args) {
-						if (!args[1]) {
-							args[1] = { ___tag: key, isSVG: type };
-						} else {
-							args[1].___tag = key;
-							args[1].isSVG = type;
-						}
-						// @ts-expect-error
-						return target(...args);
-					},
-				});
-			},
-		}
-	) as { [P in keyof SvelteHTMLElements]: motion<P> };
+					// @ts-expect-error
+					return new target(...args);
+				},
+				// support svelte 5
+				apply(target, thisArg, args) {
+					if (!args[1]) {
+						args[1] = { ___tag: key, isSVG: type };
+					} else {
+						args[1].___tag = key;
+						args[1].isSVG = type;
+					}
+					// @ts-expect-error
+					return target(...args);
+				},
+			});
+		},
+	}) satisfies { [P in keyof SvelteHTMLElements]: MotionComponent<P> };
 }
 
-const M = createMotionProxy();
+const Motion = createMotionProxy();
 
-export { M, createMotionProxy };
+export { Motion, createMotionProxy };

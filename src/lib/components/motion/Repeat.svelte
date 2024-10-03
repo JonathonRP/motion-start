@@ -6,7 +6,7 @@
 
 <Box cls="bg-slate-800 flex" minHeight={350}>
     {#key i}
-        <Motion
+        <Motion.div
             animate={{
                 rotate: 360,
             }}
@@ -15,7 +15,7 @@
                 duration: 2,
                 repeat: Infinity,
             }}
-            let:motion><div class="box" use:motion></div></Motion
-        >
+            class="box"
+        ></Motion.div>
     {/key}
 </Box>
