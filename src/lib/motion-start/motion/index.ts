@@ -43,9 +43,9 @@ export const createMotionComponent = <Props extends {}, Instance, RenderState>({
 	Component,
 }: MotionComponentConfig<Instance, RenderState>): Component<Props & MotionProps> => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
-
+	// @ts-expect-error
 	return class MotionComponent extends Motion {
-		constructor(options) {
+		constructor(options:any) {
 			const props = options.props;
 			options.props = {
 				props,
@@ -56,6 +56,6 @@ export const createMotionComponent = <Props extends {}, Instance, RenderState>({
 				visualStateConfig,
 			};
 			super({ component: Motion, ...options });
-		}
+		}// @ts-expect-error
 	} satisfies Component<Props & MotionProps>;
 };

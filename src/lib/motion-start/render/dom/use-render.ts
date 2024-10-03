@@ -7,7 +7,7 @@ import type { HTMLRenderState } from '../html/types';
 import type { SVGRenderState } from '../svg/types';
 import UseRender from './UseRender.svelte';
 
-export function createUseRender(forwardMotionProps?: boolean) {
+export function createUseRender(forwardMotionProps?: boolean) {// @ts-expect-error
 	return UseRender({ props: { forwardMotionProps } }) satisfies
 		| RenderComponent<SVGElement, SVGRenderState>
 		| RenderComponent<HTMLElement, HTMLRenderState>;

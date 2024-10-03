@@ -55,7 +55,7 @@ export class DragControls {
 	};
 
 	updateConstraints = (flush?: boolean): void => {
-		this.componentControls.forEach((controls) => {
+		this.componentControls.forEach((controls) => {// @ts-expect-error
 			controls.prepareBoundingBox();
 			controls.resolveDragConstraints();
 		});

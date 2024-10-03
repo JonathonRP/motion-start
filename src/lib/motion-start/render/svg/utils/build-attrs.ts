@@ -60,7 +60,7 @@ function buildSVGAttrs(
 	// Parse transformOrigin
 	if (dimensions && (originX !== undefined || originY !== undefined || style.transform)) {
 		style.transformOrigin = calcSVGTransformOrigin(
-			dimensions,
+			dimensions,// @ts-expect-error
 			originX !== undefined ? originX : 0.5,
 			originY !== undefined ? originY : 0.5
 		);

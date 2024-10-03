@@ -106,6 +106,7 @@ function animateVariant(
 	if (when) {
 		var [first, last] =
 			when === 'beforeChildren' ? [getAnimation, getChildAnimations] : [getChildAnimations, getAnimation];
+			//@ts-expect-error
 		return first().then(last);
 	}
 	return Promise.all([getAnimation(), getChildAnimations(options.delay)]);
@@ -128,6 +129,7 @@ function animateTarget(visualElement: VisualElement, definition: AnimationDefini
 		type && ((_b = visualElement.animationState) === null || _b === void 0 ? void 0 : _b.getState()[type]);
 	for (var key in target) {
 		var value = visualElement.getValue(key);
+		// @ts-expect-error
 		var valueTarget = target[key];
 		if (!value || valueTarget === undefined || (animationTypeState && shouldBlockAnimation(animationTypeState, key))) {
 			continue;

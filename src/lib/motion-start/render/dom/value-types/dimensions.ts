@@ -12,7 +12,7 @@ import {fixed} from '../../../utils/fix-process-env.js';
 import { number, px, percent, degrees, vw, vh } from 'style-value-types';
 import { testValueType } from './test.js';
 import { auto } from './type-auto.js';
-import type { CustomValueType } from '$lib/motion-start/types.js';
+import type { CustomValueType } from '../../../types.js';
 
 /**
  * A list of value types commonly used for dimensions

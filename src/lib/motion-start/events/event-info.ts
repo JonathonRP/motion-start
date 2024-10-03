@@ -17,8 +17,8 @@ import { isTouchEvent } from '../gestures/utils/event-type.js';
  * Filters out events not attached to the primary pointer (currently left mouse button)
  * @param eventHandler
  */
-function filterPrimaryPointer(eventHandler) {
-    return function (event) {
+function filterPrimaryPointer(eventHandler: { (event: any): void; (arg0: any): void; }) {
+    return function (event: { button: number; }) {
         var isMouseEvent = event instanceof MouseEvent;
         var isPrimaryPointer = !isMouseEvent ||
             (isMouseEvent && event.button === 0);
@@ -57,9 +57,9 @@ function getViewportPointFromEvent(event: MouseEvent | TouchEvent | PointerEvent
 }
 var wrapHandler = function (handler: EventListenerWithPointInfo, shouldFilterPrimaryPointer?: boolean): EventListener {
     if (shouldFilterPrimaryPointer === void 0) { shouldFilterPrimaryPointer = false; }
-    var listener = function (event) {
+    var listener = function (event: PointerEvent) {
         return handler(event, extractEventInfo(event));
-    };
+    };// @ts-expect-error
     return shouldFilterPrimaryPointer
         ? filterPrimaryPointer(listener)
         : listener;

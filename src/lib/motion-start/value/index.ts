@@ -370,8 +370,8 @@ export class MotionValue<V = any> implements Writable<V> {
 	start = (animation: StartAnimation): Promise<void> => {
 		this.stop();
 		return new Promise((resolve) => {
-			this.hasAnimated = true;
-			this.stopAnimation = animation(resolve); //wierd
+			this.hasAnimated = true;// @ts-expect-error
+			this.stopAnimation = animation(resolve); 
 		}).then(() => {
 			return this.clearAnimation();
 		});

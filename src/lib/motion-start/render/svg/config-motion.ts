@@ -43,6 +43,7 @@ var svgMotionConfig = {
             }
             buildSVGAttrs(renderState, latestValues, undefined, undefined, { enableHardwareAcceleration: false }, props.transformTemplate);
             // TODO: Replace with direct assignment
+            // @ts-expect-error
             renderSVG(instance, renderState);
         },
     } satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>

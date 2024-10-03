@@ -22,14 +22,14 @@ Copyright (c) 2018 Framer B.V.
 import { elementDragControls } from '../../../gestures/drag/VisualElementDragControls.js';
 import { Presence } from '../types.js';
 import { createCrossfader } from './crossfader.js';
-import type { Point2D } from '$lib/motion-start/types/geometry';
+import type { AxisBox2D, Point2D } from '../../../types/geometry';
 
 function layoutStack(): LayoutStack {
 	var stack = new Set();
 	var state = { leadIsExiting: false, lead: {} as VisualElement, follow: {} as VisualElement };
 	var prevState = Object.assign({}, state);
 	var prevValues: any;
-	var prevViewportBox: undefined;
+	var prevViewportBox: AxisBox2D| undefined;
 	var prevDragCursor: Point2D | undefined;
 	var crossfader = createCrossfader();
 	var needsCrossfadeAnimation = false;
@@ -80,15 +80,16 @@ function layoutStack(): LayoutStack {
 				lead !== null && lead !== void 0 ? lead : (lead = element);
 				if (lead && follow) break;
 			}
-			state.lead = lead;
-			state.follow = follow;
+			state.lead = lead as VisualElement;
+			state.follow = follow as VisualElement;
 			state.leadIsExiting = ((_a = state.lead) === null || _a === void 0 ? void 0 : _a.presence) === Presence.Exiting;
 			crossfader.setOptions({
-				lead: lead,
-				follow: follow,
+				lead: lead as VisualElement,
+				follow: follow as VisualElement,
 				prevValues: prevValues,
 				crossfadeOpacity:
-					(follow === null || follow === void 0 ? void 0 : follow.isPresenceRoot) ||
+				// @ts-expect-error
+					(follow === null || follow === void 0 ? void 0 : follow.isPresenceRoot) ||// @ts-expect-error
 					(lead === null || lead === void 0 ? void 0 : lead.isPresenceRoot),
 			});
 			if (
@@ -121,11 +122,12 @@ function layoutStack(): LayoutStack {
 					/**
 					 * We'll use this to determine if the element or its layoutId has been reparented.
 					 */
+					// @ts-expect-error
 					config.prevParent = prevParent;
 				}
-				if (child.presence === Presence.Entering) {
+				if (child.presence === Presence.Entering) {// @ts-expect-error
 					config.originBox = getFollowViewportBox();
-				} else if (child.presence === Presence.Exiting) {
+				} else if (child.presence === Presence.Exiting) {// @ts-expect-error
 					config.targetBox = getFollowLayout();
 				}
 				if (needsCrossfadeAnimation) {

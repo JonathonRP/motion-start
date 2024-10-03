@@ -14,7 +14,7 @@ Copyright (c) 2018 Framer B.V.
 import { writable } from 'svelte/store';
 import { createBatcher } from '../components/AnimateSharedLayout/utils/batcher.js';
 import { getDomContext } from './DOMcontext.js';
-
+// @ts-expect-error
 var SharedLayoutContext = (custom?: any): Writable<SyncLayoutBatcher | SharedLayoutSyncMethods> => getDomContext("SharedLayout",custom)||writable(createBatcher());
 
 /**
@@ -22,7 +22,7 @@ var SharedLayoutContext = (custom?: any): Writable<SyncLayoutBatcher | SharedLay
  */
 var FramerTreeLayoutContext = ()=> writable(createBatcher());
 
-function isSharedLayout(context: SyncLayoutBatcher | SharedLayoutSyncMethods): context is SharedLayoutSyncMethods {
+function isSharedLayout(context: SharedLayoutSyncMethods): context is SharedLayoutSyncMethods {
     return !!context.forceUpdate;
 }
 

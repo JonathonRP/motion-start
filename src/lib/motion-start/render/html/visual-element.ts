@@ -49,7 +49,7 @@ var htmlConfig = {
 		return a.compareDocumentPosition(b) & 2 ? 1 : -1;
 	},
 	getBaseTarget: (props, key) => {
-		var _a;
+		var _a;// @ts-expect-error
 		return (_a = props.style) === null || _a === void 0 ? void 0 : _a[key];
 	},
 	measureViewportBox: (element, _a) => {
@@ -88,7 +88,7 @@ var htmlConfig = {
 		if (isMounted === void 0) {
 			isMounted = true;
 		}
-		var { transition, transitionEnd, ...target } = _a;
+		var { transition, transitionEnd, ...target } = _a;// @ts-expect-error
 		var origin = getOrigin(target, transition || {}, element);
 		/**
 		 * If Framer has provided a function to convert `Color` etc value types, convert them
@@ -99,7 +99,7 @@ var htmlConfig = {
 			if (origin) origin = transformValues(origin);
 		}
 		if (isMounted) {
-			checkTargetForNewValues(element, target, origin);
+			checkTargetForNewValues(element, target, origin);// @ts-expect-error
 			var parsed = parseDomVariant(element, target, origin, transitionEnd);
 			transitionEnd = parsed.transitionEnd;
 			target = parsed.target;

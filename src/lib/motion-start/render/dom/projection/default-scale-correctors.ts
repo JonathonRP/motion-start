@@ -50,9 +50,10 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	/**
 	 * We need to first strip and store CSS variables from the string.
 	 */
+	// @ts-expect-error
 	var containsCSSVariables = latest.includes('var(');
 	var cssVariables: any[] = [];
-	if (containsCSSVariables) {
+	if (containsCSSVariables) {// @ts-expect-error
 		latest = latest.replace(cssVariableRegex, (match) => {
 			cssVariables.push(match);
 			return varToken;

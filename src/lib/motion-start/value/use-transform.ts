@@ -67,6 +67,7 @@ type Transformer<I, O> =
  *
  * @public
  */
+// @ts-expect-error
 export function useTransform<I, O>(
 	value: MotionValue<number>,
 	inputRange: InputRange,
@@ -160,7 +161,7 @@ export function useTransform<I, O>(
 	type Input = typeof input;
 	type inputRangeOrTransformer = typeof inputRangeOrTransformer;
 	type OutputRange = typeof outputRange;
-	type Options = typeof options;
+	type Options = typeof options;// @ts-expect-error
 	const latest: I & (string | number)[] & number & any[{}] = [] as any;
 
 	const update = (

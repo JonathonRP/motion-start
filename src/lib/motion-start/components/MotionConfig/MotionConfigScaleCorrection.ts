@@ -9,7 +9,7 @@ export const scaleCorrection = () => {
 	const afterU = (nc = false) => {
 		/* Second part of the updater calling in child layouts first.*/
 		const scc = get(scaleCorrectionContext);
-
+		// @ts-expect-error
 		scc.forEach((v: { afterU: (arg0: boolean) => void }, i: any) => {
 			v.afterU?.(true);
 		});
@@ -17,6 +17,7 @@ export const scaleCorrection = () => {
 
 	const updater = () => {
 		// in React the updater function is called on children first, in Svelte the child does not call it.
+		// @ts-expect-error
 		get(scaleCorrectionContext).forEach((v) => {
 			v.updater?.(true);
 		});

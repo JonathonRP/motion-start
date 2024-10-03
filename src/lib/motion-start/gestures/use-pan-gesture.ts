@@ -15,7 +15,7 @@ import type { FeatureProps } from "../motion/features/types";
  *
  * @internal
  */
-export type usePanGesture = ({ onPan, onPanStart, onPanEnd, onPanSessionStart, visualElement, }: FeatureProps) => void;
+export type usePanGesture = ({ onPan, onPanStart, onPanEnd, onPanSessionStart, visualElement, }: FeatureProps | any) => void;
 
 
 export { default as UsePanGesture } from './UsePanGesture.svelte';

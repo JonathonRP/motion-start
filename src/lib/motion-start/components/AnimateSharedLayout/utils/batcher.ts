@@ -31,19 +31,21 @@ function createBatcher(): SyncLayoutBatcher {
 		flush: (_a) => {
 			var _b = _a === void 0 ? defaultHandler : _a,
 				layoutReady = _b.layoutReady,
+				// @ts-expect-error
 				parent = _b.parent;
 			batchLayout((read, write) => {
+				// @ts-expect-error
 				var order = Array.from(queue).sort(compareByDepth);
 				var ancestors = parent ? collectProjectingAncestors(parent) : [];
 				write(() => {
 					var allElements = [...ancestors, ...order];
-					allElements.forEach((element) => element.resetTransform());
+					allElements.forEach((element:any) => element.resetTransform());
 				});
-				read(() => {
+				read(() => {// @ts-expect-error
 					order.forEach(updateLayoutMeasurement);
 				});
 				write(() => {
-					ancestors.forEach((element) => element.restoreTransform());
+					ancestors.forEach((element) => element.restoreTransform());// @ts-expect-error
 					order.forEach(layoutReady);
 				});
 				read(() => {
@@ -53,7 +55,7 @@ function createBatcher(): SyncLayoutBatcher {
 					 * could be moved to the start loop. But it needs to happen after all the animations configs
 					 * are generated in AnimateSharedLayout as this relies on presence data
 					 */
-					order.forEach((child) => {
+					order.forEach((child:any) => {
 						if (child.isPresent) child.presence = Presence.Present;
 					});
 				});
@@ -76,6 +78,7 @@ function createBatcher(): SyncLayoutBatcher {
 					 * it will be against its latest projection box instead, as the snapshot is useless beyond this
 					 * render.
 					 */
+					// @ts-expect-error
 					sync.postRender(() => order.forEach(assignProjectionToSnapshot));
 					queue.clear();
 				});

@@ -10,7 +10,7 @@ export interface LazyContextProps {
 
 import { writable, type Writable } from 'svelte/store';
 import { getDomContext } from './DOMcontext';
-
+// @ts-expect-error
 const LazyContext = (c?: any): Writable<LazyContextProps> => getDomContext('Lazy', c) || writable({ strict: false });
 
 export { LazyContext };

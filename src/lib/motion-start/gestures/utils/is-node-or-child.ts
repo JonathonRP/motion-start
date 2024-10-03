@@ -16,6 +16,7 @@ Copyright (c) 2018 Framer B.V.
  * @param parent - Element to find
  * @param child - Element to test against parent
  */
+// @ts-expect-error
 var isNodeOrChild = function (parent: Element, child?: Element | null | undefined) {
     if (!child) {
         return false;

@@ -184,6 +184,7 @@ function createAnimationState(visualElement: VisualElement) {
 			 * Build an object of all the resolved values. We'll use this in the subsequent
 			 * animateChanges calls to determine whether a value has changed.
 			 */
+			// @ts-expect-error
 			var resolvedValues = definitionList.reduce(buildResolvedTypeValues, {});
 			if (activeDelta === false) resolvedValues = {};
 			/**
@@ -203,7 +204,8 @@ function createAnimationState(visualElement: VisualElement) {
 				removedKeys.delete(key);
 				typeState.needsAnimating[key] = true;
 			};
-			for (var key in allKeys) {
+			for (var key in allKeys) { 
+				// @ts-expect-error
 				var next = resolvedValues[key];
 				var prev = prevResolvedValues[key];
 				// If we've already handled this we can just skip ahead

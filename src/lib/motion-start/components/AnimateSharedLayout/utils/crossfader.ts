@@ -45,6 +45,7 @@ import { mix, progress, linear, mixColor, circOut } from 'popmotion';
 import { animate } from '../../../animation/animate.js';
 import { getValueTransition } from '../../../animation/utils/transitions.js';
 import { motionValue } from '../../../value/index.js';
+import type { Color } from 'style-value-types';
 
 function createCrossfader(): Crossfader {
 	/**
@@ -57,7 +58,7 @@ function createCrossfader(): Crossfader {
 		crossfadeOpacity: false,
 		preserveFollowOpacity: false,
 	};
-	var prevOptions = Objectj.assign({}, options);
+	var prevOptions = Object.assign({}, options);
 	var leadState = {};
 	var followState = {};
 	/**
@@ -90,8 +91,8 @@ function createCrossfader(): Crossfader {
 		finalCrossfadeFrame = null;
 		var hasUpdated = false;
 		var onUpdate = () => {
-			hasUpdated = true;
-			lead && lead.scheduleRender(); //wierd
+			hasUpdated = true;// @ts-expect-error
+			lead && lead.scheduleRender(); // @ts-expect-error
 			follow && follow.scheduleRender();
 		};
 		var onComplete = () => {
@@ -106,10 +107,11 @@ function createCrossfader(): Crossfader {
 		return animate(
 			progress,
 			target,
+			// @ts-expect-error
 			Object.assign(Object.assign({}, transition), {
 				onUpdate: onUpdate,
 				onComplete: () => {
-					if (!hasUpdated) {
+					if (!hasUpdated) {// @ts-expect-error
 						progress.set(target);
 						/**
 						 * If we never ran an update, for instance if this was an instant transition, fire a
@@ -140,8 +142,9 @@ function createCrossfader(): Crossfader {
 		 * Merge each component's latest values into our crossfaded state
 		 * before crossfading.
 		 */
+		// @ts-expect-error
 		var latestLeadValues = lead.getLatestValues();
-		Object.assign(leadState, latestLeadValues);
+		Object.assign(leadState, latestLeadValues);// @ts-expect-error
 		var latestFollowValues = follow ? follow.getLatestValues() : options.prevValues;
 		Object.assign(followState, latestFollowValues);
 		var p = progress.get();
@@ -155,20 +158,21 @@ function createCrossfader(): Crossfader {
 				null && _b !== void 0
 				? _b
 				: 1;
-		if (options.crossfadeOpacity && follow) {
+		if (options.crossfadeOpacity && follow) {// @ts-expect-error
 			leadState.opacity = mix(
 				/**
 				 * If the follow child has been completely hidden we animate
 				 * this opacity from its previous opacity, but otherwise from completely transparent.
 				 */
+				// @ts-expect-error
 				follow.isVisible !== false ? 0 : followTargetOpacity,
 				leadTargetOpacity,
 				easeCrossfadeIn(p)
-			);
+			);// @ts-expect-error
 			followState.opacity = options.preserveFollowOpacity
 				? followTargetOpacity
 				: mix(followTargetOpacity, 0, easeCrossfadeOut(p));
-		} else if (!follow) {
+		} else if (!follow) {// @ts-expect-error
 			leadState.opacity = mix(followTargetOpacity, leadTargetOpacity, p);
 		}
 		mixValues(leadState, followState, latestLeadValues, latestFollowValues || {}, Boolean(follow), p);
@@ -177,7 +181,7 @@ function createCrossfader(): Crossfader {
 		isActive: () => leadState && (isActive || getFrameData().timestamp === finalCrossfadeFrame),
 		fromLead: (transition) => startCrossfadeAnimation(0, transition),
 		toLead: (transition) => {
-			var initialProgress = 0;
+			var initialProgress = 0;// @ts-expect-error
 			if (!options.prevValues && !options.follow) {
 				/**
 				 * If we're not coming from anywhere, start at the end of the animation.
@@ -203,7 +207,7 @@ function createCrossfader(): Crossfader {
 			}
 		},
 		setOptions: (newOptions) => {
-			prevOptions = options;
+			prevOptions = options;// @ts-expect-error
 			options = newOptions;
 			leadState = {};
 			followState = {};
@@ -213,8 +217,8 @@ function createCrossfader(): Crossfader {
 }
 var easeCrossfadeIn = compress(0, 0.5, circOut);
 var easeCrossfadeOut = compress(0.5, 0.95, linear);
-function compress(min, max, easing) {
-	return (p) => {
+function compress(min: number, max: number, easing: { (v: number): number; (v: number): number; (arg0: number): any; }) {
+	return (p: number) => {
 		// Could replace ifs with clamp
 		if (p < min) return 0;
 		if (p > max) return 1;
@@ -223,7 +227,7 @@ function compress(min, max, easing) {
 }
 var borders = ['TopLeft', 'TopRight', 'BottomLeft', 'BottomRight'];
 var numBorders = borders.length;
-function mixValues(leadState, followState, latestLeadValues, latestFollowValues, hasFollowElement, p) {
+function mixValues(leadState: { [x: string]: number; rotate?: any; backgroundColor?: any; }, followState: { [x: string]: number; rotate?: any; backgroundColor?: any; }, latestLeadValues: { rotate: any; backgroundColor: string | Color; }, latestFollowValues: { rotate: any; backgroundColor: string | Color; }, hasFollowElement: boolean, p: number) {
 	/**
 	 * Mix border radius
 	 */
@@ -271,7 +275,7 @@ function mixValues(leadState, followState, latestLeadValues, latestFollowValues,
 		)(p);
 	}
 }
-function getRadius(values, radiusName) {
+function getRadius(values: { [x: string]: any; rotate?: any; backgroundColor?: string | Color; borderRadius?: any; }, radiusName: string) {
 	var _a;
 	return (_a = values[radiusName]) !== null && _a !== void 0 ? _a : values.borderRadius;
 }

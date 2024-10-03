@@ -149,16 +149,17 @@ function createLifecycles(...args: any[]) {
 		updatePropListeners: (props: { [x: string]: any }) =>
 			names.forEach((name) => {
 				var _a;
+				// @ts-expect-error
 				(_a = propSubscriptions[name]) === null || _a === void 0 ? void 0 : _a.call(propSubscriptions);
 				var on = 'on' + name;
 				var propListener = props[on];
-				if (propListener) {
+				if (propListener) {// @ts-expect-error
 					propSubscriptions[name] = (lifecycles as any)[on](propListener);
 				}
 			}),
 	} as any;
 	managers.forEach((manager, i) => {
-		lifecycles['on' + names[i]] = (handler) => manager.add(handler);
+		lifecycles['on' + names[i]] = (handler: (...args: any) => void) => manager.add(handler);
 		lifecycles['notify' + names[i]] = () => {
 			const [arg1, arg2, arg3] = args;
 			return manager.notify.apply(manager, [arg1, arg2, arg3]);

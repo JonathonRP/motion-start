@@ -31,7 +31,7 @@ function useMotionRef<Instance, RenderState>(
 		if (externalRef) {
 			if (typeof externalRef === 'function') {
 				externalRef(instance);
-			} else if (isRefObject(externalRef)) {
+			} else if (isRefObject(externalRef)) {// @ts-expect-error
 				externalRef.current = instance;
 			}
 		}

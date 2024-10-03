@@ -23,8 +23,8 @@ import { isKeyframesTarget } from '../../../animation/utils/is-keyframes-target.
 // import { invariant } from '../../../utils/errors.js';
 import { transformProps } from '../../html/utils/transform.js';
 import { findDimensionValueType } from '../value-types/dimensions.js';
-import type { MotionValue } from '$lib/motion-start/index.js';
-import type { AxisBox2D, BoundingBox2D } from '$lib/motion-start/types/geometry';
+import type { MotionValue } from '../../../index.js';
+import type { AxisBox2D, BoundingBox2D } from '../../../types/geometry';
 import type { TargetProjection } from '../../utils/state.js';
 
 var positionalKeys = new Set(['width', 'height', 'top', 'left', 'right', 'bottom', 'x', 'y']);
@@ -38,13 +38,13 @@ var setAndResetVelocity = (value: MotionValue, to: any) => {
 };
 var isNumOrPxType = (v: ValueType | undefined) => v === number || v === px;
 var getPosFromMatrix = (matrix: string, pos: number) => Number.parseFloat(matrix.split(', ')[pos]);
-var getTranslateFromMatrix = (pos2: number, pos3: number) => (_bbox: BoundingBox2D, _a: { transform: string }) => {
-	varm = _a.transform;
-	if (transform === 'none' || !transform) return 0;
+var getTranslateFromMatrix = (pos2: number, pos3: number) => (_bbox: BoundingBox2D, _a: { transform: string }) => {// @ts-expect-error
+	varm = _a.transform;// @ts-expect-error
+	if (transform === 'none' || !transform) return 0;// @ts-expect-error
 	var matrix3d = transform.match(/^matrix3d\((.+)\)$/);
 	if (matrix3d) {
 		return getPosFromMatrix(matrix3d[1], pos3);
-	} else {
+	} else {// @ts-expect-error
 		var matrix = transform.match(/^matrix\((.+)\)$/);
 		if (matrix) {
 			return getPosFromMatrix(matrix[1], pos2);

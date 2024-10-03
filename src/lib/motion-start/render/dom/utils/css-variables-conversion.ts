@@ -60,9 +60,9 @@ function getVariableValue(current: string, element: Element, depth?: number | un
 	var resolved = window.getComputedStyle(element).getPropertyValue(token);
 	if (resolved) {
 		return resolved.trim();
-	} else if (isCSSVariable(fallback)) {
+	} else if (isCSSVariable(fallback as string)) {
 		// The fallback might itself be a CSS variable, in which case we attempt to resolve it too.
-		return getVariableValue(fallback, element, depth + 1);
+		return getVariableValue(fallback as string, element, depth + 1);
 	} else {
 		return fallback;
 	}

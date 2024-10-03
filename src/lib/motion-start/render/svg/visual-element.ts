@@ -21,13 +21,13 @@ import { buildSVGAttrs } from './utils/build-attrs.js';
 import { camelCaseAttributes } from './utils/camel-case-attrs.js';
 import { renderSVG } from './utils/render.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
-import type { TransformProperties } from '$lib/motion-start/motion/types.js';
+import type { TransformProperties } from '../../motion/types.js';
 import type { DOMVisualElementOptions } from '../dom/types.js';
 import type { ResolvedValues } from '../types.js';
 import type { TargetProjection, LayoutState } from '../utils/state.js';
 import type { SVGRenderState } from './types.js';
 
-var svgVisualElement = visualElement<SVGElement>(
+var svgVisualElement = visualElement<SVGElement>(// @ts-expect-error
 	Object.assign(Object.assign({}, htmlConfig), {
 		getBaseTarget: (props: { [x: string]: any }, key: string | number) => props[key],
 		readValueFromInstance: (domElement: { getAttribute: (arg0: any) => any }, key: string) => {

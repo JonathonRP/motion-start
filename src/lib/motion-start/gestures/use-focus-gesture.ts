@@ -9,7 +9,7 @@ import type { FeatureProps } from "../motion/features/types";
  * @param ref
  * @internal
  */
-export type useFocusGesture = ({ whileFocus, visualElement }: FeatureProps) => void;
+export type useFocusGesture = ({ whileFocus, visualElement }: FeatureProps | any) => void;
 
 
 export { default as UseFocusGesture } from './UseFocusGesture.svelte';
