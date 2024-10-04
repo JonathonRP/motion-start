@@ -54,13 +54,13 @@ Copyright (c) 2018 Framer B.V. -->
     isCustom = false;
 
   let _ = !isLazyBundle(features);
-  let loadedRenderer = undefined;
+  let loadedRenderer = undefined as any;
   /**
    * If this is a synchronous load, load features immediately
    */
-  $: if (!isLazyBundle(features, _)) {
+  $: if (!isLazyBundle(features) && _) {
     const { renderer, ...loadedFeatures } = features;
-    (loadedRenderer as any).current = renderer;
+    loadedRenderer.current = renderer;
     loadFeatures(loadedFeatures);
   }
   function isLazyBundle(
@@ -72,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
     if (isLazyBundle(features)) {
       features().then(({ renderer, ...loadedFeatures }) => {
         loadFeatures(loadedFeatures);
-        (loadedRenderer as any).current = renderer;
+        loadedRenderer.current = renderer;
 
         // @ts-expect-error
         setIsLoaded(true);

@@ -45,6 +45,8 @@ import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 import { isSVGComponent } from './utils/is-svg-component.js';
 import M from './M.svelte';
+import type { loadFeatures } from '../../motion/features/definitions.js';
+import { createMotionClass } from './create-motion-class.js';
 
 type MotionComponent<Element extends keyof SvelteHTMLElements> = Component<
 	MotionProps & {
@@ -67,15 +69,16 @@ type MotionComponent<Element extends keyof SvelteHTMLElements> = Component<
  *
  * @public
  */
-function createMotionProxy(): {
+function createMotionProxy(features: Parameters<typeof loadFeatures>[0]): {
 	[P in keyof SvelteHTMLElements]: MotionComponent<P>;
 } {
-	return new Proxy({} as any, {
+	return new Proxy({} as ReturnType<typeof createMotionProxy>, {
 		get(_target, key: string) {
 			let type = false;
 			if (key.toString().slice(0, 1) === key.toString().slice(0, 1).toLowerCase()) {
 				type = isSVGComponent(key);
 			}
+			const Motion = createMotionClass(features);
 
 			return new Proxy(M, {
 				construct(target, args) {
@@ -83,33 +86,32 @@ function createMotionProxy(): {
 						args.push({});
 					}
 					if (!args[0]?.props) {
-						args[0].props = { ___tag: key, isSVG: type };
+						args[0].props = { ___tag: key, isSVG: type, Motion };
 					} else {
 						args[0].props.___tag = key;
 						args[0].props.isSVG = type;
+						args[0].props.Motion = Motion;
 					}
-
-					console.log(target, args);
 
 					// @ts-expect-error
 					return new target(...args);
 				},
 				// support svelte 5
-				apply(target, thisArg, args) {
+				apply(target, _thisArg, args) {
 					if (!args[1]) {
-						args[1] = { ___tag: key, isSVG: type };
+						args[1] = { ___tag: key, isSVG: type, Motion };
 					} else {
 						args[1].___tag = key;
 						args[1].isSVG = type;
+						args[1].Motion = Motion;
 					}
+
 					// @ts-expect-error
 					return target(...args);
 				},
 			});
 		},
-	}) satisfies { [P in keyof SvelteHTMLElements]: MotionComponent<P> };
+	});
 }
 
-const Motion = createMotionProxy();
-
-export { Motion, createMotionProxy };
+export { createMotionProxy };

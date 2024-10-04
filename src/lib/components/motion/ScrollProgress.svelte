@@ -26,7 +26,7 @@
 >
     <Motion.div
         style={{
-            width: 150,
+            width: "150px",
             height: useMotionValue(getHeight(items)),
             y: scrollY,
         }}
@@ -54,8 +54,8 @@
         width,
         transformOrigin: "0%",
         position: "absolute",
-        left: 25,
-        top: 10,
+        left: "25px",
+        top: "10px",
     }}
     class="h-[6px] bg-[#fff] rounded-full"
 ></Motion.div>

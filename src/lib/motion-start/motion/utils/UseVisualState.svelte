@@ -10,10 +10,7 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../render/utils/variants.js";
   import { resolveMotionValue } from "../../value/utils/resolve-motion-value.js";
 
-  type Instance = any;
-  type RenderState = any;
-
-  const makeState = (
+  const makeState = <Instance, RenderState>(
     {
       scrapeMotionValuesFromProps,
       createRenderState,
@@ -21,14 +18,14 @@ Copyright (c) 2018 Framer B.V. -->
     }: UseVisualStateConfig<Instance, RenderState>,
     props,
     context,
-    presenceContext
+    presenceContext,
   ) => {
     const state: any = {
       latestValues: makeLatestValues(
         props,
         context,
         presenceContext,
-        scrapeMotionValuesFromProps
+        scrapeMotionValuesFromProps,
       ),
       renderState: createRenderState(),
     };
@@ -43,7 +40,7 @@ Copyright (c) 2018 Framer B.V. -->
     props,
     context,
     presenceContext,
-    scrapeMotionValues
+    scrapeMotionValues,
   ) {
     const values: any = {};
     const blockInitialAnimation = presenceContext?.initial === false;
@@ -112,21 +109,23 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../context/PresenceContext.js";
 
   type $$Props = {
-    config: UseVisualStateConfig<Instance, RenderState>;
+    config?: UseVisualStateConfig<Instance, RenderState>;
     props: MotionProps;
     isStatic: boolean;
     isCustom?: any | undefined;
   };
 
-  export let config: $$Props["config"],
+  export let config: $$Props["config"] = undefined,
     props: $$Props["props"],
     isStatic: $$Props["isStatic"],
-    isCustom: $$Props['isCustom'] = undefined;
+    isCustom: $$Props["isCustom"] = undefined;
 
   const context =
-    getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+    getContext<Writable<MotionContextProps>>(MotionContext) ||
+    MotionContext(isCustom);
   const presenceContext =
-    getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+    getContext<Writable<PresenceContextProps>>(PresenceContext) ||
+    PresenceContext(isCustom);
   let state = makeState(config, props, get(context), get(presenceContext));
   const ms = makeState;
   $: if (isStatic) {

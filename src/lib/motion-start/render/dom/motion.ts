@@ -16,10 +16,10 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 import { createMotionComponent } from '../../motion/index.js';
-import { createMotionClass } from './create-motion-class.js';
+// import { createMotionClass } from './create-motion-class.js';
 import { createDomVisualElement } from './create-visual-element.js';
 import { featureBundle } from './featureBundle.js';
-//import { createMotionProxy } from './motion-proxy.js';
+import { createMotionProxy } from './motion-proxy.js';
 
 /**
  * HTML & SVG components, optimised for use with gestures and animation. These can be used as
@@ -27,7 +27,8 @@ import { featureBundle } from './featureBundle.js';
  *
  * @public
  */
-var motion = /*@__PURE__*/ createMotionClass(featureBundle as any); //createMotionProxy(allMotionFeatures);
+var motion = /*@__PURE__*/ createMotionProxy(featureBundle);
+
 /**
  * Create a DOM `motion` component with the provided string. This is primarily intended
  * as a full alternative to `motion` for consumers who have to support environments that don't

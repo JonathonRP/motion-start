@@ -12,6 +12,7 @@ import type { VisualState } from '../utils/use-visual-state';
 export interface FeatureProps {
 	props: MotionProps;
 	visualElement: VisualElement;
+	isCustom: any;
 }
 export type FeatureNames = {
 	animation: true;

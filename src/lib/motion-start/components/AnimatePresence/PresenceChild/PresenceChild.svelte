@@ -1,15 +1,15 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script context="module">
+<script context="module" lang="ts">
     let presenceId = 0;
     function getPresenceId() {
         const id = presenceId;
         presenceId++;
         return id;
     }
-    function newChildrenMap() {
-        return new Map();
+    function newChildrenMap(): Map<number, boolean> {
+        return new Map<number, boolean>();
     }
 </script>
 
@@ -21,25 +21,25 @@ Copyright (c) 2018 Framer B.V. -->
 
     type $$Props = PresenceChildProps;
 
-    export let isPresent: $$Props['isPresent'],
-        onExitComplete: $$Props['onExitComplete'] = undefined,
-        initial: $$Props['initial'] = undefined,
-        custom: $$Props['custom'] = undefined,
-        presenceAffectsLayout: $$Props['presenceAffectsLayout'],
-        isCustom: $$Props['isCustom'];
+    export let isPresent: $$Props["isPresent"],
+        onExitComplete: $$Props["onExitComplete"] = undefined,
+        initial: $$Props["initial"] = undefined,
+        custom: $$Props["custom"] = undefined,
+        presenceAffectsLayout: $$Props["presenceAffectsLayout"],
+        isCustom: $$Props["isCustom"];
 
     const presenceChildren = newChildrenMap();
     const id = getPresenceId();
 
     $: refresh = presenceAffectsLayout ? undefined : isPresent;
 
-    const memoContext = () => {
+    const memoContext = (flag?: boolean) => {
         return {
             id,
             initial,
             isPresent,
             custom,
-            onExitComplete: (childId) => {
+            onExitComplete: (childId: number) => {
                 presenceChildren.set(childId, true);
                 let allComplete = true;
                 presenceChildren.forEach((isComplete) => {
@@ -48,7 +48,7 @@ Copyright (c) 2018 Framer B.V. -->
 
                 allComplete && onExitComplete?.();
             },
-            register: (childId) => {
+            register: (childId: number) => {
                 presenceChildren.set(childId, false);
                 return () => presenceChildren.delete(childId);
             },
@@ -64,7 +64,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     $: context.set(memoContext(refresh));
 
-    const keyset = () => {
+    const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
     $: keyset(isPresent);
@@ -72,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
         !isPresent && !presenceChildren.size && onExitComplete?.();
     });
     setContext(PresenceContext, context);
-    setDomContext("Presence",isCustom,context)
+    setDomContext("Presence", isCustom, context);
 </script>
 
 <slot />

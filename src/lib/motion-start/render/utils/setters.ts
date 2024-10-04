@@ -45,7 +45,8 @@ function setTarget(visualElement: VisualElement, definition: string | TargetAndT
 		_b = _a.transitionEnd;
 	var { transition, transitionEnd = _b === void 0 ? {} : _b, ...target } = _a;
 	target = Object.assign(Object.assign({}, target), transitionEnd);
-	for (var key in target) {// @ts-expect-error
+	for (var key in target) {
+		// @ts-expect-error
 		var value = resolveFinalValueInKeyframes(target[key]);
 		setMotionValue(visualElement, key, value);
 	}
@@ -99,7 +100,7 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
 			value =
 				(_b = (_a = origin[key]) !== null && _a !== void 0 ? _a : visualElement.readValue(key)) !== null &&
 				_b !== void 0
-					? _b// @ts-expect-error
+					? _b // @ts-expect-error
 					: target[key];
 		}
 		/**
@@ -119,8 +120,8 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
 	}
 }
 function getOriginFromTransition(key: string, transition: Transition) {
-	if (!transition) return; //@ts-ignore
-	var valueTransition = transition[key] || transition['default'] || transition;
+	if (!transition) return; //@ts-expect-error
+	var valueTransition = transition[key] || transition.default || transition;
 	return valueTransition.from;
 }
 function getOrigin(target: Target, transition: Transition, visualElement: VisualElement) {

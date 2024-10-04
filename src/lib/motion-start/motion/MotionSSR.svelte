@@ -234,7 +234,7 @@ Copyright (c) 2018 Framer B.V. -->
                             props={motionProps}
                             ref={useMotionRef(
                                 visualState,
-                                context.visualElement,
+                                (context as any).visualElement,
                                 externalRef,
                             )}
                             {visualState}

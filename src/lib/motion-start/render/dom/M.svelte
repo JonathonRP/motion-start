@@ -3,11 +3,12 @@
     import type { SvelteHTMLElements } from "svelte/elements";
     import type { Snippet } from "svelte";
     import type { MotionProps } from "../../motion";
-    import { Motion } from "./motion";
+    import type M from "../../motion/Motion.svelte";
 
     // let {as, class: className, children, ...restProps}: {as: keyof SvelteHTMLElements, children: Snippet, class: string } & MotionProps = $props();
     export let ___tag: keyof SvelteHTMLElements;
     export let el: SvelteHTMLElements[typeof ___tag]["this"];
+    export let Motion: typeof M;
 </script>
 
 <Motion {...$$restProps} let:props let:motion>
