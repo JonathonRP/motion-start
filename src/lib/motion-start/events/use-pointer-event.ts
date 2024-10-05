@@ -29,4 +29,5 @@ export interface UsePointerEventProps {
 	options?: AddEventListenerOptions;
 }
 
+// @ts-ignore
 export { default as UsePointerEvent, addPointerEvent } from './UsePointerEvent.svelte';

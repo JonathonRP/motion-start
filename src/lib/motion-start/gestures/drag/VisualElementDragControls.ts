@@ -605,7 +605,7 @@ class VisualElementDragControls {
 		/**
 		 * Attach a pointerdown event listener on this DOM element to initiate drag tracking.
 		 */
-		var stopPointerListener = addPointerEvent(element, 'pointerdown', (event) => {
+		var stopPointerListener = addPointerEvent(element, 'pointerdown', (event: PointerEvent) => {
 			var _a = this.props,
 				drag = _a.drag,
 				_b = _a.dragListener,

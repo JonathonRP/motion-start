@@ -9,6 +9,6 @@ export interface MotionContextProps {
     animate?: string | string[];
 }
 
-
+//@ts-ignore
 export { MotionContext, useVisualElementContext, default as UseVisualElementContext } from "./MotionContext.svelte";
 

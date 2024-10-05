@@ -1,7 +1,9 @@
 import { getContext } from 'svelte';
 import { get, type Writable } from 'svelte/store';
+// @ts-ignore
 import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../context/ScaleCorrectionProvider.svelte';
-import type { MotionContextProps } from '$lib/motion-start/context/MotionContext';
+import type { MotionContextProps } from '../../context/MotionContext/index.js'
+// '$lib/motion-start/context/MotionContext';
 
 export const scaleCorrection = () => {
 	const scaleCorrectionContext = getContext<Writable<MotionContextProps>>(ScaleCorrectionContext);
@@ -9,7 +11,7 @@ export const scaleCorrection = () => {
 	const afterU = (nc = false) => {
 		/* Second part of the updater calling in child layouts first.*/
 		const scc = get(scaleCorrectionContext);
-		// @ts-expect-error
+		// @ts-ignore
 		scc.forEach((v: { afterU: (arg0: boolean) => void }, i: any) => {
 			v.afterU?.(true);
 		});
