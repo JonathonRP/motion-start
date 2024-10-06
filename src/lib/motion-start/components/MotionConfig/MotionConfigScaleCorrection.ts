@@ -11,7 +11,6 @@ export const scaleCorrection = () => {
 	const afterU = (nc = false) => {
 		/* Second part of the updater calling in child layouts first.*/
 		const scc = get(scaleCorrectionContext);
-		// @ts-ignore
 		scc.forEach((v: { afterU: (arg0: boolean) => void }, i: any) => {
 			v.afterU?.(true);
 		});

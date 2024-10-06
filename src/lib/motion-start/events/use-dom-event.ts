@@ -44,5 +44,17 @@ export interface UseDomEventProps {
  *
  * @public
  */
-export { default as UseDomEvent, addDomEvent } from './UseDomEvent.svelte';
+
+export function addDomEvent(
+    target: EventTarget,
+    eventName: string,
+    handler: EventListener,
+    options?: AddEventListenerOptions
+  ) {
+    target.addEventListener(eventName, handler, options);
+    return function () {
+      return target.removeEventListener(eventName, handler, options);
+    };
+  }
+export { default as UseDomEvent } from './UseDomEvent.svelte';
 
