@@ -20,7 +20,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 > **Note** - this is in alpha expect bugs and please report or make PRs to fix bugs. This is svelte-motion ported to typescript currently. I have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
----
+
 
 ## Documentation
 
