@@ -1,6 +1,6 @@
 
-
 [![Join discord server](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2F7q8NBZbQzt%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=white&labelColor=9656CE&links=https://discord.gg/TBdTdu6hmW)](https://discord.gg/TBdTdu6hmW)
+
 
 
 
