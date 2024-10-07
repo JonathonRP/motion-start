@@ -9,7 +9,7 @@
 
 An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
-<a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yml?branch=main" alt="Build Status"></a>
+<a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yaml?branch=main" alt="Build Status"></a>
 
 <a href="https://github.com/JonathonRP/motion-start/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/motion-start.svg" alt="License"></a>
 
