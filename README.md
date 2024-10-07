@@ -44,3 +44,14 @@ For svg elements like 'g', 'path' or 'circle', use:
 <Motion let:motion isSVG><g use:motion/></Motion>
 ```
 
+
+## Community
+
+Join the Discord server to ask questions, find collaborators, or just say hi!
+
+<a href="https://discord.gg/TBdTdu6hmW" alt="Svecosystem Discord community">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/TBdTdu6hmW">
+  <img alt="Svecosystem Discord community" src="https://invidget.switchblade.xyz/TBdTdu6hmW?theme=light">
+</picture>
+</a>
