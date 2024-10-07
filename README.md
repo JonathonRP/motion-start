@@ -1,12 +1,11 @@
 [![Join discord server](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=9656CE&label=motion-start&labelColor=light-gray&color=9656CE&link=https%3A%2F%2Fdiscord.gg%2FTBdTdu6hmW)](https://discord.gg/TBdTdu6hmW)
 
 # Motion Start
+An animation library based on [framer-motion](https://www.framer.com/motion/)
 
 > **Note** <br> **this is in alpha expect bugs and please report or make PRs to fix bugs.** <br> fyi this is svelte-motion ported to typescript currently.
 
-plan is to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future
-
-An animation library based on [framer-motion](https://www.framer.com/motion/).
+plan is to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
 ## Installation
 
