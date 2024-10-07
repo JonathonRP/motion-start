@@ -17,7 +17,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 [![npm version](https://badge.fury.io/js/motion-start.svg)](https://badge.fury.io/js/motion-start)
 
-<a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+<a href="https://www.npmjs.com/package/motion-start"><img src="https://img.shields.io/npm/dt/motion-start.svg" alt="Total Downloads"></a>
 
 </div>
 
