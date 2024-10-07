@@ -1,5 +1,5 @@
 <p align="center">
- <!-- <img align="center" src="https://raw.githubusercontent.com/huntabyte/shadcn-svelte/main/sites/docs/static/android-chrome-192x192.png" height="96" /> -->
+ <img align="center" src="https://cdn.discordapp.com/attachments/1288125624317382677/1288132876793020448/icon.png?ex=6705363a&is=6703e4ba&hm=a9dd121a4b4cac11a7ae3f206e5f5f2728f75a897ea3b5e5180fa4b94aa0e655&" height="96" />
  <h1 align="center">
   Motion Start
  </h1>
