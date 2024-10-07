@@ -17,7 +17,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 </div>
 
-> **Note** <br> this is in alpha expect bugs and please report or make PRs to fix bugs. <br> this is svelte-motion ported to typescript currently. plan is to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
+> **Note** - this is in alpha expect bugs and please report or make PRs to fix bugs. <br> this is svelte-motion ported to typescript currently. I have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
 ## Installation
 
