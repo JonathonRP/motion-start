@@ -10,7 +10,7 @@
 An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 [![Join discord server](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=9656CE&label=motion-start&labelColor=light-gray&color=9656CE&link=https%3A%2F%2Fdiscord.gg%2FTBdTdu6hmW)](https://discord.gg/TBdTdu6hmW)
-[![CI](https://github.com/JonathonRP/motion-start/.github/workflows/main.yml/badge.svg)](https://github.com/JonathonRP/motion-start/.github/workflows/main.yml)
+[![CI](https://github.com/JonathonRP/motion-start/actions/workflows/main.yml/badge.svg)](https://github.com/JonathonRP/motion-start/actions/workflows/main.yml)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/JonathonRP/motion-start/blob/main/LICENSE)
 [![npm version](https://badge.fury.io/js/motion-start.svg)](https://badge.fury.io/js/motion-start)
 
