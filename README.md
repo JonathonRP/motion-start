@@ -1,5 +1,5 @@
 <p align="center">
- <img align="center" src="https://raw.githubusercontent.com/huntabyte/shadcn-svelte/main/sites/docs/static/android-chrome-192x192.png" height="96" />
+ <!-- <img align="center" src="https://raw.githubusercontent.com/huntabyte/shadcn-svelte/main/sites/docs/static/android-chrome-192x192.png" height="96" /> -->
  <h1 align="center">
   Motion Start
  </h1>
