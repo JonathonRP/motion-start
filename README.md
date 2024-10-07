@@ -9,17 +9,25 @@
 
 An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
-[![CI](https://github.com/JonathonRP/motion-start/actions/workflows/main.yaml/badge.svg)](https://github.com/JonathonRP/motion-start/actions/workflows/main.yaml)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/JonathonRP/motion-start/blob/main/LICENSE)
-[![npm version](https://badge.fury.io/js/motion-start.svg)](https://badge.fury.io/js/motion-start)
+<a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yml?branch=main" alt="Build Status"></a>
+
+<a href="https://github.com/JonathonRP/motion-start/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/motion-start.svg" alt="License"></a>
+
+ <a href="https://github.com/JonathonRP/motion-start/releases"><img src="https://img.shields.io/npm/v/motion-start.svg" alt="Latest Release"></a>
+
 <a href="https://www.npmjs.com/package/motion-start"><img src="https://img.shields.io/npm/dt/motion-start.svg" alt="Total Downloads"></a>
+
 [![Join discord server](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=9656CE&label=motion-start&labelColor=light-gray&color=9656CE&link=https%3A%2F%2Fdiscord.gg%2FTBdTdu6hmW)](https://discord.gg/TBdTdu6hmW)
 
 </div>
 
 > **Note** - this is in alpha expect bugs and please report or make PRs to fix bugs. This is svelte-motion ported to typescript currently. I have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
-## Installation
+---
+
+## Documentation
+
+### Installation
 
 ```bash
 npm install --save-dev motion-start
@@ -37,7 +45,7 @@ yarn install --save-dev motion-start
 bun install --save-dev motion-start
 ```
 
-## Usage
+### Usage
 
 Corresponding to a `MotionDiv` in framer-motion is this:
 
