@@ -1,4 +1,4 @@
-![Join discord server](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=white&labelColor=9656CE&color=gray&link=https://discord.gg/TBdTdu6hmW)
+![Join discord server](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=white&label=""labelColor=gray&color=9656CE&link=https://discord.gg/TBdTdu6hmW)
 
 # Motion Start
 
