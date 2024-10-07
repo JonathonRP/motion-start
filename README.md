@@ -1,3 +1,4 @@
+[![Wechaty Discord](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2F7q8NBZbQzt%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&logoColor=purple)](https://discord.gg/TBdTdu6hmW)
 
 # Motion Start
 
@@ -31,8 +32,7 @@ bun install --save-dev motion-start
 
 Corresponding to a `MotionDiv` in framer-motion is this:
 
-```javascript
-import { Motion } from 'motion-start'
+```javascript
 import { Motion } from 'motion-start'
 
 <Motion let:motion><div use:motion/></Motion>
