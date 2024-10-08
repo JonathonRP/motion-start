@@ -14,7 +14,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 <a href="https://github.com/JonathonRP/motion-start/releases"><img src="https://img.shields.io/npm/v/motion-start.svg" alt="Latest Release"></a>
 <a href="https://www.npmjs.com/package/motion-start"><img src="https://img.shields.io/npm/dt/motion-start.svg" alt="Total Downloads"></a>
 <a
-href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&label=chat&labelColor=lightgray" alt="Discord Server Invite"></a>
+href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Finvites%2FTBdTdu6hmW%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&logo=discord&label=chat&color=discord" alt="Discord Server Invite"></a>
 
 </div>
 
