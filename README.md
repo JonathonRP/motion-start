@@ -62,8 +62,9 @@ For svg elements like 'g', 'path' or 'circle', use:
 # Community
 Join the Discord server to ask questions, find collaborators, or say hi!
 
-<a href="https://discord.gg/TBdTdu6hmW" alt="Motion Start">
+<a href="https://discord.gg/bTa32kj9T3" alt="Motion Start">
 <picture>
-  <img align="center" src="https://cdn.discordapp.com/attachments/1288125624317382677/1288132876793020448/icon.png?ex=6705363a&is=6703e4ba&hm=a9dd121a4b4cac11a7ae3f206e5f5f2728f75a897ea3b5e5180fa4b94aa0e655&" height="48" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/bTa32kj9T3">
+  <img alt="Motion Start Discord Community" src="https://invidget.switchblade.xyz/bTa32kj9T3?theme=light">
 </picture>
 </a>
