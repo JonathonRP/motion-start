@@ -18,12 +18,11 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 ---
 
-## Documentation
 Work in progress.
 
 > **Note**: The library is  in alpha expect bugs and please report or make PRs to fix bugs. This is svelte-motion ported to typescript currently. We have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
-### Installation
+## Installation
 
 ```sh
 npm install --save-dev motion-start
@@ -41,7 +40,7 @@ yarn install --save-dev motion-start
 bun install --save-dev motion-start
 ```
 
-### Usage
+## Usage
 
 Corresponding to a `MotionDiv` in framer-motion is this:
 
@@ -58,7 +57,7 @@ For svg elements like 'g', 'path' or 'circle', use:
 ```
 
 
-## Community
+# Community
 Join the Discord server to ask questions, find collaborators, or say hi!
 
 <a href="https://discord.gg/bTa32kj9T3" alt="Motion Start">
