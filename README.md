@@ -9,6 +9,8 @@
 
 An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
+> **Note** - this is in alpha expect bugs and please report or make PRs to fix bugs. This is svelte-motion ported to typescript currently. I have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
+
 <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yaml" alt="Build Status"></a>
 <a href="https://github.com/JonathonRP/motion-start/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/motion-start.svg" alt="License"></a>
 <a href="https://github.com/JonathonRP/motion-start/releases"><img src="https://img.shields.io/npm/v/motion-start.svg" alt="Latest Release"></a>
@@ -21,8 +23,6 @@ href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/dyna
 ---
 
 ## Documentation
-
-> **Note** - this is in alpha expect bugs and please report or make PRs to fix bugs. This is svelte-motion ported to typescript currently. I have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
 For full documentation, visit ...coming soon.
 
