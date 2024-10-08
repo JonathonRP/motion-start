@@ -14,11 +14,9 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 [![Latest Release](https://img.shields.io/npm/v/motion-start.svg)](https://github.com/JonathonRP/motion-start/releases)
 [![Total Downloads](https://img.shields.io/npm/dt/motion-start.svg)](https://www.npmjs.com/package/motion-start)
 [![Discord Server](https://img.shields.io/discord/1288125623570530334?logo=discord&logoColor=white&label=community&labelColor=5865F2")](https://discord.gg/TBdTdu6hmW)
-
----
 </div>
 
-
+---
 
 Work in progress.
 
