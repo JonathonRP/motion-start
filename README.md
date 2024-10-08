@@ -22,9 +22,9 @@ href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/dyna
 
 ## Documentation
 
-For full documentation, visit ...coming soon.
-
 > **Note** - this is in alpha expect bugs and please report or make PRs to fix bugs. This is svelte-motion ported to typescript currently. I have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
+
+For full documentation, visit ...coming soon.
 
 ### Installation
 
