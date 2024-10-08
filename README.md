@@ -15,7 +15,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 <a href="https://www.npmjs.com/package/motion-start"><img src="https://img.shields.io/npm/dt/motion-start.svg" alt="Total Downloads"></a>
 <a
 href="https://discord.gg/TBdTdu6hmW">
-<img alt="Discord Server" src="https://img.shields.io/discord/1288125623570530334"></a>
+<img alt="Discord Server" src="https://img.shields.io/discord/1288125623570530334?logo=discord"></a>
 
 </div>
 
