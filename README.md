@@ -26,6 +26,9 @@ href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/dyna
 
 ## Documentation
 
+For full documentation, visit ...coming soon.
+
+
 ### Installation
 
 ```bash
