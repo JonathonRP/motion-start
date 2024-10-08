@@ -20,7 +20,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 <a href="https://github.com/JonathonRP/motion-start/releases"><img src="https://img.shields.io/npm/v/motion-start.svg" alt="Latest Release"></a>
 <a href="https://www.npmjs.com/package/motion-start"><img src="https://img.shields.io/npm/dt/motion-start.svg" alt="Total Downloads"></a>
 <a
-href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/&logo=discord&logoColor=white" alt="Discord Server Invite"></a>
+href="https://discord.gg/TBdTdu6hmW"><img src="https://img.shields.io/badge/?logo=discord&logoColor=white" alt="Discord Server Invite"></a>
 
 </div>
 
