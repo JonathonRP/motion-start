@@ -10,8 +10,7 @@
 An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 <a href="https://github.com/JonathonRP/motion-start/actions"><img src="https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yaml" alt="Build Status"></a>
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/withastro/astro/blob/main/LICENSE)
-<a href="https://github.com/JonathonRP/motion-start/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/motion-start.svg?color=blue" alt="License"></a>
+<a href="https://github.com/JonathonRP/motion-start/blob/main/LICENSE.md"><img src="https://img.shields.io/npm/l/motion-start.svg?color=blue" alt="License"></a>
 <a href="https://github.com/JonathonRP/motion-start/releases"><img src="https://img.shields.io/npm/v/motion-start.svg" alt="Latest Release"></a>
 <a href="https://www.npmjs.com/package/motion-start"><img src="https://img.shields.io/npm/dt/motion-start.svg" alt="Total Downloads"></a>
 <a
