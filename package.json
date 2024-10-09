@@ -1,6 +1,6 @@
 {
 	"name": "motion-start",
-	"version": "0.0.4",
+	"version": "0.0.3",
 	"description": "Svelte animation library based on the React library framer-motion.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
