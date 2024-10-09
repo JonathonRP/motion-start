@@ -20,7 +20,7 @@ function SharedLayoutContext(custom?: any): Writable<SyncLayoutBatcher> | Writab
 /**
  * @internal
  */
-var FramerTreeLayoutContext = () => writable(createBatcher());
+var FramerTreeLayoutContext = (isCustom?: any) => writable(createBatcher());
 
 function isSharedLayout(context: SyncLayoutBatcher | SharedLayoutSyncMethods): context is SharedLayoutSyncMethods {
 	return 'forceUpdate' in context;

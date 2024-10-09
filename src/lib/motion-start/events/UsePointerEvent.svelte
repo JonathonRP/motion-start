@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { getPointerEventName, type UsePointerEventProps } from "./use-pointer-event.js";
   type $$Props = UsePointerEventProps;
 
-  export let ref: $$Props["ref"],
+  export let ref:$$Props["ref"] | any ,
     eventName: $$Props["eventName"],
     handler: $$Props["handler"] = undefined,
     options: $$Props["options"] = undefined;

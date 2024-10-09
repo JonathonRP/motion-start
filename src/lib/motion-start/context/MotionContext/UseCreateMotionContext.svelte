@@ -17,11 +17,11 @@ Copyright (c) 2018 Framer B.V. -->
     let { initial, animate } = getCurrentTreeVariants(props, get(mc));
     $: ({ initial, animate } = getCurrentTreeVariants(props, $mc));
 
-    const variantLabelsAsDependency = (prop) => {
+    const variantLabelsAsDependency = (prop: string | boolean | any[] | undefined) => {
         return Array.isArray(prop) ? prop.join(" ") : prop;
     };
 
-    const memo = () => {
+    const memo = (variantLabelsAsDependency?:string | boolean | undefined, variantLabelsAsDependency2?:string | boolean | undefined) => {
         return { initial: initial, animate: animate };
     };
     /**

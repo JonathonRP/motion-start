@@ -22,8 +22,8 @@ Copyright (c) 2018 Framer B.V. -->
 
   // If we've been provided a DragControls for manual control over the drag gesture,
   // subscribe this component to it on mount.
-  let cleanup;
-  const dragEffect = () => {
+  let cleanup: () => void;
+  const dragEffect = (dragControls?: VisualElementDragControls) => {
     if (cleanup) {
       cleanup();
     }

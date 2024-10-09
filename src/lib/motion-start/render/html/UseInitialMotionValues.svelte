@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   import { createHtmlRenderState } from "./utils/create-render-state.js";
   export let visualState, isStatic, props;
-  const memo = () => {
+  const memo = (variantLabelsAsDependency?:string | boolean | undefined) => {
     let state = createHtmlRenderState();
 
     buildHTMLStyles(
