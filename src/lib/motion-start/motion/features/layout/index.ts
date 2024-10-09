@@ -13,9 +13,9 @@ import { AnimateLayoutContextProvider } from './Animate.js';
 import { MeasureContextProvider } from './Measure.js';
 
 
-var layoutAnimations = {
+var layoutAnimations: FeatureComponents = {
 	measureLayout: MeasureContextProvider,
 	layoutAnimation: AnimateLayoutContextProvider,
-} satisfies FeatureComponents;
+};
 
 export { layoutAnimations };

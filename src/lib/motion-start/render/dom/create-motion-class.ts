@@ -6,7 +6,9 @@ import Motion from '../../motion/Motion.svelte';
 import { loadFeatures } from '../../motion/features/definitions';
 
 
-export const createMotionClass = (features: Parameters<typeof loadFeatures>[0]) => {
+const createMotionClass = (features: Parameters<typeof loadFeatures>[0]) => {
 	features && loadFeatures(features);
-	return Motion;
+	return Motion as any;
 };
+
+export { createMotionClass }
