@@ -27,7 +27,7 @@ Work in progress.
 
 # Documentation
 
-for full docs, please visit [docs](motion-start.com)
+For full documentation, visit [motion-start.com](https://motion-start.com/docs).
 
 # Community
 Join the Discord server to ask questions, find collaborators, or say hi!
