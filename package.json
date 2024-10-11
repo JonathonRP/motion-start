@@ -13,9 +13,7 @@
 		"directory": "src/lib/motion-start"
 	},
 	"type": "module",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"main": "./dist/index.js",
 	"bin": "./dist/index.js",
 	"svelte": "./dist/index.js",
@@ -23,7 +21,7 @@
 	"exports": "./dist/index.js",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && bun --bun package",
+		"build": "vite build && pnpm package",
 		"package": "svelte-kit sync && svelte-package --input ./src/lib/motion-start && publint --strict",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -78,19 +76,6 @@
 	},
 	"packageManager": "pnpm@9.6.0",
 	"sideEffects": false,
-	"keywords": [
-		"svelte animation",
-		"svelte",
-		"animation",
-		"gestures",
-		"drag",
-		"spring",
-		"popmotion",
-		"framer-motion"
-	],
-	"trustedDependencies": [
-		"@biomejs/biome",
-		"@sveltejs/kit",
-		"esbuild"
-	]
+	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
+	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
 }
