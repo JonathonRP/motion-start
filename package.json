@@ -4,8 +4,8 @@
 	"description": "Svelte animation library inspired by the React library framer-motion.",
  "license": "MIT",
  "author": {
-   name: "JonathonRP",
-   url: "https://github.com/JonathonRP"
+   "name": "JonathonRP",
+   "url": "https://github.com/JonathonRP"
  },
  "repository": {
 		"type": "git",
