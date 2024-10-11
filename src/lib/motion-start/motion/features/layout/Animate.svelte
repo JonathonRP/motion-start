@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" context="module">
   const progressTarget = 1000;
 
-  function hasMoved(a: { x: any; y: any; }, b: { x: any; y: any; }) {
+  function hasMoved(a: AxisBox2D, b: AxisBox2D) {
     return (
       !isZeroBox(a) &&
       !isZeroBox(b) &&
@@ -12,12 +12,12 @@ Copyright (c) 2018 Framer B.V. -->
     );
   }
 
-  const zeroAxis = { min: 0, max: 0 };
-  function isZeroBox(a: { x: any; y: any; }) {
+  const zeroAxis = { min: 0, max: 0 } satisfies Axis;
+  function isZeroBox(a: AxisBox2D) {
     return axisIsEqual(a.x, zeroAxis) && axisIsEqual(a.y, zeroAxis);
   }
 
-  function axisIsEqual(a: { min: any; max: any; }, b: { min: any; max: any; }) {
+  function axisIsEqual(a: Axis, b: Axis) {
     return a.min === b.min && a.max === b.max;
   }
 
@@ -38,6 +38,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { eachAxis } from "../../../utils/each-axis.js";
   import { axisBox } from "../../../utils/geometry/index.js";
   import { tweenAxis } from "./utils";
+  import type { Axis, AxisBox2D } from "$lib/motion-start/types/geometry.js";
 
   export let visualElement,
     //initial = undefined,
@@ -122,7 +123,7 @@ Copyright (c) 2018 Framer B.V. -->
   let stopAxisAnimation = {
     x: undefined,
     y: undefined,
-  };
+  } as any satisfies AxisBox2D;
 
   let unsubLayoutReady: () => void;
 
@@ -145,8 +146,8 @@ Copyright (c) 2018 Framer B.V. -->
   });
 
   const animateF = (
-    target: { [x: string]: { max: any; }; x?: any; y?: any; },
-    origin: { [x: string]: any; x?: any; y?: any; },
+    target: { [x: string]: { max: any }; x: any; y: any },
+    origin: { [x: string]: any; x: any; y: any },
     {
       originBox,
       targetBox,
@@ -154,7 +155,7 @@ Copyright (c) 2018 Framer B.V. -->
       shouldStackAnimate,
       onComplete,
       ...config
-    } = {}
+    } = {} as any,
   ) => {
     /**
      * Early return if we've been instructed not to animate this render.
@@ -195,7 +196,7 @@ Copyright (c) 2018 Framer B.V. -->
       if (visualElement.projection.isTargetLocked) {
         return;
       } else if (visibilityAction !== undefined) {
-        visualElement.setVisibility(visibilityAction === VisibilityAction.Show);
+        visualElement.setVisibility(visibilityAction === visibilityAction.Show);
       } else if (boxHasMoved) {
         // If the box has moved, animate between it's current visual state and its
         // final state
@@ -206,7 +207,7 @@ Copyright (c) 2018 Framer B.V. -->
         return visualElement.setProjectionTargetAxis(
           axis,
           target[axis].min,
-          target[axis].max
+          target[axis].max,
         );
       }
     });
@@ -235,23 +236,23 @@ Copyright (c) 2018 Framer B.V. -->
     axis: string,
     target: Axis,
     origin: Axis,
-    { transition: _transition } = {}
+    { transition: _transition } = {} as any,
   ) => {
     stopAxisAnimation[axis]?.();
     /**
      * If we're not animating to a new target, don't run this animation
      */
     if (
-      isAnimating[axis] &&
-      axisIsEqual(target, currentAnimationTarget[axis])
+      (isAnimating as any)[axis] &&
+      axisIsEqual(target, (currentAnimationTarget as any)[axis])
     ) {
       return;
     }
 
     stopAxisAnimation[axis]?.();
-    isAnimating[axis] = true;
+    (isAnimating as any)[axis] = true;
 
-    const _frameTarget = frameTarget[axis];
+    const _frameTarget = (frameTarget as any)[axis];
     const layoutProgress = visualElement.getProjectionAnimationProgress()[axis];
 
     /**
@@ -275,7 +276,7 @@ Copyright (c) 2018 Framer B.V. -->
       visualElement.setProjectionTargetAxis(
         axis,
         _frameTarget.min,
-        _frameTarget.max
+        _frameTarget.max,
       );
     };
 
@@ -289,12 +290,12 @@ Copyright (c) 2018 Framer B.V. -->
     const unsubscribeProgress = layoutProgress.onChange(frame);
 
     stopAxisAnimation[axis] = () => {
-      isAnimating[axis] = false;
+      (isAnimating as any)[axis] = false;
       layoutProgress.stop();
       unsubscribeProgress();
     };
 
-    currentAnimationTarget[axis] = target;
+    (currentAnimationTarget as any)[axis] = target;
 
     const layoutTransition =
       _transition ||
@@ -306,7 +307,7 @@ Copyright (c) 2018 Framer B.V. -->
       axis === "x" ? "layoutX" : "layoutY",
       layoutProgress,
       progressTarget,
-      layoutTransition && getValueTransition(layoutTransition, "layout")
+      layoutTransition && getValueTransition(layoutTransition, "layout"),
     ).then(stopAxisAnimation[axis]);
 
     return animation;

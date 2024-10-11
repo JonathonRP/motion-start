@@ -22,7 +22,6 @@
 </script>
 
 <Box cls="bg-slate-800 text-black">
-    <Motion animate={controls} onTap={startCode} let:motion
-        ><div class="box" use:motion>Tap</div></Motion
+    <Motion.div animate={controls} onTap={startCode} class="box">Tap</Motion.div
     >
 </Box>

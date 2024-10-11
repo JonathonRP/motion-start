@@ -78,7 +78,7 @@ function buildHTMLStyles(state: HTMLRenderState, latestValues: ResolvedValues, p
                 projection &&
                 layoutState.isHydrated &&
                 valueScaleCorrection[key]) {
-                var correctedValue = valueScaleCorrection[key].process(value, layoutState, projection);
+                var correctedValue = valueScaleCorrection[key].process(value as string | number, layoutState, projection);
                 /**
                  * Scale-correctable values can define a number of other values to break
                  * down into. For instance borderRadius needs applying to borderBottomLeftRadius etc

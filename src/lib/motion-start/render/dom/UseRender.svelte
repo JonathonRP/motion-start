@@ -13,13 +13,13 @@ Copyright (c) 2018 Framer B.V. -->
     isStatic,
     ref,
     targetEl = undefined;
-  const motion = (node) => {
+  const motion = (node: any) => {
     ref(node);
   };
   $: filteredProps = filterProps(
     props,
     typeof Component === "string",
-    forwardMotionProps
+    forwardMotionProps,
   );
   $: if (targetEl) {
     motion(targetEl);

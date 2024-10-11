@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
-  import { get } from "svelte/store";
+  import { get, type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
     ScaleCorrectionParentContext,
@@ -13,9 +13,11 @@ Copyright (c) 2018 Framer B.V. -->
 
   export let visualElement, syncLayout, framerSyncLayout, update;
 
-  const scaleCorrectionContext: any = getContext(ScaleCorrectionContext);
-  const scaleCorrectionParentContext: any = getContext(
-    ScaleCorrectionParentContext
+  const scaleCorrectionContext = getContext<Writable<any[]>>(
+    ScaleCorrectionContext,
+  );
+  const scaleCorrectionParentContext = getContext<Writable<any[]>>(
+    ScaleCorrectionParentContext,
   );
 
   onMount(() => {
@@ -72,7 +74,7 @@ Copyright (c) 2018 Framer B.V. -->
     /* Second part of the updater calling in child layouts first.*/
     const scc = get(scaleCorrectionContext);
 
-    scc.forEach((v, i) => {
+    scc.forEach((v: any, i) => {
       v.afterU?.(true);
     });
 
@@ -92,7 +94,7 @@ Copyright (c) 2018 Framer B.V. -->
         updater,
         afterU,
       },
-    ])
+    ]),
   );
   afterUpdate(afterU);
 </script>

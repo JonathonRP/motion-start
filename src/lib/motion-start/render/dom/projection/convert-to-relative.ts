@@ -13,7 +13,7 @@ Copyright (c) 2018 Framer B.V.
 import { calcRelativeOffset } from '../../../motion/features/layout/utils.js';
 import { eachAxis } from '../../../utils/each-axis.js';
 import { removeBoxTransforms } from '../../../utils/geometry/delta-apply.js';
-import type { AxisBox2D } from "$lib/motion-start/types/geometry";
+import type { AxisBox2D } from "../../../types/geometry.js";
 
 /**
  * Returns a boolean stating whether or not we converted the projection

@@ -7,7 +7,7 @@
 
 <Box cls="bg-slate-800 flex-col gap-20" minHeight={350}>
     {#key i}
-        <Motion
+        <Motion.div
             animate={{
                 rotate: 360,
             }}
@@ -16,8 +16,8 @@
                 duration: 5,
                 bounce: 0.6,
             }}
-            let:motion><div class="box" use:motion></div></Motion
-        >
+            class="box"
+        ></Motion.div>
     {/key}
     <div>
         <Button

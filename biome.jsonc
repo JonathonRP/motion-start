@@ -59,8 +59,7 @@
 				"useSortedClasses": {
 					"level": "warn",
 					"fix": "safe",
-					"options": {
-					}
+					"options": {}
 				}
 			},
 			"suspicious": {
@@ -127,7 +126,7 @@
 	"overrides": [
 		{
 			"include": ["*.svelte"],
-			"javascript": { "formatter": { "bracketSpacing": true } },
+			"javascript": { "formatter": { "bracketSpacing": true, "bracketSameLine": true } },
 			"linter": {
 				"rules": {
 					"style": { "useConst": "off", "useImportType": "off" }
@@ -136,4 +135,3 @@
 		}
 	]
 }
-

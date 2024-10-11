@@ -1,23 +1,8 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
-
-<script lang="ts" context="module">
-  export function addDomEvent(
-    target: EventTarget,
-    eventName: string,
-    handler: EventListener,
-    options?: AddEventListenerOptions
-  ) {
-    target.addEventListener(eventName, handler, options);
-    return function () {
-      return target.removeEventListener(eventName, handler, options);
-    };
-  }
-</script>
-
 <script lang="ts">
   import { onDestroy } from "svelte";
-  import type { UseDomEventProps } from "./use-dom-event.js";
+  import { addDomEvent, type UseDomEventProps } from "./use-dom-event.js";
 
   type $$Props = UseDomEventProps;
 

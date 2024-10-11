@@ -40,8 +40,8 @@ function getGlobalLock(drag: boolean | "x" | "y" | "lockDirection") {
         var openHorizontal_1 = globalHorizontalLock();
         var openVertical_1 = globalVerticalLock();
         if (openHorizontal_1 && openVertical_1) {
-            lock = function () {
-                openHorizontal_1();
+            lock = function () {// @ts-expect-error
+                openHorizontal_1();// @ts-expect-error
                 openVertical_1();
             };
         }

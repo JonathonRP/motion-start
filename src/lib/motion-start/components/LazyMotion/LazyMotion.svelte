@@ -9,6 +9,8 @@ Copyright (c) 2018 Framer B.V. -->
 
   import { LazyContext } from "../../context/LazyContext";
   import { loadFeatures } from "../../motion/features/definitions";
+  import type { FeatureBundle } from "$lib/motion-start/motion/features/types";
+  import type { LazyFeatureBundle } from "./types";
 
   type $$Props = LazyProps;
 
@@ -52,16 +54,18 @@ Copyright (c) 2018 Framer B.V. -->
     isCustom = false;
 
   let _ = !isLazyBundle(features);
-  let loadedRenderer = undefined;
+  let loadedRenderer = undefined as any;
   /**
    * If this is a synchronous load, load features immediately
    */
-  $: if (!isLazyBundle(features, _)) {
+  $: if (!isLazyBundle(features) && _) {
     const { renderer, ...loadedFeatures } = features;
     loadedRenderer.current = renderer;
     loadFeatures(loadedFeatures);
   }
-  function isLazyBundle(features) {
+  function isLazyBundle(
+    features: FeatureBundle | LazyFeatureBundle,
+  ): features is LazyFeatureBundle {
     return typeof features === "function";
   }
   onMount(() => {
@@ -69,6 +73,8 @@ Copyright (c) 2018 Framer B.V. -->
       features().then(({ renderer, ...loadedFeatures }) => {
         loadFeatures(loadedFeatures);
         loadedRenderer.current = renderer;
+
+        // @ts-expect-error
         setIsLoaded(true);
       });
     }

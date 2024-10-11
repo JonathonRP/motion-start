@@ -8,15 +8,15 @@
 
 <Box cls="flex flex-col gap-10 bg-slate-900">
     {#key i}
-        <Motion
+        <Motion.div
             animate={{
                 rotate: 360,
             }}
             transition={{
                 duration: 2,
             }}
-            let:motion><div class="box" use:motion></div></Motion
-        >
+            class="box"
+        ></Motion.div>
     {/key}
     <div>
         <Button

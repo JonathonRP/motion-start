@@ -15,8 +15,8 @@ import { svgVisualElement } from '../svg/visual-element.js';
 var createDomVisualElement: CreateVisualElement<HTMLElement | SVGElement> = function (Component, options) {
    
     return Component === "SVG"
-        ? svgVisualElement(options, { enableHardwareAcceleration: false })
-        : htmlVisualElement(options, { enableHardwareAcceleration: true });
+        ? svgVisualElement(options!, { enableHardwareAcceleration: false })
+        : htmlVisualElement(options!, { enableHardwareAcceleration: true });
 };
 
 export { createDomVisualElement };

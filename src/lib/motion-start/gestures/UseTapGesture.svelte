@@ -12,13 +12,13 @@ Copyright (c) 2018 Framer B.V. -->
   import { isDragActive } from "./drag/utils/lock.js";
   import { isNodeOrChild } from "./utils/is-node-or-child.js";
 
-  export let props, visualElement;
+  export let props, visualElement: any;
 
   $: ({ onTap, onTapStart, onTapCancel, whileTap } = props);
   $: hasPressListeners = onTap || onTapStart || onTapCancel || whileTap;
 
   let isPressing = false;
-  let cancelPointerEndListeners = null;
+  let cancelPointerEndListeners: Function | null = null;
 
   function removePointerEndListener() {
     cancelPointerEndListeners?.();
@@ -32,7 +32,7 @@ Copyright (c) 2018 Framer B.V. -->
     return !isDragActive();
   }
 
-  function onPointerUp(event, info) {
+  function onPointerUp(event: { target: Element | null | undefined }, info: any) {
     if (!checkPointerEnd()) return;
 
     /**
@@ -44,18 +44,19 @@ Copyright (c) 2018 Framer B.V. -->
       : onTap?.(event, info);
   }
 
-  function onPointerCancel(event, info) {
+  function onPointerCancel(event: any, info: any) {
     if (!checkPointerEnd()) return;
 
     onTapCancel?.(event, info);
   }
 
-  function onPointerDown(event, info) {
+  function onPointerDown(event?: any, info?: any) {
     if (isPressing) return;
     removePointerEndListener();
     isPressing = true;
 
     cancelPointerEndListeners = pipe(
+      // @ts-expect-error
       addPointerEvent(window, "pointerup", onPointerUp),
       addPointerEvent(window, "pointercancel", onPointerCancel)
     );

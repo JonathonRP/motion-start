@@ -15,10 +15,10 @@ import { UseTapGesture } from '../../gestures/use-tap-gesture.js';
 /**
  * @public
  */
-const gestureAnimations = {
+const gestureAnimations: FeatureComponents = {
     tap: UseTapGesture,
     focus: UseFocusGesture,
     hover: UseHoverGesture,
-} satisfies FeatureComponents;
+};
 
 export { gestureAnimations };

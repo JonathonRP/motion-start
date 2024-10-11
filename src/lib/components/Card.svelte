@@ -39,7 +39,7 @@
 
 <!-- Animate Presence Stack -->
 
-<Motion
+<Motion.div
     style={{
         x,
         rotate,
@@ -55,12 +55,7 @@
     transition={frontCard
         ? { type: "spring", stiffness: 300, damping: 20 }
         : { scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
-    let:motion
+    class="w-32 h-32 top-10 bg-white rouned-xl absolute rounded-xl text-black flex justify-center items-center select-none"
 >
-    <div
-        class="w-32 h-32 top-10 bg-white rouned-xl absolute rounded-xl text-black flex justify-center items-center select-none"
-        use:motion
-    >
-        {index}
-    </div>
-</Motion>
+    {index}
+</Motion.div>

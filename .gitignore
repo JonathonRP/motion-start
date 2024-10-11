@@ -1,7 +1,6 @@
 node_modules
 .pnpm-store
 bun.lockb
-pnpm-lock.yaml
 /types/tsdoc-metadata.json
 
 # Output
@@ -24,4 +23,5 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+*.vitest-temp.*
 bun.lockb

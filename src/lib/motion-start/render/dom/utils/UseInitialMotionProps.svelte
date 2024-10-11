@@ -3,11 +3,21 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { isMotionValue } from "../../../value/utils/is-motion-value.js";
+  import type { VisualElement } from "../../types.js";
 
-  export let visualElement, props;
-  const createAttrs = (visualElement, props) => {
+  type $$Props = {
+    visualElement: VisualElement;
+    props: any;
+  };
+
+  export let visualElement: $$Props["visualElement"], props: $$Props["props"];
+
+  const createAttrs = (
+    visualElement: $$Props["visualElement"],
+    props: $$Props["props"],
+  ) => {
     const { attrs } = visualElement.build();
-    const resolvedMotionValueProps = {};
+    const resolvedMotionValueProps = {} as any;
 
     for (const key in props) {
       if (isMotionValue(props[key])) {
@@ -18,6 +28,7 @@ Copyright (c) 2018 Framer B.V. -->
     return { ...attrs, ...resolvedMotionValueProps };
   };
   let svgProps = createAttrs(visualElement, props);
+
   $: if (visualElement.isStatic) {
     svgProps = createAttrs(visualElement, props);
   }

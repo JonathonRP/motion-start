@@ -4,7 +4,7 @@
 </script>
 
 <Box cls="bg-slate-800 flex text-black">
-    <Motion
+    <Motion.div
         drag={true}
         whileHover={{
             opacity: 1,
@@ -22,6 +22,6 @@
         transition={{
             duration: 0.2,
         }}
-        let:motion><div class="box" use:motion>Drag</div></Motion
+        class="box">Drag</Motion.div
     >
 </Box>
