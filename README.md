@@ -28,21 +28,17 @@ Work in progress.
 ## Installation
 
 ```sh
-```sh
 npm install --save-dev motion-start
 ```
 
-```sh
 ```sh
 pnpm install --save-dev motion-start
 ```
 
 ```sh
-```sh
 yarn install --save-dev motion-start
 ```
 
-```sh
 ```sh
 bun install --save-dev motion-start
 ```
