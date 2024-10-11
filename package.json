@@ -1,11 +1,22 @@
 {
 	"name": "motion-start",
 	"version": "0.0.3",
-	"description": "Svelte animation library based on the React library framer-motion.",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"module": "dist/index.js",
-	"files": ["./dist"],
+	"description": "Svelte animation library inspired by the React library framer-motion.",
+ "license": "MIT",
+ "author": {
+   name: "JonathonRP",
+   url: "https://github.com/JonathonRP"
+ },
+ "repository": {
+		"type": "git",
+		"ur": "https://github.com/JonathonRP/motion-start.git",
+  "directory": "src/lib/motion-start"
+	},
+ "type": "module",
+ "exports": "./dist/index.js",
+	"main": "./dist/index.js",
+	"bin": "./dist/index.js",
+	"files": ["dist"],
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && bun --bun package",
@@ -19,8 +30,6 @@
 		"test:types:ui": "vitest --ui",
 		"ci:publish": "pnpm build && changeset publish"
 	},
-	"author": "JonathonRP",
-	"license": "MIT",
 	"dependencies": {
 		"framesync": "^6.1.2",
 		"popmotion": "^11.0.5",
@@ -58,17 +67,12 @@
 	"peerDependencies": {
 		"svelte": "^5.0.0 || ^5.0.0-next.0"
 	},
-	"type": "module",
 	"engines": {
 		"bun": ">=1.0.0",
 		"pnpm": ">=8.7.0",
 		"node": ">=20"
 	},
 	"packageManager": "pnpm@9.6.0",
-	"repository": {
-		"type": "git",
-		"ur": "https://github.com/JonathonRP/motion-start/"
-	},
 	"sideEffects": false,
 	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
 	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
