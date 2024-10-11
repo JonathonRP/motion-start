@@ -9,8 +9,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"ur": "https://github.com/JonathonRP/motion-start.git",
-		"directory": "src/lib/motion-start"
+		"ur": "https://github.com/JonathonRP/motion-start.git"
 	},
 	"type": "module",
 	"files": ["dist"],
