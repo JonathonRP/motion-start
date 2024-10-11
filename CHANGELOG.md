@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.0
+
+### Minor Changes
+
+- passing tests, handle minimal-motion for lazymotion
+
 ## 0.0.3
 
 ### Patch Changes
