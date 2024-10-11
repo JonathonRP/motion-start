@@ -24,21 +24,26 @@ Work in progress.
 > **Note:** 🚧 This library is currently in alpha. Features and APIs may change. expect bugs and please report or make PRs to fix bugs.
 
 > **Note:** This is svelte-motion ported to typescript currently. We have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
+> **Note:** This is svelte-motion ported to typescript currently. We have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
 ## Installation
 
+```sh
 ```sh
 npm install --save-dev motion-start
 ```
 
 ```sh
+```sh
 pnpm install --save-dev motion-start
 ```
 
 ```sh
+```sh
 yarn install --save-dev motion-start
 ```
 
+```sh
 ```sh
 bun install --save-dev motion-start
 ```
@@ -48,6 +53,7 @@ bun install --save-dev motion-start
 Corresponding to a `MotionDiv` in framer-motion is this:
 
 ```javascript
+
 
 import { Motion } from 'motion-start'
 
@@ -59,6 +65,16 @@ For svg elements like 'g', 'path' or 'circle', use:
 <Motion.g></Motion.g>
 ```
 
+
+# Community
+Join the Discord server to ask questions, find collaborators, or say hi!
+
+<a href="https://discord.gg/bTa32kj9T3" alt="Motion Start">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/bTa32kj9T3">
+  <img alt="Motion Start Discord Community" src="https://invidget.switchblade.xyz/bTa32kj9T3?theme=light">
+</picture>
+</a>
 
 # Community
 Join the Discord server to ask questions, find collaborators, or say hi!
