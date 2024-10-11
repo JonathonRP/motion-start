@@ -23,4 +23,5 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+vite.*.{ts,js,json}.timestamp-*
 bun.lockb
