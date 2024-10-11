@@ -9,6 +9,11 @@ Copyright (c) 2018 Framer B.V. -->
         isSharedLayout,
     } from "../../context/SharedLayoutContext.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
+    import type { Writable } from "svelte/store";
+    import {
+        type SharedLayoutSyncMethods,
+        type SyncLayoutBatcher,
+    } from "../AnimateSharedLayout/types.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -25,18 +30,18 @@ Copyright (c) 2018 Framer B.V. -->
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
     const layoutContext =
-        getContext(SharedLayoutContext) || SharedLayoutContext(isCustom);
-
-    $: isl = isSharedLayout($layoutContext);
+        getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
+            SharedLayoutContext,
+        ) || SharedLayoutContext(isCustom);
 
     $: forceRender = () => {
-        if (isl) {
+        if (isSharedLayout($layoutContext)) {
             $layoutContext.forceUpdate();
         }
         _list = [..._list];
     };
 
-    function getChildKey(child) {
+    function getChildKey(child: { key: number }) {
         return child.key || "";
     }
 
@@ -45,9 +50,12 @@ Copyright (c) 2018 Framer B.V. -->
     $: filteredChildren = _list;
 
     let presentChildren = filteredChildren;
-    let allChildren = new Map();
-    let exiting = new Set();
-    const updateChildLookup = (children, allChild) => {
+    let allChildren = new Map<string | number, { key: number }>();
+    let exiting = new Set<"" | number>();
+    const updateChildLookup = (
+        children: { key: number }[],
+        allChild: Map<string | number, { key: number }>,
+    ) => {
         children.forEach((child) => {
             const key = getChildKey(child);
             allChild.set(key, child);

@@ -40,6 +40,7 @@ import { getDomContext } from "./DOMcontext";
 /**
  * @public
  */
+// @ts-expect-error
 var MotionConfigContext = (c?: any): Writable<MotionConfigContextObject> => getDomContext("MotionConfig", c) || writable({
     transformPagePoint: function (p) { return p; },
     isStatic: false,

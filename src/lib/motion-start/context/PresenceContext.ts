@@ -23,4 +23,5 @@ import { getDomContext } from "./DOMcontext";
 /**
  * @public
  */
+// @ts-expect-error
 export const PresenceContext = (c?: any): Writable<PresenceContextProps | null> => getDomContext("Presence", c) || writable(null);

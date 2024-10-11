@@ -2,30 +2,45 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Easing } from "popmotion";
+
+// TODO: would love to use svelte Easing here instead.
+import type { Easing } from 'popmotion';
+
 /**
  * @public
  */
 export interface TransformOptions<T> {
-    /**
-     * Clamp values to within the given range. Defaults to `true`
-     *
-     * @public
-     */
-    clamp?: boolean;
-    /**
-     * Easing functions to use on the interpolations between each value in the input and output ranges.
-     *
-     * If provided as an array, the array must be one item shorter than the input and output ranges, as the easings apply to the transition **between** each.
-     *
-     * @public
-     */
-    ease?: Easing | Easing[];
-    /**
-     * @internal
-     */
-    mixer?: (from: T, to: T) => (v: number) => any;
+	/**
+	 * Clamp values to within the given range. Defaults to `true`
+	 *
+	 * @public
+	 */
+	clamp?: boolean;
+	/**
+	 * Easing functions to use on the interpolations between each value in the input and output ranges.
+	 *
+	 * If provided as an array, the array must be one item shorter than the input and output ranges, as the easings apply to the transition **between** each.
+	 *
+	 * @public
+	 */
+	ease?: Easing | Easing[];
+	/**
+	 * @internal
+	 */
+	mixer?: (from: T, to: T) => (v: number) => any;
 }
+
+/** 
+based on framer-motion@4.0.3,
+Copyright (c) 2018 Framer B.V.
+*/
+import { fixed } from './fix-process-env';
+import { interpolate } from 'popmotion';
+import type { CustomValueType } from '../types';
+
+var isCustomValueType = (v: any): v is CustomValueType => typeof v === 'object' && v.mix;
+var getMixer = (v: any) => (isCustomValueType(v) ? v.mix : undefined);
+
 /**
  * Transforms numbers into other values by mapping them from an input range to an output range.
  * Returns the type of the input provided.
@@ -43,11 +58,11 @@ export interface TransformOptions<T> {
  * ```jsx
  * import { transform } from "svelte-motion"
  *
- * 
+ *
  *    const inputRange = [0, 200]
  *    const outputRange = [0, 1]
  *    const output = transform(100, inputRange, outputRange)
- *    
+ *
  *    console.log(output) // Returns 0.5
  * ```
  *
@@ -88,33 +103,16 @@ function transform<T>(inputValue: number, inputRange: number[], outputRange: T[]
  *
  * @public
  */
-function transform<T>(inputRange: number[], outputRange: T[], options?: TransformOptions<T>): (inputValue: number) => T; //wierd
-
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import {fixed} from './fix-process-env';
-import { __assign } from 'tslib';
-import { interpolate } from 'popmotion';
-import type { CustomValueType } from "../types";
-
-var isCustomValueType = function (v: any): v is CustomValueType {
-    return typeof v === "object" && v.mix;
-};
-var getMixer = function (v: any) { return (isCustomValueType(v) ? v.mix : undefined); };
-function transform<T>(...args: [number, number[], T[], TransformOptions<T>?]
-    | [number[], T[], TransformOptions<T>?]
-) {
-    var useImmediate = !Array.isArray(args[0]);
-    var argOffset = useImmediate ? 0 : -1;
-    var inputValue = args[0 + argOffset] as number;
-    var inputRange = args[1 + argOffset] as number[];
-    var outputRange = args[2 + argOffset] as T[];
-    var options = args[3 + argOffset] as TransformOptions<T>;
-    var interpolator = interpolate(inputRange, outputRange, __assign({ mixer: getMixer(outputRange[0]) }, options));
-    return useImmediate ? interpolator(inputValue) : interpolator;
+function transform<T>(inputRange: number[], outputRange: T[], options?: TransformOptions<T>): (inputValue: number) => T;
+function transform<T>(...args: [number, number[], T[], TransformOptions<T>?] | [number[], T[], TransformOptions<T>?]) {
+	var useImmediate = !Array.isArray(args[0]);
+	var argOffset = useImmediate ? 0 : -1;
+	var inputValue = args[0 + argOffset] as number;
+	var inputRange = args[1 + argOffset] as number[];
+	var outputRange = args[2 + argOffset] as T[];
+	var options = args[3 + argOffset] as TransformOptions<T>;
+	var interpolator = interpolate(inputRange, outputRange, Object.assign({ mixer: getMixer(outputRange[0]) }, options));
+	return useImmediate ? interpolator(inputValue) : interpolator;
 }
 
 export { transform };

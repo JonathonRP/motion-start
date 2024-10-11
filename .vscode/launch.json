@@ -10,9 +10,10 @@
 			"console": "integratedTerminal",
 			"skipFiles": ["<node_internals>/**"],
 			"serverReadyAction": {
-				"pattern": "http://localhost:([0-9]+)",
-				"uriFormat": "http://localhost:%s/tests",
-				"action": "debugWithChrome"
+				"pattern": "\\bLocal:\\s+(https?://\\S+\\d)",
+				"uriFormat": "%s/tests",
+				"action": "debugWithChrome",
+				"killOnServerStop": true
 			}
 		},
 		{
@@ -24,9 +25,10 @@
 			"console": "integratedTerminal",
 			"skipFiles": ["<node_internals>/**"],
 			"serverReadyAction": {
-				"pattern": "http://localhost:([0-9]+)",
-				"uriFormat": "http://localhost:%s/tests",
-				"action": "debugWithEdge"
+				"pattern": "\\bLocal:\\s+(https?://\\S+\\d)",
+				"uriFormat": "%s/tests",
+				"action": "debugWithEdge",
+				"killOnServerStop": true
 			}
 		}
 	]

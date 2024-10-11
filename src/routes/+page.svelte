@@ -21,17 +21,14 @@
                     <span
                         class="ms-2 block text-lg font-medium text-gray-800 dark:text-white"
                     >
-                        Git clone both this repository and the motion start
+                        Git clone the motion start port/typescript branch
                     </span>
                 </div>
             </div>
         </li>
         <!-- End Item -->
         <div class="grid">
-            <pre
-                class="text-gray-800 dark:text-white/70 mx-9 max-w-md">https://github.com/JonathonRP/motion-start.git</pre>
-            <pre
-                class="text-gray-800 dark:text-white/70 mx-9 max-w-md">https://github.com/cliffordkleinsr/motion-tests.git</pre>
+            <pre class="text-gray-800 dark:text-white/70 mx-9 max-w-md">https://github.com/JonathonRP/motion-start.git</pre>
         </div>
 
         <!-- Item -->
@@ -55,25 +52,7 @@
         <!-- End Item -->
 
         <!-- Item -->
-        <li class="flex items-center gap-x-2 shrink basis-0 flex-1 group">
-            <div
-                class="min-w-7 min-h-7 inline-flex justify-center items-center text-xs align-middle"
-            >
-                <span
-                    class="size-7 flex justify-center items-center shrink-0 bg-gray-100 font-medium text-gray-800 rounded-full dark:bg-neutral-700 dark:text-white"
-                >
-                    3
-                </span>
-                <span
-                    class="ms-2 block text-lg font-medium text-gray-800 dark:text-white max-w-lg"
-                >
-                    Run <code class="dark:text-white/70"
-                        >npm link| bun link| pnpm link
-                    </code> on the motion-start repostitory to link the repo to the
-                    global node cache directory, then run either:
-                </span>
-            </div>
-        </li>
+
         <!-- End Item -->
         <div class="grid">
             <pre
@@ -94,7 +73,7 @@
                 <span
                     class="size-7 flex justify-center items-center shrink-0 bg-gray-100 font-medium text-gray-800 rounded-full dark:bg-neutral-700 dark:text-white"
                 >
-                    4
+                    3
                 </span>
                 <span
                     class="ms-2 block text-lg font-medium text-gray-800 dark:text-white max-w-lg"

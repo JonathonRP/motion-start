@@ -3,23 +3,30 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { SharedLayoutContext } from "../../context/SharedLayoutContext.js";
-  import type { Presence, SharedLayoutProps } from "./index.js";
+  import { Presence, type SharedLayoutProps } from "./index.js";
   import { createBatcher } from "./utils/batcher.js";
 
   import { getContext, onMount, setContext, tick } from "svelte";
-  import { get, writable } from "svelte/store";
+  import { get, writable, type Writable } from "svelte/store";
   import { setDomContext } from "../../context/DOMcontext.js";
-  import { MotionContext } from "../../context/MotionContext/index.js";
+  import {
+    MotionContext,
+    type MotionContextProps,
+  } from "../../context/MotionContext/index.js";
   import { snapshotViewportBox } from "../../render/dom/projection/utils.js";
   import { resetRotate } from "./utils/rotate.js";
   import { layoutStack } from "./utils/stack.js";
+  import PresenceChild from "../AnimatePresence/PresenceChild/PresenceChild.svelte";
+  import type { VisualElement } from "$lib/motion-start/render/types.js";
 
   type $$Props = SharedLayoutProps;
 
   export let type: $$Props["type"] = undefined,
     isCustom = false;
 
-  const context = getContext(MotionContext) || MotionContext(isCustom);
+  const context =
+    getContext<Writable<MotionContextProps>>(MotionContext) ||
+    MotionContext(isCustom);
 
   /**
    * Track whether the component has mounted. If it hasn't, the presence of added children
@@ -29,7 +36,7 @@ Copyright (c) 2018 Framer B.V. -->
   /**
    * A list of all the children in the shared layout
    */
-  let children = new Set();
+  let children = new Set<VisualElement>();
   /**
    * As animate components with a defined `layoutId` are added/removed to the tree,
    * we store them in order. When one is added, it will animate out from the
@@ -59,7 +66,7 @@ Copyright (c) 2018 Framer B.V. -->
    */
   let syncContext = {
     ...createBatcher(),
-    syncUpdate: (force) => scheduleUpdate(force),
+    syncUpdate: (force?: boolean) => scheduleUpdate(force),
     forceUpdate: () => {
       // By copying syncContext to itself, when this component re-renders it'll also re-render
       // all children subscribed to the SharedLayout context.
@@ -71,8 +78,8 @@ Copyright (c) 2018 Framer B.V. -->
 
       forced = true;
     },
-    register: (child) => addChild(child),
-    remove: (child) => {
+    register: (child: VisualElement) => addChild(child),
+    remove: (child: VisualElement) => {
       removeChild(child);
     },
   };
@@ -104,8 +111,8 @@ Copyright (c) 2018 Framer B.V. -->
      * Create a handler which we can use to flush the children animations
      */
     const handler = {
-      measureLayout: (child) => child.updateLayoutMeasurement(),
-      layoutReady: (child) => {
+      measureLayout: (child: PresenceChild) => child.updateLayoutMeasurement(),
+      layoutReady: (child: VisualElement) => {
         if (child.getLayoutId() !== undefined) {
           const stack = getStack(child);
           stack.animate(child, type === "crossfade");
@@ -172,25 +179,25 @@ Copyright (c) 2018 Framer B.V. -->
     }
   };
 
-  const addChild = (child) => {
+  const addChild = (child: VisualElement) => {
     children.add(child);
     addToStack(child);
 
     child.presence = hasMounted ? Presence.Entering : Presence.Present;
   };
 
-  const removeChild = (child) => {
+  const removeChild = (child: VisualElement) => {
     scheduleUpdate();
     children.delete(child);
     removeFromStack(child);
   };
 
-  const addToStack = (child) => {
+  const addToStack = (child: VisualElement) => {
     const stack = getStack(child);
     stack?.add(child);
   };
 
-  const removeFromStack = (child) => {
+  const removeFromStack = (child: VisualElement) => {
     const stack = getStack(child);
     stack?.remove(child);
   };
@@ -199,7 +206,7 @@ Copyright (c) 2018 Framer B.V. -->
    * Return a stack of animate children based on the provided layoutId.
    * Will create a stack if none currently exists with that layoutId.
    */
-  const getStack = (child) => {
+  const getStack = (child: VisualElement) => {
     const id = child.getLayoutId();
     if (id === undefined) return;
 

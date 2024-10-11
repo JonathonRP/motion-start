@@ -16,9 +16,9 @@ import { UseDrag } from '../../gestures/drag/use-drag.js';
 /**
  * @public
  */
-const drag = {
+const drag:FeatureComponents = {
     pan: UsePanGesture,
     drag: UseDrag
-} satisfies FeatureComponents
+}
 
 export { drag };

@@ -66,8 +66,8 @@ function updateAxisDelta(delta: AxisDelta, source: Axis, target: Axis, origin?: 
  * The transform `origin` is optional. If not provided, it'll be automatically
  * calculated based on the relative positions of the two bounding boxes.
  */
-function updateBoxDelta(delta: BoxDelta, source: AxisBox2D, target: AxisBox2D, origin: ResolvedValues) {
-    updateAxisDelta(delta.x, source.x, target.x, defaultOrigin(origin.originX));
+function updateBoxDelta(delta: BoxDelta, source: AxisBox2D, target: AxisBox2D, origin: ResolvedValues) {// @ts-expect-error
+    updateAxisDelta(delta.x, source.x, target.x, defaultOrigin(origin.originX));// @ts-expect-error
     updateAxisDelta(delta.y, source.y, target.y, defaultOrigin(origin.originY));
 }
 /**

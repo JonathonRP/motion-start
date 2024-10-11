@@ -14,15 +14,16 @@ Copyright (c) 2018 Framer B.V. -->
   let { onPan, onPanStart, onPanEnd, onPanSessionStart } = props;
   $: ({ onPan, onPanStart, onPanEnd, onPanSessionStart } = props);
   $: hasPanEvents = onPan || onPanStart || onPanEnd || onPanSessionStart;
-  let panSession = null;
+  let panSession: PanSession | null = null;
   const mcc = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
-  let { transformPagePoint } = get(mcc);
-  $: ({ transformPagePoint } = $mcc);
+  // @ts-expect-error
+  $: ( { transformPagePoint } = get(mcc));
+  // $: ({ transformPagePoint } = $mcc);
   let handlers = {
     onSessionStart: onPanSessionStart,
     onStart: onPanStart,
     onMove: onPan,
-    onEnd: (event, info) => {
+    onEnd: (event: any, info: any) => {
       panSession = null;
       onPanEnd && onPanEnd(event, info);
     },
@@ -36,7 +37,7 @@ Copyright (c) 2018 Framer B.V. -->
       onPanEnd && onPanEnd(event, info);
     },
   };
-  function onPointerDown(event) {
+  function onPointerDown(event: PointerEvent) {
     panSession = new PanSession(event, handlers, {
       transformPagePoint,
     });

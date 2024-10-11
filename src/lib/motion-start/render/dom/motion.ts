@@ -2,7 +2,6 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-// import { SvelteComponent } from "svelte";
 import type { DOMMotionComponents } from './types.js';
 // import type { CustomMotionComponentConfig} from './motion-proxy.js'
 // import type { MotionProps } from "../../motion/types.js";
@@ -17,10 +16,10 @@ based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 import { createMotionComponent } from '../../motion/index.js';
-import { createMotionClass } from './create-motion-class.js';
+// import { createMotionClass } from './create-motion-class.js';
 import { createDomVisualElement } from './create-visual-element.js';
 import { featureBundle } from './featureBundle.js';
-//import { createMotionProxy } from './motion-proxy.js';
+import { createMotionProxy } from './motion-proxy.js';
 
 /**
  * HTML & SVG components, optimised for use with gestures and animation. These can be used as
@@ -28,7 +27,8 @@ import { featureBundle } from './featureBundle.js';
  *
  * @public
  */
-var motion = /*@__PURE__*/ createMotionClass(featureBundle); //createMotionProxy(allMotionFeatures);
+var motion = /*@__PURE__*/ createMotionProxy(featureBundle);
+
 /**
  * Create a DOM `motion` component with the provided string. This is primarily intended
  * as a full alternative to `motion` for consumers who have to support environments that don't
@@ -48,12 +48,15 @@ function createDomMotionComponent<T extends keyof DOMMotionComponents>(key: T): 
 	var config = {
 		createVisualElement: createDomVisualElement(key),
 		// useRender: createUseRender(key, false),
-		//@ts-ignore
-		forwardMotionProps: key.forwardMotionProps,//@ts-ignore
-		Component: key.Component,//@ts-ignore
+		// @ts-expect-error
+		forwardMotionProps: key.forwardMotionProps,
+		// @ts-expect-error
+		Component: key.Component,
+		// @ts-expect-error
 		defaultFeatures: allMotionFeatures,
 	};
-	//@ts-ignore
+
+	// @ts-expect-error
 	return createMotionComponent(config);
 }
 

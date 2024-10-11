@@ -10,4 +10,5 @@ import { getDomContext } from "./DOMcontext";
 /**
  * @internal
  */
+// @ts-expect-error
 export const LayoutGroupContext = (c?: any): Writable<string | null> => getDomContext("LayoutGroup",c)||writable(null);

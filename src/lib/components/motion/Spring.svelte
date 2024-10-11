@@ -7,7 +7,7 @@
 
 <Box cls="bg-slate-900 flex-col gap-10">
     {#key i}
-        <Motion
+        <Motion.div
             animate={{
                 rotate: 180,
             }}
@@ -17,8 +17,8 @@
                 mass: 0.75,
                 stiffness: 100,
             }}
-            let:motion><div class="box" use:motion></div></Motion
-        >
+            class="box"
+        ></Motion.div>
     {/key}
     <div>
         <Button

@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { Component } from 'svelte';
 import type { CreateVisualElement, VisualElement } from '../../render/types';
-import type { MotionProps } from '../types';
+import type { MotionProps, Ref } from '../types';
 import type { VisualState } from '../utils/use-visual-state';
 /**
  * @public
@@ -12,6 +12,7 @@ import type { VisualState } from '../utils/use-visual-state';
 export interface FeatureProps {
 	props: MotionProps;
 	visualElement: VisualElement;
+	isCustom: any;
 }
 export type FeatureNames = {
 	animation: true;
@@ -50,10 +51,11 @@ export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 export type FeatureDefinitions = {
 	[K in keyof FeatureNames]: FeatureDefinition;
 };
+
 export type RenderComponent<Instance, RenderState> = (
-	Component: string | React.ComponentType,
+	Component: string | Component,
 	props: MotionProps,
-	ref: React.Ref<Instance>,
+	ref: Ref<Instance>,
 	visualState: VisualState<Instance, RenderState>,
 	isStatic: boolean
 ) => any;

@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { createSvgRenderState } from "./utils/create-render-state.js";
 
   export let visualState, props;
-  let memo = () => {
+  let memo = (variantLabelsAsDependency?:string | boolean | undefined) => {
     const state = createSvgRenderState();
     buildSVGAttrs(
       state,

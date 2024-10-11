@@ -2,27 +2,12 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
-  export function copyRawValuesOnly(
-    target: ResolvedValues,
-    source: {
-      [key: string]: string | number | MotionValue;
-    },
-    props: MotionProps
-  ) {
-    for (const key in source) {
-      if (!isMotionValue(source[key]) && !isForcedMotionValue(key, props)) {
-        target[key] = source[key];
-      }
-    }
-  }
+  import { copyRawValuesOnly } from "./use-props.js";
 </script>
 
 <script lang="ts">
-  import type { MotionProps, MotionValue } from "../../index.js";
-  import { isForcedMotionValue } from "../../motion/utils/is-forced-motion-value.js";
-  import { isMotionValue } from "../../value/utils/is-motion-value.js";
-  import type { ResolvedValues } from "../types.js";
   import UseInitialMotionValues from "./UseInitialMotionValues.svelte";
+
   export let visualState, props, isStatic;
   $: styleProp = props.style || {};
   let style = {};
@@ -32,7 +17,7 @@ Copyright (c) 2018 Framer B.V. -->
   const cRVO = copyRawValuesOnly;
   $: cRVO(style, styleProp, props);
 
-  const toStyle = (s1: { s1: {}; props: any; style: {}; }) => {
+  const toStyle = (s1: { s1: {}; props: any; style: {} }) => {
     Object.assign(style, s1);
     if (props.transformValues) {
       style = props.transformValues(style);

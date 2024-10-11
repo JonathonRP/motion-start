@@ -37,18 +37,15 @@
     });
 </script>
 
-<Motion let:motion>
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div
-        use:motion
-        bind:this={dockElement}
-        on:mousemove={(e) => handleMouseMove(e)}
-        on:mouseleave={handleMouseLeave}
-        class={dockClass}
-    >
-        <slot {mouseX} {magnification} {distance}>
-            <!-- Your Content -->
-            Default
-        </slot>
-    </div>
-</Motion>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<Motion.div
+    bind:el={dockElement}
+    onmousemove={(e) => handleMouseMove(e)}
+    onmouseleave={handleMouseLeave}
+    class={dockClass}
+>
+    <slot {mouseX} {magnification} {distance}>
+        <!-- Your Content -->
+        Default
+    </slot>
+</Motion.div>

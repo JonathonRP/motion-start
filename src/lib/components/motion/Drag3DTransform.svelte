@@ -9,8 +9,7 @@
 
 <Box cls="bg-slate-800 flex text-black" minHeight={350}>
     <div class="small_circle">
-        <Motion
-            let:motion
+        <Motion.div
             style={{
                 left: -25,
                 top: -25,
@@ -30,7 +29,9 @@
             }}
             dragElastic={0.6}
             whileTap={{ cursor: "grabbing" }}
-            ><div class="box font-medium" use:motion>3D</div></Motion
+            class="box font-medium"
+        >
+            3D</Motion.div
         >
     </div>
 </Box>

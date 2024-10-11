@@ -9,31 +9,21 @@
 </script>
 
 <!-- Color Interpolation -->
-<Motion
+<Motion.div
     style={{
         background,
     }}
-    let:motion
+    class=" h-[350px] border border-dashed flex justify-center items-center rounded-3xl"
 >
-    <div
-        class=" h-[350px] border border-dashed flex justify-center items-center rounded-3xl"
-        use:motion
+    <Motion.div
+        style={{
+            x: x,
+        }}
+        drag="x"
+        dragConstraints={{ right: 0, left: 0 }}
+        whileTap={{ cursor: "grabbing" }}
+        class="w-32 h-32 text-black rounded-full bg-white cursor-grab flex justify-center items-center select-none"
     >
-        <Motion
-            style={{
-                x: x,
-            }}
-            drag="x"
-            dragConstraints={{ right: 0, left: 0 }}
-            whileTap={{ cursor: "grabbing" }}
-            let:motion
-        >
-            <div
-                class="w-32 h-32 text-black rounded-full bg-white cursor-grab flex justify-center items-center select-none"
-                use:motion
-            >
-                Drag me
-            </div>
-        </Motion>
-    </div>
-</Motion>
+        Drag me
+    </Motion.div>
+</Motion.div>

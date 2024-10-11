@@ -48,14 +48,14 @@ export class DragControls {
 	 *
 	 * @public
 	 */
-	start = (event: React.PointerEvent | PointerEvent, options?: DragControlOptions): void => {
+	start = (event: PointerEvent | { nativeEvent: PointerEvent }, options?: DragControlOptions): void => {
 		this.componentControls.forEach((controls) => {
-			controls.start((event as React.PointerEvent).nativeEvent || event), options;
+			controls.start('nativeEvent' in event ? event.nativeEvent : event, options);
 		});
 	};
 
 	updateConstraints = (flush?: boolean): void => {
-		this.componentControls.forEach((controls) => {
+		this.componentControls.forEach((controls) => {// @ts-expect-error
 			controls.prepareBoundingBox();
 			controls.resolveDragConstraints();
 		});

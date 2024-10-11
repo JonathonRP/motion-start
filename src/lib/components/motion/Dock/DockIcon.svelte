@@ -44,8 +44,6 @@
     );
 </script>
 
-<Motion style={{ width: width }} let:motion>
-    <div use:motion bind:this={iconElement} class={iconClass}>
-        <slot></slot>
-    </div>
-</Motion>
+<Motion.div style={{ width: width }} bind:el={iconElement} class={iconClass}>
+    <slot></slot>
+</Motion.div>

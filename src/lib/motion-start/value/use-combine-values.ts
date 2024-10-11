@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V.
 import sync from 'framesync';
 import { motionValue } from '.';
 
-export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: () => R) => {
+export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], combineValues: () => R) => {
 	let subscriptions: (() => void)[] = [];
 	let vals = values;
 
@@ -21,7 +21,7 @@ export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: 
 		}
 	};
 	const subscribe = () => {
-		subscriptions = vals.map((val) => val.onChange(handler));
+		subscriptions = vals.map((val) => (val as MotionValue).onChange(handler));
 		updateValue();
 	};
 	const value = motionValue(combineValues(), () => {

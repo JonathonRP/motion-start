@@ -10,40 +10,37 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../render/utils/variants.js";
   import { resolveMotionValue } from "../../value/utils/resolve-motion-value.js";
 
-  type Instance = any;
-  type RenderState = any;
-
-  const makeState = (
+  const makeState = <Instance, RenderState>(
     {
       scrapeMotionValuesFromProps,
       createRenderState,
       onMount,
     }: UseVisualStateConfig<Instance, RenderState>,
-    props,
-    context,
-    presenceContext
+    props: MotionProps,
+    context: MotionContextProps,
+    presenceContext: PresenceContextProps,
   ) => {
     const state: any = {
       latestValues: makeLatestValues(
         props,
         context,
         presenceContext,
-        scrapeMotionValuesFromProps
+        scrapeMotionValuesFromProps,
       ),
       renderState: createRenderState(),
     };
 
     if (onMount) {
-      state.mount = (instance) => onMount(props, instance, state);
+      state.mount = (instance: Instance) => onMount(props, instance, state);
     }
 
     return state;
   };
   function makeLatestValues(
-    props,
-    context,
-    presenceContext,
-    scrapeMotionValues
+    props: MotionProps,
+    context: MotionContextProps,
+    presenceContext: PresenceContextProps,
+    scrapeMotionValues: { (props: MotionProps): { [key: string]: MotionValue | string | number; }; (arg0: any): any; },
   ) {
     const values: any = {};
     const blockInitialAnimation = presenceContext?.initial === false;
@@ -85,8 +82,8 @@ Copyright (c) 2018 Framer B.V. -->
         if (!resolved) return;
 
         const { transitionEnd, transition, ...target } = resolved;
-
-        for (const key in target) values[key] = target[key];
+        // @ts-expect-error
+        for (const key in target) values[key] = target[key];// @ts-expect-error
         for (const key in transitionEnd) values[key] = transitionEnd[key];
       });
     }
@@ -96,6 +93,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts" generics="Instance, RenderState">
+  import type { MotionValue } from "$lib/motion-start/value/index.js";
   import type { UseVisualStateConfig } from "./use-visual-state.js";
 
   import type { MotionProps } from "..";
@@ -112,25 +110,27 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../context/PresenceContext.js";
 
   type $$Props = {
-    config: UseVisualStateConfig<Instance, RenderState>;
+    config?: UseVisualStateConfig<Instance, RenderState>;
     props: MotionProps;
     isStatic: boolean;
     isCustom?: any | undefined;
   };
 
-  export let config: $$Props["config"],
+  export let config: $$Props["config"] = undefined,
     props: $$Props["props"],
     isStatic: $$Props["isStatic"],
-    isCustom: $$Props['isCustom'] = undefined;
+    isCustom: $$Props["isCustom"] = undefined;
 
   const context =
-    getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+    getContext<Writable<MotionContextProps>>(MotionContext) ||
+    MotionContext(isCustom);
   const presenceContext =
-    getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
-  let state = makeState(config, props, get(context), get(presenceContext));
+    getContext<Writable<PresenceContextProps>>(PresenceContext) ||
+    PresenceContext(isCustom);
+  let state = makeState(config as UseVisualStateConfig<Instance, RenderState>, props, get(context), get(presenceContext));
   const ms = makeState;
   $: if (isStatic) {
-    state = ms(config, props, $context, $presenceContext);
+    state = ms(config as UseVisualStateConfig<Instance, RenderState>, props, $context, $presenceContext);
   }
 </script>
 
