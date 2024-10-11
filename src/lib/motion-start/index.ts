@@ -32,7 +32,7 @@ export { M } from './render/dom/motion-minimal.js';
 /**
  * Features
  */
-// export { domMax, domAnimation } from "./render/dom/featureBundle.js";
+export { featureBundle, animations, drag, gestureAnimations } from './render/dom/featureBundle.js';
 /**
  * Motion values
  */
