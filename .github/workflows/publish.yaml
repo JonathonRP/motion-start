@@ -13,7 +13,7 @@ permissions:
       pull-requests: write # to create pull request (changesets/action)
 
 jobs:
-  release:
+  publish:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: bun --bun ci:publish
+          publish: bun --bun release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
