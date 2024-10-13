@@ -29,7 +29,7 @@
 		"test:types": "vitest --typecheck.only",
 		"test:ui": "vitest --ui",
 		"test:types:ui": "vitest --ui",
-		"ci:publish": "bun --bun run build && bun --bun changesets publish"
+		"ci:publish": "bun --bun run build && bun --bun changeset publish"
 	},
 	"dependencies": {
 		"framesync": "^6.1.2",
