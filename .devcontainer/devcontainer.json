@@ -23,7 +23,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "corepack enable && corepack install && pnpm install",
-	"postCreateCommand": "corepack enable && corepack install && bun install",
+	"postCreateCommand": "bun install",
 
 	// Configure tool-specific properties.
 	"customizations": {

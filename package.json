@@ -70,10 +70,8 @@
 	},
 	"engines": {
 		"bun": ">=1.0.0",
-		"pnpm": ">=8.7.0",
 		"node": ">=20"
 	},
-	"packageManager": "pnpm@9.6.0",
 	"sideEffects": false,
 	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
 	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
