@@ -162,8 +162,7 @@ function createLifecycles(...args: any[]) {
 	managers.forEach((manager, i) => {
 		lifecycles['on' + names[i]] = (handler: (...args: any) => void) => manager.add(handler);
 		lifecycles['notify' + names[i]] = () => {
-			// @ts-expect-error
-			return manager.notify.apply(manager, ...args);
+			return manager.notify.apply(manager, args);
 		};
 	});
 	return lifecycles satisfies LifecycleManager;

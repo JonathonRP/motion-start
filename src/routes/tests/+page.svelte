@@ -381,7 +381,9 @@
         <Card.Root>
             <Card.Header>
                 <Card.Title>Animate Layout</Card.Title>
-                <Card.Description>Click switch button</Card.Description>
+                <Card.Description>
+                    Click the switch to visualize the effect
+                </Card.Description>
             </Card.Header>
             <Card.Content>
                 <AnimateLayout />
