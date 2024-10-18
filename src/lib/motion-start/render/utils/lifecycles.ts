@@ -141,7 +141,7 @@ var names = [
 	'SetAxisTarget',
 	'Unmount',
 ];
-function createLifecycles(...args: [any]) {
+function createLifecycles(...args?: [any]) {
 	var managers = names.map(() => new SubscriptionManager());
 	var propSubscriptions = {};
 	var lifecycles = {
