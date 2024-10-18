@@ -8,11 +8,14 @@ import { isMotionValue } from '../../value/utils/is-motion-value';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 
-export type useStyle = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => ResolvedValues;
-export type useHTMLProps = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => any;
+export type UseStyle = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => ResolvedValues;
+export type UseHTMLProps = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => any;
 
-export { default as UseHTMLProps } from './UseHTMLProps.svelte';
-export { default as UseStyle } from './UseStyle.svelte';
+import { default as UseHTMLPropsComp } from './UseHTMLProps.svelte';
+import { default as UseStyleComp } from './UseStyle.svelte';
+
+export const UseHTMLProps = UseHTMLPropsComp as typeof UseHTMLPropsComp;
+export const UseStyle = UseStyleComp as typeof UseStyleComp;
 
 export function copyRawValuesOnly(
 	target: ResolvedValues,

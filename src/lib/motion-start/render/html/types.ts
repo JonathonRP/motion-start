@@ -8,6 +8,16 @@ import type { ResolvedValues } from '../types';
 import type { HTMLElements } from './supported-elements';
 import type { Component } from 'svelte';
 
+export type HTMLProps = {
+	draggable: boolean;
+	style: {
+		userSelect?: any;
+		WebkitUserSelect?: any;
+		WebkitTouchCallout?: any;
+		touchAction?: any;
+	};
+};
+
 export interface TransformOrigin {
 	originX?: number | string;
 	originY?: number | string;

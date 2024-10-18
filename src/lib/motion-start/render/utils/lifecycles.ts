@@ -141,7 +141,7 @@ var names = [
 	'SetAxisTarget',
 	'Unmount',
 ];
-function createLifecycles(...args?: [any]) {
+function createLifecycles(...args: any[]) {
 	var managers = names.map(() => new SubscriptionManager());
 	var propSubscriptions = {};
 	var lifecycles = {
@@ -162,6 +162,7 @@ function createLifecycles(...args?: [any]) {
 	managers.forEach((manager, i) => {
 		lifecycles['on' + names[i]] = (handler: (...args: any) => void) => manager.add(handler);
 		lifecycles['notify' + names[i]] = () => {
+			// @ts-expect-error
 			return manager.notify.apply(manager, ...args);
 		};
 	});
