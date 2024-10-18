@@ -27,8 +27,8 @@ export { AnimatePresence } from './components/AnimatePresence/index.js';
 export { AnimateSharedLayout } from './components/AnimateSharedLayout/index.js';
 export { LazyMotion } from './components/LazyMotion/index.js';
 export { MotionConfig } from './components/MotionConfig/index.js';
-export { Motion, createDomMotionComponent } from './render/dom/motion.js';
-export { M } from './render/dom/motion-minimal.js';
+export { Motion, createDomMotionComponent, Motion as motion } from './render/dom/motion.js';
+export { M, M as m } from './render/dom/motion-minimal.js';
 /**
  * Features
  */

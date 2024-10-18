@@ -1,4 +1,5 @@
 // @ts-nocheck
+export { default as AnimateLayout } from './AnimateLayout.svelte';
 export { default as AnimatePresenceStack } from './AnimatePresenceStack.svelte';
 export { default as AnimationSequence } from './AnimationSequence.svelte';
 export { default as ColorInterpolation } from './ColorInterpolation.svelte';
