@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- passing tests, handle minimal-motion for lazymotion
+- passing tests, handle minimal-motion for lazymotion,update API for motion to align more with framer-motion API usage
 
 ## 0.0.3
 

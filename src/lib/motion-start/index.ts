@@ -27,8 +27,8 @@ export { AnimatePresence } from './components/AnimatePresence/index.js';
 export { AnimateSharedLayout } from './components/AnimateSharedLayout/index.js';
 export { LazyMotion } from './components/LazyMotion/index.js';
 export { MotionConfig } from './components/MotionConfig/index.js';
-export { Motion, createDomMotionComponent } from './render/dom/motion.js';
-export { M } from './render/dom/motion-minimal.js';
+export { motion, createDomMotionComponent, motion as Motion } from './render/dom/motion.js';
+export { m, m as M } from './render/dom/motion-minimal.js';
 /**
  * Features
  */
@@ -59,7 +59,7 @@ export { useAnimation } from './animation/use-animation.js';
 export { useIsPresent, usePresence } from './components/AnimatePresence/use-presence.js';
 export { createCrossfader } from './components/AnimateSharedLayout/utils/crossfader.js';
 export { UseDomEvent } from './events/use-dom-event.js';
-export { type PanInfo } from './gestures/PanSession.js';
+export type { PanInfo } from './gestures/PanSession.js';
 export { DragControls, useDragControls } from './gestures/drag/use-drag-controls.js';
 export type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers, TapInfo } from './gestures/types.js';
 export { createMotionComponent } from './motion/index.js';

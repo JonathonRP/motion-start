@@ -18,12 +18,12 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [5000],
+	// "forwardPorts": [5173],
 	// "appPort": [5000]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "corepack enable && corepack install && pnpm install",
-	"postCreateCommand": "corepack enable && corepack install && bun install",
+	"postCreateCommand": "bun install",
 
 	// Configure tool-specific properties.
 	"customizations": {
