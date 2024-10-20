@@ -7,7 +7,7 @@
         damping: 30,
     };
 
-    let active = $state(false);
+    let active = false;
 
     function toggleSwitch() {
         active = !active;
