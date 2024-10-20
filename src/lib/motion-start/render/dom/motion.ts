@@ -60,4 +60,4 @@ function createDomMotionComponent<T extends keyof DOMMotionComponents>(key: T): 
 	return createMotionComponent(config);
 }
 
-export { motion as Motion, createDomMotionComponent };
+export { motion, createDomMotionComponent };

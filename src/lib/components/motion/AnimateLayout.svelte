@@ -1,15 +1,24 @@
 <script>
     import { motion } from "$lib/motion-start";
 
-    let isOn = false;
-    const toggleSwitch = () => (isOn = !isOn);
+    const spring = {
+        type: "spring",
+        stiffness: 700,
+        damping: 30,
+    };
+
+    let active = $state(false);
+
+    function toggleSwitch() {
+        active = !active;
+    }
 </script>
 
 <div
     class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
 >
-    <button class="switch" class:isOn onclick={toggleSwitch}>
-        <motion.div layout class="handle" />
+    <button class="switch" data-active={active} onclick={toggleSwitch}>
+        <motion.div layout class="handle" transition={spring} />
     </button>
 </div>
 
@@ -31,13 +40,9 @@
         justify-content: flex-start;
     }
 
-    .isOn {
+    .switch[data-active="true"] {
         justify-content: flex-end;
     }
-
-    /* .switch[data-active="true"] {
-        justify-content: flex-end;
-    } */
 
     :global(.handle) {
         width: 3rem;
