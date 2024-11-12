@@ -1,16 +1,11 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
 import { lowercaseSVGElements } from '../../svg/lowercase-elements.js';
-import type { Component } from 'svelte';
 
-function isSVGComponent(Component: string | Component) {
+export function isSVGComponent(Component: string) {
 	if (
 		/**
 		 * If it's not a string, it's a custom React component. Currently we only support
@@ -23,8 +18,7 @@ function isSVGComponent(Component: string | Component) {
 		Component.includes('-')
 	) {
 		return false;
-	}
-	if (
+	} else if (
 		/**
 		 * If it's in our list of lowercase SVG tags, it's an SVG component
 		 */
@@ -32,11 +26,10 @@ function isSVGComponent(Component: string | Component) {
 		/**
 		 * If it contains a capital letter, it's an SVG component
 		 */
-		/[A-Z]/.test(Component)
+		/[A-Z]/u.test(Component)
 	) {
 		return true;
 	}
+
 	return false;
 }
-
-export { isSVGComponent };

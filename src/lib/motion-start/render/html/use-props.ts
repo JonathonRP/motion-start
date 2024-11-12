@@ -8,25 +8,20 @@ import { isMotionValue } from '../../value/utils/is-motion-value';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 
-export type UseStyle = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => ResolvedValues;
-export type UseHTMLProps = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => any;
-
-import { default as UseHTMLPropsComp } from './UseHTMLProps.svelte';
-import { default as UseStyleComp } from './UseStyle.svelte';
-
-export const UseHTMLProps = UseHTMLPropsComp as typeof UseHTMLPropsComp;
-export const UseStyle = UseStyleComp as typeof UseStyleComp;
-
 export function copyRawValuesOnly(
 	target: ResolvedValues,
-	source: {
-		[key: string]: string | number | MotionValue;
-	},
+	source: { [key: string]: string | number | MotionValue },
 	props: MotionProps
 ) {
 	for (const key in source) {
 		if (!isMotionValue(source[key]) && !isForcedMotionValue(key, props)) {
-			target[key] = source[key];
+			target[key] = source[key] as string | number;
 		}
 	}
 }
+
+// export type UseStyle = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => ResolvedValues;
+// export type UseHTMLProps = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => any;
+// export { default as UseInitialMotionValues } from './UseInitialMotionValues.svelte';
+// export { default as UseStyle } from './UseStyle.svelte';
+export { default as UseHTMLProps } from './UseHTMLProps.svelte';

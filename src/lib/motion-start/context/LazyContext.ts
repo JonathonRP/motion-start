@@ -1,7 +1,8 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 import type { CreateVisualElement } from '../render/types';
 export interface LazyContextProps {
 	renderer?: CreateVisualElement<any>;
@@ -10,7 +11,7 @@ export interface LazyContextProps {
 
 import { writable, type Writable } from 'svelte/store';
 import { getDomContext } from './DOMcontext';
-// @ts-expect-error
+
 const LazyContext = (c?: any): Writable<LazyContextProps> => getDomContext('Lazy', c) || writable({ strict: false });
 
 export { LazyContext };

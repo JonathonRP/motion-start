@@ -1,65 +1,49 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { PopmotionTransitionProps, ValueTarget, SingleTarget, KeyframesTarget } from '../../types';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { isKeyframesTarget } from './is-keyframes-target.js';
+import { transformProps } from '../../render/html/utils/transform';
+import type { ValueAnimationOptions } from '../types';
 
-var underDampedSpring = () => ({
+const underDampedSpring: Partial<ValueAnimationOptions> = {
 	type: 'spring',
 	stiffness: 500,
 	damping: 25,
-	restDelta: 0.5,
 	restSpeed: 10,
-});
-var criticallyDampedSpring = (to: SingleTarget) => ({
+};
+
+const criticallyDampedSpring = (target: unknown): Partial<ValueAnimationOptions> => ({
 	type: 'spring',
 	stiffness: 550,
-	damping: to === 0 ? 2 * Math.sqrt(550) : 30,
-	restDelta: 0.01,
+	damping: target === 0 ? 2 * Math.sqrt(550) : 30,
 	restSpeed: 10,
 });
-var linearTween = () => ({
-	type: 'keyframes',
-	ease: 'linear',
-	duration: 0.3,
-});
-var keyframes = (values: KeyframesTarget) => ({
+
+const keyframesTransition: Partial<ValueAnimationOptions> = {
 	type: 'keyframes',
 	duration: 0.8,
-	values: values,
-});
-var defaultTransitions = {
-	x: underDampedSpring,
-	y: underDampedSpring,
-	z: underDampedSpring,
-	rotate: underDampedSpring,
-	rotateX: underDampedSpring,
-	rotateY: underDampedSpring,
-	rotateZ: underDampedSpring,
-	scaleX: criticallyDampedSpring,
-	scaleY: criticallyDampedSpring,
-	scale: criticallyDampedSpring,
-	opacity: linearTween,
-	backgroundColor: linearTween,
-	color: linearTween,
-	default: criticallyDampedSpring,
 };
 
-// TODO: need to bring closer to Transition - then can use keyof typeof defaultTransitions.
-var getDefaultTransition = (valueKey: string, to: ValueTarget): PopmotionTransitionProps => {
-	var transitionFactory: (v: any) => any;
-	if (isKeyframesTarget(to)) {
-		transitionFactory = keyframes;
-	} else {
-		transitionFactory = (defaultTransitions as any)[valueKey] || defaultTransitions.default;
+/**
+ * Default easing curve is a slightly shallower version of
+ * the default browser easing curve.
+ */
+const ease: Partial<ValueAnimationOptions> = {
+	type: 'keyframes',
+	ease: [0.25, 0.1, 0.35, 1],
+	duration: 0.3,
+};
+
+export const getDefaultTransition = (
+	valueKey: string,
+	{ keyframes }: ValueAnimationOptions
+): Partial<ValueAnimationOptions> => {
+	if (keyframes.length > 2) {
+		return keyframesTransition;
+	} else if (transformProps.has(valueKey)) {
+		return valueKey.startsWith('scale') ? criticallyDampedSpring(keyframes[1]) : underDampedSpring;
 	}
-	return Object.assign({ to: to }, transitionFactory(to));
-};
 
-export { criticallyDampedSpring, getDefaultTransition, linearTween, underDampedSpring };
+	return ease;
+};

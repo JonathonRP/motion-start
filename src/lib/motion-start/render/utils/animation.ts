@@ -29,7 +29,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import { startAnimation } from '../../animation/utils/transitions.js';
 import { setTarget } from './setters.js';
-import { resolveVariant } from './variants.js';
+import { resolveVariant } from './variant-props.js';
 
 /**
  * @internal
@@ -106,7 +106,7 @@ function animateVariant(
 	if (when) {
 		var [first, last] =
 			when === 'beforeChildren' ? [getAnimation, getChildAnimations] : [getChildAnimations, getAnimation];
-			//@ts-expect-error
+		//@ts-expect-error
 		return first().then(last);
 	}
 	return Promise.all([getAnimation(), getChildAnimations(options.delay)]);

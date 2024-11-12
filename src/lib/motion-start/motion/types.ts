@@ -1,26 +1,24 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 import type { Properties } from 'csstype';
-import type { AnimationControls } from '../animation/types';
-import type { DraggableProps } from '../gestures/drag/types';
-import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types';
-import type { VisualElementLifecycles } from '../render/utils/lifecycles';
-import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from '../types';
 import type { MotionValue } from '../value';
+import type { AnimationControls } from '../animation/types';
+import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from '../types';
+import type { DraggableProps } from '../gestures/drag/types';
 import type { LayoutProps } from './features/layout/types';
+import type { EventProps } from '../render/types';
+import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from '../gestures/types';
+import type { ViewportProps } from './features/viewport/types';
 
-export type Ref<T> = (instance: T | null) => void | {
-	current: T | null;
-} | null;
-
-export type MotionStyleProp = string | number | MotionValue;
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.
  * @public
  */
 export type VariantLabels = string | string[];
+
 export interface TransformProperties {
 	x?: string | number;
 	y?: string | number;
@@ -45,6 +43,7 @@ export interface TransformProperties {
 	perspective?: string | number;
 	transformPerspective?: string | number;
 }
+
 /**
  * @public
  */
@@ -53,6 +52,7 @@ export interface SVGPathProperties {
 	pathOffset?: number;
 	pathSpacing?: number;
 }
+
 export interface CustomStyles {
 	/**
 	 * Framer Library custom prop types. These are not actually supported in Motion - preferably
@@ -63,61 +63,80 @@ export interface CustomStyles {
 	shadow?: string;
 	image?: string;
 }
+
 export type MakeMotion<T> = MakeCustomValueType<{
-	[K in keyof T]: T[K] | MotionValue<number> | MotionValue<string> | MotionValue<any>;
+	[K in keyof T]: T[K] | MotionValue<number> | MotionValue<string> | MotionValue<any>; // A permissive type for Custom value types
 }>;
+
 export type MotionCSS = MakeMotion<Omit<Properties, 'rotate' | 'scale' | 'perspective'>>;
+
 /**
  * @public
  */
 export type MotionTransform = MakeMotion<TransformProperties>;
 
 /**
+ * TODO: Currently unused, would like to reimplement with the ability
+ * to still accept React.CSSProperties.
+ */
+export type MotionCSSVariables = {
+	[key: `--${string}`]: MotionValue<number> | MotionValue<string> | string | number;
+};
+
+/**
  * @public
  */
 export type MotionStyle = MotionCSS &
 	MotionTransform &
-	MakeMotion<SVGPathProperties> /* & MakeCustomValueType<CustomStyles>*/;
+	MakeMotion<SVGPathProperties> &
+	MakeCustomValueType<CustomStyles>;
+
 export type OnUpdate = (v: Target) => void;
-/**
- * @public
- */
-export interface RelayoutInfo {
-	delta: {
-		x: number;
-		y: number;
-		width: number;
-		height: number;
-	};
-}
-/**
- * @public
- */
-export type ResolveLayoutTransition = (info: RelayoutInfo) => Transition | boolean;
+
 /**
  * @public
  */
 export interface AnimationProps {
 	/**
-	 * Values to animate to, variant label(s), or `AnimationControls`.
+	 * Properties, variant label or array of variant labels to start in.
 	 *
-	 * @motion
+	 * Set to `false` to initialise with the values in `animate` (disabling the mount animation)
 	 *
 	 * ```jsx
 	 * // As values
-	 * <MotionDiv animate={{ opacity: 1 }} />
+	 * <motion.div initial={{ opacity: 1 }} />
 	 *
 	 * // As variant
-	 * <MotionDiv animate="visible" variants={variants} />
+	 * <motion.div initial="visible" variants={variants} />
 	 *
 	 * // Multiple variants
-	 * <MotionDiv animate={["visible", "active"]} variants={variants} />
+	 * <motion.div initial={["visible", "active"]} variants={variants} />
+	 *
+	 * // As false (disable mount animation)
+	 * <motion.div initial={false} animate={{ opacity: 0 }} />
+	 * ```
+	 */
+	initial?: boolean | Target | VariantLabels;
+
+	/**
+	 * Values to animate to, variant label(s), or `AnimationControls`.
+	 *
+	 * ```jsx
+	 * // As values
+	 * <motion.div animate={{ opacity: 1 }} />
+	 *
+	 * // As variant
+	 * <motion.div animate="visible" variants={variants} />
+	 *
+	 * // Multiple variants
+	 * <motion.div animate={["visible", "active"]} variants={variants} />
 	 *
 	 * // AnimationControls
-	 * <MotionDiv animate={animation} />
+	 * <motion.div animate={animation} />
 	 * ```
 	 */
 	animate?: AnimationControls | TargetAndTransition | VariantLabels | boolean;
+
 	/**
 	 * A target to animate to when this component is removed from the tree.
 	 *
@@ -126,54 +145,55 @@ export interface AnimationProps {
 	 * This limitation exists because React doesn't allow components to defer unmounting until after
 	 * an animation is complete. Once this limitation is fixed, the `AnimatePresence` component will be unnecessary.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * import { AnimatePresence, motion } from 'svelte-motion'
+	 * import { AnimatePresence, motion } from 'framer-motion'
 	 *
-	 *
-	 * <AnimatePresence show={isVisible}>
-	 *      <MotionDiv
-	 *        initial={{ opacity: 0 }}
-	 *        animate={{ opacity: 1 }}
-	 *        exit={{ opacity: 0 }}
-	 *      />
-	 * </AnimatePresence>
+	 * export const MyComponent = ({ isVisible }) => {
+	 *   return (
+	 *     <AnimatePresence>
+	 *        {isVisible && (
+	 *          <motion.div
+	 *            initial={{ opacity: 0 }}
+	 *            animate={{ opacity: 1 }}
+	 *            exit={{ opacity: 0 }}
+	 *          />
+	 *        )}
+	 *     </AnimatePresence>
+	 *   )
+	 * }
 	 * ```
 	 */
 	exit?: TargetAndTransition | VariantLabels;
+
 	/**
-	 * Variants allow you to define animation states and organise them by name. They allow
-	 * you to control animations throughout a component tree by switching a single `animate` prop.
-	 *
-	 * Using `transition` options like `delayChildren` and `staggerChildren`, you can orchestrate
-	 * when children animations play relative to their parent.
-	 *
-	 * @motion
-	 *
-	 * After passing variants to one or more `motion` component's `variants` prop, these variants
-	 * can be used in place of values on the `animate`, `initial`, `whileFocus`, `whileTap` and `whileHover` props.
-	 *
-	 * ```jsx
-	 * const variants = {
-	 *   active: {
-	 *       backgroundColor: "#f00"
-	 *   },
-	 *   inactive: {
-	 *     backgroundColor: "#fff",
-	 *     transition: { duration: 2 }
-	 *   }
-	 * }
-	 *
-	 * <MotionDiv variants={variants} animate="active" />
-	 * ```
-	 */
+     * Variants allow you to define animation states and organise them by name. They allow
+     * you to control animations throughout a component tree by switching a single `animate` prop.
+     *
+     * Using `transition` options like `delayChildren` and `staggerChildren`, you can orchestrate
+     * when children animations play relative to their parent.
+
+     *
+     * After passing variants to one or more `motion` component's `variants` prop, these variants
+     * can be used in place of values on the `animate`, `initial`, `whileFocus`, `whileTap` and `whileHover` props.
+     *
+     * ```jsx
+     * const variants = {
+     *   active: {
+     *       backgroundColor: "#f00"
+     *   },
+     *   inactive: {
+     *     backgroundColor: "#fff",
+     *     transition: { duration: 2 }
+     *   }
+     * }
+     *
+     * <motion.div variants={variants} animate="active" />
+     * ```
+     */
 	variants?: Variants;
+
 	/**
 	 * Default transition. If no `transition` is defined in `animate`, it will use the transition defined here.
-	 *
-	 * @motion
-	 *
 	 * ```jsx
 	 * const spring = {
 	 *   type: "spring",
@@ -181,19 +201,18 @@ export interface AnimationProps {
 	 *   stiffness: 100
 	 * }
 	 *
-	 * <MotionDiv transition={spring} animate={{ scale: 1.2 }} />
+	 * <motion.div transition={spring} animate={{ scale: 1.2 }} />
 	 * ```
 	 */
 	transition?: Transition;
 }
+
 /**
  * @public
  */
 export interface MotionAdvancedProps {
 	/**
 	 * Custom data to use to resolve dynamic variants differently for each animating component.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * const variants = {
@@ -203,20 +222,32 @@ export interface MotionAdvancedProps {
 	 *   })
 	 * }
 	 *
-	 * <MotionDiv custom={0} animate="visible" variants={variants} />
-	 * <MotionDiv custom={1} animate="visible" variants={variants} />
-	 * <MotionDiv custom={2} animate="visible" variants={variants} />
+	 * <motion.div custom={0} animate="visible" variants={variants} />
+	 * <motion.div custom={1} animate="visible" variants={variants} />
+	 * <motion.div custom={2} animate="visible" variants={variants} />
 	 * ```
 	 *
 	 * @public
 	 */
 	custom?: any;
+
 	/**
 	 * @public
 	 * Set to `false` to prevent inheriting variant changes from its parent.
 	 */
 	inherit?: boolean;
+
+	/**
+	 * @public
+	 * Set to `false` to prevent throwing an error when a `motion` component is used within a `LazyMotion` set to strict.
+	 */
+	ignoreStrict?: boolean;
 }
+
+type ExternalMotionValues = {
+	[key: string]: MotionValue<number> | MotionValue<string>;
+};
+
 /**
  * Props for `motion` components.
  *
@@ -224,59 +255,42 @@ export interface MotionAdvancedProps {
  */
 export interface MotionProps
 	extends AnimationProps,
-		VisualElementLifecycles,
+		EventProps,
 		PanHandlers,
 		TapHandlers,
 		HoverHandlers,
 		FocusHandlers,
+		ViewportProps,
 		DraggableProps,
 		LayoutProps,
 		MotionAdvancedProps {
-	transformValues?: any;
 	/**
-	 * Properties, variant label or array of variant labels to start in.
-	 *
-	 * Set to `false` to initialise with the values in `animate` (disabling the mount animation)
-	 *
-	 * @motion
-	 *
-	 * ```jsx
-	 * // As values
-	 * <MotionDiv initial={{ opacity: 1 }} />
-	 *
-	 * // As variant
-	 * <MotionDiv initial="visible" variants={variants} />
-	 *
-	 * // Multiple variants
-	 * <MotionDiv initial={["visible", "active"]} variants={variants} />
-	 *
-	 * // As false (disable mount animation)
-	 * <MotionDiv initial={false} animate={{ opacity: 0 }} />
-	 * ```
-	 */
-	initial?: boolean | Target | VariantLabels;
-	/**
-	 * @motion
 	 *
 	 * The React DOM `style` prop, enhanced with support for `MotionValue`s and separate `transform` values.
 	 *
 	 * ```jsx
-	 * <script>
+	 * export const MyComponent = () => {
 	 *   const x = useMotionValue(0)
-	 * </script>
 	 *
-	 * <MotionDiv style={{ x, opacity: 1, scale: 0.5 }} />
+	 *   return <motion.div style={{ x, opacity: 1, scale: 0.5 }} />
+	 * }
 	 * ```
 	 */
 	style?: MotionStyle;
+
 	/**
-	 * By default, Svelte Motion generates a `transform` property with a sensible transform order. `transformTemplate`
+	 * Provide a set of motion values to perform animations on.
+	 *
+	 * @internal
+	 */
+	values?: ExternalMotionValues;
+
+	/**
+	 * By default, Motion generates a `transform` property with a sensible transform order. `transformTemplate`
 	 * can be used to create a different order, or to append/preprend the automatically generated `transform` property.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   style={{ x: 0, rotate: 180 }}
 	 *   transformTemplate={
 	 *     ({ x, rotate }) => `rotate(${rotate}deg) translateX(${x}px)`
@@ -285,10 +299,15 @@ export interface MotionProps
 	 * ```
 	 *
 	 * @param transform - The latest animated transform props.
-	 * @param generatedTransform - The transform string as automatically generated by Framer Motion
+	 * @param generatedTransform - The transform string as automatically generated by Motion
 	 *
 	 * @public
 	 */
 	transformTemplate?(transform: TransformProperties, generatedTransform: string): string;
+
+	children?: Node | MotionValue<number> | MotionValue<string>;
+
+	'data-framer-appear-id'?: string;
 }
+
 export type TransformTemplate = (transform: TransformProperties, generatedTransform: string) => string;

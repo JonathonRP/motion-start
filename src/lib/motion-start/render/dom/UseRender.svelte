@@ -1,19 +1,21 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { UseHTMLProps } from "../html/use-props.js";
   import { UseSVGProps } from "../svg/use-props.js";
   import { filterProps } from "./utils/filter-props.js";
+  import { isSVGComponent } from "./utils/is-svg-component.js";
 
   export let props,
     visualState,
-    Component,
+    Component: string,
     forwardMotionProps = false,
-    isStatic,
     ref,
     targetEl = undefined;
+
   const motion = (node: any) => {
+    Component = node.tagName;
     ref(node);
   };
   $: filteredProps = filterProps(
@@ -27,10 +29,10 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <svelte:component
-  this={Component === "SVG" ? UseSVGProps : UseHTMLProps}
+  this={isSVGComponent(Component) ? UseSVGProps : UseHTMLProps}
   {visualState}
-  {isStatic}
   {props}
+  {Component}
   let:visualProps
 >
   <slot {motion} props={{ ...filteredProps, ...visualProps }} />

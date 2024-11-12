@@ -1,26 +1,26 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
   import { isAnimationControls } from "../../animation/utils/is-animation-controls.js";
+  import { resolveVariantFromProps } from "../../render/utils/resolve-variants.js";
   import {
-    checkIfControllingVariants,
-    checkIfVariantNode,
-    resolveVariantFromProps,
-  } from "../../render/utils/variants.js";
+    isControllingVariants as checkIsControllingVariants,
+    isVariantNode as checkIsVariantNode,
+  } from "../../render/utils/is-controlling-variants.js";
   import { resolveMotionValue } from "../../value/utils/resolve-motion-value.js";
 
-  const makeState = <Instance, RenderState>(
+  function makeState<I, RS>(
     {
       scrapeMotionValuesFromProps,
       createRenderState,
       onMount,
-    }: UseVisualStateConfig<Instance, RenderState>,
+    }: UseVisualStateConfig<I, RS>,
     props: MotionProps,
     context: MotionContextProps,
-    presenceContext: PresenceContextProps,
-  ) => {
-    const state: any = {
+    presenceContext: PresenceContextProps | null,
+  ) {
+    const state: VisualState<I, RS> = {
       latestValues: makeLatestValues(
         props,
         context,
@@ -31,19 +31,18 @@ Copyright (c) 2018 Framer B.V. -->
     };
 
     if (onMount) {
-      state.mount = (instance: Instance) => onMount(props, instance, state);
+      state.mount = (instance: I) => onMount(props, instance, state);
     }
 
     return state;
-  };
+  }
   function makeLatestValues(
     props: MotionProps,
     context: MotionContextProps,
-    presenceContext: PresenceContextProps,
-    scrapeMotionValues: { (props: MotionProps): { [key: string]: MotionValue | string | number; }; (arg0: any): any; },
+    presenceContext: PresenceContextProps | null,
+    scrapeMotionValues: ScrapeMotionValuesFromProps,
   ) {
-    const values: any = {};
-    const blockInitialAnimation = presenceContext?.initial === false;
+    const values: ResolvedValues = {};
 
     const motionValues = scrapeMotionValues(props);
     for (const key in motionValues) {
@@ -51,8 +50,8 @@ Copyright (c) 2018 Framer B.V. -->
     }
 
     let { initial, animate } = props;
-    const isControllingVariants = checkIfControllingVariants(props);
-    const isVariantNode = checkIfVariantNode(props);
+    const isControllingVariants = checkIsControllingVariants(props);
+    const isVariantNode = checkIsVariantNode(props);
 
     if (
       context &&
@@ -60,16 +59,17 @@ Copyright (c) 2018 Framer B.V. -->
       !isControllingVariants &&
       props.inherit !== false
     ) {
-      initial !== null && initial !== void 0
-        ? initial
-        : (initial = context.initial);
-      animate !== null && animate !== void 0
-        ? animate
-        : (animate = context.animate);
+      if (initial === undefined) initial = context.initial;
+      if (animate === undefined) animate = context.animate;
     }
 
-    const variantToSet =
-      blockInitialAnimation || initial === false ? animate : initial;
+    let isInitialAnimationBlocked = presenceContext
+      ? presenceContext.initial === false
+      : false;
+
+    isInitialAnimationBlocked = isInitialAnimationBlocked || initial === false;
+
+    const variantToSet = isInitialAnimationBlocked ? animate : initial;
 
     if (
       variantToSet &&
@@ -82,9 +82,28 @@ Copyright (c) 2018 Framer B.V. -->
         if (!resolved) return;
 
         const { transitionEnd, transition, ...target } = resolved;
-        // @ts-expect-error
-        for (const key in target) values[key] = target[key];// @ts-expect-error
-        for (const key in transitionEnd) values[key] = transitionEnd[key];
+        for (const key in target) {
+          let valueTarget = target[key as keyof typeof target];
+
+          if (Array.isArray(valueTarget)) {
+            /**
+             * Take final keyframe if the initial animation is blocked because
+             * we want to initialise at the end of that blocked animation.
+             */
+            const index = isInitialAnimationBlocked
+              ? valueTarget.length - 1
+              : 0;
+            valueTarget = valueTarget[index];
+          }
+
+          if (valueTarget !== null) {
+            values[key] = valueTarget as string | number;
+          }
+        }
+        for (const key in transitionEnd)
+          values[key] = transitionEnd[key as keyof typeof transitionEnd] as
+            | string
+            | number;
       });
     }
 
@@ -93,13 +112,15 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts" generics="Instance, RenderState">
-  import type { MotionValue } from "$lib/motion-start/value/index.js";
-  import type { UseVisualStateConfig } from "./use-visual-state.js";
+  import type {
+    UseVisualStateConfig,
+    VisualState,
+  } from "./use-visual-state.js";
 
-  import type { MotionProps } from "..";
+  import type { MotionProps } from "../types";
+  import type { Writable } from "svelte/store";
 
   import { getContext } from "svelte";
-  import { get, type Writable } from "svelte/store";
   import {
     MotionContext,
     type MotionContextProps,
@@ -108,15 +129,19 @@ Copyright (c) 2018 Framer B.V. -->
     PresenceContext,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
+  import type {
+    ResolvedValues,
+    ScrapeMotionValuesFromProps,
+  } from "$lib/motion-start/render/types.js";
 
   type $$Props = {
-    config?: UseVisualStateConfig<Instance, RenderState>;
+    config: UseVisualStateConfig<Instance, RenderState>;
     props: MotionProps;
     isStatic: boolean;
     isCustom?: any | undefined;
   };
 
-  export let config: $$Props["config"] = undefined,
+  export let config: $$Props["config"],
     props: $$Props["props"],
     isStatic: $$Props["isStatic"],
     isCustom: $$Props["isCustom"] = undefined;
@@ -127,10 +152,10 @@ Copyright (c) 2018 Framer B.V. -->
   const presenceContext =
     getContext<Writable<PresenceContextProps>>(PresenceContext) ||
     PresenceContext(isCustom);
-  let state = makeState(config as UseVisualStateConfig<Instance, RenderState>, props, get(context), get(presenceContext));
-  const ms = makeState;
-  $: if (isStatic) {
-    state = ms(config as UseVisualStateConfig<Instance, RenderState>, props, $context, $presenceContext);
+  const make = () => makeState(config, props, $context, $presenceContext);
+  let state = make();
+  $: if (!isStatic) {
+    state = make();
   }
 </script>
 

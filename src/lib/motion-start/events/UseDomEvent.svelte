@@ -1,8 +1,10 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+
 <script lang="ts">
   import { onDestroy } from "svelte";
-  import { addDomEvent, type UseDomEventProps } from "./use-dom-event.js";
+  import { addDomEvent } from "./add-dom-event";
+  import type { UseDomEventProps } from "./use-dom-event";
 
   type $$Props = UseDomEventProps;
 
@@ -31,8 +33,15 @@ Copyright (c) 2018 Framer B.V. -->
     eventName: $$Props["eventName"],
     handler: $$Props["handler"] = undefined,
     options: $$Props["options"] = undefined;
+
   let cleanup = () => {};
-  const effect = (ref?:any, eventName?:any, handler?:any, options?:any) => {
+
+  const effect = (
+    ref: RefObject<EventTarget>,
+    eventName: string,
+    handler?: EventListener | undefined,
+    options?: AddEventListenerOptions,
+  ) => {
     cleanup();
     if (!ref) {
       return () => {};
