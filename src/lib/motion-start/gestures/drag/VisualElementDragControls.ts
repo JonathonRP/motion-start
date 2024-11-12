@@ -44,8 +44,8 @@ import { batchLayout, flushLayout } from '../../render/dom/utils/batch-layout.js
 import { AnimationType } from '../../render/utils/types.js';
 import { eachAxis } from '../../utils/each-axis.js';
 import { invariant } from '../../utils/errors.js';
-import { calcOrigin } from '../../utils/geometry/delta-calc.js';
-import { axisBox, convertAxisBoxToBoundingBox, convertBoundingBoxToAxisBox } from '../../utils/geometry/index.js';
+import { calcOrigin } from '../../projection/geometry/delta-calc.js';
+import { axisBox, convertAxisBoxToBoundingBox, convertBoundingBoxToAxisBox } from '../../projection/geometry/index.js';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import { PanSession } from '../PanSession.js';
 import {

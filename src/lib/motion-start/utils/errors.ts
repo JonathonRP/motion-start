@@ -1,22 +1,27 @@
-import { noop } from "./noop"
+/** 
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
 
-export type DevMessage = (check: boolean, message: string) => void
+import { noop } from './noop';
 
-let warning: DevMessage = noop
-let invariant: DevMessage = noop
+export type DevMessage = (check: boolean, message: string) => void;
 
-if (process.env.NODE_ENV !== "production") {
-    warning = (check, message) => {
-        if (!check && typeof console !== "undefined") {
-            console.warn(message)
-        }
-    }
+let warning: DevMessage = noop;
+let invariant: DevMessage = noop;
 
-    invariant = (check, message) => {
-        if (!check) {
-            throw new Error(message)
-        }
-    }
+if (process.env.NODE_ENV !== 'production') {
+	warning = (check, message) => {
+		if (!check && typeof console !== 'undefined') {
+			console.warn(message);
+		}
+	};
+
+	invariant = (check, message) => {
+		if (!check) {
+			throw new Error(message);
+		}
+	};
 }
 
-export { invariant, warning }
+export { warning, invariant };

@@ -1,28 +1,27 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionProps, MotionStyle } from "../../../motion/types";
 
+import type { MotionProps, MotionStyle } from '../../../motion/types';
+import { isForcedMotionValue } from '../../../motion/utils/is-forced-motion-value';
+import { isMotionValue } from '../../../value/utils/is-motion-value';
+import type { VisualElement } from '../../VisualElement';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { isForcedMotionValue } from '../../../motion/utils/is-forced-motion-value.js';
-import { isMotionValue } from '../../../value/utils/is-motion-value.js';
+export function scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement?: VisualElement) {
+	const { style } = props;
+	const newValues: { [key: string]: any } = {};
 
-function scrapeMotionValuesFromProps(props: MotionProps) {
-    var style = props.style as MotionStyle;
-    var newValues = {};
-    for (var key in style) {
-        //@ts-ignore
-        if (isMotionValue(style[key]) || isForcedMotionValue(key, props)) {
-            //@ts-ignore
-            newValues[key] = style[key];
-        }
-    }
-    return newValues;
+	for (const key in style) {
+		if (
+			isMotionValue(style[key as keyof MotionStyle]) ||
+			(prevProps.style && isMotionValue(prevProps.style[key as keyof MotionStyle])) ||
+			isForcedMotionValue(key, props) ||
+			visualElement?.getValue(key)?.liveStyle !== undefined
+		) {
+			newValues[key] = style[key as keyof MotionStyle];
+		}
+	}
+
+	return newValues;
 }
-
-export { scrapeMotionValuesFromProps };

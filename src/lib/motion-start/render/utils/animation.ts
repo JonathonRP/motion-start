@@ -29,7 +29,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import { startAnimation } from '../../animation/utils/transitions.js';
 import { setTarget } from './setters.js';
-import { resolveVariant } from './variants.js';
+import { resolveVariant } from './variant-props.js';
 
 /**
  * @internal

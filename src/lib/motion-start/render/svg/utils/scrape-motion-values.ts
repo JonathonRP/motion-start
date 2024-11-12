@@ -1,28 +1,25 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionProps } from "../../../motion/types";
 
+import type { MotionProps } from '../../../motion/types';
+import { isMotionValue } from '../../../value/utils/is-motion-value';
+import type { VisualElement } from '../../VisualElement';
+import { scrapeMotionValuesFromProps as scrapeHTMLMotionValuesFromProps } from '../../html/utils/scrape-motion-values';
+import { transformPropOrder } from '../../html/utils/transform';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { isMotionValue } from '../../../value/utils/is-motion-value.js';
-import { scrapeMotionValuesFromProps as scrapeMotionValuesFromProps$1 } from '../../html/utils/scrape-motion-values.js';
+export function scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement?: VisualElement) {
+	const newValues = scrapeHTMLMotionValuesFromProps(props, prevProps, visualElement);
 
-function scrapeMotionValuesFromProps(props: MotionProps) {
-    var newValues = scrapeMotionValuesFromProps$1(props);
-    for (var key in props) {
-        //@ts-ignore
-        if (isMotionValue(props[key])) {
-            var targetKey = key === "x" || key === "y" ? "attr" + key.toUpperCase() : key;
-            //@ts-ignore
-            newValues[targetKey] = props[key];
-        }
-    }
-    return newValues;
+	for (const key in props) {
+		if (isMotionValue(props[key as keyof typeof props]) || isMotionValue(prevProps[key as keyof typeof prevProps])) {
+			const targetKey =
+				transformPropOrder.indexOf(key) !== -1 ? 'attr' + key.charAt(0).toUpperCase() + key.substring(1) : key;
+
+			newValues[targetKey] = props[key as keyof typeof props];
+		}
+	}
+
+	return newValues;
 }
-
-export { scrapeMotionValuesFromProps };

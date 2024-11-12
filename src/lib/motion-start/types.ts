@@ -1,19 +1,26 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 import type { SVGAttributes } from 'svelte/elements';
-import type { SVGPathProperties, TransformProperties } from './motion/types.js';
 import type { Properties } from 'csstype';
+import type { Easing } from './easing/types';
+import type { TransformProperties, CustomStyles, SVGPathProperties } from './motion/types';
+import type { VariableKeyframesDefinition } from './animation/types';
+
+export type GenericKeyframesTarget<V> = V[] | Array<null | V>;
 
 /**
  * @public
  */
-export type ResolvedKeyframesTarget = [null, ...number[]] | number[] | [null, ...string[]] | string[];
+export type ResolvedKeyframesTarget = GenericKeyframesTarget<number> | GenericKeyframesTarget<string>;
+
 /**
  * @public
  */
-export type KeyframesTarget = ResolvedKeyframesTarget | [null, ...CustomValueType[]] | CustomValueType[];
+export type KeyframesTarget = ResolvedKeyframesTarget | GenericKeyframesTarget<CustomValueType>;
+
 /**
  * @public
  */
@@ -30,67 +37,12 @@ export type ResolvedValueTarget = ResolvedSingleTarget | ResolvedKeyframesTarget
  * @public
  */
 export type ValueTarget = SingleTarget | KeyframesTarget;
+
 /**
  * @public
  */
-export type Props = {
-	[key: string]: any;
-};
-/**
- * A function that accepts a progress value between `0` and `1` and returns a
- * new one.
- *
- * @library
- *
- * ```jsx
- * const transition = {
- *   ease: progress => progress * progress
- * }
- *
- * <Frame
- *   animate={{ opacity: 0 }}
- *   transition={transition}
- * />
- * ```
- *
- * @motion
- *
- * ```jsx
- * <MotionDiv
- *   animate={{ opacity: 0 }}
- *   transition={{
- *     duration: 1,
- *     ease: progress => progress * progress
- *   }}
- * />
- * ```
- *
- * @public
- */
-export type EasingFunction = (v: number) => number;
-/**
- * The easing function to use. Set as one of:
- *
- * - The name of an in-built easing function.
- * - An array of four numbers to define a cubic bezier curve.
- * - An easing function, that accepts and returns a progress value between `0` and `1`.
- *
- * @public
- */
-export type Easing =
-	| [number, number, number, number]
-	| 'linear'
-	| 'easeIn'
-	| 'easeOut'
-	| 'easeInOut'
-	| 'circIn'
-	| 'circOut'
-	| 'circInOut'
-	| 'backIn'
-	| 'backOut'
-	| 'backInOut'
-	| 'anticipate'
-	| EasingFunction;
+export type Props = { [key: string]: any };
+
 /**
  * Options for orchestrating the timing of animations.
  *
@@ -110,6 +62,7 @@ export interface Orchestration {
 	 * @public
 	 */
 	delay?: number;
+
 	/**
 	 * Describes the relationship between the transition and its children. Set
 	 * to `false` by default.
@@ -119,8 +72,6 @@ export interface Orchestration {
 	 * children with either `"beforeChildren"` to finish this transition before
 	 * starting children transitions, `"afterChildren"` to finish children
 	 * transitions before starting this transition.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * const list = {
@@ -137,27 +88,21 @@ export interface Orchestration {
 	 *   }
 	 * }
 	 *
-	 *  <Motion let:motion={ul} variants={list} animate="hidden">
-	 *    <ul use:ul>
-	 *      <Motion let:motion variants={item}>
-	 *        <li use:motion />
-	 *      </Motion>
-	 *      <Motion let:motion variants={item}>
-	 *        <li use:motion />
-	 *      </Motion>
-	 *     </ul>
-	 *   </Motion>
+	 * return (
+	 *   <motion.ul variants={list} animate="hidden">
+	 *     <motion.li variants={item} />
+	 *     <motion.li variants={item} />
+	 *   </motion.ul>
 	 * )
 	 * ```
 	 *
 	 * @public
 	 */
 	when?: false | 'beforeChildren' | 'afterChildren' | string;
+
 	/**
 	 * When using variants, children animations will start after this duration
 	 * (in seconds). You can add the `transition` property to both the `Frame` and the `variant` directly. Adding it to the `variant` generally offers more flexibility, as it allows you to customize the delay per visual state.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * const container = {
@@ -175,24 +120,22 @@ export interface Orchestration {
 	 *   show: { opacity: 1 }
 	 * }
 	 *
-	 *  <Motion let:motion={ul}
-	 *      variants={container}
-	 *      initial="hidden"
-	 *      animate="show">
-	 *    <ul use:ul>
-	 *      <Motion let:motion variants={item}>
-	 *        <li use:motion />
-	 *      </Motion>
-	 *      <Motion let:motion variants={item}>
-	 *        <li use:motion />
-	 *      </Motion>
-	 *     </ul>
-	 *   </Motion>
+	 * return (
+	 *   <motion.ul
+	 *     variants={container}
+	 *     initial="hidden"
+	 *     animate="show"
+	 *   >
+	 *     <motion.li variants={item} />
+	 *     <motion.li variants={item} />
+	 *   </motion.ul>
+	 * )
 	 * ```
 	 *
 	 * @public
 	 */
 	delayChildren?: number;
+
 	/**
 	 * When using variants, animations of child components can be staggered by this
 	 * duration (in seconds).
@@ -202,8 +145,6 @@ export interface Orchestration {
 	 * on.
 	 *
 	 * The calculated stagger delay will be added to `delayChildren`.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * const container = {
@@ -222,32 +163,26 @@ export interface Orchestration {
 	 * }
 	 *
 	 * return (
-	 *  <Motion let:motion={ul}
-	 *      variants={container}
-	 *      initial="hidden"
-	 *      animate="show">
-	 *    <ol use:ul>
-	 *      <Motion let:motion variants={item}>
-	 *        <li use:motion />
-	 *      </Motion>
-	 *      <Motion let:motion variants={item}>
-	 *        <li use:motion />
-	 *      </Motion>
-	 *     </ol>
-	 *   </Motion>
+	 *   <motion.ol
+	 *     variants={container}
+	 *     initial="hidden"
+	 *     animate="show"
+	 *   >
+	 *     <motion.li variants={item} />
+	 *     <motion.li variants={item} />
+	 *   </motion.ol>
 	 * )
 	 * ```
 	 *
 	 * @public
 	 */
 	staggerChildren?: number;
+
 	/**
 	 * The direction in which to stagger children.
 	 *
 	 * A value of `1` staggers from the first to the last while `-1`
 	 * staggers from the last to the first.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * const container = {
@@ -255,7 +190,7 @@ export interface Orchestration {
 	 *   show: {
 	 *     opacity: 1,
 	 *     transition: {
-	 *       delayChildren: 0.5,
+	 *       staggerChildren: 0.5,
 	 *       staggerDirection: -1
 	 *     }
 	 *   }
@@ -266,39 +201,31 @@ export interface Orchestration {
 	 *   show: { opacity: 1 }
 	 * }
 	 *
-	 *   <Motion let:motion={ul}
-	 *      variants={container}
-	 *      initial="hidden"
-	 *      animate="show">
-	 *      <ul use:ul>
-	 *        <Motion let:motion
-	 *          variants={item}
-	 *          size={50}/>
-	 *              <li use:motion/>
-	 *        </Motion>
-	 *        <Motion let:motion
-	 *          variants={item}
-	 *          size={50}/>
-	 *              <li use:motion/>
-	 *        </Motion>*
-	 *      </ul>
-	 * </Motion>
+	 * return (
+	 *   <motion.ul
+	 *     variants={container}
+	 *     initial="hidden"
+	 *     animate="show"
+	 *   >
+	 *     <motion.li variants={item} size={50} />
+	 *     <motion.li variants={item} size={50} />
+	 *   </motion.ul>
+	 * )
 	 * ```
 	 *
 	 * @public
 	 */
 	staggerDirection?: number;
 }
+
 export interface Repeat {
 	/**
 	 * The number of times to repeat the transition. Set to `Infinity` for perpetual repeating.
 	 *
 	 * Without setting `repeatType`, this will loop the animation.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ repeat: Infinity, duration: 2 }}
 	 * />
@@ -307,6 +234,7 @@ export interface Repeat {
 	 * @public
 	 */
 	repeat?: number;
+
 	/**
 	 * How to repeat the animation. This can be either:
 	 *
@@ -316,10 +244,8 @@ export interface Repeat {
 	 *
 	 * "mirror": Switches `from` and `to` alternately
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{
 	 *     repeat: 1,
@@ -332,14 +258,13 @@ export interface Repeat {
 	 * @public
 	 */
 	repeatType?: 'loop' | 'reverse' | 'mirror';
+
 	/**
 	 * When repeating an animation, `repeatDelay` will set the
 	 * duration of the time to wait, in seconds, between each repetition.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ repeat: Infinity, repeatDelay: 1 }}
 	 * />
@@ -349,6 +274,7 @@ export interface Repeat {
 	 */
 	repeatDelay?: number;
 }
+
 /**
  * An animation that animates between two or more values over a specific duration of time.
  * This is the default animation for non-physical values like `color` and `opacity`.
@@ -361,24 +287,19 @@ export interface Tween extends Repeat {
 	 * If any non-orchestration `transition` values are set without a `type` property,
 	 * this is used as the default animation.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <Motion let:motion isSVG={true}
+	 * <motion.path
 	 *   animate={{ pathLength: 1 }}
-	 *   transition={{ duration: 2, type: "tween" }}>
-	 *  <path use:motion/>
-	 * </Motion>     *
+	 *   transition={{ duration: 2, type: "tween" }}
 	 * />
 	 * ```
 	 *
 	 * @public
 	 */
 	type?: 'tween';
+
 	/**
 	 * The duration of the tween animation. Set to `0.3` by default, 0r `0.8` if animating a series of keyframes.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * const variants = {
@@ -392,6 +313,7 @@ export interface Tween extends Repeat {
 	 * @public
 	 */
 	duration?: number;
+
 	/**
 	 * The easing function to use. Set as one of the below.
 	 *
@@ -405,10 +327,9 @@ export interface Tween extends Repeat {
 	 * animation, `ease` can be set as an array of easing functions to set different easings between
 	 * each of those values.
 	 *
-	 * @motion
 	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ opacity: 0 }}
 	 *   transition={{ ease: [0.17, 0.67, 0.83, 0.67] }}
 	 * />
@@ -417,6 +338,7 @@ export interface Tween extends Repeat {
 	 * @public
 	 */
 	ease?: Easing | Easing[];
+
 	/**
 	 * The duration of time already elapsed in the animation. Set to `0` by
 	 * default.
@@ -424,6 +346,7 @@ export interface Tween extends Repeat {
 	 * @internal
 	 */
 	elapsed?: number;
+
 	/**
 	 * When animating keyframes, `times` can be used to determine where in the animation each keyframe is reached.
 	 * Each value in `times` is a value between `0` and `1`, representing `duration`.
@@ -431,10 +354,8 @@ export interface Tween extends Repeat {
 	 * There must be the same number of `times` as there are keyframes.
 	 * Defaults to an array of evenly-spread durations.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ scale: [0, 1, 0.5, 1] }}
 	 *   transition={{ times: [0, 0.1, 0.9, 1] }}
 	 * />
@@ -443,13 +364,12 @@ export interface Tween extends Repeat {
 	 * @public
 	 */
 	times?: number[];
+
 	/**
 	 * When animating keyframes, `easings` can be used to define easing functions between each keyframe. This array should be one item fewer than the number of keyframes, as these easings apply to the transitions between the keyframes.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ backgroundColor: ["#0f0", "#00f", "#f00"] }}
 	 *   transition={{ easings: ["easeIn", "easeOut"] }}
 	 * />
@@ -458,14 +378,13 @@ export interface Tween extends Repeat {
 	 * @public
 	 */
 	easings?: Easing[];
+
 	/**
 	 * The value to animate from.
 	 * By default, this is the current state of the animating value.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ from: 90, duration: 2 }}
 	 * />
@@ -474,19 +393,23 @@ export interface Tween extends Repeat {
 	 * @public
 	 */
 	from?: number | string;
+
 	/**
 	 * @internal
 	 */
 	to?: number | string | ValueTarget;
+
 	/**
 	 * @internal
 	 */
 	velocity?: number;
+
 	/**
 	 * @internal
 	 */
 	delay?: number;
 }
+
 /**
  * An animation that simulates spring physics for realistic motion.
  * This is the default animation for physical values like `x`, `y`, `scale` and `rotate`.
@@ -498,10 +421,8 @@ export interface Spring extends Repeat {
 	 * Set `type` to `"spring"` to animate using spring physics for natural
 	 * movement. Type is set to `"spring"` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring' }}
 	 * />
@@ -510,14 +431,13 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	type: 'spring';
+
 	/**
 	 * Stiffness of the spring. Higher values will create more sudden movement.
 	 * Set to `100` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.section
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring', stiffness: 50 }}
 	 * />
@@ -526,14 +446,13 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	stiffness?: number;
+
 	/**
 	 * Strength of opposing force. If set to 0, spring will oscillate
 	 * indefinitely. Set to `10` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.a
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring', damping: 300 }}
 	 * />
@@ -542,11 +461,10 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	damping?: number;
+
 	/**
 	 * Mass of the moving object. Higher values will result in more lethargic
 	 * movement. Set to `1` by default.
-	 *
-	 * @motion
 	 *
 	 * ```jsx
 	 * <motion.feTurbulence
@@ -558,6 +476,7 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	mass?: number;
+
 	/**
 	 * The duration of the animation, defined in seconds. Spring animations can be a maximum of 10 seconds.
 	 *
@@ -565,10 +484,8 @@ export interface Spring extends Repeat {
 	 *
 	 * Note: `duration` and `bounce` will be overridden if `stiffness`, `damping` or `mass` are set.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ x: 100 }}
 	 *   transition={{ type: "spring", duration: 0.8 }}
 	 * />
@@ -577,6 +494,7 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	duration?: number;
+
 	/**
 	 * `bounce` determines the "bounciness" of a spring animation.
 	 *
@@ -586,10 +504,8 @@ export interface Spring extends Repeat {
 	 *
 	 * Note: `bounce` and `duration` will be overridden if `stiffness`, `damping` or `mass` are set.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ x: 100 }}
 	 *   transition={{ type: "spring", bounce: 0.25 }}
 	 * />
@@ -598,14 +514,13 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	bounce?: number;
+
 	/**
 	 * End animation if absolute speed (in units per second) drops below this
 	 * value and delta is smaller than `restDelta`. Set to `0.01` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring', restSpeed: 0.5 }}
 	 * />
@@ -614,15 +529,14 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	restSpeed?: number;
+
 	/**
 	 * End animation if distance is below this value and speed is below
 	 * `restSpeed`. When animation ends, spring gets “snapped” to. Set to
 	 * `0.01` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring', restDelta: 0.5 }}
 	 * />
@@ -631,14 +545,13 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	restDelta?: number;
+
 	/**
 	 * The value to animate from.
 	 * By default, this is the initial state of the animating value.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring', from: 90 }}
 	 * />
@@ -647,17 +560,17 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	from?: number | string;
+
 	/**
 	 * @internal
 	 */
 	to?: number | string | ValueTarget;
+
 	/**
 	 * The initial velocity of the spring. By default this is the current velocity of the component.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'spring', velocity: 2 }}
 	 * />
@@ -666,11 +579,13 @@ export interface Spring extends Repeat {
 	 * @public
 	 */
 	velocity?: number;
+
 	/**
 	 * @internal
 	 */
 	delay?: number;
 }
+
 /**
  * An animation that decelerates a value based on its initial velocity,
  * usually used to implement inertial scrolling.
@@ -692,10 +607,8 @@ export interface Inertia {
 	 * Set `type` to animate using the inertia animation. Set to `"tween"` by
 	 * default. This can be used for natural deceleration, like momentum scrolling.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: "inertia", velocity: 50 }}
 	 * />
@@ -704,13 +617,12 @@ export interface Inertia {
 	 * @public
 	 */
 	type: 'inertia';
+
 	/**
 	 * A function that receives the automatically-calculated target and returns a new one. Useful for snapping the target to a grid.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{
 	 *     power: 0,
@@ -723,15 +635,14 @@ export interface Inertia {
 	 * @public
 	 */
 	modifyTarget?(v: number): number;
+
 	/**
 	 * If `min` or `max` is set, this affects the stiffness of the bounce
 	 * spring. Higher values will create more sudden movement. Set to `500` by
 	 * default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{
 	 *     min: 0,
@@ -744,15 +655,14 @@ export interface Inertia {
 	 * @public
 	 */
 	bounceStiffness?: number;
+
 	/**
 	 * If `min` or `max` is set, this affects the damping of the bounce spring.
 	 * If set to `0`, spring will oscillate indefinitely. Set to `10` by
 	 * default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{
 	 *     min: 0,
@@ -765,13 +675,12 @@ export interface Inertia {
 	 * @public
 	 */
 	bounceDamping?: number;
+
 	/**
 	 * A higher power value equals a further target. Set to `0.8` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{ power: 0.2 }}
 	 * />
@@ -780,14 +689,13 @@ export interface Inertia {
 	 * @public
 	 */
 	power?: number;
+
 	/**
 	 * Adjusting the time constant will change the duration of the
 	 * deceleration, thereby affecting its feel. Set to `700` by default.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{ timeConstant: 200 }}
 	 * />
@@ -796,15 +704,14 @@ export interface Inertia {
 	 * @public
 	 */
 	timeConstant?: number;
+
 	/**
 	 * End the animation if the distance to the animation target is below this value, and the absolute speed is below `restSpeed`.
 	 * When the animation ends, the value gets snapped to the animation target. Set to `0.01` by default.
 	 * Generally the default values provide smooth animation endings, only in rare cases should you need to customize these.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{ restDelta: 10 }}
 	 * />
@@ -813,13 +720,12 @@ export interface Inertia {
 	 * @public
 	 */
 	restDelta?: number;
+
 	/**
 	 * Minimum constraint. If set, the value will "bump" against this value (or immediately spring to it if the animation starts as less than this value).
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{ min: 0, max: 100 }}
 	 * />
@@ -828,13 +734,12 @@ export interface Inertia {
 	 * @public
 	 */
 	min?: number;
+
 	/**
 	 * Maximum constraint. If set, the value will "bump" against this value (or immediately snap to it, if the initial animation value exceeds this value).
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   drag
 	 *   dragTransition={{ min: 0, max: 100 }}
 	 * />
@@ -843,13 +748,12 @@ export interface Inertia {
 	 * @public
 	 */
 	max?: number;
+
 	/**
 	 * The value to animate from. By default, this is the current state of the animating value.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <Frame
 	 *   drag
 	 *   dragTransition={{ from: 50 }}
 	 * />
@@ -858,14 +762,13 @@ export interface Inertia {
 	 * @public
 	 */
 	from?: number | string;
+
 	/**
 	 * The initial velocity of the animation.
 	 * By default this is the current velocity of the component.
 	 *
-	 * @motion
-	 *
 	 * ```jsx
-	 * <MotionDiv
+	 * <motion.div
 	 *   animate={{ rotate: 180 }}
 	 *   transition={{ type: 'inertia', velocity: 200 }}
 	 * />
@@ -874,21 +777,17 @@ export interface Inertia {
 	 * @public
 	 */
 	velocity?: number;
+
 	/**
 	 * @internal
 	 */
 	delay?: number;
 }
+
 /**
  * Keyframes tweens between multiple `values`.
  *
  * These tweens can be arranged using the `duration`, `easings`, and `times` properties.
- *
- * @internalremarks
- * We could possibly make the `type` property redundant, if not for all animations
- * then for this one quite easily.
- *
- * @internal
  */
 export interface Keyframes {
 	/**
@@ -898,12 +797,16 @@ export interface Keyframes {
 	 * @public
 	 */
 	type: 'keyframes';
+	// We could possibly make the `type` property redundant, if not for all animations
+	// then for this one quite easily.
+
 	/**
 	 * An array of values to animate between.
 	 *
 	 * @internal
 	 */
 	values: KeyframesTarget;
+
 	/**
 	 * An array of numbers between 0 and 1, where `1` represents the `total` duration.
 	 *
@@ -914,6 +817,7 @@ export interface Keyframes {
 	 * @public
 	 */
 	times?: number[];
+
 	/**
 	 * An array of easing functions for each generated tween, or a single easing function applied to all tweens.
 	 *
@@ -931,16 +835,19 @@ export interface Keyframes {
 	 * @public
 	 */
 	ease?: Easing | Easing[];
+
 	/**
 	 * Popmotion's easing prop to define individual easings. `ease` will be mapped to this prop in keyframes animations.
 	 *
 	 * @internal
 	 */
 	easings?: Easing | Easing[];
+
 	/**
 	 * @internal
 	 */
 	elapsed?: number;
+
 	/**
 	 * The total duration of the animation. Set to `0.3` by default.
 	 *
@@ -950,7 +857,7 @@ export interface Keyframes {
 	 *   duration: 2
 	 * }
 	 *
-	 * <MotionDiv
+	 * <Frame
 	 *   animate={{ opacity: 0 }}
 	 *   transition={transition}
 	 * />
@@ -959,37 +866,33 @@ export interface Keyframes {
 	 * @public
 	 */
 	duration?: number;
+
 	/**
 	 * @public
 	 */
 	repeatDelay?: number;
+
 	/**
 	 * @internal
 	 */
 	from?: number | string;
+
 	/**
 	 * @internal
 	 */
 	to?: number | string | ValueTarget;
+
 	/**
 	 * @internal
 	 */
 	velocity?: number;
+
 	/**
 	 * @internal
 	 */
 	delay?: number;
 }
-/**
- * @internal
- */
-export interface Just {
-	type: 'just';
-	to?: number | string | ValueTarget;
-	from?: number | string;
-	delay?: number;
-	velocity?: number;
-}
+
 /**
  * @public
  */
@@ -1000,71 +903,94 @@ export interface None {
 	 * @public
 	 */
 	type: false;
+
 	/**
 	 * @internal
 	 */
 	from?: number | string;
+
 	/**
 	 * @internal
 	 */
 	delay?: number;
+
 	/**
 	 * @internal
 	 */
 	velocity?: number;
 }
+
 /**
  * @public
  */
-export type PopmotionTransitionProps = Tween | Spring | Keyframes | Inertia | Just;
+export type PopmotionTransitionProps = Tween | Spring | Keyframes | Inertia;
+
 /**
  * @public
  */
 export type PermissiveTransitionDefinition = {
 	[key: string]: any;
 };
+
 /**
  * @public
  */
-export type TransitionDefinition = Tween | Spring | Keyframes | Inertia | Just | None | PermissiveTransitionDefinition;
-export type TransitionMap = Orchestration & {
-	[key: string]: TransitionDefinition;
-};
+export type TransitionDefinition = Tween | Spring | Keyframes | Inertia | None | PermissiveTransitionDefinition;
+
+export type TransitionMap = Orchestration &
+	TransitionDefinition & {
+		[key: string]: TransitionDefinition;
+	};
+
 /**
  * Transition props
  *
  * @public
  */
 export type Transition = (Orchestration & Repeat & TransitionDefinition) | (Orchestration & Repeat & TransitionMap);
+
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type CSSPropertiesWithoutTransitionOrSingleTransforms = Omit<
 	Properties,
 	'transition' | 'rotate' | 'scale' | 'perspective'
 >;
+
+type SVGTransformAttributes = {
+	attrX?: number;
+	attrY?: number;
+	attrScale?: number;
+};
+
 type TargetProperties = CSSPropertiesWithoutTransitionOrSingleTransforms &
 	SVGAttributes<SVGElement> &
-	TransformProperties /*& CustomStyles*/ &
-	SVGPathProperties;
+	SVGTransformAttributes &
+	TransformProperties &
+	CustomStyles &
+	SVGPathProperties &
+	VariableKeyframesDefinition;
+
 /**
  * @public
  */
-export type MakeCustomValueType<T> = {
-	[K in keyof T]: T[K] | CustomValueType;
-};
+export type MakeCustomValueType<T> = { [K in keyof T]: T[K] | CustomValueType };
+
 /**
  * @public
  */
 export type Target = MakeCustomValueType<TargetProperties>;
+
 /**
  * @public
  */
 export type MakeKeyframes<T> = {
 	[K in keyof T]: T[K] | T[K][] | [null, ...T[K][]];
 };
+
 /**
  * @public
  */
 export type TargetWithKeyframes = MakeKeyframes<Target>;
+
 /**
  * An object that specifies values to animate to. Each value may be set either as
  * a single value, or an array of values.
@@ -1089,17 +1015,21 @@ export type TargetAndTransition = TargetWithKeyframes & {
 	transition?: Transition;
 	transitionEnd?: Target;
 };
-export type TargetResolver = (custom: any, current: Target, velocity: Target) => TargetAndTransition;
+
+export type TargetResolver = (custom: any, current: Target, velocity: Target) => TargetAndTransition | string;
+
 /**
  * @public
  */
 export type Variant = TargetAndTransition | TargetResolver;
+
 /**
  * @public
  */
 export type Variants = {
 	[key: string]: Variant;
 };
+
 /**
  * @public
  */

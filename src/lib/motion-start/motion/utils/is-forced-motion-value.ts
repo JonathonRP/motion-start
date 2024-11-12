@@ -1,23 +1,16 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionProps } from "../..";
 
+import { scaleCorrectors } from '../../projection/styles/scale-correction';
+import type { MotionProps } from '../..';
+import { transformProps } from '../../render/html/utils/transform';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { valueScaleCorrection } from '../../render/dom/projection/scale-correction.js';
-import { isTransformOriginProp, isTransformProp } from '../../render/html/utils/transform.js';
-
-function isForcedMotionValue(key: string, _a: { layout?: MotionProps['layout'], layoutId?: MotionProps['layoutId'] }): boolean {
-    var layout = _a.layout, layoutId = _a.layoutId;
-    return (isTransformProp(key) ||
-        isTransformOriginProp(key) ||
-        ((layout || layoutId !== undefined) && !!valueScaleCorrection[key]));
+export function isForcedMotionValue(key: string, { layout, layoutId }: MotionProps) {
+	return (
+		transformProps.has(key) ||
+		key.startsWith('origin') ||
+		((layout || layoutId !== undefined) && (!!scaleCorrectors[key] || key === 'opacity'))
+	);
 }
-
-export { isForcedMotionValue };
-

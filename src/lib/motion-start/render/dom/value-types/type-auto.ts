@@ -1,21 +1,14 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ValueType } from "style-value-types";
 
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+import type { ValueType } from '../../../value/types/types';
 
 /**
  * ValueType for "auto"
  */
-var auto = {
-    test: function (v) { return v === "auto"; },
-    parse: function (v) { return v; },
-} as ValueType;
-
-export { auto };
+export const auto: ValueType = {
+	test: (v: unknown) => v === 'auto',
+	parse: (v) => v,
+};

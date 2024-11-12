@@ -1,10 +1,11 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
 
 <script lang="ts">
   import { onDestroy, type Snippet } from "svelte";
-  import { addDomEvent, type UseDomEventProps } from "./use-dom-event.js";
+  import { addDomEvent } from "./add-dom-event";
+  import type { UseDomEventProps } from "./use-dom-event";
+  import type { RefObject } from "../utils/safe-react-types";
 
   interface Props extends UseDomEventProps {
     children?: Snippet;
@@ -40,10 +41,10 @@ Copyright (c) 2018 Framer B.V. -->
   }: Props = $props();
   let cleanup = () => {};
   const _cleanup = (
-    ref?: any,
-    eventName?: any,
-    handler?: any,
-    options?: any,
+    ref: RefObject<EventTarget>,
+    eventName: string,
+    handler?: EventListener | undefined,
+    options?: AddEventListenerOptions,
   ) => {
     cleanup();
     if (!ref) {

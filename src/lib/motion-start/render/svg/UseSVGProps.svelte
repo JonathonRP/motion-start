@@ -1,22 +1,34 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
+  import type { MotionProps } from "../../motion/types.js";
+  import type { ResolvedValues } from "../types.js";
   import { copyRawValuesOnly } from "../html/use-props.js";
   import { buildSVGAttrs } from "./utils/build-attrs.js";
   import { createSvgRenderState } from "./utils/create-render-state.js";
+  import { isSVGTag } from "./utils/is-svg-tag.js";
+  import type { Snippet } from "svelte";
 
-  let { visualState, props, children } = $props();
+  let {
+    visualState,
+    props,
+    Component,
+    children,
+  }: {
+    visualState: ResolvedValues;
+    props: MotionProps;
+    Component?: keyof HTMLElementTagNameMap;
+    children: Snippet<[{ style: Record<string, any> }]>;
+  } = $props();
 
-  let memo = (variantLabelsAsDependency?: string | boolean | undefined) => {
+  let memo = (_visualState: typeof visualState) => {
     const state = createSvgRenderState();
     buildSVGAttrs(
       state,
-      visualState,
-      undefined,
-      undefined,
-      { enableHardwareAcceleration: false },
+      _visualState,
+      isSVGTag(Component),
       props.transformTemplate,
     );
     return {
@@ -29,7 +41,7 @@ Copyright (c) 2018 Framer B.V. -->
   $effect(() => {
     if (props.style) {
       const rawStyles = {};
-      copyRawValuesOnly(rawStyles, props.style, props);
+      copyRawValuesOnly(rawStyles, props.style as any, props);
       visualProps.style = { ...rawStyles, ...visualProps.style };
     }
   });

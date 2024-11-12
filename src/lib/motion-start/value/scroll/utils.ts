@@ -2,7 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionValue } from '../index.js';
+
+import { motionValue, type MotionValue } from '../';
 /**
  * @public
  */
@@ -20,13 +21,7 @@ export interface ScrollOffsets {
 }
 export type GetScrollOffsets = () => ScrollOffsets;
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { motionValue } from '../index.js';
-
-function createScrollMotionValues(startStopNotifier?: () => Promise<() => void>): ScrollMotionValues {
+export function createScrollMotionValues(startStopNotifier?: () => Promise<() => void>): ScrollMotionValues {
 	const hasListener = { x: false, y: false, xp: false, yp: false };
 	let stop: Promise<() => void>;
 
@@ -59,13 +54,9 @@ function setProgress(offset: number, maxOffset: number, value: MotionValue<numbe
 	value.set(!offset || !maxOffset ? 0 : offset / maxOffset);
 }
 
-function createScrollUpdater(values: ScrollMotionValues, getOffsets: GetScrollOffsets) {
-	var update = () => {
-		var _a = getOffsets(),
-			xOffset = _a.xOffset,
-			yOffset = _a.yOffset,
-			xMaxOffset = _a.xMaxOffset,
-			yMaxOffset = _a.yMaxOffset;
+export function createScrollUpdater(values: ScrollMotionValues, getOffsets: GetScrollOffsets) {
+	const update = () => {
+		const { xOffset, yOffset, xMaxOffset, yMaxOffset } = getOffsets();
 		// Set absolute positions
 		values.scrollX.set(xOffset);
 		values.scrollY.set(yOffset);
@@ -76,5 +67,3 @@ function createScrollUpdater(values: ScrollMotionValues, getOffsets: GetScrollOf
 	update();
 	return update;
 }
-
-export { createScrollMotionValues, createScrollUpdater };

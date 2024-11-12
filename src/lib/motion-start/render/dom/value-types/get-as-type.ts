@@ -1,21 +1,13 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ValueType } from "style-value-types";
 
+import type { ValueType } from '../../../value/types/types';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
 /**
  * Provided a value and a ValueType, returns the value as that value type.
  */
-var getValueAsType = function (value: any, type?: ValueType | undefined) {
-    return type && typeof value === "number" //@ts-ignore
-        ? type.transform(value)
-        : value;
+export const getValueAsType = (value: unknown, type?: ValueType) => {
+	return type && typeof value === 'number' ? (type as any).transform(value) : value;
 };
-
-export { getValueAsType };

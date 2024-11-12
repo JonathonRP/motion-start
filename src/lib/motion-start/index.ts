@@ -8,9 +8,9 @@ export { UseGestures } from "./gestures/use-gestures.js";
 export { UsePanGesture } from "./gestures/use-pan-gesture.js";
 export { UseTapGesture } from "./gestures/use-tap-gesture.js";
 
-export { default as MotionSSR } from "./motion/MotionSSR.svelte";
+export { default as MotionSSR } from "./render/components/motion/MotionSSR.svelte";
 
-export { UseAnimation } from "./animation/use-animation.js";
+export { UseAnimation } from "./animation/hooks/use-animation.js";
 
 export {
   default as Mdiv,
@@ -34,8 +34,8 @@ export {
   motion,
   createDomMotionComponent,
   motion as Motion,
-} from "./render/dom/motion.js";
-export { m, m as M } from "./render/dom/motion-minimal.js";
+} from "./render/components/motion.js";
+export { m, m as M } from "./render/components/m/motion-minimal.js";
 /**
  * Features
  */
@@ -65,14 +65,14 @@ export { resolveMotionValue } from "./value/utils/resolve-motion-value.js";
 /**
  * Accessibility
  */
-export { useReducedMotion } from "./utils/use-reduced-motion.js";
+export { useReducedMotion } from "./utils/reduce-motion/use-reduced-motion.js";
 /**
  * Utils
  */
 export { animate } from "./animation/animate.js";
 export { animationControls } from "./animation/animation-controls.js";
 export type { AnimationControls } from "./animation/types.js";
-export { useAnimation } from "./animation/use-animation.js";
+export { useAnimation } from "./animation/hooks/use-animation.js";
 export {
   useIsPresent,
   usePresence,
@@ -144,7 +144,7 @@ export type {
   ResolveLayoutTransition,
   VariantLabels,
 } from "./motion/types.js";
-export type { CustomDomComponent } from "./render/dom/motion-proxy.js";
+export type { CustomDomComponent } from "./render/components/motion-proxy.js";
 // export type { ForwardRefComponent, HTMLMotionProps } from "./render/html/types.js";
 // export type { SVGAttributesAsMotionValues, SVGMotionProps } from "./render/svg/types.js";
 export { FlatTree } from "./render/utils/flat-tree.js";
