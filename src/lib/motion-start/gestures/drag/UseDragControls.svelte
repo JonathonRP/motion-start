@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script module lang="ts">
+<script context="module" module lang="ts">
   import { DragControls } from "./use-drag-controls";
   const createDragControls = () => new DragControls();
 </script>

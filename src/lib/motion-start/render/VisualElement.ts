@@ -36,6 +36,8 @@ import { complex } from '../value/types/complex';
 import { getAnimatableNone } from './dom/value-types/animatable-none';
 import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
+import type { Booleanish } from 'svelte/elements';
+import type { Snippet } from 'svelte';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -82,7 +84,11 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	 * Often this have been specified via the initial prop but it might be
 	 * that the value needs to be read from the Instance.
 	 */
-	abstract readValueFromInstance(instance: Instance, key: string, options: Options): string | number | null | undefined;
+	abstract readValueFromInstance(
+		instance: Instance,
+		key: string,
+		options: Options
+	): string | number | Booleanish | null | undefined | Snippet<any>;
 
 	/**
 	 * When a value has been removed from the VisualElement we use this to remove
