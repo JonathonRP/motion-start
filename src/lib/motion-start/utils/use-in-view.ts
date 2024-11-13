@@ -1,6 +1,11 @@
-// TODO: update
-import { type RefObject, useEffect, useState } from 'react';
+/** 
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
+
+import type { RefObject } from './safe-react-types';
 import { inView, type InViewOptions } from '../render/dom/viewport';
+import { tick } from 'svelte';
 
 export interface UseInViewOptions extends Omit<InViewOptions, 'root' | 'amount'> {
 	root?: RefObject<Element>;
@@ -9,15 +14,15 @@ export interface UseInViewOptions extends Omit<InViewOptions, 'root' | 'amount'>
 }
 
 export function useInView(ref: RefObject<Element>, { root, margin, amount, once = false }: UseInViewOptions = {}) {
-	const [isInView, setInView] = useState(false);
+	let isInView = false;
 
-	useEffect(() => {
+	tick().then(() => {
 		if (!ref.current || (once && isInView)) return;
 
 		const onEnter = () => {
-			setInView(true);
+			isInView = true;
 
-			return once ? undefined : () => setInView(false);
+			return once ? undefined : () => (isInView = false);
 		};
 
 		const options: InViewOptions = {
@@ -27,7 +32,7 @@ export function useInView(ref: RefObject<Element>, { root, margin, amount, once 
 		};
 
 		return inView(ref.current, onEnter, options);
-	}, [root, ref, margin, once, amount]);
+	});
 
 	return isInView;
 }

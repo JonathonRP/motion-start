@@ -1,22 +1,18 @@
-/** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { SpringOptions } from "popmotion";
-import { MotionValue } from ".";
-
-/** 
-based on framer-motion@4.1.16,
-Copyright (c) 2018 Framer B.V.
-*/
-
 import { fixed } from '../utils/fix-process-env';
-import { getContext } from "svelte"
-import { MotionConfigContext, type MotionConfigContextObject } from "../context/MotionConfigContext"
+import { beforeUpdate, getContext, tick } from 'svelte';
 import { get, type Writable } from 'svelte/store';
-import { useMotionValue } from "./use-motion-value";
-import { isMotionValue } from "./utils/is-motion-value";
-import { animate } from "popmotion"
+import type { MotionValue } from '../value';
+import { isMotionValue } from './utils/is-motion-value';
+import { useMotionValue } from './use-motion-value';
+import { MotionConfigContext } from '../context/MotionConfigContext';
+import type { SpringOptions } from '../animation/types';
+import { frame, frameData } from '../frameloop';
+import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
+
+function toNumber(v: string | number) {
+	if (typeof v === 'number') return v;
+	return Number.parseFloat(v);
+}
 
 /**
  * Creates a `MotionValue` that, when `set`, will use a spring animation to animate to its new state.
@@ -38,47 +34,76 @@ import { animate } from "popmotion"
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
+	const mcc = getContext<Writable<MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(isCustom);
 
-    const mcc = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
-    let activeSpringAnimation: { stop: () => void } | null = null;
+	const value = useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source) as MotionValue<number> & {
+		reset: (_: MotionValue<number>, config: SpringOptions) => void;
+	};
 
-    let value = useMotionValue(isMotionValue(source) ? source.get() : source) as MotionValue<any> & { reset: (_: any, config: SpringOptions) => void };
+	let latestValue = value.get();
+	let latestSetter: (v: number) => void = () => {};
 
-    let cleanup: () => void;
-    const update = (_source: typeof source, _config: typeof config) => {
-        value.attach((v, set) => {
+	const startAnimation = () => {
+		/**
+		 * If the previous animation hasn't had the chance to even render a frame, render it now.
+		 */
+		const animation = activeSpringAnimation;
 
+		if (animation && animation.time === 0) {
+			animation.sample(frameData.delta);
+		}
 
-            const { isStatic } = get(mcc);
+		stopAnimation();
 
-            if (isStatic) {
-                return set(v);
-            }
-            if (activeSpringAnimation) {
-                activeSpringAnimation.stop();
-            }
-            activeSpringAnimation = animate({
-                from: value.get(),
-                to: v,
-                velocity: value.getVelocity(),
-                ..._config,
-                onUpdate: set,
-            })
+		activeSpringAnimation = animateValue({
+			keyframes: [value.get(), latestValue],
+			velocity: value.getVelocity(),
+			type: 'spring',
+			restDelta: 0.001,
+			restSpeed: 0.01,
+			...config,
+			onUpdate: latestSetter,
+		});
+	};
 
-            return value.get();
-        })
-        cleanup?.()
-        return isMotionValue(_source) ?
-            _source.onChange(v => value.set(parseFloat(v))) :
-            undefined
-    }
+	const stopAnimation = () => {
+		if (activeSpringAnimation) {
+			activeSpringAnimation.stop();
+		}
+	};
 
-    update(source, config);
+	const update = (_config: typeof config) => {
+		value.attach((v, set) => {
+			const { isStatic } = get(mcc);
 
-    value.reset = update;
+			if (isStatic) {
+				return set(v);
+			}
 
-    return value;
-}
+			latestValue = v;
+			latestSetter = set;
+
+			frame.update(startAnimation);
+
+			return value.get();
+		}, stopAnimation);
+	};
+
+	beforeUpdate(() => {
+		update(config);
+	});
+
+	tick().then(() => {
+		if (isMotionValue(source)) {
+			return source.on('change', (v) => value.set(Number.parseFloat(v)));
+		}
+	});
+
+	value.reset = (_value, _config) => update(_config);
+
+	return value;
+};
 
 //export { default as UseSpring } from './UseSpring.svelte';

@@ -43,10 +43,10 @@ export function createScrollMotionValues(startStopNotifier?: () => Promise<() =>
 		: () => void {};
 
 	return {
-		scrollX: motionValue(0, jointNotifier('x')),
-		scrollY: motionValue(0, jointNotifier('y')),
-		scrollXProgress: motionValue(0, jointNotifier('xp')),
-		scrollYProgress: motionValue(0, jointNotifier('yp')),
+		scrollX: motionValue(0, { startStopNotifier: jointNotifier('x') }),
+		scrollY: motionValue(0, { startStopNotifier: jointNotifier('y') }),
+		scrollXProgress: motionValue(0, { startStopNotifier: jointNotifier('xp') }),
+		scrollYProgress: motionValue(0, { startStopNotifier: jointNotifier('yp') }),
 	};
 }
 

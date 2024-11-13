@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" context="module">
+<script lang="ts" context="module" module>
   const progressTarget = 1000;
 
   function hasMoved(a: AxisBox2D, b: AxisBox2D) {

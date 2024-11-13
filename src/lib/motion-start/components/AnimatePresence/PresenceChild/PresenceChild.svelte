@@ -1,7 +1,7 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script context="module" lang="ts">
+<script context="module" module lang="ts">
     let presenceId = 0;
     function getPresenceId() {
         const id = presenceId;

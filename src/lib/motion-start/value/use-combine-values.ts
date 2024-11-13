@@ -1,17 +1,14 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 import type { MotionValue } from '.';
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import sync from 'framesync';
 import { motionValue } from '.';
+import { beforeUpdate } from 'svelte';
+import { cancelFrame, frame } from '../frameloop';
 
-export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], combineValues: () => R) => {
+export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: () => R) => {
 	let subscriptions: (() => void)[] = [];
 	let vals = values;
 
@@ -21,13 +18,15 @@ export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], c
 		}
 	};
 	const subscribe = () => {
-		subscriptions = vals.map((val) => (val as MotionValue).onChange(handler));
+		subscriptions = vals.map((val) => val.on('change', handler));
 		updateValue();
 	};
-	const value = motionValue(combineValues(), () => {
-		unsubscribe();
-		subscribe();
-		return unsubscribe;
+	const value = motionValue(combineValues(), {
+		startStopNotifier: () => {
+			unsubscribe();
+			subscribe();
+			return unsubscribe;
+		},
 	}) as MotionValue<R> & { reset: (values: MotionValue[], combineValues: () => R) => void };
 
 	let updateValue = () => {
@@ -35,7 +34,7 @@ export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], c
 	};
 
 	const handler = () => {
-		sync.update(updateValue, false, true);
+		frame.update(updateValue, false, true);
 	};
 
 	value.reset = (_values, _combineValues) => {
@@ -47,6 +46,16 @@ export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], c
 		};
 		subscribe();
 	};
+
+	beforeUpdate(() => {
+		const scheduleUpdate = () => frame.preRender(updateValue, false, true);
+		const subscriptions = values.map((v) => v.on('change', scheduleUpdate));
+
+		return () => {
+			subscriptions.forEach((unsubscribe) => unsubscribe());
+			cancelFrame(updateValue);
+		};
+	});
 
 	return value;
 };

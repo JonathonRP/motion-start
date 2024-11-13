@@ -1,7 +1,7 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" context="module">
+<script lang="ts" context="module" module>
   import type { MotionProps } from "../../motion/types.js";
   import type { ResolvedValues } from "../types.js";
   import { copyRawValuesOnly } from "./use-props.js";

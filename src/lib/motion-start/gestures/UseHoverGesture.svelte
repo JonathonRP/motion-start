@@ -1,17 +1,23 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" context="module">
+<script lang="ts" context="module" module>
   import { isDragActive } from "./drag/utils/lock.js";
-  function createHoverEvent(visualElement:VisualElement, isActive:boolean, callback:any) {
-    return (event?: any | MouseEvent | TouchEvent | PointerEvent, info?: any) => {
+  function createHoverEvent(
+    visualElement: VisualElement,
+    isActive: boolean,
+    callback: any,
+  ) {
+    return (
+      event?: any | MouseEvent | TouchEvent | PointerEvent,
+      info?: any,
+    ) => {
       if (!isMouseEvent(event) || isDragActive()) return;
       callback?.(event, info);
 
       visualElement.animationState?.setActive(AnimationType.Hover, isActive);
     };
   }
-  
 </script>
 
 <script lang="ts">
@@ -23,7 +29,6 @@ Copyright (c) 2018 Framer B.V. -->
   export let props, visualElement;
   let { onHoverStart, onHoverEnd, whileHover } = props;
   $: ({ onHoverStart, onHoverEnd, whileHover } = props);
-  
 </script>
 
 <UsePointerEvent

@@ -1,9 +1,9 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
-<script module lang="ts">
+<script context="module" module lang="ts">
   interface AnimatedStateOptions {
-      initialState: ResolvedValues
+    initialState: ResolvedValues;
   }
   const createObject = () => ({});
   // const stateVisualElement = visualElement({
@@ -26,33 +26,37 @@ Copyright (c) 2018 Framer B.V. -->
   //     );
   //   },
   // });
-class StateVisualElement extends VisualElement<ResolvedValues, {}, AnimatedStateOptions> {
-  type: "state"
-  build() {}
-  measureInstanceViewportBox = createBox
-  resetTransform() {}
-  restoreTransform() {}
-  removeValueFromRenderState() {}
-  renderInstance() {}
-  scrapeMotionValuesFromProps() {
-      return createObject()
-  }
-  getBaseTargetFromProps() {
-      return undefined
-  }
+  class StateVisualElement extends VisualElement<
+    ResolvedValues,
+    {},
+    AnimatedStateOptions
+  > {
+    type: "state";
+    build() {}
+    measureInstanceViewportBox = createBox;
+    resetTransform() {}
+    restoreTransform() {}
+    removeValueFromRenderState() {}
+    renderInstance() {}
+    scrapeMotionValuesFromProps() {
+      return createObject();
+    }
+    getBaseTargetFromProps() {
+      return undefined;
+    }
 
-  readValueFromInstance(
+    readValueFromInstance(
       _state: ResolvedValues,
       key: string,
-      options: AnimatedStateOptions
-  ) {
-      return options.initialState[key] || 0
-  }
+      options: AnimatedStateOptions,
+    ) {
+      return options.initialState[key] || 0;
+    }
 
-  sortInstanceNodePosition() {
-      return 0
+    sortInstanceNodePosition() {
+      return 0;
+    }
   }
-}
 </script>
 
 <script lang="ts">
@@ -61,10 +65,10 @@ class StateVisualElement extends VisualElement<ResolvedValues, {}, AnimatedState
   import { afterUpdate, getContext, onMount } from "svelte";
   import { ScaleCorrectionParentContext } from "../../context/ScaleCorrectionProvider.svelte";
   import { UseVisualState } from "../../motion/utils/use-visual-state.js";
-  import { visualElement } from "../../render/index.js";
-  // import { type AnimationDefinition } from "../../render/utils/animation";
-  // import { checkTargetForNewValues, getOrigin } from "../../render/utils/setters.js";
-  import type { ResolvedValues, VisualElementOptions } from "../../render/types";
+  import type {
+    ResolvedValues,
+    VisualElementOptions,
+  } from "../../render/types";
   import { createBox } from "../../projection/geometry/models";
   import { VisualElement } from "../../render/VisualElement";
   import { animateVisualElement } from "../interfaces/visual-element";
@@ -72,43 +76,46 @@ class StateVisualElement extends VisualElement<ResolvedValues, {}, AnimatedState
   export let initialState: VisualElementOptions<any, any>;
 
   let animationState = initialState;
-  
-  // @ts-expect-error
-  $:( element = new StateVisualElement({
-    props: {
-      onUpdate: (v) => {
+
+  $: element = new StateVisualElement(
+    {
+      props: {
+        onUpdate: (v) => {
+          // @ts-expect-error
           animationState = { ...v };
+        },
       },
+      // @ts-expect-error
+      visualState: state,
+      presenceContext: null,
     },
-    visualState,
-    presenceContext: null,
-  }, { initialState }));
+    // @ts-expect-error
+    { initialState },
+  );
   onMount(() => {
-    // @ts-expect-error
     element.mount({});
-    // @ts-expect-error
     return () => element.unmount();
   });
   const _afterUpdate = () => {
     // @ts-expect-error
     element.setProps({
-      onUpdate: (v: VisualElementOptions<any, any>) => (animationState = { ...v }),
+      onUpdate: (v: VisualElementOptions<any, any>) =>
+        (animationState = { ...v }),
     });
   };
 
   afterUpdate(_afterUpdate);
   const scaleCorrectionParentContext = getContext<Writable<Array<unknown>>>(
-    ScaleCorrectionParentContext
+    ScaleCorrectionParentContext,
   );
   scaleCorrectionParentContext.update((v) =>
     v.concat([
       {
         afterU: _afterUpdate,
       },
-    ])
+    ]),
   );
   let startAnimation = (animationDefinition: TargetAndTransition) => {
-    // @ts-expect-error
     return animateVisualElement(element, animationDefinition);
   };
 </script>
@@ -120,7 +127,7 @@ class StateVisualElement extends VisualElement<ResolvedValues, {}, AnimatedState
   }}
   props={{}}
   isStatic={false}
-  let:state={visualState}
+  let:state
 >
   <slot {...[animationState, startAnimation]} />
 </UseVisualState>
