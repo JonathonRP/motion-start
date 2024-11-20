@@ -8,7 +8,7 @@ import { complex } from '../../value/types/complex';
 import type { ScaleCorrectorDefinition } from './types';
 
 export const correctBoxShadow: ScaleCorrectorDefinition = {
-	correct: (latest: string, { treeScale, projectionDelta }) => {
+	correct: (latest: string | number, { treeScale, projectionDelta }) => {
 		const original = latest;
 		const shadow = complex.parse(latest);
 

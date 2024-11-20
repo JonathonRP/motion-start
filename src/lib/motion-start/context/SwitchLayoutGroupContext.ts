@@ -9,8 +9,8 @@ import type { Transition } from '../types';
 import { getDomContext } from './DOMcontext';
 
 export interface SwitchLayoutGroup {
-	register?: (member: IProjectionNode) => void;
-	deregister?: (member: IProjectionNode) => void;
+	register?: <I>(member: IProjectionNode<I>) => void;
+	deregister?: <I>(member: IProjectionNode<I>) => void;
 }
 
 export type SwitchLayoutGroupContext = SwitchLayoutGroup & InitialPromotionConfig;
@@ -24,7 +24,7 @@ export type InitialPromotionConfig = {
 	/**
 	 * If the follow tree should preserve its opacity when the lead is promoted on mount
 	 */
-	shouldPreserveFollowOpacity?: (member: IProjectionNode) => boolean;
+	shouldPreserveFollowOpacity?: <I>(member: IProjectionNode<I>) => boolean;
 };
 
 /**

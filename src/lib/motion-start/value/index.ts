@@ -117,6 +117,7 @@ export class MotionValue<V = any> implements Writable<V> {
 	/**
 	 * The last time the `MotionValue` was updated.
 	 */
+	// @ts-expect-error
 	private updatedAt: number;
 
 	/**
@@ -457,7 +458,7 @@ export class MotionValue<V = any> implements Writable<V> {
 	 */
 	start(startAnimation: StartAnimation) {
 		this.stop();
-		const { promise, resolve } = Promise.withResolvers();
+		const { promise, resolve } = Promise.withResolvers<void>();
 
 		this.hasAnimated = true;
 		this.animation = startAnimation(resolve);

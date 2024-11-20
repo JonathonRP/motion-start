@@ -5,4 +5,4 @@ Copyright (c) 2018 Framer B.V.
 
 import type { VisualElement } from './VisualElement';
 
-export const visualElementStore = new WeakMap<any, VisualElement>();
+export const visualElementStore = new WeakMap<any, VisualElement<unknown>>();

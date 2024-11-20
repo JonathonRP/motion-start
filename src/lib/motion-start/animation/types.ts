@@ -60,7 +60,7 @@ export interface ValueAnimationOptionsWithRenderContext<V extends string | numbe
 	extends ValueAnimationOptions<V> {
 	KeyframeResolver?: typeof KeyframeResolver;
 	motionValue?: MotionValue<V>;
-	element?: VisualElement;
+	element?: VisualElement<unknown>;
 }
 
 export interface AnimationScope<T = any> {
@@ -120,7 +120,7 @@ export interface AnimationPlaybackControls {
 	then: (onResolve: VoidFunction, onReject?: VoidFunction) => Promise<void>;
 	attachTimeline?: (
 		timeline: ProgressTimeline,
-		fallback?: (animation: AnimationPlaybackControls) => VoidFunction
+		fallback: ((animation: AnimationPlaybackControls) => VoidFunction) | undefined
 	) => VoidFunction;
 }
 
@@ -226,7 +226,7 @@ export interface AnimationControls {
 	 *
 	 * @internal
 	 */
-	subscribe(visualElement: VisualElement): () => void;
+	subscribe(visualElement: VisualElement<unknown>): () => void;
 
 	/**
 	 * Starts an animation on all linked components.

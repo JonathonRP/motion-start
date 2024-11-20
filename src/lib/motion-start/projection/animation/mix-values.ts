@@ -65,7 +65,7 @@ export function mixValues(
 			target[borderLabel] = Math.max(mixNumber(asNumber(followRadius), asNumber(leadRadius), progress), 0);
 
 			if (percent.test(leadRadius) || percent.test(followRadius)) {
-				target[borderLabel] += '%';
+				[`${target[borderLabel]}`, '%'].join('');
 			}
 		} else {
 			target[borderLabel] = leadRadius;

@@ -1,11 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-
-
-/** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
@@ -16,17 +10,12 @@ Copyright (c) 2018 Framer B.V.
  * @param parent - Element to find
  * @param child - Element to test against parent
  */
-// @ts-expect-error
-var isNodeOrChild = function (parent: Element, child?: Element | null | undefined) {
-    if (!child) {
-        return false;
-    }
-    else if (parent === child) {
-        return true;
-    }
-    else {
-        return isNodeOrChild(parent, child.parentElement);
-    }
+export const isNodeOrChild = (parent: Element | null, child?: Element | null): boolean => {
+	if (!child) {
+		return false;
+	} else if (parent === child) {
+		return true;
+	} else {
+		return isNodeOrChild(parent, child.parentElement);
+	}
 };
-
-export { isNodeOrChild };

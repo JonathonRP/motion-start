@@ -10,18 +10,18 @@ import { resolveVariantFromProps } from './resolve-variants';
 /**
  * Resovles a variant if it's a variant resolver
  */
-export function resolveVariant(
-	visualElement: VisualElement,
+export function resolveVariant<I>(
+	visualElement: VisualElement<I>,
 	definition: TargetAndTransition | TargetResolver,
 	custom?: any
 ): TargetAndTransition;
-export function resolveVariant(
-	visualElement: VisualElement,
+export function resolveVariant<I>(
+	visualElement: VisualElement<I>,
 	definition?: string | TargetAndTransition | TargetResolver,
 	custom?: any
 ): TargetAndTransition | undefined;
-export function resolveVariant(
-	visualElement: VisualElement,
+export function resolveVariant<I>(
+	visualElement: VisualElement<I>,
 	definition?: string | TargetAndTransition | TargetResolver,
 	custom?: any
 ) {

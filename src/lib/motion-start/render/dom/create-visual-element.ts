@@ -15,6 +15,6 @@ export const createDomVisualElement: CreateVisualElement<HTMLElement | SVGElemen
 	return isSVGComponent(Component)
 		? new SVGVisualElement(options)
 		: new HTMLVisualElement(options, {
-				allowProjection: Component,
+				allowProjection: Component !== null,
 			});
 };

@@ -8,6 +8,9 @@ import { SVGVisualElement } from '../../render/svg/SVGVisualElement';
 import { HTMLVisualElement } from '../../render/html/HTMLVisualElement';
 import { visualElementStore } from '../../render/store';
 import { ObjectVisualElement } from '../../render/object/ObjectVisualElement';
+import type { VisualElementOptions } from '../../render/types';
+import type { SVGRenderState } from '../../render/svg/types';
+import type { HTMLRenderState } from '../../render/html/types';
 
 export function createDOMVisualElement(element: HTMLElement | SVGElement) {
 	const options = {
@@ -17,13 +20,14 @@ export function createDOMVisualElement(element: HTMLElement | SVGElement) {
 			renderState: {
 				transform: {},
 				transformOrigin: {},
+				transformKeys: [],
 				style: {},
 				vars: {},
 				attrs: {},
 			},
 			latestValues: {},
 		},
-	};
+	} satisfies VisualElementOptions<SVGElement | HTMLElement, SVGRenderState | HTMLRenderState>;
 	const node = isSVGElement(element) ? new SVGVisualElement(options) : new HTMLVisualElement(options);
 
 	node.mount(element as any);

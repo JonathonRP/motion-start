@@ -43,20 +43,24 @@ export abstract class BaseAnimation<T extends string | number, Resolved> impleme
 	protected options: ValueAnimationOptionsWithDefaults<T>;
 
 	// Resolve the current finished promise
+	// @ts-expect-error
 	protected resolveFinishedPromise: VoidFunction;
 
 	// A promise that resolves when the animation is complete
+	// @ts-expect-error
 	protected currentFinishedPromise: Promise<void>;
 
 	// Track whether the animation has been stopped. Stopped animations won't restart.
 	protected isStopped = false;
 
 	// Internal reference to defered resolved keyframes and animation-specific data returned from initPlayback.
+	// @ts-expect-error
 	protected _resolved: Resolved & { keyframes: ResolvedKeyframes<T> };
 
 	protected hasAttemptedResolve = false;
 
 	// Reference to the active keyframes resolver.
+	// @ts-expect-error
 	protected resolver: KeyframeResolver<T>;
 
 	private createdAt: number;

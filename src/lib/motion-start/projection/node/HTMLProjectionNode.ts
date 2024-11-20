@@ -7,7 +7,7 @@ import { createProjectionNode } from './create-projection-node';
 import { DocumentProjectionNode } from './DocumentProjectionNode';
 import type { IProjectionNode } from './types';
 
-export const rootProjectionNode: { current: IProjectionNode | undefined } = {
+export const rootProjectionNode: { current: IProjectionNode<Window> | undefined } = {
 	current: undefined,
 };
 

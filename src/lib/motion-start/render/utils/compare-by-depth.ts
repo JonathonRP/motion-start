@@ -9,4 +9,4 @@ export interface WithDepth {
 	depth: number;
 }
 
-export const compareByDepth = (a: VisualElement, b: VisualElement) => a.depth - b.depth;
+export const compareByDepth = (a: WithDepth, b: WithDepth) => a.depth - b.depth;

@@ -179,9 +179,9 @@ export function useTransform<I, O>(
 				: transform(_inputRangeOrTransformer!, _outputRange!, _options);
 		transformer = Array.isArray(_input)
 			? _transformer
-			: ([_latest]) => (_transformer as SingleTransformer<I, O>)(_latest);
+			: ([_latest]: any[]) => (_transformer as SingleTransformer<I, O>)(_latest);
 		return Array.isArray(_input)
-			? useListTransform(_input, transformer as MultiTransformer<string | number, O>)
+			? useListTransform(_input as MotionValue<string | number>[], transformer as MultiTransformer<string | number, O>)
 			: useListTransform([_input], ([_latest]) => (transformer as SingleTransformer<I, O>)(_latest));
 	};
 	const comb = update(input, inputRangeOrTransformer, outputRange, options);
@@ -215,5 +215,3 @@ function useListTransform<I, O>(values: MotionValue<I>[], transformer: MultiTran
 		return transformer(latest);
 	});
 }
-
-// export { default as UseTransform } from './UseTransform.svelte';

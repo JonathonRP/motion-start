@@ -11,7 +11,7 @@ export function renderHTML(
 	element: HTMLElement,
 	{ style, vars }: HTMLRenderState,
 	styleProp?: MotionStyle,
-	projection?: IProjectionNode
+	projection?: IProjectionNode<unknown>
 ) {
 	Object.assign(element.style, style, projection && projection.getProjectionStyles(styleProp));
 

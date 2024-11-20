@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import type { ProgressTimeline } from '../render/dom/scroll/observe';
 import { supportsScrollTimeline } from '../render/dom/scroll/supports';
 import type { AnimationPlaybackControls } from './types';
 
@@ -32,12 +33,15 @@ export class GroupPlaybackControls implements AnimationPlaybackControls {
 		}
 	}
 
-	attachTimeline(timeline: any, fallback: (animation: AnimationPlaybackControls) => VoidFunction) {
+	attachTimeline(
+		timeline: ProgressTimeline,
+		fallback: ((animation: AnimationPlaybackControls) => VoidFunction) | undefined
+	): VoidFunction {
 		const subscriptions = this.animations.map((animation) => {
 			if (supportsScrollTimeline() && animation.attachTimeline) {
-				return animation.attachTimeline(timeline);
+				return animation.attachTimeline(timeline, undefined);
 			} else {
-				return fallback(animation);
+				return fallback && fallback(animation);
 			}
 		});
 

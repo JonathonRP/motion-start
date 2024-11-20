@@ -16,11 +16,11 @@ export class WillChangeMotionValue extends MotionValue implements WillChange {
 
 		if (styleName) {
 			addUniqueItem(this.values, styleName);
-			this.update();
+			this.inform();
 		}
 	}
 
-	private update() {
+	private inform() {
 		this.set(this.values.length ? this.values.join(', ') : 'auto');
 	}
 }

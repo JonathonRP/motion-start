@@ -69,4 +69,4 @@ export const useAnimationControls = () => {
 	return controls;
 };
 
-export { default as UseAnimation } from './UseAnimation.svelte';
+export const useAnimation = useAnimationControls;

@@ -54,7 +54,7 @@ const transformKeys = new Set(['x', 'y', 'z']);
 const nonTranslationalTransformKeys = transformPropOrder.filter((key) => !transformKeys.has(key));
 
 type RemovedTransforms = [string, string | number][];
-export function removeNonTranslationalTransform(visualElement: VisualElement) {
+export function removeNonTranslationalTransform<I>(visualElement: VisualElement<I>) {
 	const removedTransforms: RemovedTransforms = [];
 
 	nonTranslationalTransformKeys.forEach((key) => {

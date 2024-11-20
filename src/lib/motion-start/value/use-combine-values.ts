@@ -59,4 +59,3 @@ export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: 
 
 	return value;
 };
-// export { default as UseCombineMotionValues } from "./UseCombineValues.svelte";

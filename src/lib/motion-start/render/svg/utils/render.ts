@@ -14,7 +14,7 @@ export function renderSVG(
 	element: SVGElement,
 	renderState: SVGRenderState,
 	_styleProp?: MotionStyle,
-	projection?: IProjectionNode
+	projection?: IProjectionNode<unknown>
 ) {
 	renderHTML(element as any, renderState, undefined, projection);
 

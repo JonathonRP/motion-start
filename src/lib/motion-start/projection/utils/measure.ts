@@ -14,7 +14,7 @@ export function measureViewportBox(instance: HTMLElement, transformPoint?: Trans
 
 export function measurePageBox(
 	element: HTMLElement,
-	rootProjectionNode: IProjectionNode,
+	rootProjectionNode: IProjectionNode<unknown>,
 	transformPagePoint?: TransformPoint
 ) {
 	const viewportBox = measureViewportBox(element, transformPagePoint);

@@ -9,7 +9,7 @@ import type { VisualElementAnimationOptions } from './types';
 import { animateTarget } from './visual-element-target';
 
 export function animateVariant(
-	visualElement: VisualElement,
+	visualElement: VisualElement<unknown>,
 	variant: string,
 	options: VisualElementAnimationOptions = {}
 ) {
@@ -69,7 +69,7 @@ export function animateVariant(
 }
 
 function animateChildren(
-	visualElement: VisualElement,
+	visualElement: VisualElement<unknown>,
 	variant: string,
 	delayChildren = 0,
 	staggerChildren = 0,
@@ -98,6 +98,6 @@ function animateChildren(
 	return Promise.all(animations);
 }
 
-export function sortByTreeOrder(a: VisualElement, b: VisualElement) {
+export function sortByTreeOrder(a: VisualElement<unknown>, b: VisualElement<unknown>) {
 	return a.sortNodePosition(b);
 }

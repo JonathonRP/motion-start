@@ -17,7 +17,8 @@ import type { VisualElementAnimationOptions } from '../../animation/interfaces/t
 import type { AnimationDefinition } from '../../animation/types';
 import { animateVisualElement } from '../../animation/interfaces/visual-element';
 import type { ResolvedValues } from '../types';
-import { getVariantContext } from './get-variant-context';
+import { getVariantContext, type VariantStateContext } from './get-variant-context';
+import { getContext } from 'svelte';
 
 export interface AnimationState {
 	animateChanges: (type?: AnimationType) => Promise<any>;
@@ -37,12 +38,12 @@ export type AnimationList = string[] | TargetAndTransition[];
 const reversePriorityOrder = [...variantPriorityOrder].reverse();
 const numAnimationTypes = variantPriorityOrder.length;
 
-function animateList(visualElement: VisualElement) {
+function animateList<I>(visualElement: VisualElement<I>) {
 	return (animations: DefinitionAndOptions[]) =>
 		Promise.all(animations.map(({ animation, options }) => animateVisualElement(visualElement, animation, options)));
 }
 
-export function createAnimationState(visualElement: VisualElement): AnimationState {
+export function createAnimationState<I>(visualElement: VisualElement<I>): AnimationState {
 	let animate = animateList(visualElement);
 	let state = createState();
 	let isInitialRender = true;
@@ -87,7 +88,8 @@ export function createAnimationState(visualElement: VisualElement): AnimationSta
 	 */
 	function animateChanges(changedActiveType?: AnimationType) {
 		const { props } = visualElement;
-		const context = getVariantContext(visualElement.parent) || {};
+		const context =
+			getContext<VariantStateContext>(visualElement.parent) || getVariantContext(visualElement.parent) || {};
 
 		/**
 		 * A list of animations that we'll build into as we iterate through the animation
@@ -312,7 +314,7 @@ export function createAnimationState(visualElement: VisualElement): AnimationSta
 				const motionValue = visualElement.getValue(key);
 				if (motionValue) motionValue.liveStyle = true;
 
-				// @ts-expect-error - @mattgperry to figure if we should do something here
+				// @ts-expect-error
 				fallbackAnimation[key] = fallbackTarget ?? null;
 			});
 

@@ -56,6 +56,7 @@ function getElementAnimationState(element: Element) {
 }
 
 export class NativeAnimation implements AnimationPlaybackControls {
+	// @ts-expect-error
 	animation: Animation;
 
 	options: ValueAnimationOptions;
@@ -63,9 +64,11 @@ export class NativeAnimation implements AnimationPlaybackControls {
 	private pendingTimeline: ProgressTimeline | undefined;
 
 	// Resolve the current finished promise
+	// @ts-expect-error
 	private resolveFinishedPromise: VoidFunction;
 
 	// A promise that resolves when the animation is complete
+	// @ts-expect-error
 	private currentFinishedPromise: Promise<void>;
 
 	private setValue: (element: HTMLElement, name: string, value: string) => void;

@@ -110,6 +110,7 @@ function isUnsupportedEase(key: string): key is keyof typeof unsupportedEasingFu
 }
 
 export class AcceleratedAnimation<T extends string | number> extends BaseAnimation<T, ResolvedAcceleratedAnimation> {
+	// @ts-expect-error
 	protected options: ValueAnimationOptionsWithDefaults<T> & {
 		name: string;
 		motionValue: MotionValue<T>;
@@ -118,6 +119,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 	constructor(options: ValueAnimationOptionsWithRenderContext<T>) {
 		super(options);
 
+		// @ts-expect-error
 		const { name, motionValue, element, keyframes } = this.options;
 
 		this.resolver = new DOMKeyframesResolver<T>(
@@ -386,8 +388,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 	static supports(options: ValueAnimationOptionsWithRenderContext): options is AcceleratedValueAnimationOptions {
 		const { motionValue, name, repeatDelay, repeatType, damping, type } = options;
 
-		return (
-			supportsWaapi() &&
+		return (supportsWaapi() &&
 			name &&
 			acceleratedValues.has(name) &&
 			motionValue &&
@@ -401,7 +402,6 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			!repeatDelay &&
 			repeatType !== 'mirror' &&
 			damping !== 0 &&
-			type !== 'inertia'
-		);
+			type !== 'inertia') as boolean;
 	}
 }

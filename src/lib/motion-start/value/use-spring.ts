@@ -1,3 +1,8 @@
+/** 
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
+
 import { fixed } from '../utils/fix-process-env';
 import { beforeUpdate, getContext, tick } from 'svelte';
 import { get, type Writable } from 'svelte/store';
@@ -105,5 +110,3 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 
 	return value;
 };
-
-//export { default as UseSpring } from './UseSpring.svelte';

@@ -13,7 +13,7 @@ import { resolveVariant } from './resolve-dynamic-variants';
  * Set VisualElement's MotionValue, creating a new MotionValue for it if
  * it doesn't exist.
  */
-function setMotionValue(visualElement: VisualElement, key: string, value: string | number) {
+function setMotionValue<I>(visualElement: VisualElement<I>, key: string, value: string | number) {
 	if (visualElement.hasValue(key)) {
 		visualElement.getValue(key)!.set(value);
 	} else {
@@ -21,7 +21,10 @@ function setMotionValue(visualElement: VisualElement, key: string, value: string
 	}
 }
 
-export function setTarget(visualElement: VisualElement, definition: string | TargetAndTransition | TargetResolver) {
+export function setTarget<I>(
+	visualElement: VisualElement<I>,
+	definition: string | TargetAndTransition | TargetResolver
+) {
 	const resolved = resolveVariant(visualElement, definition);
 	let { transitionEnd = {}, transition = {}, ...target } = resolved || {};
 

@@ -1,7 +1,8 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 import type { HTMLAttributes, SvelteHTMLElements } from 'svelte/elements';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
@@ -45,20 +46,20 @@ export interface HTMLRenderState {
  */
 export type ForwardRefComponent<T, P extends Record<string, any>> = Component<T & P>;
 
-// export type UnwrapFactoryElement<F> = F extends HTMLAttributes<infer P> ? P : never;
+export type UnwrapFactoryElement<F> = F extends HTMLAttributes<infer P> ? P : never;
 
-// type HTMLAttributesWithoutMotionProps<Attributes extends HTMLAttributes<Element>, Element extends EventTarget> = {
-// 	[K in Exclude<keyof Attributes, keyof MotionProps>]?: Attributes[K];
-// };
+type HTMLAttributesWithoutMotionProps<Attributes extends HTMLAttributes<Element>, Element extends EventTarget> = {
+	[K in Exclude<keyof Attributes, keyof MotionProps>]?: Attributes[K];
+};
 
 /**
  * @public
  */
-// export type HTMLMotionProps<TagName extends keyof SvelteHTMLElements> = HTMLAttributesWithoutMotionProps<
-// 	SvelteHTMLElements[TagName],
-// 	UnwrapFactoryElement<SvelteHTMLElements[TagName]>
-// > &
-// 	MotionProps;
+export type HTMLMotionProps<TagName extends keyof SvelteHTMLElements> = HTMLAttributesWithoutMotionProps<
+	SvelteHTMLElements[TagName],
+	UnwrapFactoryElement<SvelteHTMLElements[TagName]>
+> &
+	MotionProps;
 
 /**
  * Motion-optimised versions of React's HTML components.
