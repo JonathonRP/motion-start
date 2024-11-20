@@ -44,7 +44,7 @@ export class HTMLVisualElement extends DOMVisualElement<HTMLElement, HTMLRenderS
 
 	measureInstanceViewportBox(
 		instance: HTMLElement,
-		{ transformPagePoint }: MotionProps & Partial<typeof MotionConfigContext>
+		{ transformPagePoint }: MotionProps & Partial<MotionConfigContext>
 	): Box {
 		return measureViewportBox(instance, transformPagePoint);
 	}
@@ -53,7 +53,7 @@ export class HTMLVisualElement extends DOMVisualElement<HTMLElement, HTMLRenderS
 		buildHTMLStyles(renderState, latestValues, props.transformTemplate);
 	}
 
-	scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement: VisualElement) {
+	scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement: VisualElement<HTMLElement>) {
 		return scrapeMotionValuesFromProps(props, prevProps, visualElement);
 	}
 

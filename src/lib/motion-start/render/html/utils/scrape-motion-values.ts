@@ -8,7 +8,11 @@ import { isForcedMotionValue } from '../../../motion/utils/is-forced-motion-valu
 import { isMotionValue } from '../../../value/utils/is-motion-value';
 import type { VisualElement } from '../../VisualElement';
 
-export function scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement?: VisualElement) {
+export function scrapeMotionValuesFromProps<I>(
+	props: MotionProps,
+	prevProps: MotionProps,
+	visualElement?: VisualElement<I>
+) {
 	const { style } = props;
 	const newValues: { [key: string]: any } = {};
 

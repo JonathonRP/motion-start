@@ -18,5 +18,5 @@ export function extractEventInfo(event: PointerEvent, pointType: 'page' | 'clien
 }
 
 export const addPointerInfo = (handler: EventListenerWithPointInfo): EventListener => {
-	return (event: PointerEvent) => isPrimaryPointer(event) && handler(event, extractEventInfo(event));
+	return ((event: PointerEvent) => isPrimaryPointer(event) && handler(event, extractEventInfo(event))) as EventListener;
 };

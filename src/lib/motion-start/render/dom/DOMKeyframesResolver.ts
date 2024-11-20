@@ -14,8 +14,8 @@ import type { VisualElement } from '../VisualElement';
 import type { MotionValue } from '../../value';
 
 export class DOMKeyframesResolver<T extends string | number> extends KeyframeResolver<T> {
-	name: string;
-	element?: VisualElement<HTMLElement | SVGElement>;
+	declare name: string;
+	declare element?: VisualElement<HTMLElement | SVGElement>;
 
 	private removedTransforms?: [string, string | number][];
 	private measuredOrigin?: string | number;
@@ -25,7 +25,7 @@ export class DOMKeyframesResolver<T extends string | number> extends KeyframeRes
 		onComplete: OnKeyframesResolved<T>,
 		name?: string,
 		motionValue?: MotionValue<T>,
-		element?: VisualElement
+		element?: VisualElement<HTMLElement | SVGElement | unknown>
 	) {
 		super(unresolvedKeyframes, onComplete, name, motionValue, element, true);
 	}

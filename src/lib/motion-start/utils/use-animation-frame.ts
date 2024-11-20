@@ -13,11 +13,22 @@ export type FrameCallback = (timestamp: number, delta: number) => void;
 
 export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 	let initialTimestamp = 0;
-	const { isStatic } = get(
-		getContext<Writable<MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(isCustom)
-	);
+	const mcc = getContext<Writable<MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(isCustom);
+	const { isStatic } = get(mcc);
+
+	if (isStatic) return;
+
+	const provideTimeSinceStart = ({ timestamp, delta }: FrameData) => {
+		if (!initialTimestamp) initialTimestamp = timestamp;
+
+		callback(timestamp - initialTimestamp, delta);
+	};
+
+	frame.update(provideTimeSinceStart, true);
 
 	tick().then(() => {
+		const { isStatic } = get(mcc);
+
 		if (isStatic) return;
 
 		const provideTimeSinceStart = ({ timestamp, delta }: FrameData) => {
@@ -29,4 +40,6 @@ export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 		frame.update(provideTimeSinceStart, true);
 		return () => cancelFrame(provideTimeSinceStart);
 	});
+
+	return () => cancelFrame(provideTimeSinceStart);
 }

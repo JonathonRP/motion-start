@@ -30,7 +30,7 @@ function shouldBlockAnimation({ protectedKeys, needsAnimating }: AnimationTypeSt
 }
 
 export function animateTarget(
-	visualElement: VisualElement,
+	visualElement: VisualElement<unknown>,
 	targetAndTransition: TargetAndTransition,
 	{ delay = 0, transitionOverride, type }: VisualElementAnimationOptions = {}
 ): AnimationPlaybackControls[] {

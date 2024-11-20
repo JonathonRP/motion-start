@@ -6,17 +6,17 @@ Copyright (c) 2018 Framer B.V.
 import { addUniqueItem, removeItem } from '../../utils/array';
 import type { IProjectionNode } from '../node/types';
 
-export class NodeStack {
-	lead?: IProjectionNode;
-	prevLead?: IProjectionNode;
-	members: IProjectionNode[] = [];
+export class NodeStack<I> {
+	lead?: IProjectionNode<I>;
+	prevLead?: IProjectionNode<I>;
+	members: IProjectionNode<I>[] = [];
 
-	add(node: IProjectionNode) {
+	add(node: IProjectionNode<I>) {
 		addUniqueItem(this.members, node);
 		node.scheduleRender();
 	}
 
-	remove(node: IProjectionNode) {
+	remove(node: IProjectionNode<I>) {
 		removeItem(this.members, node);
 		if (node === this.prevLead) {
 			this.prevLead = undefined;
@@ -29,14 +29,14 @@ export class NodeStack {
 		}
 	}
 
-	relegate(node: IProjectionNode): boolean {
+	relegate(node: IProjectionNode<I>): boolean {
 		const indexOfNode = this.members.findIndex((member) => node === member);
 		if (indexOfNode === 0) return false;
 
 		/**
 		 * Find the next projection node that is present
 		 */
-		let prevLead: IProjectionNode | undefined;
+		let prevLead: IProjectionNode<I> | undefined;
 		for (let i = indexOfNode; i >= 0; i--) {
 			const member = this.members[i];
 			if (member.isPresent !== false) {
@@ -53,7 +53,7 @@ export class NodeStack {
 		}
 	}
 
-	promote(node: IProjectionNode, preserveFollowOpacity?: boolean) {
+	promote(node: IProjectionNode<I>, preserveFollowOpacity?: boolean) {
 		const prevLead = this.lead;
 
 		if (node === prevLead) return;

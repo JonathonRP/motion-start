@@ -1,17 +1,17 @@
 <svelte:options runes={true} />
 
 <script lang="ts" generics="V">
-	import type { SvelteHTMLElements } from 'svelte/elements';
-	import type { ReorderContextProps } from './types';
-	import type { DefaultPropsType } from '.';
+	import type { SvelteHTMLElements } from "svelte/elements";
+	import type { ReorderContextProps } from "./types";
+	import type { DefaultPropsType } from ".";
 
-	import Motion from '../../render/components/motion/Motion.svelte';
-	import { useMotionValue } from '../../value/use-motion-value';
-	import { getContext } from 'svelte';
+	import Motion from "../../motion/Motion.svelte";
+	import { useMotionValue } from "../../value/use-motion-value";
+	import { getContext } from "svelte";
 
-	import { useTransform } from '../../value/use-transform';
-	import { isMotionValue} from '../../value/utils/is-motion-value';
-	import { invariant } from '../../utils/errors';
+	import { useTransform } from "../../value/use-transform";
+	import { isMotionValue } from "../../value/utils/is-motion-value";
+	import { invariant } from "../../utils/errors";
 
 	type Props<V> = {
 		/**
@@ -34,28 +34,33 @@
 		 * @public
 		 * @default true
 		 */
-		layout?: true | 'position';
+		layout?: true | "position";
 	};
 
 	const {
 		children,
 		style = {},
 		value,
-		as = 'li',
+		as = "li",
 		onDrag,
 		layout = true,
 		...props
 	}: Props<V> & DefaultPropsType = $props();
 
-	const context = getContext<ReorderContextProps<V>>('Reorder');
+	const context = getContext<ReorderContextProps<V>>("Reorder");
 	const point = $state({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
 	});
 
-	const zIndex = useTransform([point.x, point.y], ([latestX, latestY]) => (latestX || latestY ? 1 : 'unset'));
+	const zIndex = useTransform([point.x, point.y], ([latestX, latestY]) =>
+		latestX || latestY ? 1 : "unset",
+	);
 
-	invariant(Boolean(context), 'Reorder.Item must be a child of Reorder.Group');
+	invariant(
+		Boolean(context),
+		"Reorder.Item must be a child of Reorder.Group",
+	);
 
 	const { axis, registerItem, updateOrder } = $derived(context);
 
@@ -97,7 +102,8 @@
 		max: 50,
 		power: 0.88,
 	}}
-	let:motion>
+	let:motion
+>
 	<svelte:element this={as} class={props.class} use:motion>
 		{@render children()}
 	</svelte:element>

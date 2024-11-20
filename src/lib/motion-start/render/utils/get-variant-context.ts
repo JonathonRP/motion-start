@@ -9,7 +9,7 @@ import { variantProps } from './variant-props';
 
 const numVariantProps = variantProps.length;
 
-type VariantStateContext = {
+export type VariantStateContext = {
 	initial?: string | string[];
 	animate?: string | string[];
 	exit?: string | string[];
@@ -19,7 +19,7 @@ type VariantStateContext = {
 	whileTap?: string | string[];
 };
 
-export function getVariantContext(visualElement?: VisualElement): undefined | VariantStateContext {
+export function getVariantContext<I>(visualElement?: VisualElement<I>): undefined | VariantStateContext {
 	if (!visualElement) return undefined;
 
 	if (!visualElement.isControllingVariants) {

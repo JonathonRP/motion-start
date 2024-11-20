@@ -1,22 +1,54 @@
+import { onDestroy, tick } from 'svelte';
 import type { RefObject } from '../utils/safe-react-types';
+import { addDomEvent } from './add-dom-event';
 
-export type UseDomEventProps = {
-	/**
-	 * Ref object that's been provided to the element you want to bind the listener to.
-	 */
-	ref: RefObject<EventTarget>;
-	/**
-	 * Name of the event you want listen for.
-	 */
-	eventName: string;
-	/**
-	 * Function to fire when receiving the event.
-	 */
-	handler?: EventListener | undefined;
-	/**
-	 * Options to pass to `Event.addEventListener`.
-	 */
-	options?: AddEventListenerOptions;
-};
+/**
+ * Attaches an event listener directly to the provided DOM element.
+ *
+ * Bypassing React's event system can be desirable, for instance when attaching non-passive
+ * event handlers.
+ *
+ * ```jsx
+ * const ref = useRef(null)
+ *
+ * useDomEvent(ref, 'wheel', onWheel, { passive: false })
+ *
+ * return <div ref={ref} />
+ * ```
+ *
+ * @param ref - React.RefObject that's been provided to the element you want to bind the listener to.
+ * @param eventName - Name of the event you want listen for.
+ * @param handler - Function to fire when receiving the event.
+ * @param options - Options to pass to `Event.addEventListener`.
+ *
+ * @public
+ */
+export function useDomEvent(
+	ref: RefObject<EventTarget>,
+	eventName: string,
+	handler?: EventListener | undefined,
+	options?: AddEventListenerOptions
+) {
+	let cleanup = () => {};
 
-export { default as UseDomEvent } from './UseDomEvent.svelte';
+	const effect = (
+		ref: RefObject<EventTarget>,
+		eventName: string,
+		handler?: EventListener | undefined,
+		options?: AddEventListenerOptions
+	) => {
+		cleanup();
+		if (!ref) {
+			return () => {};
+		}
+		const element = ref.current;
+
+		if (handler && element) {
+			return addDomEvent(element, eventName, handler, options);
+		}
+		return () => {};
+	};
+
+	tick().then(() => (cleanup = effect(ref, eventName, handler, options)));
+	onDestroy(cleanup);
+}

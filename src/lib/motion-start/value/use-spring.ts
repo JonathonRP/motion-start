@@ -1,12 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { SpringOptions } from "popmotion";
-import { MotionValue } from ".";
-
-/** 
-based on framer-motion@4.1.16,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
@@ -117,5 +110,3 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 
 	return value;
 };
-
-//export { default as UseSpring } from './UseSpring.svelte';

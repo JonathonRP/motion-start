@@ -25,7 +25,6 @@ import { updateMotionValuesFromProps } from './utils/motion-values';
 import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
 import { featureDefinitions } from '../motion/features/definitions';
-import type { Feature } from '../motion/features/Feature';
 import type { PresenceContextProps } from '../context/PresenceContext';
 import { visualElementStore } from './store';
 import { KeyframeResolver } from './utils/KeyframesResolver';
@@ -36,8 +35,8 @@ import { complex } from '../value/types/complex';
 import { getAnimatableNone } from './dom/value-types/animatable-none';
 import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
-import type { Booleanish } from 'svelte/elements';
-import type { Snippet } from 'svelte';
+import type { HTMLRenderState } from './html/types';
+import type { SVGRenderState } from './svg/types';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -49,11 +48,20 @@ const propEventHandlers = [
 	'LayoutAnimationComplete',
 ] as const;
 
+type ExtractFeature<T extends FeatureDefinitions[keyof FeatureDefinitions]> =
+	T extends FeatureDefinitions[keyof FeatureDefinitions]
+		? T[Exclude<keyof T, 'isEnabled' | 'MeasureLayout' | 'ProjectionNode'>]
+		: never;
+
 /**
  * A VisualElement is an imperative abstraction around UI elements such as
  * HTMLElement, SVGElement, Three.Object3D etc.
  */
-export abstract class VisualElement<Instance = unknown, RenderState = unknown, Options extends {} = {}> {
+export abstract class VisualElement<
+	Instance,
+	RenderState = Instance extends HTMLElement ? HTMLRenderState : Instance extends SVGElement ? SVGRenderState : unknown,
+	Options extends {} = {},
+> {
 	/**
 	 * VisualElements are arranged in trees mirroring that of the React tree.
 	 * Each type of VisualElement has a unique name, to detect when we're crossing
@@ -84,11 +92,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	 * Often this have been specified via the initial prop but it might be
 	 * that the value needs to be read from the Instance.
 	 */
-	abstract readValueFromInstance(
-		instance: Instance,
-		key: string,
-		options: Options
-	): string | number | Booleanish | null | undefined | Snippet<any>;
+	abstract readValueFromInstance(instance: Instance, key: string, options: Options): string | number | null | undefined;
 
 	/**
 	 * When a value has been removed from the VisualElement we use this to remove
@@ -112,7 +116,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 		instance: Instance,
 		renderState: RenderState,
 		styleProp?: MotionStyle,
-		projection?: IProjectionNode
+		projection?: IProjectionNode<unknown>
 	): void;
 
 	/**
@@ -131,7 +135,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	scrapeMotionValuesFromProps(
 		_props: MotionProps,
 		_prevProps: MotionProps,
-		_visualElement: VisualElement
+		_visualElement: VisualElement<unknown>
 	): {
 		[key: string]: MotionValue | string | number;
 	} {
@@ -147,12 +151,12 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	/**
 	 * A reference to the parent VisualElement (if exists).
 	 */
-	parent: VisualElement | undefined;
+	parent: VisualElement<unknown> | undefined;
 
 	/**
 	 * A set containing references to this VisualElement's children.
 	 */
-	children = new Set<VisualElement>();
+	children = new Set<VisualElement<unknown>>();
 
 	/**
 	 * The depth of this VisualElement within the overall VisualElement tree.
@@ -181,7 +185,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	 * any children that are also part of the tree. This is essentially
 	 * a shadow tree to simplify logic around how to stagger over children.
 	 */
-	variantChildren?: Set<VisualElement>;
+	variantChildren?: Set<VisualElement<unknown>>;
 
 	/**
 	 * Decides whether this VisualElement should animate in reduced motion
@@ -211,7 +215,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	/**
 	 * A reference to this VisualElement's projection node, used in layout animations.
 	 */
-	projection?: IProjectionNode;
+	projection?: IProjectionNode<unknown>;
 
 	/**
 	 * A map of all motion values attached to this visual element. Motion
@@ -246,7 +250,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	 * Cleanup functions for active features (hover/tap/exit etc)
 	 */
 	private features: {
-		[K in keyof FeatureDefinitions]?: Feature<Instance>;
+		[K in keyof FeatureDefinitions]?: InstanceType<ExtractFeature<FeatureDefinitions[K]>>;
 	} = {};
 
 	/**
@@ -356,14 +360,14 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 	mount(instance: Instance) {
 		this.current = instance;
 
-		visualElementStore.set(instance, this);
+		visualElementStore.set(instance, this as VisualElement<unknown>);
 
 		if (this.projection && !this.projection.instance) {
 			this.projection.mount(instance);
 		}
 
 		if (this.parent && this.isVariantNode && !this.isControllingVariants) {
-			this.removeFromVariantTree = this.parent.addVariantChild(this);
+			this.removeFromVariantTree = this.parent.addVariantChild(this as VisualElement<unknown>);
 		}
 
 		this.values.forEach((value, key) => this.bindToMotionValue(key, value));
@@ -386,7 +390,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 			);
 		}
 
-		if (this.parent) this.parent.children.add(this);
+		if (this.parent) this.parent.children.add(this as VisualElement<unknown>);
 		this.update(this.props, this.presenceContext);
 	}
 
@@ -471,7 +475,7 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 			 * If this feature is enabled but not active, make a new instance.
 			 */
 			if (!this.features[key] && FeatureConstructor && isEnabled(this.props)) {
-				this.features[key] = new FeatureConstructor(this) as any;
+				this.features[key] = new FeatureConstructor(this as VisualElement<HTMLElement>) as any;
 			}
 
 			/**
@@ -560,8 +564,8 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 		}
 
 		this.prevMotionValues = updateMotionValuesFromProps(
-			this,
-			this.scrapeMotionValuesFromProps(props, this.prevProps, this),
+			this as VisualElement<unknown>,
+			this.scrapeMotionValuesFromProps(props, this.prevProps, this as VisualElement<unknown>),
 			this.prevMotionValues
 		);
 
@@ -592,14 +596,18 @@ export abstract class VisualElement<Instance = unknown, RenderState = unknown, O
 		return (this.props as any).transformPagePoint;
 	}
 
-	getClosestVariantNode(): VisualElement | undefined {
-		return this.isVariantNode ? this : this.parent ? this.parent.getClosestVariantNode() : undefined;
+	getClosestVariantNode(): VisualElement<unknown> | undefined {
+		return this.isVariantNode
+			? (this as VisualElement<unknown>)
+			: this.parent
+				? this.parent.getClosestVariantNode()
+				: undefined;
 	}
 
 	/**
 	 * Add a child visual element to our set of children.
 	 */
-	addVariantChild(child: VisualElement) {
+	addVariantChild(child: VisualElement<unknown>) {
 		const closestVariantNode = this.getClosestVariantNode();
 		if (closestVariantNode) {
 			closestVariantNode.variantChildren && closestVariantNode.variantChildren.add(child);

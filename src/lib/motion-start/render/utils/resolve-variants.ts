@@ -8,7 +8,7 @@ import type { TargetAndTransition, TargetResolver } from '../../types';
 import type { VisualElement } from '../VisualElement';
 import type { ResolvedValues } from '../types';
 
-function getValueState(visualElement?: VisualElement): [ResolvedValues, ResolvedValues] {
+function getValueState<I>(visualElement?: VisualElement<I>): [ResolvedValues, ResolvedValues] {
 	const state: [ResolvedValues, ResolvedValues] = [{}, {}];
 
 	visualElement?.values.forEach((value, key) => {
@@ -19,23 +19,23 @@ function getValueState(visualElement?: VisualElement): [ResolvedValues, Resolved
 	return state;
 }
 
-export function resolveVariantFromProps(
+export function resolveVariantFromProps<I>(
 	props: MotionProps,
 	definition: TargetAndTransition | TargetResolver,
 	custom?: any,
-	visualElement?: VisualElement
+	visualElement?: VisualElement<I>
 ): TargetAndTransition;
-export function resolveVariantFromProps(
+export function resolveVariantFromProps<I>(
 	props: MotionProps,
 	definition?: string | TargetAndTransition | TargetResolver,
 	custom?: any,
-	visualElement?: VisualElement
+	visualElement?: VisualElement<I>
 ): undefined | TargetAndTransition;
-export function resolveVariantFromProps(
+export function resolveVariantFromProps<I>(
 	props: MotionProps,
 	definition?: string | TargetAndTransition | TargetResolver,
 	custom?: any,
-	visualElement?: VisualElement
+	visualElement?: VisualElement<I>
 ) {
 	/**
 	 * If the variant definition is a function, resolve.

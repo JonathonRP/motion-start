@@ -84,7 +84,7 @@ let id = 0;
 
 function resetDistortingTransform(
 	key: string,
-	visualElement: VisualElement,
+	visualElement: VisualElement<unknown>,
 	values: ResolvedValues,
 	sharedAnimationValues?: ResolvedValues
 ) {
@@ -100,7 +100,7 @@ function resetDistortingTransform(
 	}
 }
 
-function cancelTreeOptimisedTransformAnimations(projectionNode: IProjectionNode) {
+function cancelTreeOptimisedTransformAnimations<I>(projectionNode: IProjectionNode<I>) {
 	projectionNode.hasCheckedOptimisedAppear = true;
 	if (projectionNode.root === projectionNode) return;
 
@@ -112,7 +112,7 @@ function cancelTreeOptimisedTransformAnimations(projectionNode: IProjectionNode)
 
 	if (window.MotionHasOptimisedAnimation!(appearId, 'transform')) {
 		const { layout, layoutId } = projectionNode.options;
-		window.MotionCancelOptimisedAnimation!(appearId, 'transform', frame, !(layout || layoutId));
+		window.MotionCancelOptimisedAnimation!(appearId!, 'transform', frame, !(layout || layoutId));
 	}
 
 	const { parent } = projectionNode;
@@ -121,7 +121,7 @@ function cancelTreeOptimisedTransformAnimations(projectionNode: IProjectionNode)
 	}
 }
 
-export function createProjectionNode<I>({
+export function createProjectionNode<I = unknown>({
 	attachResizeListener,
 	defaultParent,
 	measureScroll,
@@ -142,23 +142,24 @@ export function createProjectionNode<I>({
 		/**
 		 * A reference to the platform-native node (currently this will be a HTMLElement).
 		 */
+		// @ts-expect-error
 		instance: I;
 
 		/**
 		 * A reference to the root projection node. There'll only ever be one tree and one root.
 		 */
-		root: IProjectionNode;
+		root: IProjectionNode<I>;
 
 		/**
 		 * A reference to this node's parent.
 		 */
-		parent?: IProjectionNode;
+		parent?: IProjectionNode<I>;
 
 		/**
 		 * A path from this node to the root node. This provides a fast way to iterate
 		 * back up the tree.
 		 */
-		path: IProjectionNode[];
+		path: IProjectionNode<I>[];
 
 		/**
 		 * A Set containing all this component's children. This is used to iterate
@@ -166,7 +167,7 @@ export function createProjectionNode<I>({
 		 *
 		 * TODO: This could be faster to iterate as a flat array stored on the root node.
 		 */
-		children = new Set<IProjectionNode>();
+		children = new Set<IProjectionNode<I>>();
 
 		/**
 		 * Options for the node. We use this to configure what kind of layout animations
@@ -199,6 +200,7 @@ export function createProjectionNode<I>({
 		 * acting on the element's layout. It's from here we can calculate the projectionDelta
 		 * required to get the element from its layout into its calculated target box.
 		 */
+		// @ts-expect-error
 		layoutCorrected: Box;
 
 		/**
@@ -226,7 +228,7 @@ export function createProjectionNode<I>({
 		relativeTarget?: Box;
 
 		relativeTargetOrigin?: Box;
-		relativeParent?: IProjectionNode;
+		relativeParent?: IProjectionNode<I>;
 
 		/**
 		 * We use this to detect when its safe to shut down part of a projection tree.
@@ -347,12 +349,12 @@ export function createProjectionNode<I>({
 		/**
 		 * Is hydrated with a projection node if an element is animating from another.
 		 */
-		resumeFrom?: IProjectionNode;
+		resumeFrom?: IProjectionNode<I>;
 
 		/**
 		 * Is hydrated with a projection node if an element is animating from another.
 		 */
-		resumingFrom?: IProjectionNode;
+		resumingFrom?: IProjectionNode<I>;
 
 		/**
 		 * A reference to the element's latest animated values. This is a reference shared
@@ -365,7 +367,7 @@ export function createProjectionNode<I>({
 		 */
 		eventHandlers = new Map<LayoutEvents, SubscriptionManager<any>>();
 
-		nodes?: FlatTree;
+		nodes?: FlatTree<IProjectionNode<I>>;
 
 		depth: number;
 
@@ -379,7 +381,10 @@ export function createProjectionNode<I>({
 
 		hasTreeAnimated = false;
 
-		constructor(latestValues: ResolvedValues = {}, parent: IProjectionNode | undefined = defaultParent?.()) {
+		constructor(
+			latestValues: ResolvedValues = {},
+			parent: IProjectionNode<I> | undefined = defaultParent?.() as IProjectionNode<any>
+		) {
 			this.latestValues = latestValues;
 			this.root = parent ? parent.root || parent : this;
 			this.path = parent ? [...parent.path, parent] : [];
@@ -1318,12 +1323,13 @@ export function createProjectionNode<I>({
 		animationValues?: ResolvedValues;
 		pendingAnimation?: Process;
 		currentAnimation?: AnimationPlaybackControls;
+		// @ts-expect-error
 		mixTargetDelta: (progress: number) => void;
 		animationProgress = 0;
 
 		setAnimationOrigin(delta: Delta, hasOnlyRelativeTargetChanged = false) {
 			const snapshot = this.snapshot;
-			const snapshotLatestValues = snapshot ? snapshot.latestValues : undefined || {};
+			const snapshotLatestValues = snapshot ? snapshot.latestValues : {};
 			const mixedValues = { ...this.latestValues };
 
 			const targetDelta = createDelta();
@@ -1513,8 +1519,8 @@ export function createProjectionNode<I>({
 		 * Shared layout
 		 */
 		// TODO Only running on root node
-		sharedNodes: Map<string, NodeStack> = new Map();
-		registerSharedNode(layoutId: string, node: IProjectionNode) {
+		sharedNodes: Map<string, NodeStack<I>> = new Map();
+		registerSharedNode(layoutId: string, node: IProjectionNode<I>) {
 			if (!this.sharedNodes.has(layoutId)) {
 				this.sharedNodes.set(layoutId, new NodeStack());
 			}
@@ -1754,18 +1760,18 @@ export function createProjectionNode<I>({
 
 		// Only run on root
 		resetTree() {
-			this.root.nodes!.forEach((node: IProjectionNode) => node.currentAnimation?.stop());
+			this.root.nodes!.forEach((node) => node.currentAnimation?.stop());
 			this.root.nodes!.forEach(clearMeasurements);
 			this.root.sharedNodes.clear();
 		}
 	};
 }
 
-function updateLayout(node: IProjectionNode) {
+function updateLayout<I>(node: IProjectionNode<I>) {
 	node.updateLayout();
 }
 
-function notifyLayoutUpdate(node: IProjectionNode) {
+function notifyLayoutUpdate<I>(node: IProjectionNode<I>) {
 	const snapshot = node.resumeFrom?.snapshot || node.snapshot;
 
 	if (node.isLead() && node.layout && snapshot && node.hasListeners('didUpdate')) {
@@ -1863,7 +1869,7 @@ function notifyLayoutUpdate(node: IProjectionNode) {
 	node.options.transition = undefined;
 }
 
-export function propagateDirtyNodes(node: IProjectionNode) {
+export function propagateDirtyNodes<I>(node: IProjectionNode<I>) {
 	/**
 	 * Increase debug counter for nodes encountered this frame
 	 */
@@ -1895,23 +1901,23 @@ export function propagateDirtyNodes(node: IProjectionNode) {
 	node.isTransformDirty ||= node.parent.isTransformDirty;
 }
 
-export function cleanDirtyNodes(node: IProjectionNode) {
+export function cleanDirtyNodes<I>(node: IProjectionNode<I>) {
 	node.isProjectionDirty = node.isSharedProjectionDirty = node.isTransformDirty = false;
 }
 
-function clearSnapshot(node: IProjectionNode) {
+function clearSnapshot<I>(node: IProjectionNode<I>) {
 	node.clearSnapshot();
 }
 
-function clearMeasurements(node: IProjectionNode) {
+function clearMeasurements<I>(node: IProjectionNode<I>) {
 	node.clearMeasurements();
 }
 
-function clearIsLayoutDirty(node: IProjectionNode) {
+function clearIsLayoutDirty<I>(node: IProjectionNode<I>) {
 	node.isLayoutDirty = false;
 }
 
-function resetTransformStyle(node: IProjectionNode) {
+function resetTransformStyle<I>(node: IProjectionNode<I>) {
 	const { visualElement } = node.options;
 	if (visualElement && visualElement.getProps().onBeforeLayoutMeasure) {
 		visualElement.notify('BeforeLayoutMeasure');
@@ -1920,25 +1926,25 @@ function resetTransformStyle(node: IProjectionNode) {
 	node.resetTransform();
 }
 
-function finishAnimation(node: IProjectionNode) {
+function finishAnimation<I>(node: IProjectionNode<I>) {
 	node.finishAnimation();
 	node.targetDelta = node.relativeTarget = node.target = undefined;
 	node.isProjectionDirty = true;
 }
 
-function resolveTargetDelta(node: IProjectionNode) {
+function resolveTargetDelta<I>(node: IProjectionNode<I>) {
 	node.resolveTargetDelta();
 }
 
-function calcProjection(node: IProjectionNode) {
+function calcProjection<I>(node: IProjectionNode<I>) {
 	node.calcProjection();
 }
 
-function resetSkewAndRotation(node: IProjectionNode) {
+function resetSkewAndRotation<I>(node: IProjectionNode<I>) {
 	node.resetSkewAndRotation();
 }
 
-function removeLeadSnapshots(stack: NodeStack) {
+function removeLeadSnapshots<I>(stack: NodeStack<I>) {
 	stack.removeLeadSnapshot();
 }
 
@@ -1959,7 +1965,7 @@ export function mixBox(output: Box, from: Box, to: Box, p: number) {
 	mixAxis(output.y, from.y, to.y, p);
 }
 
-function hasOpacityCrossfade(node: IProjectionNode) {
+function hasOpacityCrossfade<I>(node: IProjectionNode<I>) {
 	return node.animationValues && node.animationValues.opacityExit !== undefined;
 }
 
@@ -1996,6 +2002,6 @@ function shouldAnimatePositionOnly(animationType: string | undefined, snapshot: 
 	);
 }
 
-function checkNodeWasScrollRoot(node: IProjectionNode) {
+function checkNodeWasScrollRoot<I>(node: IProjectionNode<I>) {
 	return node !== node.root && node.scroll?.wasRoot;
 }

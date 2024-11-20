@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { VisualElement } from '../../render/VisualElement';
 import { isWillChangeMotionValue } from './is';
 
-export function addValueToWillChange(visualElement: VisualElement, key: string) {
+export function addValueToWillChange<I>(visualElement: VisualElement<I>, key: string) {
 	const willChange = visualElement.getValue('willChange');
 
 	/**

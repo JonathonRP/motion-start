@@ -41,7 +41,7 @@ export class SVGVisualElement extends DOMVisualElement<SVGElement, SVGRenderStat
 
 	measureInstanceViewportBox = createBox;
 
-	scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement: VisualElement) {
+	scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement: VisualElement<SVGElement>) {
 		return scrapeMotionValuesFromProps(props, prevProps, visualElement);
 	}
 

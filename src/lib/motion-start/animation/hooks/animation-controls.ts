@@ -9,11 +9,11 @@ import type { VisualElement } from '../../render/VisualElement';
 import type { AnimationControls, AnimationDefinition } from '../types';
 import { animateVisualElement } from '../interfaces/visual-element';
 
-function stopAnimation(visualElement: VisualElement) {
+function stopAnimation(visualElement: VisualElement<unknown>) {
 	visualElement.values.forEach((value) => value.stop());
 }
 
-function setVariants(visualElement: VisualElement, variantLabels: string[]) {
+function setVariants(visualElement: VisualElement<unknown>, variantLabels: string[]) {
 	const reversedLabels = [...variantLabels].reverse();
 
 	reversedLabels.forEach((key) => {
@@ -28,7 +28,7 @@ function setVariants(visualElement: VisualElement, variantLabels: string[]) {
 	});
 }
 
-export function setValues(visualElement: VisualElement, definition: AnimationDefinition) {
+export function setValues(visualElement: VisualElement<unknown>, definition: AnimationDefinition) {
 	if (Array.isArray(definition)) {
 		return setVariants(visualElement, definition);
 	} else if (typeof definition === 'string') {
@@ -50,7 +50,7 @@ export function animationControls(): AnimationControls {
 	/**
 	 * A collection of linked component animation controls.
 	 */
-	const subscribers = new Set<VisualElement>();
+	const subscribers = new Set<VisualElement<unknown>>();
 
 	const controls: AnimationControls = {
 		subscribe(visualElement) {

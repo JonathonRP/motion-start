@@ -24,14 +24,14 @@ export const mixLinearColor = (from: number, to: number, v: number) => {
 const colorTypes = [hex, rgba, hsla];
 const getColorType = (v: Color | string) => colorTypes.find((type) => type.test(v));
 
-function asRGBA(color: Color | string) {
+function asRGBA(color: string | Color) {
 	const type = getColorType(color);
 
 	warning(Boolean(type), `'${color}' is not an animatable color. Use the equivalent color code instead.`);
 
 	if (!Boolean(type)) return false;
 
-	let model = type!.parse(color);
+	let model = type!.parse(color.toString());
 
 	if (type === hsla) {
 		// TODO Remove this cast - needed since Framer Motion's stricter typing
@@ -41,7 +41,7 @@ function asRGBA(color: Color | string) {
 	return model as RGBA;
 }
 
-export const mixColor = (from: Color | string, to: Color | string) => {
+export const mixColor = (from: string | Color, to: string | Color) => {
 	const fromRGBA = asRGBA(from);
 	const toRGBA = asRGBA(to);
 

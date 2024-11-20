@@ -5,17 +5,17 @@ Copyright (c) 2018 Framer B.V.
 
 import type { IProjectionNode } from './types';
 
-const notify = (node: IProjectionNode) => !node.isLayoutDirty && node.willUpdate(false);
+const notify = (node: IProjectionNode<unknown>) => !node.isLayoutDirty && node.willUpdate(false);
 
 export interface NodeGroup {
-	add: (node: IProjectionNode) => void;
-	remove: (node: IProjectionNode) => void;
+	add: (node: IProjectionNode<unknown>) => void;
+	remove: (node: IProjectionNode<unknown>) => void;
 	dirty: VoidFunction;
 }
 
 export function nodeGroup(): NodeGroup {
-	const nodes = new Set<IProjectionNode>();
-	const subscriptions = new WeakMap<IProjectionNode, () => void>();
+	const nodes = new Set<IProjectionNode<unknown>>();
+	const subscriptions = new WeakMap<IProjectionNode<unknown>, () => void>();
 
 	const dirtyAll = () => nodes.forEach(notify);
 

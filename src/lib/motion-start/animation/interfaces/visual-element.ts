@@ -11,7 +11,7 @@ import { animateTarget } from './visual-element-target';
 import { animateVariant } from './visual-element-variant';
 
 export function animateVisualElement(
-	visualElement: VisualElement,
+	visualElement: VisualElement<unknown>,
 	definition: AnimationDefinition,
 	options: VisualElementAnimationOptions = {}
 ) {

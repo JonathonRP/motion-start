@@ -40,15 +40,15 @@ export type LayoutEvents =
 	| 'animationStart'
 	| 'animationComplete';
 
-export interface IProjectionNode<I = unknown> {
+export interface IProjectionNode<I> {
 	id: number;
 	animationId: number;
-	parent?: IProjectionNode;
-	relativeParent?: IProjectionNode;
-	root?: IProjectionNode;
-	children: Set<IProjectionNode>;
-	path: IProjectionNode[];
-	nodes?: FlatTree;
+	parent?: IProjectionNode<I>;
+	relativeParent?: IProjectionNode<I>;
+	root?: IProjectionNode<I>;
+	children: Set<IProjectionNode<I>>;
+	path: IProjectionNode<I>[];
+	nodes?: FlatTree<IProjectionNode<I>>;
 	depth: number;
 	instance: I;
 	mount: (node: I, isLayoutDirty?: boolean) => void;
@@ -93,14 +93,14 @@ export interface IProjectionNode<I = unknown> {
 	scheduleUpdateProjection(): void;
 	scheduleCheckAfterUnmount(): void;
 	checkUpdateFailed(): void;
-	sharedNodes: Map<string, NodeStack>;
-	registerSharedNode(id: string, node: IProjectionNode): void;
-	getStack(): NodeStack | undefined;
+	sharedNodes: Map<string, NodeStack<I>>;
+	registerSharedNode(id: string, node: IProjectionNode<I>): void;
+	getStack(): NodeStack<I> | undefined;
 	isVisible: boolean;
 	hide(): void;
 	show(): void;
 	scheduleRender(notifyAll?: boolean): void;
-	getClosestProjectingParent(): IProjectionNode | undefined;
+	getClosestProjectingParent(): IProjectionNode<I> | undefined;
 
 	setTargetDelta(delta: Delta): void;
 	resetTransform(): void;
@@ -131,8 +131,8 @@ export interface IProjectionNode<I = unknown> {
 		preserveFollowOpacity?: boolean;
 	}): void;
 	relegate(): boolean;
-	resumeFrom?: IProjectionNode;
-	resumingFrom?: IProjectionNode;
+	resumeFrom?: IProjectionNode<I>;
+	resumingFrom?: IProjectionNode<I>;
 	isPresent?: boolean;
 
 	addEventListener(name: LayoutEvents, handler: any): VoidFunction;
@@ -154,7 +154,7 @@ export interface LayoutUpdateData {
 export type LayoutUpdateHandler = (data: LayoutUpdateData) => void;
 
 export interface ProjectionNodeConfig<I> {
-	defaultParent?: () => IProjectionNode;
+	defaultParent?: () => IProjectionNode<Window>;
 	attachResizeListener?: (instance: I, notifyResize: VoidFunction) => VoidFunction;
 	measureScroll: (instance: I) => Point;
 	checkIsScrollRoot: (instance: I) => boolean;
@@ -170,7 +170,7 @@ export interface ProjectionNodeOptions {
 	animationType?: 'size' | 'position' | 'both' | 'preserve-aspect';
 	layoutId?: string;
 	layout?: boolean | string;
-	visualElement?: VisualElement;
+	visualElement?: VisualElement<unknown>;
 	crossfade?: boolean;
 	transition?: Transition;
 	initialPromotionConfig?: InitialPromotionConfig;

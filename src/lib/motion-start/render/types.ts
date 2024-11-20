@@ -38,7 +38,7 @@ export interface MotionPoint {
 export type ScrapeMotionValuesFromProps = (
 	props: MotionProps,
 	prevProps: MotionProps,
-	visualElement?: VisualElement
+	visualElement?: VisualElement<unknown>
 ) => {
 	[key: string]: MotionValue | string | number;
 };
@@ -59,7 +59,7 @@ export type VisualElementOptions<Instance, RenderState = any> = {
  * A generic set of string/number values
  */
 export interface ResolvedValues {
-	[key: string]: string | number | null | Booleanish | Snippet;
+	[key: string]: string | number;
 }
 
 export interface VisualElementEventCallbacks {
@@ -152,6 +152,6 @@ export interface AnimationLifecycles {
 export type EventProps = LayoutLifecycles & AnimationLifecycles;
 
 export type CreateVisualElement<Instance> = (
-	Component: string | Component<{ children: Snippet | Component }>,
-	options?: VisualElementOptions<Instance>
+	Component: string, // | Component<{ children: Snippet | Component }>
+	options: VisualElementOptions<Instance>
 ) => VisualElement<Instance>;

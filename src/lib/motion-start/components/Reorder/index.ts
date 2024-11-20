@@ -1,9 +1,10 @@
-import type { MotionProps } from 'svelte-motion';
-import type { DefaultPropsType as DefaultComponentProps } from '..';
+/** 
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
+
 import Group from './Group.svelte';
 import Item from './Item.svelte';
-
-export type DefaultPropsType = MotionProps & Pick<DefaultComponentProps, 'children'> & { class?: string };
 
 export const Reorder = {
 	Group,

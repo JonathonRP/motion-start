@@ -5,11 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { VisualElement } from '../../render/VisualElement';
 import type { VisualState } from './use-visual-state';
-import { isRefObject } from '../../utils/is-ref-object.js';
-
-type Ref<T> = (instance: T | null) => void | {
-	current: T | null;
-} | null;
+import { isRefObject, type Ref } from '../../utils/is-ref-object.js';
 
 /**
  * Creates a ref function that, when called, hydrates the provided

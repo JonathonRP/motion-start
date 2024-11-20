@@ -9,7 +9,11 @@ import type { VisualElement } from '../../VisualElement';
 import { scrapeMotionValuesFromProps as scrapeHTMLMotionValuesFromProps } from '../../html/utils/scrape-motion-values';
 import { transformPropOrder } from '../../html/utils/transform';
 
-export function scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement?: VisualElement) {
+export function scrapeMotionValuesFromProps<I>(
+	props: MotionProps,
+	prevProps: MotionProps,
+	visualElement?: VisualElement<I>
+) {
 	const newValues = scrapeHTMLMotionValuesFromProps(props, prevProps, visualElement);
 
 	for (const key in props) {

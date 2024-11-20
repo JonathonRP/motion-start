@@ -9,7 +9,7 @@ import { motionValue } from '../../value';
 import { isMotionValue } from '../../value/utils/is-motion-value';
 import type { VisualElement } from '../VisualElement';
 
-export function updateMotionValuesFromProps(element: VisualElement, next: MotionStyle, prev: MotionStyle) {
+export function updateMotionValuesFromProps<I>(element: VisualElement<I>, next: MotionStyle, prev: MotionStyle) {
 	for (const key in next) {
 		const nextValue = next[key as keyof MotionStyle];
 		const prevValue = prev[key as keyof MotionStyle];

@@ -33,8 +33,8 @@ declare global {
 		MotionHandoffIsComplete?: (elementId: string) => boolean;
 		MotionHasOptimisedAnimation?: (elementId?: string, valueName?: string) => boolean;
 		MotionCancelOptimisedAnimation?: (
-			elementId?: string,
-			valueName?: string,
+			elementId: string,
+			valueName: string,
 			frame?: Batcher,
 			canResume?: boolean
 		) => void;

@@ -1,14 +1,14 @@
 <svelte:options runes={true} />
 
 <script lang="ts" generics="V">
-	import type { SvelteHTMLElements } from 'svelte/elements';
-	import { setContext } from 'svelte';
-	import Motion from '../../render/components/motion/Motion.svelte';
-	import type { DefaultPropsType } from '.';
-	import type { ItemData, ReorderContextProps } from './types';
+	import type { SvelteHTMLElements } from "svelte/elements";
+	import { setContext, type Snippet } from "svelte";
+	import Motion from "../../motion/Motion.svelte";
+	import type { ItemData, ReorderContextProps } from "./types";
 
-	import { invariant } from '../../utils/errors';
-	import { checkReorder } from './utils/check-reorder';
+	import { invariant } from "../../utils/errors";
+	import { checkReorder } from "./utils/check-reorder";
+	import type { HTMLMotionProps } from "../../render/html/types";
 
 	type Props<V> = {
 		/**
@@ -24,7 +24,7 @@
 		 *
 		 * @public
 		 */
-		axis?: 'x' | 'y';
+		axis?: "x" | "y";
 
 		/**
 		 * A callback to fire with the new value order. For instance, if the values
@@ -56,17 +56,18 @@
 
 	const {
 		children,
-		as = 'ul',
-		axis = 'y',
+		as = "ul",
+		axis = "y",
 		onReorder,
 		values,
 		...props
-	}: Props<V> & DefaultPropsType = $props();
+	}: Props<V> &
+		Omit<HTMLMotionProps<any>, "values"> & { children: Snippet } = $props();
 
 	const order: ItemData<V>[] = [];
 	let isReordering = $state(false);
 
-	invariant(Boolean(values), 'Reorder.Group must be provided a values prop');
+	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
 
 	const context: ReorderContextProps<V> = {
 		axis,
@@ -87,12 +88,16 @@
 
 			if (order !== newOrder) {
 				isReordering = true;
-				onReorder(newOrder.map(getValue).filter((value) => values.indexOf(value) !== -1));
+				onReorder(
+					newOrder
+						.map(getValue)
+						.filter((value) => values.indexOf(value) !== -1),
+				);
 			}
 		},
 	};
 
-	setContext<typeof context>('Reorder', context);
+	setContext<typeof context>("Reorder", context);
 
 	$effect(() => {
 		if (!isReordering) return;

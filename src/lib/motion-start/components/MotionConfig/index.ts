@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionConfigContextObject } from "../../context/MotionConfigContext.js";
-export type MotionConfigProps = Partial<MotionConfigContextObject>;
+import type { MotionConfigContext } from '../../context/MotionConfigContext';
+export type MotionConfigProps = Partial<MotionConfigContext>;
 /**
  * `MotionConfig` is used to set configuration options for all children `motion` components.
  *
@@ -17,4 +17,4 @@ export type MotionConfigProps = Partial<MotionConfigContextObject>;
  *
  * @public
  */
-export {default as MotionConfig} from './MotionConfig.svelte';
+export { default as MotionConfig } from './MotionConfig.svelte';

@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { VisualElement } from '../VisualElement';
 
-export function isDraggable(visualElement: VisualElement) {
+export function isDraggable<I>(visualElement: VisualElement<I>) {
 	const { drag, _dragX } = visualElement.getProps();
 	return drag && !_dragX;
 }

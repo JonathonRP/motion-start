@@ -61,14 +61,19 @@ const TREE_SCALE_SNAP_MAX = 1.0000000000001;
  *
  * This is the final nested loop within updateLayoutDelta for future refactoring
  */
-export function applyTreeDeltas(box: Box, treeScale: Point, treePath: IProjectionNode[], isSharedTransition = false) {
+export function applyTreeDeltas<I>(
+	box: Box,
+	treeScale: Point,
+	treePath: IProjectionNode<I>[],
+	isSharedTransition = false
+) {
 	const treeLength = treePath.length;
 	if (!treeLength) return;
 
 	// Reset the treeScale
 	treeScale.x = treeScale.y = 1;
 
-	let node: IProjectionNode;
+	let node: IProjectionNode<I>;
 	let delta: Delta | undefined;
 
 	for (let i = 0; i < treeLength; i++) {
