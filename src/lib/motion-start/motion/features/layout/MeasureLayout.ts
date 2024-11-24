@@ -24,7 +24,7 @@ export type MeasureProps = MotionProps & MeasureContextProps & { visualElement: 
 export function MeasureLayout(props: MotionProps & { visualElement: VisualElement<unknown> }, isCustom = false) {
 	const [isPresent, safeToRemove] = get(usePresence(isCustom));
 	const layoutGroup = get(
-		getContext<Writable<LayoutGroupContextProps>>(LayoutGroupContext) || LayoutGroupContext(isCustom)
+		getContext<ReturnType<typeof LayoutGroupContext>>(LayoutGroupContext) || LayoutGroupContext(isCustom)
 	);
 
 	return new Proxy({} as Component<MotionProps>, {

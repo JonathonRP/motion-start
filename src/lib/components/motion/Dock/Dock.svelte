@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Motion } from "$lib/motion-start";
+    import { motion } from "$lib/motion-start";
     import { cva, type VariantProps } from "class-variance-authority";
     import { cn } from "$lib/utils";
 
@@ -38,8 +38,8 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<Motion.div
-    bind:el={dockElement}
+<motion.div
+    bind:ref={dockElement}
     onmousemove={(e) => handleMouseMove(e)}
     onmouseleave={handleMouseLeave}
     class={dockClass}
@@ -48,4 +48,4 @@
         <!-- Your Content -->
         Default
     </slot>
-</Motion.div>
+</motion.div>

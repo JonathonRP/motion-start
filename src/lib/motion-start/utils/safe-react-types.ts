@@ -12,3 +12,7 @@ export type MutableRefObject<T> = {
 export type RefObject<T> = {
 	current: T | null;
 };
+
+export type RefCallBack<T> = (instance: T | null) => void;
+
+export type Ref<T> = RefCallBack<T> | RefObject<T> | null;

@@ -1,4 +1,4 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script context="module" module lang="ts">
@@ -18,6 +18,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { setDomContext } from "../../../context/DOMcontext.js";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
+    import PopChild from "../PopChild/PopChild.svelte";
 
     type $$Props = PresenceChildProps;
 
@@ -26,6 +27,7 @@ Copyright (c) 2018 Framer B.V. -->
         initial: $$Props["initial"] = undefined,
         custom: $$Props["custom"] = undefined,
         presenceAffectsLayout: $$Props["presenceAffectsLayout"],
+        mode: $$Props["mode"],
         isCustom: $$Props["isCustom"];
 
     const presenceChildren = newChildrenMap();
@@ -75,4 +77,10 @@ Copyright (c) 2018 Framer B.V. -->
     setDomContext("Presence", isCustom, context);
 </script>
 
-<slot />
+{#if mode === "popLayout"}
+    <PopChild {isPresent}>
+        <slot />
+    </PopChild>
+{:else}
+    <slot />
+{/if}

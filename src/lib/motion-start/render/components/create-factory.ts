@@ -13,10 +13,14 @@ import { htmlMotionConfig } from '../html/config-motion';
 import { createUseRender } from '../dom/use-render';
 import type { ForwardRefComponent } from '../html/types';
 import type { Snippet } from 'svelte';
+import type { SvelteHTMLElements } from 'svelte/elements';
 
-type MotionComponent<T, P> = T extends keyof DOMMotionComponents
+type MotionComponent<
+	T extends keyof DOMMotionComponents | keyof SvelteHTMLElements,
+	P,
+> = T extends keyof DOMMotionComponents
 	? DOMMotionComponents[T]
-	: ForwardRefComponent<any, MotionComponentProps<{ [K in keyof P]: P[K] } & { children: Snippet }>>;
+	: ForwardRefComponent<T, MotionComponentProps<{ [K in keyof P]: P[K] } & { children: Snippet }>>;
 
 export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,

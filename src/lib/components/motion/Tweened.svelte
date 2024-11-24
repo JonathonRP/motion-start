@@ -2,13 +2,13 @@
     import Box from "../Box.svelte";
     import Button from "../ui/button/button.svelte";
     // import { Motion } from "svelte-motion"
-    import { Motion } from "$lib/motion-start";
+    import { motion } from "$lib/motion-start";
     let i = 0;
 </script>
 
 <Box cls="flex flex-col gap-10 bg-slate-900">
     {#key i}
-        <Motion.div
+        <motion.div
             animate={{
                 rotate: 360,
             }}
@@ -16,7 +16,7 @@
                 duration: 2,
             }}
             class="box"
-        ></Motion.div>
+        ></motion.div>
     {/key}
     <div>
         <Button

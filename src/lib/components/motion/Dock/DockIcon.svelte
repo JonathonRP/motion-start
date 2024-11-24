@@ -1,7 +1,7 @@
 <script lang="ts">
     import { cn } from "$lib/utils";
     import {
-        Motion,
+        motion,
         useMotionValue,
         useSpring,
         useTransform,
@@ -44,6 +44,6 @@
     );
 </script>
 
-<Motion.div style={{ width: width }} bind:el={iconElement} class={iconClass}>
+<motion.div style={{ width: width }} bind:ref={iconElement} class={iconClass}>
     <slot></slot>
-</Motion.div>
+</motion.div>

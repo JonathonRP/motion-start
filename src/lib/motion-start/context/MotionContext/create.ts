@@ -1,4 +1,9 @@
-import { getContext, tick } from 'svelte';
+/** 
+based on framer-motion@4.1.17,
+Copyright (c) 2018 Framer B.V.
+*/
+
+import { afterUpdate, getContext, onMount, tick } from 'svelte';
 import { get, type Writable } from 'svelte/store';
 import { MotionContext, type MotionContextProps } from '.';
 import type { MotionProps } from '../../motion/types';
@@ -8,7 +13,6 @@ export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = 
 	const mc = () => get(getContext<Writable<MotionContextProps<Instance>>>(MotionContext) || MotionContext(isCustom));
 
 	let { initial, animate } = getCurrentTreeVariants(props, mc());
-	tick().then(() => ({ initial, animate } = getCurrentTreeVariants(props, mc())));
 
 	const memo = (_initial: string | boolean | undefined, _animate: string | boolean | undefined) => ({
 		initial,
@@ -16,7 +20,11 @@ export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = 
 	});
 
 	let value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
-	tick().then(() => (value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate))));
+
+	afterUpdate(() => {
+		({ initial, animate } = getCurrentTreeVariants(props, mc()));
+		value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
+	});
 
 	return value;
 }

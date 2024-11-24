@@ -1,6 +1,6 @@
 <script>
     import Box from "../Box.svelte";
-    import { Motion, useTransform, useMotionValue } from "$lib/motion-start";
+    import { motion, useTransform, useMotionValue } from "$lib/motion-start";
     let x = useMotionValue(0);
     let scale = useTransform(x, [-150, 0, 150], [1.5, 1, 0.4]);
     let rotate = useTransform(x, [-150, 0, 150], [-120, 0, 120]);
@@ -8,7 +8,7 @@
 </script>
 
 <Box cls="bg-slate-800 text-black" minHeight={350}>
-    <Motion.div
+    <motion.div
         style={{
             x,
             scale,
@@ -59,5 +59,5 @@
                 ><path d="m9 18 6-6-6-6" /></svg
             >
         </div>
-    </Motion.div>
+    </motion.div>
 </Box>

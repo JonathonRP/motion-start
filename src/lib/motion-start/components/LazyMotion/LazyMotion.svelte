@@ -1,16 +1,28 @@
-<!-- based on framer-motion@4.0.3,
+<!--based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+
+<script lang="ts" context="module" module>
+  function isLazyBundle(
+    features: FeatureBundle | LazyFeatureBundle,
+  ): features is LazyFeatureBundle {
+    return typeof features === "function";
+  }
+</script>
 
 <script lang="ts">
   import { onMount, setContext } from "svelte";
   import { writable } from "svelte/store";
   import { setDomContext } from "../../context/DOMcontext";
-  import type { LazyProps } from "./index.js";
 
   import { LazyContext } from "../../context/LazyContext";
-  import { loadFeatures } from "../../motion/features/definitions";
-  import type { FeatureBundle } from "$lib/motion-start/motion/features/types";
-  import type { LazyFeatureBundle } from "./types";
+  import { loadFeatures } from "../../motion/features/load-features";
+  import type {
+    FeatureBundle,
+    LazyFeatureBundle,
+  } from "../../motion/features/types";
+  import type { CreateVisualElement } from "../../render/types";
+  import type { LazyProps } from "./types";
+  import type { Ref } from "../../utils/safe-react-types";
 
   type $$Props = LazyProps;
 
@@ -54,7 +66,10 @@ Copyright (c) 2018 Framer B.V. -->
     isCustom = false;
 
   let _ = !isLazyBundle(features);
-  let loadedRenderer = undefined as any;
+  let loadedRenderer: Ref<undefined | CreateVisualElement<any>> = {
+    current: undefined,
+  };
+
   /**
    * If this is a synchronous load, load features immediately
    */
@@ -63,19 +78,14 @@ Copyright (c) 2018 Framer B.V. -->
     loadedRenderer.current = renderer;
     loadFeatures(loadedFeatures);
   }
-  function isLazyBundle(
-    features: FeatureBundle | LazyFeatureBundle,
-  ): features is LazyFeatureBundle {
-    return typeof features === "function";
-  }
+
   onMount(() => {
     if (isLazyBundle(features)) {
       features().then(({ renderer, ...loadedFeatures }) => {
         loadFeatures(loadedFeatures);
         loadedRenderer.current = renderer;
 
-        // @ts-expect-error
-        setIsLoaded(true);
+        _ = true;
       });
     }
   });

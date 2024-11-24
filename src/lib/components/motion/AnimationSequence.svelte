@@ -1,6 +1,6 @@
 <script>
     import Box from "../Box.svelte";
-    import { Motion, useAnimation } from "$lib/motion-start";
+    import { motion, useAnimation } from "$lib/motion-start";
     let controls = useAnimation();
     let startCode = async () => {
         let all = [
@@ -22,6 +22,6 @@
 </script>
 
 <Box cls="bg-slate-800 text-black">
-    <Motion.div animate={controls} onTap={startCode} class="box">Tap</Motion.div
+    <motion.div animate={controls} onTap={startCode} class="box">Tap</motion.div
     >
 </Box>

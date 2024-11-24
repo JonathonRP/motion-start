@@ -1,5 +1,5 @@
 <script>
-    import { Motion, AnimatePresence } from "$lib/motion-start";
+    import { AnimatePresence } from "$lib/motion-start";
     import Card from "$lib/components/Card.svelte";
     let index = 0;
     $: mint = index + 1;
