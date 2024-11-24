@@ -1,26 +1,26 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { getContext, setContext } from "svelte";
-  import { get, writable, type Writable } from "svelte/store";
+  import { get, writable } from "svelte/store";
   import { setDomContext } from "../../context/DOMcontext.js";
-  import {
-    MotionConfigContext,
-    type MotionConfigContextObject,
-  } from "../../context/MotionConfigContext.js";
-  import { provideScaleCorrection } from "../../context/ScaleCorrectionProvider.svelte";
-  import { scaleCorrection } from "./MotionConfigScaleCorrection.js";
+  import { MotionConfigContext } from "../../context/MotionConfigContext.js";
   import type { MotionConfigProps } from "./index.js";
+  import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
 
   type $$Props = MotionConfigProps;
 
-  export let transformPagePoint: $$Props["transformPagePoint"] = undefined,
+  export let isValidProp: $$Props["isValidProp"] = undefined,
+    transformPagePoint: $$Props["transformPagePoint"] = undefined,
     isStatic: $$Props["isStatic"] = undefined,
     transition: $$Props["transition"] = undefined,
     isCustom = false;
+
+  isValidProp && loadExternalIsValidProp(isValidProp);
+
   const mcc =
-    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
+    getContext<ReturnType<typeof MotionConfigContext>>(MotionConfigContext) ||
     MotionConfigContext(isCustom);
   /**
    * Inherit props from any parent MotionConfig components
@@ -28,8 +28,6 @@ Copyright (c) 2018 Framer B.V. -->
   let config = { ...get(mcc), ...{ transformPagePoint, isStatic, transition } };
   $: config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
 
-  // need to inform child layouts, or problems with scroll occur
-  provideScaleCorrection();
   /**
    * Don't allow isStatic to change between renders as it affects how many hooks
    * motion components fire.
@@ -40,18 +38,18 @@ Copyright (c) 2018 Framer B.V. -->
    * Creating a new config context object will re-render every `motion` component
    * every time it renders. So we only want to create a new one sparingly.
    */
-  $: transitionDependency =
-    typeof config.transition === "object" ? config.transition.toString() : "";
-
   let context = writable(config);
   setContext(MotionConfigContext, context);
   setDomContext("Motion", isCustom, context);
-  const memo = () => config;
-  const scaleCorrector = scaleCorrection();
+  const memo = (..._args: any[]) => config;
   $: {
-    // @ts-expect-error
-    context.set(memo(transitionDependency, config.transformPagePoint));
-    scaleCorrector.update();
+    context.set(
+      memo(
+        JSON.stringify(config.transition),
+        config.transformPagePoint,
+        config.reducedMotion,
+      ),
+    );
   }
 </script>
 

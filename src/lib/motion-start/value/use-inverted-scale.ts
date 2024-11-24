@@ -7,10 +7,9 @@ import { useTransform } from '../value/use-transform';
 import type { MotionValue } from './';
 import { invariant, warning } from '../utils/errors';
 import { useMotionValue } from './use-motion-value';
-import { MotionContext, type MotionContextProps } from '../context/MotionContext';
+import { MotionContext } from '../context/MotionContext';
 import { getContext, tick } from 'svelte';
-import { get, type Writable } from 'svelte/store';
-import { TicketCheck } from 'lucide-svelte';
+import { get } from 'svelte/store';
 
 interface ScaleMotionValues {
 	scaleX: MotionValue<number>;
@@ -47,7 +46,7 @@ let hasWarned = false;
 export function useInvertedScale(scale?: Partial<ScaleMotionValues>, isCustom = false): ScaleMotionValues {
 	let parentScaleX = useMotionValue(1);
 	let parentScaleY = useMotionValue(1);
-	const mc = getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+	const mc = getContext<ReturnType<typeof MotionContext>>(MotionContext) || MotionContext(isCustom);
 	const { visualElement } = get(mc);
 
 	invariant(

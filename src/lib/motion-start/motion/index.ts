@@ -3,7 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { getContext, onDestroy, setContext, tick, type Component } from 'svelte';
+import {
+	beforeUpdate,
+	createRawSnippet,
+	getContext,
+	mount,
+	onDestroy,
+	onMount,
+	setContext,
+	tick,
+	type Component,
+	type Snippet,
+} from 'svelte';
 import { get, writable, type Writable } from 'svelte/store';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
@@ -22,7 +33,7 @@ import type { CreateVisualElement } from '../render/types';
 import { invariant, warning } from '../utils/errors';
 import { featureDefinitions } from './features/definitions';
 import Motion from './Motion.svelte';
-import type { Ref } from '../utils/is-ref-object';
+import type { Ref } from '../utils/safe-react-types';
 import { setDomContext } from '../context/DOMcontext';
 import type { MeasureLayout } from './features/layout/MeasureLayout';
 
@@ -58,17 +69,25 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 }: MotionComponentConfig<Instance, RenderState>) => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
-	const MotionComponent = (
-		...[anchor, { props, externalRef }, ...options]: Parameters<
-			Component<{ props: MotionComponentProps<Props>; externalRef?: Ref<Instance> }>
-		>
+	const MotionComponent: Component<{ props: MotionComponentProps<Props>; externalRef?: Ref<Instance> | undefined }> = (
+		anchor,
+		{ props, externalRef }
 	) => {
+		props = props || {};
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
-		let useMeasureLayout: undefined | typeof MeasureLayout;
-		const mcc = getContext<Writable<MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(Component);
+		let useMeasureLayout: typeof MeasureLayout | undefined = undefined;
+		let render: Snippet | undefined = undefined;
+
+		let mcc = getContext<Writable<MotionConfigContext>>(MotionConfigContext);
+
+		onMount(() => {
+			mcc = mcc || MotionConfigContext(Component);
+		});
+
+		const context = useCreateMotionContext<Instance>(props);
 
 		const configAndProps = {
 			...get(mcc),
@@ -77,8 +96,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		};
 
 		const { isStatic } = configAndProps;
-
-		const context = useCreateMotionContext<Instance>(props);
 
 		const visualState = useVisualState(props, isStatic);
 
@@ -105,67 +122,59 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 		// MotionContext.Provider
 		const store = writable(context);
-		tick().then(() => {
-			const configAndProps = {
-				...get(mcc),
-				...props,
-				layoutId: useLayoutId(props),
-			};
+		store.set(context);
 
-			const { isStatic } = configAndProps;
-
-			const context = useCreateMotionContext<Instance>(props);
-
-			const visualState = useVisualState(props, isStatic);
-
-			if (!isStatic && isBrowser) {
-				useStrictMode(configAndProps, preloadedFeatures);
-
-				const layoutProjection = getProjectionFunctionality(configAndProps);
-				useMeasureLayout = layoutProjection.MeasureLayout;
-
-				/**
-				 * Create a VisualElement for this component. A VisualElement provides a common
-				 * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-				 * providing a way of rendering to these APIs outside of the React render loop
-				 * for more performant animations and interactions
-				 */
-				context.visualElement = useVisualElement<Instance, RenderState>(
-					Component,
-					visualState,
-					configAndProps,
-					createVisualElement,
-					layoutProjection.ProjectionNode
-				);
-			}
-
-			store.set(context);
-		});
 		setContext(MotionContext, store);
-		setDomContext('Motion', Component, store);
+		setDomContext('Motion', this, store);
 
 		// Since useMotionRef is not called on destroy, the visual element is unmounted here
 		onDestroy(() => {
 			context?.visualElement?.unmount();
 		});
 
-		return [
-			useMeasureLayout && context.visualElement
-				? useMeasureLayout({ visualElement: context.visualElement, ...configAndProps })
-				: null,
-			useRender(
-				Component,
-				props,
-				useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-				visualState,
-				isStatic,
-				context.visualElement
-			),
-		].join('');
+		// style="display: contents"
+		render = createRawSnippet(() => {
+			return {
+				render: () => '<slot>hello from motion<slot>',
+				setup(node: Element) {
+					useMeasureLayout && context.visualElement
+						? mount(useMeasureLayout({ visualElement: context.visualElement, ...configAndProps }), {
+								target: node,
+							})
+						: null;
+					useRender(
+						Component,
+						props,
+						useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+						visualState,
+						isStatic,
+						context.visualElement
+					);
+				},
+			};
+		});
 
+		return Motion(anchor, { children: render, $$slots: { default: true } });
+		// return [
+		// 	useMeasureLayout && context.visualElement
+		// 		? useMeasureLayout({ visualElement: context.visualElement, ...configAndProps })
+		// 		: null,
+		// 	useRender(
+		// 		Component,
+		// 		props,
+		// 		useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+		// 		visualState,
+		// 		isStatic,
+		// 		context.visualElement
+		// 	),
+		// ].join('');
 		// return Motion(
 		// 	anchor,
 		// 	{
+		// 		MeasureLayout:
+		// 			useMeasureLayout && context.visualElement
+		// 				? useMeasureLayout({ visualElement: context.visualElement, ...configAndProps })
+		// 				: null,
 		// 		UseRender: useRender(
 		// 			Component,
 		// 			props,
@@ -174,43 +183,126 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		// 			isStatic,
 		// 			context.visualElement
 		// 		),
-		// 		MeasureLayout:
-		// 			MeasureLayout && context.visualElement
-		// 				? new Proxy(MeasureLayout, {
-		// 						get(target, _key, args) {
-		// 							if (!args[1]) {
-		// 								args[1] = { visualElement: context.visualElement, ...configAndProps };
-		// 							} else {
-		// 								args[1] = {
-		// 									...args[1],
-		// 									visualElement: context.visualElement,
-		// 									...configAndProps,
-		// 								};
-		// 							}
-
-		// 							// @ts-expect-error
-		// 							return target(...args);
-		// 						},
-		// 					})
-		// 				: undefined,
 		// 	},
 		// 	...options
 		// );
 	};
 
-	MotionComponent[motionComponentSymbol] = Component;
+	(MotionComponent as any)[motionComponentSymbol] = Component;
 	return MotionComponent;
+	// return new Proxy(
+	// 	MotionComponent as Component<{ props: MotionComponentProps<Props>; externalRef?: Ref<Instance> | undefined }>,
+	// 	{
+	// 		get(target, _key, args) {
+	// 			const props = args[1].props;
+	// 			const externalRef = args[1].externalRef;
+	// 			const mcc = getContext<Writable<MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(Component);
+	// 			/**
+	// 			 * If we need to measure the element we load this functionality in a
+	// 			 * separate class component in order to gain access to getSnapshotBeforeUpdate.
+	// 			 */
+	// 			let useMeasureLayout: typeof MeasureLayout | undefined = undefined;
+
+	// 			const configAndProps = {
+	// 				...get(mcc),
+	// 				...props,
+	// 				layoutId: useLayoutId(props),
+	// 			};
+
+	// 			const { isStatic } = configAndProps;
+
+	// 			const context = useCreateMotionContext<Instance>(props);
+
+	// 			const visualState = useVisualState(props, isStatic);
+
+	// 			if (!isStatic && isBrowser) {
+	// 				useStrictMode(configAndProps, preloadedFeatures);
+
+	// 				const layoutProjection = getProjectionFunctionality(configAndProps);
+	// 				useMeasureLayout = layoutProjection.MeasureLayout;
+
+	// 				/**
+	// 				 * Create a VisualElement for this component. A VisualElement provides a common
+	// 				 * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
+	// 				 * providing a way of rendering to these APIs outside of the React render loop
+	// 				 * for more performant animations and interactions
+	// 				 */
+	// 				context.visualElement = useVisualElement<Instance, RenderState>(
+	// 					Component,
+	// 					visualState,
+	// 					configAndProps,
+	// 					createVisualElement,
+	// 					layoutProjection.ProjectionNode
+	// 				);
+	// 			}
+
+	// 			// MotionContext.Provider
+	// 			const store = writable(context);
+	// 			store.set(context);
+
+	// 			setContext(MotionContext, store);
+	// 			setDomContext('Motion', Component, store);
+
+	// 			// Since useMotionRef is not called on destroy, the visual element is unmounted here
+	// 			onDestroy(() => {
+	// 				context?.visualElement?.unmount();
+	// 			});
+
+	// 			const children = createRawSnippet(() => {
+	// 				return {
+	// 					render: () => `<${Component}></${Component}>`,
+	// 					setup(node: Element) {
+	// 						beforeUpdate(() => {
+	// 							useMeasureLayout && context.visualElement
+	// 								? mount(useMeasureLayout({ visualElement: context.visualElement, ...configAndProps }), {
+	// 										target: node,
+	// 									})
+	// 								: null;
+	// 							mount(
+	// 								useRender(
+	// 									Component,
+	// 									props,
+	// 									useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+	// 									visualState,
+	// 									isStatic,
+	// 									context.visualElement
+	// 								),
+	// 								{ target: node }
+	// 							);
+	// 						});
+	// 					},
+	// 				};
+	// 			});
+
+	// 			console.log(Component);
+	// 			if (!args[1]) {
+	// 				args[1] = {
+	// 					children,
+	// 					$$slots: {
+	// 						default: true,
+	// 					},
+	// 				};
+	// 			} else {
+	// 				args[1].children = children;
+	// 				args[1].$$slots.default = true;
+	// 			}
+
+	// 			// @ts-expect-error
+	// 			return target(...args);
+	// 		},
+	// 	}
+	// );
 };
 
 function useLayoutId({ layoutId }: MotionProps, isCustom = false) {
 	const layoutGroupId = get(
-		getContext<Writable<LayoutGroupContextProps>>(LayoutGroupContext) || LayoutGroupContext(isCustom)
+		getContext<ReturnType<typeof LayoutGroupContext>>(LayoutGroupContext) || LayoutGroupContext(isCustom)
 	).id;
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle, isCustom = false) {
-	const isStrict = get(getContext<Writable<LazyContextProps>>(LazyContext) || LazyContext(isCustom)).strict;
+	const isStrict = get(getContext<ReturnType<typeof LazyContext>>(LazyContext) || LazyContext(isCustom)).strict;
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

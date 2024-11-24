@@ -15,6 +15,7 @@ export interface PresenceContextProps {
 	onExitComplete?: (id: string | number) => void;
 	initial?: false | VariantLabels;
 	custom?: any;
+	presenceChildren?: Writable<{ key: any }>;
 }
 
 import { writable } from 'svelte/store';

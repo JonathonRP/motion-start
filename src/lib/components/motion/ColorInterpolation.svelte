@@ -1,5 +1,5 @@
 <script>
-    import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
+    import { motion, useMotionValue, useTransform } from "$lib/motion-start";
     let x = useMotionValue(0);
     let background = useTransform(
         x,
@@ -9,13 +9,13 @@
 </script>
 
 <!-- Color Interpolation -->
-<Motion.div
+<motion.div
     style={{
         background,
     }}
     class=" h-[350px] border border-dashed flex justify-center items-center rounded-3xl"
 >
-    <Motion.div
+    <motion.div
         style={{
             x: x,
         }}
@@ -25,5 +25,5 @@
         class="w-32 h-32 text-black rounded-full bg-white cursor-grab flex justify-center items-center select-none"
     >
         Drag me
-    </Motion.div>
-</Motion.div>
+    </motion.div>
+</motion.div>

@@ -1,17 +1,29 @@
+<!-- based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
+
+<script lang="ts" context="module" module>
+	function useDefaultMotionValue(value: any, defaultValue = 0) {
+		return isMotionValue(value) ? value : useMotionValue(defaultValue);
+	}
+</script>
 
 <script lang="ts" generics="V">
 	import type { SvelteHTMLElements } from "svelte/elements";
-	import type { ReorderContextProps } from "./types";
-	import type { DefaultPropsType } from ".";
 
-	import Motion from "../../motion/Motion.svelte";
+	import { ReorderContext } from "../../context/ReorderContext";
+	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value";
-	import { getContext } from "svelte";
+	import { getContext, type Snippet, type Component } from "svelte";
 
 	import { useTransform } from "../../value/use-transform";
 	import { isMotionValue } from "../../value/utils/is-motion-value";
 	import { invariant } from "../../utils/errors";
+	import type { HTMLMotionProps } from "../../render/html/types";
+	import type { Ref } from "../../utils/safe-react-types";
+	import type { Box } from "../../projection/geometry/types";
+	import type { PanInfo } from "$lib/motion-start/gestures/pan/PanSession";
+	import type { Writable } from "svelte/store";
 
 	type Props<V> = {
 		/**
@@ -37,17 +49,31 @@
 		layout?: true | "position";
 	};
 
-	const {
+	let {
 		children,
 		style = {},
 		value,
 		as = "li",
 		onDrag,
 		layout = true,
+		ref = $bindable(),
 		...props
-	}: Props<V> & DefaultPropsType = $props();
+	}: Props<V> &
+		Omit<HTMLMotionProps<any>, "children"> & {
+			ref?: Ref<SvelteHTMLElements[typeof as]>;
+		} & { children?: Snippet } = $props();
 
-	const context = getContext<ReorderContextProps<V>>("Reorder");
+	const Component = motion[as as keyof typeof motion] as Component<
+		Omit<HTMLMotionProps<any>, "children"> & {
+			ref?: Ref<SvelteHTMLElements[typeof as]>;
+		} & {
+			children?: Snippet;
+		}
+	>;
+
+	const context =
+		getContext<ReturnType<typeof ReorderContext>>(ReorderContext) ||
+		ReorderContext(Component);
 	const point = $state({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
@@ -58,20 +84,17 @@
 	);
 
 	invariant(
-		Boolean(context),
+		Boolean($context),
 		"Reorder.Item must be a child of Reorder.Group",
 	);
 
-	const { axis, registerItem, updateOrder } = $derived(context);
-
-	function useDefaultMotionValue(value: any, defaultValue = 0) {
-		return isMotionValue(value) ? value : useMotionValue(defaultValue);
-	}
+	const { axis, registerItem, updateOrder } = $derived($context!);
 </script>
 
-<Motion
+<Component
 	drag={axis}
 	{...props}
+	dragSnapToOrigin
 	style={{
 		...style,
 		x: point.x,
@@ -79,7 +102,7 @@
 		zIndex,
 	}}
 	{layout}
-	onDrag={(event, gesturePoint) => {
+	onDrag={(event: PointerEvent, gesturePoint: PanInfo) => {
 		event.stopPropagation();
 
 		const { velocity } = gesturePoint;
@@ -87,24 +110,9 @@
 
 		onDrag && onDrag(event, gesturePoint);
 	}}
-	onLayoutMeasure={(measured) => registerItem(value, measured)}
-	dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
-	dragElastic={0.88}
-	_dragX={point.x}
-	_dragY={point.y}
-	whileDrag={{
-		scale: 1.025,
-	}}
-	dragTransition={{
-		bounceDamping: 15,
-		bounceStiffness: 200,
-		min: 0,
-		max: 50,
-		power: 0.88,
-	}}
-	let:motion
+	onLayoutMeasure={(measured: Box) => registerItem(value, measured)}
+	bind:ref
+	ignoreStrict
 >
-	<svelte:element this={as} class={props.class} use:motion>
-		{@render children()}
-	</svelte:element>
-</Motion>
+	{@render children?.()}
+</Component>

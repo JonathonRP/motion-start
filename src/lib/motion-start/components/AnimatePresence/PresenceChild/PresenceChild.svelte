@@ -1,4 +1,4 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
@@ -19,6 +19,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { setDomContext } from "../../../context/DOMcontext.js";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
+    import PopChild from "../PopChild/PopChild.svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -28,6 +29,7 @@ Copyright (c) 2018 Framer B.V. -->
         initial = undefined,
         custom = undefined,
         presenceAffectsLayout,
+        mode = "wait",
         isCustom,
         children,
     }: Props = $props();
@@ -81,4 +83,10 @@ Copyright (c) 2018 Framer B.V. -->
     setDomContext("Presence", isCustom, context);
 </script>
 
-{@render children?.()}
+{#if mode === "popLayout"}
+    <PopChild {isPresent}>
+        {@render children?.()}
+    </PopChild>
+{:else}
+    {@render children?.()}
+{/if}

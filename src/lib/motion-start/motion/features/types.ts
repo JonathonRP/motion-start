@@ -9,7 +9,7 @@ import type { VisualElement } from '../../render/VisualElement';
 import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature';
 import type { MeasureLayout } from './layout/MeasureLayout';
-import type { Ref } from '../../utils/is-ref-object';
+import type { Ref } from '../../utils/safe-react-types';
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
@@ -56,6 +56,7 @@ export interface FeatureBundle extends FeaturePackages {
 
 export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 
+// TODO: this should be component...
 export type RenderComponent<Instance, RenderState> = (
 	Component: string,
 	props: MotionProps,

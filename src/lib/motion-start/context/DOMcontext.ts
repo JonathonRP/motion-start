@@ -18,7 +18,8 @@ export const getDomContext = (
 				(ReorderContextProps<any> | null) &
 				(PresenceContextProps | null) &
 				LazyContextProps &
-				LayoutGroupContextProps
+				LayoutGroupContextProps &
+				string
 	  >
 	| undefined => {
 	if (!el || !window) {

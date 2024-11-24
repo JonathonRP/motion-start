@@ -1,5 +1,5 @@
 <script>
-    import { Motion } from "$lib/motion-start";
+    import { motion } from "$lib/motion-start";
 </script>
 
 <svg
@@ -11,7 +11,7 @@
     stroke-linecap="round"
     fill="transparent"
 >
-    <Motion.path
+    <motion.path
         animate={{
             d: [
                 "M 40,40 Q 160,40 160,160",

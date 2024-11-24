@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
+import { getContext, tick } from 'svelte';
 import type { RenderComponent } from '../../motion/features/types';
 import type { HTMLRenderState } from '../html/types';
 import { useHTMLProps } from '../html/use-props';
@@ -11,6 +11,8 @@ import type { SVGRenderState } from '../svg/types';
 import { useSvgProps } from '../svg/use-props';
 import { filterProps } from './utils/filter-props';
 import { isSVGComponent } from './utils/is-svg-component';
+import { Children$ } from '../../components/AnimatePresence/utils';
+import { PresenceContext } from '$lib/motion-start/context/PresenceContext';
 
 export function createUseRender(forwardMotionProps = false) {
 	const useRender: RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState> = (
@@ -28,12 +30,19 @@ export function createUseRender(forwardMotionProps = false) {
 
 		let elementProps = { ...filteredProps, ...visualProps, ref };
 
-		let element = ref(document.createElement(Component))?.current;
+		let element = document.createElement(Component);
 
 		Object.entries<any>(elementProps).forEach(([key, val]) => {
 			element?.setAttribute(key, val);
 		});
 
+		typeof ref === 'function' ? ref(element) : (ref!.current = element);
+
+		// const presenceContext =
+		// 	getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(Component);
+
+		// presenceContext.update((val) => val?.register());
+		// Children$.update((children$) => [...children$, { key: (element.dataset.key = `ap-${id++}`) }]);
 		tick().then(() => {
 			useVisualProps = isSVGComponent(Component) ? useSvgProps : useHTMLProps;
 
@@ -43,11 +52,14 @@ export function createUseRender(forwardMotionProps = false) {
 
 			elementProps = { ...filteredProps, ...visualProps, ref };
 
-			element = ref(document.createElement(Component))?.current;
+			element = document.createElement(Component);
 
 			Object.entries<any>(elementProps).forEach(([key, val]) => {
 				element?.setAttribute(key, val);
 			});
+
+			typeof ref === 'function' ? ref(element) : (ref!.current = element);
+			// Children$.update((children$) => [...children$, element]);
 		});
 
 		return element;

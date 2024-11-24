@@ -4,15 +4,15 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { afterUpdate, beforeUpdate, getContext, onMount, tick } from 'svelte';
-import { get, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
-import { LazyContext, type LazyContextProps } from '../../context/LazyContext';
+import { LazyContext } from '../../context/LazyContext';
 import {
 	MotionConfigContext,
 	type MotionConfigContext as MotionConfigContextProps,
 } from '../../context/MotionConfigContext';
-import { MotionContext, type MotionContextProps } from '../../context/MotionContext';
-import { PresenceContext, type PresenceContextProps } from '../../context/PresenceContext';
+import { MotionContext } from '../../context/MotionContext';
+import { PresenceContext } from '../../context/PresenceContext';
 import type { VisualElement } from '../../render/VisualElement';
 import type { CreateVisualElement } from '../../render/types';
 import type { MotionProps } from '../types';
@@ -30,15 +30,15 @@ export function useVisualElement<Instance, RenderState>(
 	ProjectionNodeConstructor?: any,
 	isCustom = false
 ): VisualElement<Instance> | undefined {
-	const mc = getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+	const mc = getContext<ReturnType<typeof MotionContext>>(MotionContext) || MotionContext(isCustom);
 	const { visualElement: parent } = get(mc);
 
-	const lazyContext = getContext<Writable<LazyContextProps>>(LazyContext) || LazyContext(isCustom);
+	const lazyContext = getContext<ReturnType<typeof LazyContext>>(LazyContext) || LazyContext(isCustom);
 
-	const presenceContext = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+	const presenceContext = getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
 
 	const reducedMotionConfig = get(
-		getContext<Writable<MotionConfigContextProps>>(MotionConfigContext) || MotionConfigContext(isCustom)
+		getContext<ReturnType<typeof MotionConfigContextProps>>(MotionConfigContext) || MotionConfigContext(isCustom)
 	).reducedMotion;
 
 	let visualElementRef: VisualElement<Instance> | undefined = undefined;
@@ -62,7 +62,8 @@ export function useVisualElement<Instance, RenderState>(
 	let visualElement: VisualElement<Instance> | undefined = visualElementRef;
 
 	const initialLayoutGroupConfig =
-		getContext<Writable<SwitchLayoutGroupContext>>(SwitchLayoutGroupContext) || SwitchLayoutGroupContext(isCustom);
+		getContext<ReturnType<typeof SwitchLayoutGroupContext>>(SwitchLayoutGroupContext) ||
+		SwitchLayoutGroupContext(isCustom);
 
 	if (
 		visualElement &&

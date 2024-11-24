@@ -7,5 +7,6 @@ export interface PresenceChildProps {
 	initial?: false | VariantLabels;
 	custom?: any;
 	presenceAffectsLayout: boolean;
+	mode: 'sync' | 'popLayout' | 'wait';
 	isCustom: boolean;
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
+    import { motion, useMotionValue, useTransform } from "$lib/motion-start";
     let exitX = 0;
     const x = useMotionValue(0);
     const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
@@ -19,7 +19,7 @@
     };
     $: isFront = frontCard ? variantsFrontCard : variantsBackCard;
 
-    function handleDragEnd(_: any, info: { offset: { x: number } }) {
+    function handleDragEnd(_: PointerEvent, info: PanInfo) {
         // console.log("info", info);
         if (info.offset.x < -100) {
             // setExitX(-250);
@@ -39,7 +39,7 @@
 
 <!-- Animate Presence Stack -->
 
-<Motion.div
+<motion.div
     style={{
         x,
         rotate,
@@ -58,4 +58,4 @@
     class="w-32 h-32 top-10 bg-white rouned-xl absolute rounded-xl text-black flex justify-center items-center select-none"
 >
     {index}
-</Motion.div>
+</motion.div>

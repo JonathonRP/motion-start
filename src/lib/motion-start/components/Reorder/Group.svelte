@@ -1,14 +1,28 @@
+<!-- based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
-<script lang="ts" generics="V">
-	import type { SvelteHTMLElements } from "svelte/elements";
-	import { setContext, type Snippet } from "svelte";
-	import Motion from "../../motion/Motion.svelte";
-	import type { ItemData, ReorderContextProps } from "./types";
+<script lang="ts" context="module" module>
+	function getValue<V>(item: ItemData<V>) {
+		return item.value;
+	}
 
+	function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
+		return a.layout.min - b.layout.min;
+	}
+</script>
+
+<script lang="ts" generics="V">
 	import { invariant } from "../../utils/errors";
-	import { checkReorder } from "./utils/check-reorder";
+	import type { SvelteHTMLElements } from "svelte/elements";
+	import { setContext, type Component, type Snippet } from "svelte";
+	import { ReorderContext } from "../../context/ReorderContext";
+	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
+	import type { Ref } from "../../utils/is-ref-object";
+
+	import type { ItemData, ReorderContextProps } from "./types";
+	import { checkReorder } from "./utils/check-reorder";
 
 	type Props<V> = {
 		/**
@@ -54,16 +68,26 @@
 		values: V[];
 	};
 
-	const {
+	let {
 		children,
 		as = "ul",
 		axis = "y",
 		onReorder,
 		values,
+		ref = $bindable(),
 		...props
 	}: Props<V> &
-		Omit<HTMLMotionProps<any>, "values"> & { children: Snippet } = $props();
+		Omit<HTMLMotionProps<any>, "values" | "children"> & {
+			ref?: Ref<SvelteHTMLElements[typeof as]>;
+		} & { children?: Snippet } = $props();
 
+	const Component = motion[as as keyof typeof motion] as Component<
+		Omit<HTMLMotionProps<any>, "children"> & {
+			ref?: Ref<SvelteHTMLElements[typeof as]>;
+		} & {
+			children?: Snippet;
+		}
+	>;
 	const order: ItemData<V>[] = [];
 	let isReordering = $state(false);
 
@@ -97,24 +121,14 @@
 		},
 	};
 
-	setContext<typeof context>("Reorder", context);
+	setContext(ReorderContext, context);
 
 	$effect(() => {
 		if (!isReordering) return;
 		isReordering = false;
 	});
-
-	function getValue<V>(item: ItemData<V>) {
-		return item.value;
-	}
-
-	function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
-		return a.layout.min - b.layout.min;
-	}
 </script>
 
-<Motion {...props} let:motion>
-	<svelte:element this={as} class={props.class} use:motion>
-		{@render children()}
-	</svelte:element>
-</Motion>
+<Component {...props} bind:ref ignoreStrict>
+	{@render children?.()}
+</Component>

@@ -1,12 +1,12 @@
 <script>
     import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
+    import { motion } from "$lib/motion-start";
     let i = 0;
 </script>
 
 <Box cls="bg-slate-800 flex">
     {#key i}
-        <Motion.div
+        <motion.div
             animate={{
                 rotate: 360,
             }}
@@ -16,6 +16,6 @@
                 repeatType: "reverse",
             }}
             class="box"
-        ></Motion.div>
+        ></motion.div>
     {/key}
 </Box>

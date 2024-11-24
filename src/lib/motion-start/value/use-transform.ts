@@ -163,7 +163,7 @@ export function useTransform<I, O>(
 	outputRange?: O[],
 	options?: TransformOptions<O>
 ) {
-	let transformer: any;
+	const latest: I & (string | number)[] & number & any[{}] = [] as any;
 	const update = (
 		_input: typeof input,
 		_inputRangeOrTransformer?: typeof inputRangeOrTransformer,
@@ -173,32 +173,31 @@ export function useTransform<I, O>(
 		if (typeof _input === 'function') {
 			return useComputed(_input);
 		}
-		const _transformer =
-			typeof _inputRangeOrTransformer === 'function'
-				? _inputRangeOrTransformer
-				: transform(_inputRangeOrTransformer!, _outputRange!, _options);
-		transformer = Array.isArray(_input)
-			? _transformer
-			: ([_latest]: any[]) => (_transformer as SingleTransformer<I, O>)(_latest);
-		return Array.isArray(_input)
-			? useListTransform(_input as MotionValue<string | number>[], transformer as MultiTransformer<string | number, O>)
-			: useListTransform([_input], ([_latest]) => (transformer as SingleTransformer<I, O>)(_latest));
+		const transformer =
+			typeof inputRangeOrTransformer === 'function'
+				? inputRangeOrTransformer
+				: transform(inputRangeOrTransformer!, outputRange!, options);
+		const values = Array.isArray(input) ? input : [input];
+		const _transformer = Array.isArray(input) ? transformer : ([_latest]: any[]) => transformer(_latest);
+		return [
+			values,
+			() => {
+				latest.length = 0;
+				const numValues = values.length;
+				for (let i = 0; i < numValues; i++) {
+					// @ts-expect-error
+					latest[i] = values[i].get();
+				}
+				return _transformer(latest);
+			},
+		] as const;
 	};
-	const comb = update(input, inputRangeOrTransformer, outputRange, options);
+	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options));
 
 	(comb as any).updateInner = comb.reset;
 
-	const latest: I[] = [];
-	comb.reset = (_input, _inputRangeOrTransformer, _outputRange?: typeof outputRange, _options?: typeof options) =>
-		(comb as any).updateInner(_input, () => {
-			latest.length = 0;
-			const numValues = _input.length;
-			for (let i = 0; i < numValues; i++) {
-				latest[i] = _input[i].get();
-			}
-
-			return transformer(latest);
-		});
+	comb.reset = (input, inputRangeOrTransformer, outputRange, options) =>
+		(comb as any).updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
 	return comb;
 }
 

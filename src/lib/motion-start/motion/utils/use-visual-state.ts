@@ -15,7 +15,7 @@ import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
 import { MotionContext, type MotionContextProps } from '../../context/MotionContext';
 import { PresenceContext, type PresenceContextProps } from '../../context/PresenceContext';
 import { getContext, tick } from 'svelte';
-import { get, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 export interface VisualState<Instance, RenderState> {
 	renderState: RenderState;
@@ -55,8 +55,9 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean, isCustom = false): VisualState<I, RS> => {
-		const context = getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
-		const presenceContext = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+		const context = getContext<ReturnType<typeof MotionContext>>(MotionContext) || MotionContext(isCustom);
+		const presenceContext =
+			getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
 		const make = () => makeState(config, props, get(context), get(presenceContext));
 
 		let state = make();

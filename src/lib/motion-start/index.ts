@@ -177,7 +177,7 @@ export * from './animation/sequence/types';
 export { DeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
 export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state';
 export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale';
-export { AnimateSharedLayout } from './components/AnimateSharedLayout';
+export { default as AnimateSharedLayout } from './components/AnimateSharedLayout.svelte';
 
 // Keep explict delay in milliseconds export for BC with Framer
 export { delay, type DelayedFunction } from './utils/delay';

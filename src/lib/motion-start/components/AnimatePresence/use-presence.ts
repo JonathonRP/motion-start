@@ -1,14 +1,15 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Readable, Writable } from 'svelte/store';
-import type { PresenceContextProps } from "../../context/PresenceContext";
+
+import type { Readable } from 'svelte/store';
+import type { PresenceContextProps } from '../../context/PresenceContext';
 
 import { derived, get, readable } from 'svelte/store';
 import { PresenceContext } from '../../context/PresenceContext.js';
 
-import { getContext, onMount } from "svelte";
+import { getContext, onMount } from 'svelte';
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -19,7 +20,7 @@ let counter = 0;
 const incrementId = () => counter++;
 
 export function isPresent(context: PresenceContextProps) {
-    return context === null ? true : context.isPresent
+	return context === null ? true : context.isPresent;
 }
 
 /**
@@ -43,9 +44,9 @@ export function isPresent(context: PresenceContextProps) {
  * @public
  */
 export const useIsPresent = (isCustom = false): Readable<boolean> => {
-    let presenceContext = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
-    return derived(presenceContext, $v => $v === null ? true : $v.isPresent)
-}
+	const presenceContext = getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
+	return derived(presenceContext, ($v) => ($v === null ? true : $v.isPresent));
+};
 
 /**
  * When a component is the child of `AnimatePresence`, it can use `usePresence`
@@ -56,9 +57,9 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  *
  * const [isPresent, safeToRemove] = usePresence()
  *
- * 
+ *
  *  $: !isPresent && setTimeout(safeToRemove, 1000)
- * 
+ *
  *
  *   return <div />
  * }
@@ -70,21 +71,20 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  * @public
  */
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
+	const context = getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
+	const id = get(context) === null ? undefined : incrementId();
+	onMount(() => {
+		if (get(context) !== null) {
+			get(context)?.register(id!);
+		}
+	});
 
-    const context = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
-    const id = get(context) === null ? undefined : incrementId();
-    onMount(() => {
-        if (get(context) !== null) {
-            get(context).register(id!);
-        }
-    })
-
-    if (get(context) === null) {
-        return readable([true, null]) satisfies Readable<AlwaysPresent>;
-    }
-    return derived<typeof context, Present | NotPresent>(context, $v =>
-        (!$v.isPresent && $v.onExitComplete) ?
-            [false, () => $v.onExitComplete?.(id!)] satisfies NotPresent :
-            [true] satisfies Present
-    );
-}
+	if (get(context) === null) {
+		return readable([true, null]) satisfies Readable<AlwaysPresent>;
+	}
+	return derived<typeof context, Present | NotPresent>(context, ($v) =>
+		!$v?.isPresent && $v?.onExitComplete
+			? ([false, () => $v.onExitComplete?.(id!)] satisfies NotPresent)
+			: ([true] satisfies Present)
+	);
+};

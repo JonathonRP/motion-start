@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import { getContext, onMount } from 'svelte';
 import { motionValue, type MotionValue } from '.';
 import { MotionConfigContext } from '../context/MotionConfigContext';
-import { get, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.
@@ -34,7 +34,7 @@ export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> 
 	 * value is updated.
 	 */
 	const { isStatic } = get(
-		getContext<Writable<MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(isCustom)
+		getContext<ReturnType<typeof MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(isCustom)
 	);
 
 	onMount(() => {
