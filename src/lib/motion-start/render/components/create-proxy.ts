@@ -42,7 +42,11 @@ export function createDOMMotionComponentProxy(componentFactory: typeof createMot
 	// : {
 	// 	[P in keyof SvelteHTMLElements]: MotionComponent<P>;
 	// }
-	type MotionProxy = typeof componentFactory & DOMMotionComponents & { create: typeof componentFactory };
+	type MotionProxy = {
+		[P in keyof SvelteHTMLElements]: ReturnType<typeof componentFactory<MotionProps, P>>;
+	} & {
+		create: typeof componentFactory;
+	};
 
 	if (typeof Proxy === 'undefined') {
 		return componentFactory as MotionProxy;
@@ -55,11 +59,10 @@ export function createDOMMotionComponentProxy(componentFactory: typeof createMot
 		return componentFactory(...args);
 	};
 
-	return new Proxy(deprecatedFactoryFunction, {
-		get(_target, key: string) {
+	return new Proxy({ ...deprecatedFactoryFunction } as MotionProxy, {
+		get(_target, key) {
 			if (key === 'create') return componentFactory;
-
-			return componentFactory(key);
+			return componentFactory<undefined, typeof key>(key);
 		},
 	}) as MotionProxy;
 }

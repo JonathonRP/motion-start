@@ -5,7 +5,8 @@ Copyright (c) 2018 Framer B.V.
 
 import type { VisualElement } from '../../render/VisualElement';
 import type { VisualState } from './use-visual-state';
-import { isRefObject, type Ref } from '../../utils/is-ref-object.js';
+import { isRefObject } from '../../utils/is-ref-object.js';
+import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 
 /**
  * Creates a ref function that, when called, hydrates the provided
@@ -15,8 +16,8 @@ function useMotionRef<Instance, RenderState>(
 	visualState: VisualState<Instance, RenderState>,
 	visualElement?: VisualElement<Instance> | null,
 	externalRef?: Ref<Instance>
-): Ref<Instance> {
-	return (instance) => {
+): RefCallBack<Instance> {
+	return (instance: Instance) => {
 		instance && visualState.mount && visualState.mount(instance);
 
 		if (visualElement) {
