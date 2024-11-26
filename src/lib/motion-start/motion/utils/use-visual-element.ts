@@ -59,7 +59,7 @@ export function useVisualElement<Instance, RenderState>(
 		});
 	}
 
-	let visualElement: VisualElement<Instance> | undefined = visualElementRef;
+	const visualElement: VisualElement<Instance> | undefined = visualElementRef;
 
 	const initialLayoutGroupConfig =
 		getContext<ReturnType<typeof SwitchLayoutGroupContext>>(SwitchLayoutGroupContext) ||
@@ -97,7 +97,9 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	if (visualElement) {
+	beforeUpdate(() => {
+		if (!visualElement) return;
+
 		isMounted = true;
 		window.MotionIsMounted = true;
 
@@ -118,79 +120,23 @@ export function useVisualElement<Instance, RenderState>(
 		if (wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
 		}
-	}
-
-	tick().then(() => {
-		const { visualElement: parent } = get(mc);
-
-		if (!visualElementRef && createVisualElement) {
-			visualElementRef = createVisualElement(Component, {
-				visualState,
-				parent,
-				props,
-				presenceContext: get(presenceContext),
-				blockInitialAnimation: get(presenceContext)?.initial === false,
-				reducedMotionConfig,
-			});
-		}
-		visualElement = visualElementRef;
-
-		if (
-			visualElement &&
-			!visualElement.projection &&
-			ProjectionNodeConstructor &&
-			(visualElement.type === 'html' || visualElement.type === 'svg')
-		) {
-			createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, get(initialLayoutGroupConfig));
-		}
-
-		const optimisedAppearId = props[optimizedAppearDataAttribute as keyof typeof props];
-		const wantsHandoff =
-			Boolean(optimisedAppearId) &&
-			!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
-			window.MotionHasOptimisedAnimation?.(optimisedAppearId);
-
-		if (visualElement) {
-			isMounted = true;
-			window.MotionIsMounted = true;
-
-			visualElement.updateFeatures();
-
-			microtask.render(visualElement.render);
-
-			/**
-			 * Ideally this function would always run in a useEffect.
-			 *
-			 * However, if we have optimised appear animations to handoff from,
-			 * it needs to happen synchronously to ensure there's no flash of
-			 * incorrect styles in the event of a hydration error.
-			 *
-			 * So if we detect a situtation where optimised appear animations
-			 * are running, we use useLayoutEffect to trigger animations.
-			 */
-			if (wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
-		}
 	});
 
 	afterUpdate(() => {
-		tick().then(() => {
-			if (!visualElement) return;
+		if (!visualElement) return;
 
-			if (!wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
+		if (!wantsHandoff && visualElement.animationState) {
+			visualElement.animationState.animateChanges();
+		}
 
-			if (wantsHandoff) {
-				// This ensures all future calls to animateChanges() in this component will run in useEffect
-				queueMicrotask(() => {
-					window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
-				});
+		if (wantsHandoff) {
+			// This ensures all future calls to animateChanges() in this component will run in useEffect
+			queueMicrotask(() => {
+				window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
+			});
 
-				wantsHandoff = false;
-			}
-		});
+			wantsHandoff = false;
+		}
 	});
 
 	return visualElement;

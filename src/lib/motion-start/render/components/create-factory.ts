@@ -12,15 +12,10 @@ import { svgMotionConfig } from '../svg/config-motion';
 import { htmlMotionConfig } from '../html/config-motion';
 import { createUseRender } from '../dom/use-render';
 import type { ForwardRefComponent } from '../html/types';
-import type { Snippet } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 
-type MotionComponent<
-	T extends keyof DOMMotionComponents | keyof SvelteHTMLElements,
-	P,
-> = T extends keyof DOMMotionComponents
-	? DOMMotionComponents[T]
-	: ForwardRefComponent<T, MotionComponentProps<{ [K in keyof P]: P[K] } & { children: Snippet }>>;
+type MotionComponent<P> = Component<MotionComponentProps<P & { children: Snippet }>>;
 
 export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,
@@ -40,6 +35,6 @@ export function createMotionComponentFactory(
 			Component,
 		};
 
-		return createRendererMotionComponent(config as any) as MotionComponent<TagName, Props>;
+		return createRendererMotionComponent(config as any) as MotionComponent<Props>;
 	};
 }

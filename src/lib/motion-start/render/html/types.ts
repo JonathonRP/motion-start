@@ -44,7 +44,7 @@ export interface HTMLRenderState {
 /**
  * @public
  */
-export type ForwardRefComponent<T, P extends Record<string, any>> = Component<T & P>;
+export type ForwardRefComponent<T, P extends Record<string, any>> = Component<P & T>;
 
 export type UnwrapFactoryElement<F> = F extends HTMLAttributes<infer P> ? P : never;
 

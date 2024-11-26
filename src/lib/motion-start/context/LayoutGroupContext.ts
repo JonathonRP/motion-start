@@ -8,7 +8,7 @@ import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 import { getDomContext } from './DOMcontext';
 import type { NodeGroup } from '../projection/node/group';
-import { getContext, setContext } from 'svelte';
+import { getContext, onMount, setContext } from 'svelte';
 
 export interface LayoutGroupContextProps {
 	id?: string;

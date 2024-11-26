@@ -4,6 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import {
+	afterUpdate,
 	beforeUpdate,
 	createRawSnippet,
 	getContext,
@@ -69,11 +70,10 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 }: MotionComponentConfig<Instance, RenderState>) => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
-	const MotionComponent: Component<{ props: MotionComponentProps<Props>; externalRef?: Ref<Instance> | undefined }> = (
+	const MotionComponent: Component<MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined }> = (
 		anchor,
-		{ props, externalRef }
+		{ externalRef, ...props }
 	) => {
-		props = props || {};
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
@@ -118,14 +118,14 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				createVisualElement,
 				layoutProjection.ProjectionNode
 			);
+
+			// MotionContext.Provider
+			const store = writable(context);
+			store.set(context);
+
+			setContext(MotionContext, store);
+			setDomContext('Motion', this, store);
 		}
-
-		// MotionContext.Provider
-		const store = writable(context);
-		store.set(context);
-
-		setContext(MotionContext, store);
-		setDomContext('Motion', this, store);
 
 		// Since useMotionRef is not called on destroy, the visual element is unmounted here
 		onDestroy(() => {
@@ -135,21 +135,24 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		// style="display: contents"
 		render = createRawSnippet(() => {
 			return {
-				render: () => '<slot>hello from motion<slot>',
+				render: () => '<slot>',
 				setup(node: Element) {
 					useMeasureLayout && context.visualElement
-						? mount(useMeasureLayout({ visualElement: context.visualElement, ...configAndProps }), {
-								target: node,
-							})
+						? useMeasureLayout({ visualElement: context.visualElement, ...configAndProps })
 						: null;
-					useRender(
-						Component,
-						props,
-						useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-						visualState,
-						isStatic,
-						context.visualElement
-					);
+					mount(useRender, {
+						target: node,
+						props: {
+							Component,
+							props,
+							ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+							visualState,
+							isStatic,
+							visualElement: context.visualElement,
+							children: props.children ? props.children : undefined,
+							$$slots: { default: props.children },
+						},
+					});
 				},
 			};
 		});
