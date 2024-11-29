@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
+    import { useContext } from "../../context/utils/context.svelte.js";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
 
@@ -22,9 +22,7 @@ Copyright (c) 2018 Framer B.V. -->
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
-    const layoutContext =
-        getContext<ReturnType<typeof LayoutGroupContext>>(LayoutGroupContext) ||
-        LayoutGroupContext(isCustom);
+    const layoutContext = useContext(LayoutGroupContext, isCustom);
 
     $: forceRender = () => {
         $layoutContext.forceRender?.();

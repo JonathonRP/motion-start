@@ -10,10 +10,9 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { onMount, setContext } from "svelte";
-  import { writable } from "svelte/store";
-  import { setDomContext } from "../../context/DOMcontext";
+  import { onMount } from "svelte";
 
+  import { useContext } from "../../context/utils/context.svelte";
   import { LazyContext } from "../../context/LazyContext";
   import { loadFeatures } from "../../motion/features/load-features";
   import type {
@@ -89,10 +88,13 @@ Copyright (c) 2018 Framer B.V. -->
       });
     }
   });
-  let context = writable({ renderer: loadedRenderer.current, strict });
-  setContext(LazyContext, context);
-  setDomContext("Lazy", isCustom, context);
-  $: context.set({ renderer: loadedRenderer.current, strict });
+
+  LazyContext.Provider = { renderer: loadedRenderer.current, strict } as any;
+
+  $: useContext(LazyContext).set({
+    renderer: loadedRenderer.current,
+    strict,
+  } as any);
 </script>
 
 <slot />

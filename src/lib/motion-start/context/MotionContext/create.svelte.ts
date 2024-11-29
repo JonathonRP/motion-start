@@ -1,16 +1,16 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { afterUpdate, getContext, onMount, tick } from 'svelte';
-import { get, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import { MotionContext, type MotionContextProps } from '.';
 import type { MotionProps } from '../../motion/types';
 import { getCurrentTreeVariants } from './utils';
+import { useContext } from '../utils/context.svelte';
 
 export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = false): MotionContextProps<Instance> {
-	const mc = () => get(getContext<Writable<MotionContextProps<Instance>>>(MotionContext) || MotionContext(isCustom));
+	const mc = () => get(useContext(MotionContext, isCustom));
 
 	let { initial, animate } = getCurrentTreeVariants(props, mc());
 
@@ -21,7 +21,7 @@ export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = 
 
 	let value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
 
-	afterUpdate(() => {
+	$effect(() => {
 		({ initial, animate } = getCurrentTreeVariants(props, mc()));
 		value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
 	});

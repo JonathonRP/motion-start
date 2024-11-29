@@ -1,7 +1,7 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" context="module" module>
+<script lang="ts" module>
   import { correctBorderRadius } from "../../../projection/styles/scale-border-radius";
   import { correctBoxShadow } from "../../../projection/styles/scale-box-shadow";
 
@@ -25,30 +25,41 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { frame } from "../../../frameloop";
-  import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { addScaleCorrector } from "../../../projection/styles/scale-correction";
   import { globalProjectionState } from "../../../projection/node/state";
   import { microtask } from "../../../frameloop/microtask";
   import type { MeasureProps } from "./MeasureLayout";
 
-  type $$Props = MeasureProps;
+  let {
+    visualElement,
+    layoutGroup,
+    switchLayoutGroup,
+    layoutId,
+    layoutDependency,
+    drag,
+    isPresent,
+    safeToRemove,
+  }: {
+    visualElement: MeasureProps["visualElement"];
+    layoutGroup: MeasureProps["layoutGroup"];
+    switchLayoutGroup?: MeasureProps["switchLayoutGroup"];
+    layoutId?: MeasureProps["layoutId"];
+    layoutDependency?: MeasureProps["layoutDependency"];
+    drag?: MeasureProps["drag"];
+    isPresent: MeasureProps["isPresent"];
+    safeToRemove?: MeasureProps["safeToRemove"];
+  } = $props();
 
-  export let visualElement: $$Props["visualElement"],
-    layoutGroup: $$Props["layoutGroup"],
-    switchLayoutGroup: $$Props["switchLayoutGroup"] | undefined = undefined,
-    layoutId: $$Props["layoutId"] | undefined = undefined,
-    layoutDependency: $$Props["layoutDependency"] | undefined = undefined,
-    drag: $$Props["drag"] | undefined = undefined,
-    isPresent: $$Props["isPresent"],
-    safeToRemove: $$Props["safeToRemove"] | undefined = undefined;
-
-  $: ({ projection } = visualElement);
+  const { projection } = $derived(visualElement);
   let prevProps;
 
-  $: prevProps = {
-    isPresent,
-    layoutDependency,
-  };
+  $effect(() => {
+    prevProps = {
+      isPresent,
+      layoutDependency,
+    };
+  });
 
   const _safeToRemove = () => {
     safeToRemove && safeToRemove();
@@ -86,13 +97,13 @@ Copyright (c) 2018 Framer B.V. -->
    */
 
   let updated = false;
-  const updater = (nc = false) => {
+  const updater = () => {
     if (updated) {
-      return null;
+      return;
     }
     updated = true;
 
-    if (!projection) return null;
+    if (!projection) return;
 
     /**
      * TODO: We use this data in relegate to determine whether to
@@ -131,14 +142,14 @@ Copyright (c) 2018 Framer B.V. -->
       }
     }
 
-    return null;
+    return;
   };
 
-  $: update !== undefined && updater(update);
+  // $: isPresent !== undefined && updater(isPresent);
 
   // getSnapshotBeforeUpdate
-  if (update === undefined) {
-    beforeUpdate(updater);
+  if (safeToRemove === undefined) {
+    $effect(updater);
   }
 
   const afterU = (nc = false) => {
@@ -156,7 +167,7 @@ Copyright (c) 2018 Framer B.V. -->
   };
 
   // componentDidUupdate
-  afterUpdate(afterU);
+  $effect(afterU);
 
   onDestroy(() => {
     if (projection) {

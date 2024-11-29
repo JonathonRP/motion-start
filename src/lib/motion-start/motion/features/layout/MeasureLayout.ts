@@ -3,17 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { get, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import { usePresence } from '../../../components/AnimatePresence/use-presence';
-import { LayoutGroupContext, type LayoutGroupContextProps } from '../../../context/LayoutGroupContext';
+import { useContext } from '../../../context/utils/context.svelte';
+import { LayoutGroupContext } from '../../../context/LayoutGroupContext';
 import { SwitchLayoutGroupContext } from '../../../context/SwitchLayoutGroupContext';
 import type { MotionProps } from '../../types';
 import type { VisualElement } from '../../../render/VisualElement';
 import { default as MeasureLayoutWithContext } from './MeasureLayoutWithContext.svelte';
-import { getContext, type Component } from 'svelte';
+import type { Component } from 'svelte';
 
 interface MeasureContextProps {
-	layoutGroup: LayoutGroupContextProps;
+	layoutGroup: LayoutGroupContext;
 	switchLayoutGroup?: SwitchLayoutGroupContext;
 	isPresent: boolean;
 	safeToRemove?: VoidFunction | null;
@@ -21,35 +22,46 @@ interface MeasureContextProps {
 
 export type MeasureProps = MotionProps & MeasureContextProps & { visualElement: VisualElement<unknown> };
 
-export function MeasureLayout(props: MotionProps & { visualElement: VisualElement<unknown> }, isCustom = false) {
-	const [isPresent, safeToRemove] = get(usePresence(isCustom));
-	const layoutGroup = get(
-		getContext<ReturnType<typeof LayoutGroupContext>>(LayoutGroupContext) || LayoutGroupContext(isCustom)
-	);
+export function MeasureLayout(
+	props: MotionProps & { visualElement: VisualElement<unknown> },
+	isCustom = false
+): Component<MotionProps> {
+	return (anchor, ...args) => {
+		const [isPresent, safeToRemove] = get(usePresence(isCustom));
+		const layoutGroup = get(useContext(LayoutGroupContext, isCustom));
+		return MeasureLayoutWithContext(anchor, {
+			...args[0],
+			...props,
+			layoutGroup,
+			switchLayoutGroup: get(useContext(SwitchLayoutGroupContext, isCustom)),
+			isPresent,
+			safeToRemove,
+		});
+	};
 
-	return new Proxy({} as Component<MotionProps>, {
-		get: (_target, _key, args) => {
-			if (!args[1]) {
-				args[1] = {
-					...props,
-					layoutGroup,
-					switchLayoutGroup: get(SwitchLayoutGroupContext(isCustom)),
-					isPresent,
-					safeToRemove,
-				};
-			} else {
-				args[1] = {
-					...args[1],
-					...props,
-					layoutGroup,
-					switchLayoutGroup: get(SwitchLayoutGroupContext(isCustom)),
-					isPresent,
-					safeToRemove,
-				};
-			}
+	// return new Proxy({} as Component<MotionProps>, {
+	// 	get: (_target, _key, args) => {
+	// 		if (!args[1]) {
+	// 			args[1] = {
+	// 				...props,
+	// 				layoutGroup,
+	// 				switchLayoutGroup: get(SwitchLayoutGroupContext(isCustom)),
+	// 				isPresent,
+	// 				safeToRemove,
+	// 			};
+	// 		} else {
+	// 			args[1] = {
+	// 				...args[1],
+	// 				...props,
+	// 				layoutGroup,
+	// 				switchLayoutGroup: get(SwitchLayoutGroupContext(isCustom)),
+	// 				isPresent,
+	// 				safeToRemove,
+	// 			};
+	// 		}
 
-			// @ts-expect-error
-			return MeasureLayoutWithContext(...args);
-		},
-	});
+	// 		// @ts-expect-error
+	// 		return MeasureLayoutWithContext(...args);
+	// 	},
+	// });
 }

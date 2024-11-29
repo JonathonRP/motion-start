@@ -20,6 +20,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
+    import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
 
     interface Props extends PresenceChildProps {}
 
@@ -60,27 +61,26 @@ Copyright (c) 2018 Framer B.V. -->
             },
         };
     };
-    let context = PresenceContext();
+    let context = useContext(PresenceContext, isCustom);
 
     $effect(() => {
+        context.set(memoContext(refresh));
+
         if (presenceAffectsLayout) {
             context.set(memoContext());
         }
     });
 
-    $effect(() => context.set(memoContext(refresh)));
-
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
+
     $effect(() => {
         keyset(isPresent);
         tick().then(() => {
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
     });
-    setContext(PresenceContext, context);
-    setDomContext("Presence", isCustom, context);
 </script>
 
 {#if mode === "popLayout"}

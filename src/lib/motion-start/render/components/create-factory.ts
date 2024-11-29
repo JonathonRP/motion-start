@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { createRendererMotionComponent, type MotionComponentProps } from '../../motion';
+import { createRendererMotionComponent, type MotionComponentProps } from '../../motion/index.svelte';
 import type { DOMMotionComponents } from '../dom/types';
 import type { CreateVisualElement } from '../types';
 import type { FeaturePackages } from '../../motion/features/types';
@@ -15,7 +15,7 @@ import type { ForwardRefComponent } from '../html/types';
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 
-type MotionComponent<P> = Component<MotionComponentProps<P & { children: Snippet }>>;
+type MotionComponent<P> = Component<MotionComponentProps<P & { children?: Snippet }>>;
 
 export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,

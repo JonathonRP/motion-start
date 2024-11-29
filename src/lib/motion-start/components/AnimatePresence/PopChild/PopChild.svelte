@@ -1,3 +1,6 @@
+<!-- based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V. -->
+
 <script context="module" module lang="ts">
     let presenceId = 0;
     function getPresenceId() {
@@ -8,33 +11,30 @@
 </script>
 
 <script lang="ts">
-    import {
-        afterUpdate,
-        beforeUpdate,
-        createRawSnippet,
-        getContext,
-        mount,
-    } from "svelte";
+    import { createRawSnippet, mount } from "svelte";
     import { MotionConfigContext } from "../../../context/MotionConfigContext";
+    import { useContext } from "../../../context/utils/context.svelte";
     import type { Props, MeasureProps, Size } from "./types";
     import type { RefObject } from "../../../utils/safe-react-types";
     import { get } from "svelte/store";
 
-    type $$Props = Props;
-    export let isPresent: $$Props["isPresent"], children: $$Props["children"];
+    let {
+        isPresent,
+        children,
+    }: { isPresent: Props["isPresent"]; children?: Props["children"] } =
+        $props();
 
     const PopChildMeasure = createRawSnippet<[MeasureProps]>((measureProps) => {
         return {
-            render: () => "<div></div>",
+            render: () => "<slot></slot>",
             setup(node) {
-                afterUpdate(() => {
-                    const { childRef } = measureProps();
-                    childRef.current = node as HTMLElement;
-                });
-                beforeUpdate(() => {
+                $effect(() => {
                     const { children, childRef, sizeRef } = measureProps();
+                    childRef.current = node as HTMLElement;
 
-                    mount(children, { target: node });
+                    if (!children) return;
+
+                    mount(children!, { target: node });
 
                     const elementMeasurements =
                         childRef.current!.getBoundingClientRect()!;
@@ -68,11 +68,7 @@
     };
     $: prevProps = { isPresent };
 
-    $: ({ nonce } = get(
-        getContext<ReturnType<typeof MotionConfigContext>>(
-            MotionConfigContext,
-        ) || MotionConfigContext(),
-    ));
+    $: ({ nonce } = get(useContext(MotionConfigContext)));
 
     /**
      * We create and inject a style block so we can apply this explicit
@@ -83,7 +79,7 @@
      * styles directly on the DOM node, we might be overwriting
      * styles set via the style prop.
      */
-    beforeUpdate(() => {
+    $effect(() => {
         const { width, height, top, left } = size.current!;
         if (isPresent || !ref.current || !width || !height) return;
 

@@ -10,7 +10,7 @@ import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature';
 import type { MeasureLayout } from './layout/MeasureLayout';
 import type { Ref, RefCallBack } from '../../utils/safe-react-types';
-import type { Component } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
@@ -65,4 +65,5 @@ export type RenderComponent<Instance, RenderState> = Component<{
 	visualState: VisualState<Instance, RenderState>;
 	isStatic: boolean;
 	visualElement?: VisualElement<Instance>;
+	children?: Snippet;
 }>;

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { beforeUpdate } from 'svelte';
+import { onMount } from 'svelte';
 import type { MotionValue, MotionValueEventCallbacks } from '../value';
 
 export function useMotionValueEvent<V, EventName extends keyof MotionValueEventCallbacks<V>>(
@@ -17,5 +17,5 @@ export function useMotionValueEvent<V, EventName extends keyof MotionValueEventC
 	 * can be that binding a useLayoutEffect higher up the tree can
 	 * miss changes from lower down the tree.
 	 */
-	beforeUpdate(() => value.on(event, callback));
+	onMount(() => value.on(event, callback));
 }

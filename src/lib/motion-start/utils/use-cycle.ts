@@ -9,7 +9,7 @@ import { get, writable } from 'svelte/store';
 import { tick } from 'svelte';
 
 export type Cycle = (i?: number) => void;
-export type CycleState<T> = [T, Cycle];
+export type CycleState<T> = [Writable<T>, Cycle];
 
 /**
  * Cycles through a series of visual properties. Can be used to toggle between or cycle through animations. It works similar to `useState` in React. It is provided an initial array of possible states, and returns an array of two arguments.
@@ -41,31 +41,16 @@ export function useCycle<T>(...items: T[]): CycleState<T> {
 	let index = 0;
 	const item = writable(items[index]) as Writable<T> & {
 		/** Cycle through to next value or set the next value by index. */
-		cycle: (length: number, ..._items: T[]) => (next?: number) => void;
+		cycle: (next?: number) => void;
 	};
 
-	item.cycle =
-		(_length: number, ..._items: T[]) =>
-		() => {
-			(next?: number) => {
-				index = typeof next !== 'number' ? wrap(0, items.length, index + 1) : next;
-				item.set(items[index]);
-			};
-		};
-
-	tick().then(() => {
-		item.cycle =
-			(_length: number, ..._items: T[]) =>
-			() => {
-				(next?: number) => {
-					index = typeof next !== 'number' ? wrap(0, items.length, index + 1) : next;
-					item.set(items[index]);
-				};
-			};
-	});
+	item.cycle = (next?: number) => {
+		index = typeof next !== 'number' ? wrap(0, items.length, index + 1) : next;
+		item.set(items[index]);
+	};
 
 	// The array will change on each call, but by putting items.length at
 	// the front of this array, we guarantee the dependency comparison will match up
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return [get(item), item.cycle(items.length, ...items)];
+	return [item, item.cycle];
 }

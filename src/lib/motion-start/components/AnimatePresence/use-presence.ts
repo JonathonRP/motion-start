@@ -3,13 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Readable } from 'svelte/store';
-import type { PresenceContextProps } from '../../context/PresenceContext';
-
-import { derived, get, readable } from 'svelte/store';
-import { PresenceContext } from '../../context/PresenceContext.js';
-
-import { getContext, onMount } from 'svelte';
+import { onMount } from 'svelte';
+import { derived, get, readable, type Readable } from 'svelte/store';
+import { useContext } from '../../context/utils/context.svelte';
+import { PresenceContext } from '../../context/PresenceContext';
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -19,7 +16,7 @@ export type NotPresent = [false, SafeToRemove];
 let counter = 0;
 const incrementId = () => counter++;
 
-export function isPresent(context: PresenceContextProps) {
+export function isPresent(context: PresenceContext) {
 	return context === null ? true : context.isPresent;
 }
 
@@ -44,7 +41,7 @@ export function isPresent(context: PresenceContextProps) {
  * @public
  */
 export const useIsPresent = (isCustom = false): Readable<boolean> => {
-	const presenceContext = getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
+	const presenceContext = useContext(PresenceContext, isCustom);
 	return derived(presenceContext, ($v) => ($v === null ? true : $v.isPresent));
 };
 
@@ -71,7 +68,7 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  * @public
  */
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
-	const context = getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
+	const context = useContext(PresenceContext, isCustom);
 	const id = get(context) === null ? undefined : incrementId();
 	onMount(() => {
 		if (get(context) !== null) {

@@ -28,8 +28,8 @@
 <Box cls="bg-slate-800 text-black">
     <motion.div
         animate={{
-            scale,
-            backgroundColor,
+            scale: $scale,
+            backgroundColor: $backgroundColor,
         }}
         transition={{
             duration: 0.3,

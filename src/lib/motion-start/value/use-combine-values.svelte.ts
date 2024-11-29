@@ -5,7 +5,6 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionValue } from '.';
 import { motionValue } from '.';
-import { beforeUpdate } from 'svelte';
 import { cancelFrame, frame } from '../frameloop';
 
 export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: () => R) => {
@@ -47,7 +46,7 @@ export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: 
 		subscribe();
 	};
 
-	beforeUpdate(() => {
+	$effect(() => {
 		const scheduleUpdate = () => frame.preRender(updateValue, false, true);
 		const subscriptions = values.map((v) => v.on('change', scheduleUpdate));
 

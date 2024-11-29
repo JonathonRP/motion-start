@@ -4,8 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { VisualElement } from '../../render/VisualElement';
-import { getDomContext } from '../DOMcontext';
-import { writable } from 'svelte/store';
+import { createContext } from '../utils/context.svelte';
 
 export interface MotionContextProps<Instance = unknown> {
 	visualElement?: VisualElement<Instance>;
@@ -13,4 +12,4 @@ export interface MotionContextProps<Instance = unknown> {
 	animate?: string | string[];
 }
 
-export const MotionContext = (c?: any) => getDomContext('Motion', c) || writable<MotionContextProps>({});
+export const MotionContext = createContext<MotionContextProps>({});

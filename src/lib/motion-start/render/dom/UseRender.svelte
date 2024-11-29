@@ -1,5 +1,8 @@
+<!-- based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V. -->
+
 <script lang="ts">
-    import { afterUpdate, getContext } from "svelte";
+    import { getContext } from "svelte";
     import type { RenderComponent } from "../../motion/features/types";
     import type { HTMLRenderState } from "../html/types";
     import type { SVGRenderState } from "../svg/types";
@@ -15,15 +18,25 @@
         >
     >[1];
 
-    export let Component: $$Props["Component"],
-        props: $$Props["props"],
-        ref: $$Props["ref"],
-        visualState: $$Props["visualState"],
+    let {
+        Component,
+        props,
+        ref,
+        visualState,
+        isStatic,
+        children,
+    }: {
+        Component: $$Props["Component"];
+        props: $$Props["props"];
+        ref: $$Props["ref"];
+        visualState: $$Props["visualState"];
         isStatic: $$Props["isStatic"];
+        children: $$Props["children"];
+    } = $props();
 
     let elementProps = {};
 
-    afterUpdate(() => {
+    $effect(() => {
         const { latestValues } = visualState;
         const useVisualProps = isSVGComponent(Component)
             ? useSvgProps
@@ -46,7 +59,6 @@
     });
 
     const motion = (node) => {
-        console.log(node);
         ref(node);
     };
 
@@ -54,5 +66,5 @@
 </script>
 
 <svelte:element this={Component} use:ref {...elementProps}>
-    <slot />
+    {@render children?.()}
 </svelte:element>

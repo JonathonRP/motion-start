@@ -2,12 +2,12 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-    import type { MotionProps } from "./index";
+    import type { MotionProps } from "./index.svelte";
     import {
         MotionConfigContext,
         type MotionConfigContextObject,
     } from "../context/MotionConfigContext";
-    import { UseVisualElement } from "./utils/use-visual-element";
+    import { UseVisualElement } from "./utils/use-visual-element.svelte";
     import { UseFeatures } from "../../../motion/features/use-features";
     import MotionContextProvider from "../../../context/MotionContext/MotionContextProvider.svelte";
     import { getContext, onMount } from "svelte";
@@ -15,7 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { createDomVisualElement } from "../render/dom/create-visual-element.js";
     import { svgMotionConfig } from "../render/svg/config-motion.js";
     import { htmlMotionConfig } from "../render/html/config-motion.js";
-    import { UseCreateMotionContext } from "../context/MotionContext/create";
+    import { UseCreateMotionContext } from "../context/MotionContext/create.svelte";
     import { UseVisualState } from "./utils/use-visual-state.js";
     import { useMotionRef } from "./utils/use-motion-ref.js";
     import ScaleCorrectionProvider from "../../../context/ScaleCorrectionProvider.svelte";

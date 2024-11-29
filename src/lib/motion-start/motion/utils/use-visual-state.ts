@@ -3,6 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { tick } from 'svelte';
+import { get } from 'svelte/store';
 import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import type { MotionProps } from '../types';
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
@@ -12,10 +14,9 @@ import {
 	isVariantNode as checkIsVariantNode,
 } from '../../render/utils/is-controlling-variants.js';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
+import { useContext } from '../../context/utils/context.svelte';
 import { MotionContext, type MotionContextProps } from '../../context/MotionContext';
-import { PresenceContext, type PresenceContextProps } from '../../context/PresenceContext';
-import { getContext, tick } from 'svelte';
-import { get } from 'svelte/store';
+import { PresenceContext } from '../../context/PresenceContext';
 
 export interface VisualState<Instance, RenderState> {
 	renderState: RenderState;
@@ -38,7 +39,7 @@ function makeState<I, RS>(
 	{ scrapeMotionValuesFromProps, createRenderState, onMount }: UseVisualStateConfig<I, RS>,
 	props: MotionProps,
 	context: MotionContextProps,
-	presenceContext: PresenceContextProps | null
+	presenceContext: PresenceContext | null
 ) {
 	const state: VisualState<I, RS> = {
 		latestValues: makeLatestValues(props, context, presenceContext, scrapeMotionValuesFromProps),
@@ -55,9 +56,8 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean, isCustom = false): VisualState<I, RS> => {
-		const context = getContext<ReturnType<typeof MotionContext>>(MotionContext) || MotionContext(isCustom);
-		const presenceContext =
-			getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
+		const context = useContext(MotionContext, isCustom);
+		const presenceContext = useContext(PresenceContext, isCustom);
 		const make = () => makeState(config, props, get(context), get(presenceContext));
 
 		let state = make();
@@ -74,7 +74,7 @@ export const makeUseVisualState =
 function makeLatestValues(
 	props: MotionProps,
 	context: MotionContextProps,
-	presenceContext: PresenceContextProps | null,
+	presenceContext: PresenceContext | null,
 	scrapeMotionValues: ScrapeMotionValuesFromProps
 ) {
 	const values: ResolvedValues = {};

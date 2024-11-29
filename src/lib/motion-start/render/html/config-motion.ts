@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionComponentConfig } from '../../motion';
+import type { MotionComponentConfig } from '../../motion/index.svelte';
 import { makeUseVisualState } from '../../motion/utils/use-visual-state';
 import type { HTMLRenderState } from './types';
 import { createHtmlRenderState } from './utils/create-render-state.js';

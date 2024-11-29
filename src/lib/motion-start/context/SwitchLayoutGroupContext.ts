@@ -3,10 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { writable, type Writable } from 'svelte/store';
 import type { IProjectionNode } from '../projection/node/types';
 import type { Transition } from '../types';
-import { getDomContext } from './DOMcontext';
+import { createContext } from './utils/context.svelte';
 
 export interface SwitchLayoutGroup {
 	register?: <I>(member: IProjectionNode<I>) => void;
@@ -30,5 +29,4 @@ export type InitialPromotionConfig = {
 /**
  * Internal, exported only for usage in Framer
  */
-export const SwitchLayoutGroupContext = (c?: any): Writable<SwitchLayoutGroupContext> =>
-	getDomContext('SwitchLayoutGroup', c) || writable({});
+export const SwitchLayoutGroupContext = createContext<SwitchLayoutGroupContext>({});

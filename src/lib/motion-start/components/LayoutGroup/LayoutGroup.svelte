@@ -15,16 +15,12 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { getContext, setContext } from "svelte";
-  import {
-    LayoutGroupContext,
-    type LayoutGroupContextProps,
-  } from "../../context/LayoutGroupContext";
+  import { useContext } from "../../context/utils/context.svelte";
+  import { LayoutGroupContext } from "../../context/LayoutGroupContext";
   import { DeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
   import { nodeGroup } from "../../projection/node/group";
   import { useForceUpdate } from "../../utils/use-force-update";
-  import { setDomContext } from "../../context/DOMcontext";
-  import type { MutableRefObject } from "$lib/motion-start/utils/safe-react-types";
+  import type { MutableRefObject } from "../../utils/safe-react-types";
 
   type $$Props = Props;
 
@@ -32,20 +28,18 @@ Copyright (c) 2018 Framer B.V. -->
     inherit: $$Props["inherit"] = true,
     isCustom = false;
 
-  const layoutGroupContext =
-    getContext<ReturnType<typeof LayoutGroupContext>>(LayoutGroupContext) ||
-    LayoutGroupContext(isCustom);
+  const layoutGroupContext = useContext(LayoutGroupContext, isCustom);
 
-  const deprecatedLayoutGroupContext =
-    getContext<ReturnType<typeof DeprecatedLayoutGroupContext>>(
-      DeprecatedLayoutGroupContext,
-    ) || DeprecatedLayoutGroupContext(isCustom);
+  const deprecatedLayoutGroupContext = useContext(
+    DeprecatedLayoutGroupContext,
+    isCustom,
+  );
 
   const [forceRender, key] = useForceUpdate();
 
   let context = {
     current: null,
-  } as MutableRefObject<LayoutGroupContextProps | null>;
+  } as MutableRefObject<LayoutGroupContext | null>;
 
   const upstreamId = $layoutGroupContext.id || $deprecatedLayoutGroupContext;
 
@@ -81,8 +75,8 @@ Copyright (c) 2018 Framer B.V. -->
       forceRender,
     };
   };
-  $: setContext(LayoutGroupContext, memo(key));
-  $: setDomContext("LayoutGroup", isCustom, memo(key));
+
+  $: LayoutGroupContext.Provider = memo(key);
 </script>
 
 <slot />

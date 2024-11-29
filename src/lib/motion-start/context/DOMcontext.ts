@@ -2,10 +2,10 @@ import type { Writable } from 'svelte/store';
 import type { MotionContextProps } from './MotionContext';
 import type { MotionConfigContext } from './MotionConfigContext';
 import type { SwitchLayoutGroupContext } from './SwitchLayoutGroupContext';
-import type { PresenceContextProps } from './PresenceContext';
-import type { ReorderContextProps } from '../components/Reorder/types';
-import type { LazyContextProps } from './LazyContext';
-import type { LayoutGroupContextProps } from './LayoutGroupContext';
+import type { PresenceContext } from './PresenceContext';
+import type { ReorderContext } from '../components/Reorder/types';
+import type { LazyContext } from './LazyContext';
+import type { LayoutGroupContext } from './LayoutGroupContext';
 
 export const getDomContext = (
 	name: string,
@@ -15,10 +15,10 @@ export const getDomContext = (
 			MotionContextProps &
 				SwitchLayoutGroupContext &
 				MotionConfigContext &
-				(ReorderContextProps<any> | null) &
-				(PresenceContextProps | null) &
-				LazyContextProps &
-				LayoutGroupContextProps &
+				(ReorderContext<any> | null) &
+				(PresenceContext | null) &
+				LazyContext &
+				LayoutGroupContext &
 				string
 	  >
 	| undefined => {

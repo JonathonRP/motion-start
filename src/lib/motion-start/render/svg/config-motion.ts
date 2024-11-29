@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionComponentConfig } from '../../motion';
+import type { MotionComponentConfig } from '../../motion/index.svelte';
 import type { SVGRenderState } from './types';
 import { renderSVG } from './utils/render';
 import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values';

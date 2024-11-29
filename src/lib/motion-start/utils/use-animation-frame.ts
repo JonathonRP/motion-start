@@ -3,17 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { tick } from 'svelte';
+import { get } from 'svelte/store';
 import { frame, cancelFrame } from '../frameloop';
+import { useContext } from '../context/utils/context.svelte';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { FrameData } from '../frameloop/types';
-import { getContext, tick } from 'svelte';
-import { get } from 'svelte/store';
 
 export type FrameCallback = (timestamp: number, delta: number) => void;
 
 export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 	let initialTimestamp = 0;
-	const mcc = getContext<ReturnType<typeof MotionConfigContext>>(MotionConfigContext) || MotionConfigContext(isCustom);
+	const mcc = useContext(MotionConfigContext, isCustom);
 	const { isStatic } = get(mcc);
 
 	if (isStatic) return;

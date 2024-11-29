@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { MotionValue } from '.';
 
-import { useCombineMotionValues } from './use-combine-values';
+import { useCombineMotionValues } from './use-combine-values.svelte';
 import { isMotionValue } from './utils/is-motion-value';
 
 /**
