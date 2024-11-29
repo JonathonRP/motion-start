@@ -3,14 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { afterUpdate, beforeUpdate, getContext, onMount, tick } from 'svelte';
+import { getContext, onMount, tick } from 'svelte';
 import { get } from 'svelte/store';
 import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import { LazyContext } from '../../context/LazyContext';
-import {
-	MotionConfigContext,
-	type MotionConfigContext as MotionConfigContextProps,
-} from '../../context/MotionConfigContext';
+import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
 import type { VisualElement } from '../../render/VisualElement';
@@ -21,6 +18,7 @@ import type { IProjectionNode } from '../../projection/node/types';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { microtask } from '../../frameloop/microtask';
+import { useContext } from '$lib/motion-start/context/utils/context.svelte';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
@@ -30,16 +28,13 @@ export function useVisualElement<Instance, RenderState>(
 	ProjectionNodeConstructor?: any,
 	isCustom = false
 ): VisualElement<Instance> | undefined {
-	const mc = getContext<ReturnType<typeof MotionContext>>(MotionContext) || MotionContext(isCustom);
-	const { visualElement: parent } = get(mc);
+	const { visualElement: parent } = get(useContext(MotionContext, isCustom));
 
-	const lazyContext = getContext<ReturnType<typeof LazyContext>>(LazyContext) || LazyContext(isCustom);
+	const lazyContext = useContext(LazyContext, isCustom);
 
-	const presenceContext = getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(isCustom);
+	const presenceContext = useContext(PresenceContext, isCustom);
 
-	const reducedMotionConfig = get(
-		getContext<ReturnType<typeof MotionConfigContextProps>>(MotionConfigContext) || MotionConfigContext(isCustom)
-	).reducedMotion;
+	const reducedMotionConfig = get(useContext(MotionConfigContext)).reducedMotion;
 
 	let visualElementRef: VisualElement<Instance> | undefined = undefined;
 
@@ -61,9 +56,7 @@ export function useVisualElement<Instance, RenderState>(
 
 	const visualElement: VisualElement<Instance> | undefined = visualElementRef;
 
-	const initialLayoutGroupConfig =
-		getContext<ReturnType<typeof SwitchLayoutGroupContext>>(SwitchLayoutGroupContext) ||
-		SwitchLayoutGroupContext(isCustom);
+	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext, isCustom);
 
 	if (
 		visualElement &&
@@ -77,16 +70,6 @@ export function useVisualElement<Instance, RenderState>(
 	let isMounted = false;
 	onMount(() => (isMounted = true));
 
-	beforeUpdate(() => {
-		/**
-		 * Check the component has already mounted before calling
-		 * `update` unnecessarily. This ensures we skip the initial update.
-		 */
-		if (visualElement && isMounted) {
-			visualElement.update(props, get(presenceContext));
-		}
-	});
-
 	/**
 	 * Cache this value as we want to know whether HandoffAppearAnimations
 	 * was present on initial render - it will be deleted after this.
@@ -97,13 +80,23 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	beforeUpdate(() => {
+	$effect(() => {
+		console.log('🚀 ~ useVisualElement ~ afterUpdate', visualElement);
+
+		/**
+		 * Check the component has already mounted before calling
+		 * `update` unnecessarily. This ensures we skip the initial update.
+		 */
+		if (visualElement && isMounted) {
+			visualElement.update(props, get(presenceContext));
+		}
+
 		if (!visualElement) return;
 
 		isMounted = true;
 		window.MotionIsMounted = true;
 
-		visualElement.updateFeatures();
+		// visualElement.updateFeatures();
 
 		microtask.render(visualElement.render);
 
@@ -118,14 +111,6 @@ export function useVisualElement<Instance, RenderState>(
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
 		if (wantsHandoff && visualElement.animationState) {
-			visualElement.animationState.animateChanges();
-		}
-	});
-
-	afterUpdate(() => {
-		if (!visualElement) return;
-
-		if (!wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
 		}
 

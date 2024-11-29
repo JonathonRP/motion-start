@@ -31,7 +31,7 @@ export { useMotionValue } from './value/use-motion-value';
 export { useMotionTemplate } from './value/use-motion-template';
 export { resolveMotionValue } from './value/utils/resolve-motion-value';
 export { useTransform } from './value/use-transform';
-export { useSpring } from './value/use-spring';
+export { useSpring } from './value/use-spring.svelte';
 export { useVelocity } from './value/use-velocity';
 export { useScroll, type UseScrollOptions } from './value/use-scroll';
 export { useElementScroll } from './value/scroll/use-element-scroll';
@@ -78,7 +78,7 @@ export {
 	DragControls,
 } from './gestures/drag/use-drag-controls';
 export { useDomEvent } from './events/use-dom-event';
-export { createRendererMotionComponent } from './motion';
+export { createRendererMotionComponent } from './motion/index.svelte';
 export { isMotionComponent } from './motion/utils/is-motion-component';
 export { unwrapMotionComponent } from './motion/utils/unwrap-motion-component';
 export { VisualElement } from './render/VisualElement';

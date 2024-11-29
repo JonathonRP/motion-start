@@ -11,10 +11,11 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="V">
 	import type { SvelteHTMLElements } from "svelte/elements";
 
+	import { useContext } from "../../context/utils/context.svelte";
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value";
-	import { getContext, type Snippet, type Component } from "svelte";
+	import type { Snippet, Component } from "svelte";
 
 	import { useTransform } from "../../value/use-transform";
 	import { isMotionValue } from "../../value/utils/is-motion-value";
@@ -22,8 +23,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import type { Ref } from "../../utils/safe-react-types";
 	import type { Box } from "../../projection/geometry/types";
-	import type { PanInfo } from "$lib/motion-start/gestures/pan/PanSession";
-	import type { Writable } from "svelte/store";
+	import type { PanInfo } from "../../gestures/pan/PanSession";
 
 	type Props<V> = {
 		/**
@@ -71,9 +71,7 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 	>;
 
-	const context =
-		getContext<ReturnType<typeof ReorderContext>>(ReorderContext) ||
-		ReorderContext(Component);
+	const context = useContext(ReorderContext, Component);
 	const point = $state({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),

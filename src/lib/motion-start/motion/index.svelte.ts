@@ -4,27 +4,27 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import {
-	afterUpdate,
-	beforeUpdate,
 	createRawSnippet,
 	getContext,
+	hydrate,
 	mount,
 	onDestroy,
 	onMount,
 	setContext,
-	tick,
+	unmount,
 	type Component,
 	type Snippet,
 } from 'svelte';
+import { render } from 'svelte/server';
 import { get, writable, type Writable } from 'svelte/store';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import { MotionContext } from '../context/MotionContext';
-import { useVisualElement } from './utils/use-visual-element';
+import { useVisualElement } from './utils/use-visual-element.svelte';
 import type { UseVisualState } from './utils/use-visual-state';
 import { useMotionRef } from './utils/use-motion-ref';
-import { useCreateMotionContext } from '../context/MotionContext/create';
+import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import { loadFeatures } from './features/load-features';
 import { isBrowser } from '../utils/is-browser';
 import { LayoutGroupContext, type LayoutGroupContextProps } from '../context/LayoutGroupContext';
@@ -37,6 +37,7 @@ import Motion from './Motion.svelte';
 import type { Ref } from '../utils/safe-react-types';
 import { setDomContext } from '../context/DOMcontext';
 import type { MeasureLayout } from './features/layout/MeasureLayout';
+import { useContext } from '../context/utils/context.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -70,39 +71,44 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 }: MotionComponentConfig<Instance, RenderState>) => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
-	const MotionComponent: Component<MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined }> = (
-		anchor,
-		{ externalRef, ...props }
-	) => {
+	const MotionComponent: Component<
+		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
+	> = (anchor, { externalRef, ref, ...restProps }) => {
+		const props = $derived(restProps);
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
-		let useMeasureLayout: typeof MeasureLayout | undefined = undefined;
-		let render: Snippet | undefined = undefined;
+		let useMeasureLayout: undefined | typeof MeasureLayout = $state(undefined);
+		let mcc = $state<ReturnType<typeof useContext<MotionConfigContext>>>({} as any);
 
-		let mcc = getContext<Writable<MotionConfigContext>>(MotionConfigContext);
-
-		onMount(() => {
-			mcc = mcc || MotionConfigContext(Component);
+		$effect.pre(() => {
+			return useContext(MotionConfigContext).subscribe((context) => {
+				if (context === null || context === undefined) return;
+				mcc = context;
+			});
 		});
 
-		const context = useCreateMotionContext<Instance>(props);
-
-		const configAndProps = {
-			...get(mcc),
+		const configAndProps = $derived({
+			...mcc,
 			...props,
 			layoutId: useLayoutId(props),
-		};
+		});
 
-		const { isStatic } = configAndProps;
+		const { isStatic } = $derived(configAndProps);
 
-		const visualState = useVisualState(props, isStatic);
+		const context = $derived(useCreateMotionContext<Instance>(props));
+
+		const visualState = $derived(useVisualState(props, isStatic));
 
 		if (!isStatic && isBrowser) {
-			useStrictMode(configAndProps, preloadedFeatures);
+			$derived(useStrictMode(configAndProps, preloadedFeatures));
 
-			const layoutProjection = getProjectionFunctionality(configAndProps);
+			const layoutProjection = $derived(getProjectionFunctionality(configAndProps));
+			/**
+			 * If we need to measure the element we load this functionality in a
+			 * separate class component in order to gain access to getSnapshotBeforeUpdate.
+			 */
 			useMeasureLayout = layoutProjection.MeasureLayout;
 
 			/**
@@ -111,53 +117,71 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			 * providing a way of rendering to these APIs outside of the React render loop
 			 * for more performant animations and interactions
 			 */
-			context.visualElement = useVisualElement<Instance, RenderState>(
-				Component,
-				visualState,
-				configAndProps,
-				createVisualElement,
-				layoutProjection.ProjectionNode
+			context.visualElement = $derived(
+				useVisualElement<Instance, RenderState>(
+					Component,
+					visualState,
+					configAndProps,
+					createVisualElement,
+					layoutProjection.ProjectionNode
+				)
 			);
 
 			// MotionContext.Provider
-			const store = writable(context);
-			store.set(context);
-
-			setContext(MotionContext, store);
-			setDomContext('Motion', this, store);
+			MotionContext['_c'] = this;
+			MotionContext.Provider = context;
 		}
 
-		// Since useMotionRef is not called on destroy, the visual element is unmounted here
 		onDestroy(() => {
-			context?.visualElement?.unmount();
+			// Since useMotionRef is not called on destroy, the visual element is unmounted here
+			context.visualElement?.unmount();
 		});
 
 		// style="display: contents"
-		render = createRawSnippet(() => {
-			return {
-				render: () => '<slot>',
-				setup(node: Element) {
-					useMeasureLayout && context.visualElement
-						? useMeasureLayout({ visualElement: context.visualElement, ...configAndProps })
-						: null;
-					mount(useRender, {
-						target: node,
-						props: {
-							Component,
-							props,
-							ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-							visualState,
-							isStatic,
-							visualElement: context.visualElement,
-							children: props.children ? props.children : undefined,
-							$$slots: { default: props.children },
-						},
-					});
-				},
-			};
-		});
+		const children = $derived(
+			createRawSnippet(() => {
+				return {
+					render: () => '<slot></slot>',
+					setup(node: Element) {
+						$effect.pre(() => {
+							console.log('🚀 ~ setup ~ node:', node);
+							const measure =
+								useMeasureLayout && context.visualElement
+									? mount(useMeasureLayout({ visualElement: context.visualElement, ...configAndProps }), {
+											target: node,
+										})
+									: null;
+							const renderer = mount(useRender, {
+								target: node,
+								props: {
+									Component,
+									props,
+									ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+									visualState,
+									isStatic,
+									visualElement: context.visualElement,
+									children: props.children ? props.children : undefined,
+								},
+							});
 
-		return Motion(anchor, { children: render, $$slots: { default: true } });
+							return () => {
+								if (measure) unmount(measure);
+								unmount(renderer);
+							};
+						});
+
+						$effect(() => {
+							context.visualElement?.updateFeatures();
+							ref = context.visualElement?.current;
+						});
+					},
+				};
+			})
+		);
+
+		return Motion(anchor, {
+			children,
+		});
 		// return [
 		// 	useMeasureLayout && context.visualElement
 		// 		? useMeasureLayout({ visualElement: context.visualElement, ...configAndProps })
@@ -298,14 +322,12 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 };
 
 function useLayoutId({ layoutId }: MotionProps, isCustom = false) {
-	const layoutGroupId = get(
-		getContext<ReturnType<typeof LayoutGroupContext>>(LayoutGroupContext) || LayoutGroupContext(isCustom)
-	).id;
+	const layoutGroupId = get(useContext(LayoutGroupContext, isCustom)).id;
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle, isCustom = false) {
-	const isStrict = get(getContext<ReturnType<typeof LazyContext>>(LazyContext) || LazyContext(isCustom)).strict;
+	const isStrict = get(useContext(LazyContext, isCustom)).strict;
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

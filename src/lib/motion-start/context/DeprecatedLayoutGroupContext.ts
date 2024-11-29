@@ -3,8 +3,6 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { writable, type Writable } from 'svelte/store';
-import { getDomContext } from './DOMcontext';
+import { createContext } from './utils/context.svelte';
 
-export const DeprecatedLayoutGroupContext = (c?: any): Writable<string | null> =>
-	getDomContext('DeprecatedLayoutGroupContext', c) || writable(null);
+export const DeprecatedLayoutGroupContext = createContext<string | null>(null);

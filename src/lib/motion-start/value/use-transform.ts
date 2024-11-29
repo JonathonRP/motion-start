@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionValue } from '.';
 import { transform, type TransformOptions } from '../utils/transform';
-import { useCombineMotionValues } from './use-combine-values';
+import { useCombineMotionValues } from './use-combine-values.svelte';
 import { useComputed } from './use-computed';
 
 export type InputRange = number[];

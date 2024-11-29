@@ -12,6 +12,7 @@ import type { LayoutProps } from './features/layout/types';
 import type { EventProps } from '../render/types';
 import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from '../gestures/types';
 import type { ViewportProps } from './features/viewport/types';
+import type { Snippet } from 'svelte';
 
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.
@@ -305,7 +306,9 @@ export interface MotionProps
 	 */
 	transformTemplate?(transform: TransformProperties, generatedTransform: string): string;
 
-	children?: Node | MotionValue<number> | MotionValue<string>;
+	// children?: Node | MotionValue<number> | MotionValue<string>;
+
+	children?: Snippet;
 
 	'data-framer-appear-id'?: string;
 }

@@ -1,6 +1,6 @@
 import type { Axis, Box } from '../../projection/geometry/types';
 
-export interface ReorderContextProps<T> {
+export interface ReorderContext<T> {
 	axis: 'x' | 'y';
 	registerItem: (item: T, layout: Box) => void;
 	updateOrder: (item: T, offset: number, velocity: number) => void;

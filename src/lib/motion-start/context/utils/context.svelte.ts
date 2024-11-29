@@ -1,6 +1,7 @@
 import { getContext, onMount, setContext } from 'svelte';
 import { getDomContext, setDomContext } from '../DOMcontext';
 import { writable, type Writable } from 'svelte/store';
+import { uid } from 'uid';
 
 type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
 
@@ -8,24 +9,24 @@ type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
 interface CallableContext<T> {
 	readonly prototype: CallableContext<T>;
 
-	(c?: any): Writable<UnwrapWritable<T> | null | undefined | {}>;
+	(c?: any): T;
 }
 
 class CallableContext<T> extends Function {
 	// @ts-expect-error
 	// biome-ignore lint/complexity/noBannedTypes: <explanation>
 	// biome-ignore lint/correctness/noUnreachableSuper: <explanation>
-	constructor(f: (c?: any) => Writable<UnwrapWritable<T> | null | undefined | {}>) {
+	constructor(f: (c?: any) => T) {
 		// biome-ignore lint/correctness/noConstructorReturn: <explanation>
 		return Object.setPrototypeOf(f, new.target.prototype);
 	}
 }
 
 class Context<T> extends CallableContext<T> {
-	private _key: any = this;
+	private _key = `${Symbol('motion-start').toString()}-${uid()}`;
 
 	public constructor(
-		private _default: UnwrapWritable<T> | null = null,
+		private _default: T,
 		private _c?: any
 	) {
 		super((c?: any) => {
@@ -33,7 +34,7 @@ class Context<T> extends CallableContext<T> {
 			onMount(() => {
 				context = getDomContext(this.key, this.c || c);
 			});
-			return getContext<Writable<UnwrapWritable<T>>>(this) || context || writable(this._default);
+			return getContext<T>(this) || context || this._default;
 		});
 	}
 
@@ -53,8 +54,8 @@ class Context<T> extends CallableContext<T> {
 	}
 }
 
-export function createContext<T>(defaultValue: any = null, c?: any) {
-	return new Context<Writable<T>>(defaultValue, c);
+export function createContext<T>(defaultValue: T, c?: any) {
+	return new Context<Writable<T>>(writable(defaultValue), c);
 }
 
 export function useContext<T>(context: Context<T>, c?: any) {

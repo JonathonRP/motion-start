@@ -3,10 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { writable, type Writable } from 'svelte/store';
 import type { TransformPoint } from '../projection/geometry/types';
 import type { Transition } from '../types';
-import { getDomContext } from './DOMcontext';
+import { createContext } from './utils/context.svelte';
 
 export type ReducedMotionConfig = 'always' | 'never' | 'user';
 
@@ -53,10 +52,8 @@ export interface MotionConfigContext {
 /**
  * @public
  */
-export const MotionConfigContext = (c?: any): Writable<MotionConfigContext> =>
-	getDomContext('MotionConfig', c) ||
-	writable({
-		transformPagePoint: (p) => p,
-		isStatic: false,
-		reducedMotion: 'never',
-	});
+export const MotionConfigContext = createContext<MotionConfigContext>({
+	transformPagePoint: (p) => p,
+	isStatic: false,
+	reducedMotion: 'never',
+});

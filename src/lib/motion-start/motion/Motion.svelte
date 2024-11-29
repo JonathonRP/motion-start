@@ -2,6 +2,11 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
+    interface Props {
+        children?: import("svelte").Snippet;
+    }
+
+    let { children }: Props = $props();
 </script>
 
-<slot />
+{@render children?.()}

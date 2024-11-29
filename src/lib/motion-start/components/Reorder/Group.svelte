@@ -121,7 +121,7 @@ Copyright (c) 2018 Framer B.V. -->
 		},
 	};
 
-	setContext(ReorderContext, context);
+	ReorderContext.Provider = context;
 
 	$effect(() => {
 		if (!isReordering) return;

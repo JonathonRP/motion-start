@@ -5,10 +5,12 @@ Copyright (c) 2018 Framer B.V.
 
 import type { VariantLabels } from '../motion/types';
 import type { Writable } from 'svelte/store';
+import { createContext } from './utils/context.svelte';
+
 /**
  * @public
  */
-export interface PresenceContextProps {
+export interface PresenceContext {
 	id: number;
 	isPresent: boolean;
 	register: (id: string | number) => () => void;
@@ -18,11 +20,7 @@ export interface PresenceContextProps {
 	presenceChildren?: Writable<{ key: any }>;
 }
 
-import { writable } from 'svelte/store';
-import { getDomContext } from './DOMcontext';
-
 /**
  * @public
  */
-export const PresenceContext = (c?: any): Writable<PresenceContextProps | null> =>
-	getDomContext('Presence', c) || writable(null);
+export const PresenceContext = createContext<PresenceContext | null>(null);

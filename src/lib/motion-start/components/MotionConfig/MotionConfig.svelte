@@ -2,9 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { getContext, setContext } from "svelte";
-  import { get, writable } from "svelte/store";
-  import { setDomContext } from "../../context/DOMcontext.js";
+  import { useContext } from "../../context/utils/context.svelte.js";
   import { MotionConfigContext } from "../../context/MotionConfigContext.js";
   import type { MotionConfigProps } from "./index.js";
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
@@ -19,13 +17,11 @@ Copyright (c) 2018 Framer B.V. -->
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
-  const mcc =
-    getContext<ReturnType<typeof MotionConfigContext>>(MotionConfigContext) ||
-    MotionConfigContext(isCustom);
+  const mcc = useContext(MotionConfigContext, isCustom);
   /**
    * Inherit props from any parent MotionConfig components
    */
-  let config = { ...get(mcc), ...{ transformPagePoint, isStatic, transition } };
+  let config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
   $: config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
 
   /**
@@ -38,17 +34,16 @@ Copyright (c) 2018 Framer B.V. -->
    * Creating a new config context object will re-render every `motion` component
    * every time it renders. So we only want to create a new one sparingly.
    */
-  let context = writable(config);
-  setContext(MotionConfigContext, context);
-  setDomContext("Motion", isCustom, context);
+  MotionConfigContext.Provider = config as any;
+
   const memo = (..._args: any[]) => config;
   $: {
-    context.set(
+    useContext(MotionConfigContext).set(
       memo(
         JSON.stringify(config.transition),
         config.transformPagePoint,
         config.reducedMotion,
-      ),
+      ) as any,
     );
   }
 </script>

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { afterUpdate, getContext, setContext, tick } from 'svelte';
+import { getContext, setContext, tick } from 'svelte';
 import type { RenderComponent } from '../../motion/features/types';
 import type { HTMLRenderState } from '../html/types';
 import { useHTMLProps } from '../html/use-props';
@@ -12,7 +12,7 @@ import { useSvgProps } from '../svg/use-props';
 import { filterProps } from './utils/filter-props';
 import { isSVGComponent } from './utils/is-svg-component';
 import { Children$ } from '../../components/AnimatePresence/utils';
-import { PresenceContext } from '$lib/motion-start/context/PresenceContext';
+import { PresenceContext } from '../../context/PresenceContext';
 import { default as useRender } from './UseRender.svelte';
 
 export function createUseRender(forwardMotionProps = false) {
