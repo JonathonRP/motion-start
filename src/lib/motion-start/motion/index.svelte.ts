@@ -100,7 +100,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		const visualState = $derived(useVisualState(props, isStatic));
 
 		if (!isStatic && isBrowser) {
-			$derived(useStrictMode(configAndProps, preloadedFeatures));
+			useStrictMode(configAndProps, preloadedFeatures);
 
 			const layoutProjection = $derived(getProjectionFunctionality(configAndProps));
 			/**
@@ -115,14 +115,12 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			 * providing a way of rendering to these APIs outside of the React render loop
 			 * for more performant animations and interactions
 			 */
-			context.visualElement = $derived(
-				useVisualElement<Instance, RenderState>(
-					Component,
-					visualState,
-					configAndProps,
-					createVisualElement,
-					layoutProjection.ProjectionNode
-				)
+			context.visualElement = useVisualElement<Instance, RenderState>(
+				Component,
+				visualState,
+				configAndProps,
+				createVisualElement,
+				layoutProjection.ProjectionNode
 			);
 
 			// MotionContext.Provider
