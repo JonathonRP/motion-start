@@ -19,9 +19,12 @@ Copyright (c) 2018 Framer B.V. -->
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
-	import type { Ref } from "../../utils/is-ref-object";
+	import type { Ref } from "../../utils/safe-react-types";
 
-	import type { ItemData, ReorderContextProps } from "./types";
+	import type {
+		ItemData,
+		ReorderContext as ReorderContextProps,
+	} from "./types";
 	import { checkReorder } from "./utils/check-reorder";
 
 	type Props<V> = {

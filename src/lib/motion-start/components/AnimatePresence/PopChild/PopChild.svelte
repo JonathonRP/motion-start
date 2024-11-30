@@ -18,11 +18,7 @@ Copyright (c) 2018 Framer B.V. -->
     import type { RefObject } from "../../../utils/safe-react-types";
     import { get } from "svelte/store";
 
-    let {
-        isPresent,
-        children,
-    }: { isPresent: Props["isPresent"]; children?: Props["children"] } =
-        $props();
+    let { isPresent, children }: Props = $props();
 
     const PopChildMeasure = createRawSnippet<[MeasureProps]>((measureProps) => {
         return {

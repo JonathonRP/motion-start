@@ -12,21 +12,14 @@ import { useContext } from '../utils/context.svelte';
 export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = false): MotionContextProps<Instance> {
 	const mc = () => get(useContext(MotionContext, isCustom));
 
-	let { initial, animate } = getCurrentTreeVariants(props, mc());
+	const { initial, animate } = $state(getCurrentTreeVariants(props, mc()));
 
-	const memo = (_initial: string | boolean | undefined, _animate: string | boolean | undefined) => ({
+	const memo = $derived.by(() => (_initial: string | boolean | undefined, _animate: string | boolean | undefined) => ({
 		initial,
 		animate,
-	});
+	}));
 
-	let value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
-
-	$effect(() => {
-		({ initial, animate } = getCurrentTreeVariants(props, mc()));
-		value = memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
-	});
-
-	return value;
+	return memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
 }
 
 function variantLabelsAsDependency(prop: undefined | string | string[] | boolean) {

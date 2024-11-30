@@ -1,5 +1,6 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script module lang="ts">
     let presenceId = 0;
@@ -14,12 +15,13 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-    import { setContext, tick } from "svelte";
-    import { setDomContext } from "../../../context/DOMcontext.js";
+    import { tick } from "svelte";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
+
+    interface Props extends PresenceChildProps {}
 
     let {
         isPresent,
@@ -30,16 +32,7 @@ Copyright (c) 2018 Framer B.V. -->
         mode,
         isCustom,
         children,
-    }: {
-        isPresent: PresenceChildProps["isPresent"];
-        onExitComplete?: PresenceChildProps["onExitComplete"];
-        initial?: PresenceChildProps["initial"];
-        custom?: PresenceChildProps["custom"];
-        presenceAffectsLayout: PresenceChildProps["presenceAffectsLayout"];
-        mode: PresenceChildProps["mode"];
-        isCustom: PresenceChildProps["isCustom"];
-        children?: PresenceChildProps["children"];
-    } = $props();
+    }: Props = $props();
 
     const presenceChildren = newChildrenMap();
     const id = getPresenceId();
@@ -88,7 +81,7 @@ Copyright (c) 2018 Framer B.V. -->
         });
     });
 
-    $: PresenceContext.Provider = $context;
+    PresenceContext.Provider = $context;
 </script>
 
 {#if mode === "popLayout"}
