@@ -15,8 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-    import { setContext, tick } from "svelte";
-    import { setDomContext } from "../../../context/DOMcontext.js";
+    import { tick } from "svelte";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
@@ -81,6 +80,8 @@ Copyright (c) 2018 Framer B.V. -->
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
     });
+
+    PresenceContext.Provider = $context;
 </script>
 
 {#if mode === "popLayout"}

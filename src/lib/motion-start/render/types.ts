@@ -23,7 +23,7 @@ import type { Axis, Box } from '../projection/geometry/types';
 import type { VisualElement } from './VisualElement';
 import type { MotionProps } from '../motion/types';
 import type { AnimationDefinition } from '../animation/types';
-import type { PresenceContextProps } from '../context/PresenceContext';
+import type { PresenceContext } from '../context/PresenceContext';
 import type { ReducedMotionConfig } from '../context/MotionConfigContext';
 
 export type GenericValues = {
@@ -49,7 +49,7 @@ export type VisualElementOptions<Instance, RenderState = any> = {
 	visualState: VisualState<Instance, RenderState>;
 	parent?: VisualElement<unknown>;
 	variantParent?: VisualElement<unknown>;
-	presenceContext: PresenceContextProps | null;
+	presenceContext: PresenceContext | null;
 	props: MotionProps;
 	blockInitialAnimation?: boolean;
 	reducedMotionConfig?: ReducedMotionConfig;

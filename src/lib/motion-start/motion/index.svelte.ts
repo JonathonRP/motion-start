@@ -72,7 +72,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 	const MotionComponent: Component<
 		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
 	> = (anchor, { externalRef, ref, ...restProps }) => {
-		const props = $derived(restProps);
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
@@ -87,6 +86,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			});
 		});
 
+		const props = $derived(restProps);
 		const configAndProps = $derived({
 			...mcc,
 			...props,
