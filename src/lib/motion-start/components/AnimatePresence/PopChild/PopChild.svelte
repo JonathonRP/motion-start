@@ -16,7 +16,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { useContext } from "../../../context/utils/context.svelte";
     import type { Props, MeasureProps, Size } from "./types";
     import type { RefObject } from "../../../utils/safe-react-types";
-    import { get } from "svelte/store";
+    import { fromStore } from "svelte/store";
 
     let { isPresent, children }: Props = $props();
 
@@ -64,7 +64,7 @@ Copyright (c) 2018 Framer B.V. -->
     };
     $: prevProps = { isPresent };
 
-    $: ({ nonce } = get(useContext(MotionConfigContext)));
+    $: ({ nonce } = fromStore(useContext(MotionConfigContext)).current);
 
     /**
      * We create and inject a style block so we can apply this explicit

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import { usePresence } from '../../../components/AnimatePresence/use-presence';
 import { useContext } from '../../../context/utils/context.svelte';
 import { LayoutGroupContext } from '../../../context/LayoutGroupContext';
@@ -27,12 +27,12 @@ export function MeasureLayout(
 		Component<MotionProps & { visualElement: VisualElement<unknown>; isCustom?: boolean }>
 	>
 ): ReturnType<Component<MotionProps>> {
-	const [isPresent, safeToRemove] = get(usePresence(isCustom));
-	const layoutGroup = get(useContext(LayoutGroupContext, isCustom));
+	const [isPresent, safeToRemove] = fromStore(usePresence(isCustom)).current;
+	const layoutGroup = fromStore(useContext(LayoutGroupContext, isCustom)).current;
 	return MeasureLayoutWithContext(anchor, {
 		...props,
 		layoutGroup,
-		switchLayoutGroup: get(useContext(SwitchLayoutGroupContext, isCustom)),
+		switchLayoutGroup: fromStore(useContext(SwitchLayoutGroupContext, isCustom)).current,
 		isPresent,
 		safeToRemove,
 	});

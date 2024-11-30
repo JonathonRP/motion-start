@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 // import { fixed } from '../utils/fix-process-env';
 import { tick } from 'svelte';
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import type { MotionValue } from '.';
 import { isMotionValue } from './utils/is-motion-value';
 import { useMotionValue } from './use-motion-value';
@@ -40,7 +40,7 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
-	const mcc = useContext(MotionConfigContext, isCustom);
+	const mcc = fromStore(useContext(MotionConfigContext, isCustom));
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
@@ -82,7 +82,7 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 
 	const update = (_config: typeof config) => {
 		value.attach((v, set) => {
-			const { isStatic } = get(mcc);
+			const { isStatic } = mcc.current;
 
 			if (isStatic) {
 				return set(v);

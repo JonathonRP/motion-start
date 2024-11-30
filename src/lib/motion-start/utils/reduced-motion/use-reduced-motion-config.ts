@@ -7,15 +7,14 @@ import { tick } from 'svelte';
 import { useContext } from '../../context/utils/context.svelte';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { useReducedMotion } from './use-reduced-motion';
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 
 export function useReducedMotionConfig(isCustom = false) {
 	const reducedMotionPreference = useReducedMotion();
-	const mcc = useContext(MotionConfigContext, isCustom);
-	const { reducedMotion } = get(mcc);
+	const { reducedMotion } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 	tick().then(() => {
-		const { reducedMotion } = get(mcc);
+		const { reducedMotion } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 		if (reducedMotion === 'never') {
 			return false;
