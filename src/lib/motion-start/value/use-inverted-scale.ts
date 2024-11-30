@@ -3,13 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import { useTransform } from '../value/use-transform';
 import type { MotionValue } from './';
 import { invariant, warning } from '../utils/errors';
 import { useMotionValue } from './use-motion-value';
 import { useContext } from '../context/utils/context.svelte';
 import { MotionContext } from '../context/MotionContext';
+import { tick } from 'svelte';
 
 interface ScaleMotionValues {
 	scaleX: MotionValue<number>;
@@ -46,8 +47,8 @@ let hasWarned = false;
 export function useInvertedScale(scale?: Partial<ScaleMotionValues>, isCustom = false): ScaleMotionValues {
 	let parentScaleX = useMotionValue(1);
 	let parentScaleY = useMotionValue(1);
-	const mc = useContext(MotionContext, isCustom);
-	const { visualElement } = get(mc);
+	const mc = fromStore(useContext(MotionContext, isCustom));
+	const { visualElement } = mc.current;
 
 	invariant(
 		!!(scale || visualElement),
@@ -70,7 +71,7 @@ export function useInvertedScale(scale?: Partial<ScaleMotionValues>, isCustom = 
 	const scaleY = useTransform(parentScaleY, invertScale);
 
 	tick().then(() => {
-		const { visualElement } = get(mc);
+		const { visualElement } = mc.current;
 
 		invariant(
 			!!(scale || visualElement),

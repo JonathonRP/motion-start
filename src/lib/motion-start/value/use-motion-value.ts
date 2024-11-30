@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import { onMount } from 'svelte';
 import { motionValue, type MotionValue } from '.';
 import { MotionConfigContext } from '../context/MotionConfigContext';
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import { useContext } from '../context/utils/context.svelte';
 
 /**
@@ -34,7 +34,7 @@ export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> 
 	 * the Framer canvas, force components to rerender when the motion
 	 * value is updated.
 	 */
-	const { isStatic } = get(useContext(MotionConfigContext, isCustom));
+	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 	onMount(() => {
 		if (isStatic) {

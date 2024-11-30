@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { tick } from 'svelte';
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import { frame, cancelFrame } from '../frameloop';
 import { useContext } from '../context/utils/context.svelte';
 import { MotionConfigContext } from '../context/MotionConfigContext';
@@ -14,8 +14,7 @@ export type FrameCallback = (timestamp: number, delta: number) => void;
 
 export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 	let initialTimestamp = 0;
-	const mcc = useContext(MotionConfigContext, isCustom);
-	const { isStatic } = get(mcc);
+	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 	if (isStatic) return;
 
@@ -28,7 +27,7 @@ export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 	frame.update(provideTimeSinceStart, true);
 
 	tick().then(() => {
-		const { isStatic } = get(mcc);
+		const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 		if (isStatic) return;
 

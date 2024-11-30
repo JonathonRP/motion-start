@@ -11,49 +11,61 @@ Copyright (c) 2018 Framer B.V. -->
     import { isSVGComponent } from "./utils/is-svg-component";
     import { useSvgProps } from "../svg/use-props";
     import { useHTMLProps } from "../html/use-props";
-    import type { _ } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
+    import type { SvelteHTMLElements } from "svelte/elements";
 
     type Props = Parameters<
         RenderComponent<
             HTMLElement | SVGElement,
             HTMLRenderState | SVGRenderState
         >
-    >[1];
+    >[1] & { el: SvelteHTMLElements[typeof Component]["this"] };
 
-    let { Component, props, ref, visualState, isStatic, children }: Props =
-        $props();
+    let {
+        Component,
+        props,
+        ref,
+        visualState,
+        isStatic,
+        children,
+        el = $bindable(),
+    }: Props = $props();
 
-    let elementProps = {};
+    const { latestValues } = $derived(visualState);
+    const useVisualProps = $derived(
+        isSVGComponent(Component) ? useSvgProps : useHTMLProps,
+    );
 
-    $effect(() => {
-        const { latestValues } = visualState;
-        const useVisualProps = isSVGComponent(Component)
-            ? useSvgProps
-            : useHTMLProps;
+    const visualProps = $derived(
+        useVisualProps(props as any, latestValues, isStatic, Component),
+    );
 
-        const visualProps = useVisualProps(
-            props as any,
-            latestValues,
-            isStatic,
-            Component,
-        );
-
-        const filteredProps = filterProps(
+    const filteredProps = $derived(
+        filterProps(
             props,
             typeof Component === "string",
             getContext("forwardMotionProps"),
-        );
+        ),
+    );
 
-        elementProps = { ...filteredProps, ...visualProps };
-    });
+    const elementProps = $derived({ ...filteredProps, ...visualProps });
 
     const motion = (node) => {
+        console.log("🚀 ~ motion ~ node:", node);
         ref(node);
     };
 
+    $inspect(el);
     // $: typeof ref === "function" ? ref(element) : (ref!.current = element);
 </script>
 
-<svelte:element this={Component} use:ref {...elementProps}>
+<svelte:element
+    this={Component}
+    bind:this={el}
+    use:ref
+    {...elementProps}
+    {...isSVGComponent(Component)
+        ? { xmlns: "http://www.w3.org/2000/svg" }
+        : {}}
+>
     {@render children?.()}
 </svelte:element>

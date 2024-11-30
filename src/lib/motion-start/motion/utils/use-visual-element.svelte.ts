@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { getContext, onMount, tick } from 'svelte';
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
@@ -28,35 +28,35 @@ export function useVisualElement<Instance, RenderState>(
 	ProjectionNodeConstructor?: any,
 	isCustom = false
 ): VisualElement<Instance> | undefined {
-	const { visualElement: parent } = get(useContext(MotionContext, isCustom));
+	const { visualElement: parent } = fromStore(useContext(MotionContext, isCustom)).current;
 
-	const lazyContext = useContext(LazyContext, isCustom);
+	const lazyContext = fromStore(useContext(LazyContext, isCustom));
 
-	const presenceContext = useContext(PresenceContext, isCustom);
+	const presenceContext = fromStore(useContext(PresenceContext, isCustom));
 
-	const reducedMotionConfig = get(useContext(MotionConfigContext)).reducedMotion;
+	const reducedMotionConfig = fromStore(useContext(MotionConfigContext)).current.reducedMotion;
 
 	let visualElementRef: VisualElement<Instance> | undefined = undefined;
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
-	createVisualElement = createVisualElement || get(lazyContext).renderer;
+	createVisualElement = createVisualElement || lazyContext.current.renderer;
 
 	if (!visualElementRef && createVisualElement) {
 		visualElementRef = createVisualElement(Component, {
 			visualState,
 			parent,
 			props,
-			presenceContext: get(presenceContext),
-			blockInitialAnimation: get(presenceContext)?.initial === false,
+			presenceContext: presenceContext.current,
+			blockInitialAnimation: presenceContext.current?.initial === false,
 			reducedMotionConfig,
 		});
 	}
 
 	const visualElement: VisualElement<Instance> | undefined = visualElementRef;
 
-	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext, isCustom);
+	const initialLayoutGroupConfig = fromStore(useContext(SwitchLayoutGroupContext, isCustom));
 
 	if (
 		visualElement &&
@@ -64,7 +64,7 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, get(initialLayoutGroupConfig));
+		createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, initialLayoutGroupConfig.current);
 	}
 
 	let isMounted = false;
@@ -88,7 +88,7 @@ export function useVisualElement<Instance, RenderState>(
 		 * `update` unnecessarily. This ensures we skip the initial update.
 		 */
 		if (visualElement && isMounted) {
-			visualElement.update(props, get(presenceContext));
+			visualElement.update(props, presenceContext.current);
 		}
 
 		if (!visualElement) return;

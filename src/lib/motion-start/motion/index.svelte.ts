@@ -16,7 +16,7 @@ import {
 	type Snippet,
 } from 'svelte';
 import { render } from 'svelte/server';
-import { get } from 'svelte/store';
+import { fromStore, get } from 'svelte/store';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
 import { MotionConfigContext } from '../context/MotionConfigContext';
@@ -71,24 +71,15 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 	const MotionComponent: Component<
 		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
-	> = (anchor, { externalRef, ref, ...restProps }) => {
+	> = (anchor, { externalRef, ref, ...props }) => {
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
 		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
-		let mcc = $state<ReturnType<typeof useContext<MotionConfigContext>>>({} as any);
 
-		$effect.pre(() => {
-			return useContext(MotionConfigContext).subscribe((context) => {
-				if (context === null || context === undefined) return;
-				mcc = context;
-			});
-		});
-
-		const props = $derived(restProps);
 		const configAndProps = $derived({
-			...mcc,
+			...fromStore(useContext(MotionConfigContext)).current,
 			...props,
 			layoutId: useLayoutId(props),
 		});
@@ -134,47 +125,45 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		});
 
 		// style="display: contents"
-		const children = $derived(
-			createRawSnippet(() => {
-				return {
-					render: () => '<slot></slot>',
-					setup(node: Element) {
-						$effect.pre(() => {
-							console.log('🚀 ~ setup ~ node:', node);
-							const measure =
-								MeasureLayout && context.visualElement
-									? mount(MeasureLayout, {
-											target: node,
-											props: { visualElement: context.visualElement, ...configAndProps },
-										})
-									: null;
-							const renderer = mount(useRender, {
-								target: node,
-								props: {
-									Component,
-									props,
-									ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-									visualState,
-									isStatic,
-									visualElement: context.visualElement,
-									children: props.children ? props.children : undefined,
-								},
-							});
-
-							return () => {
-								if (measure) unmount(measure);
-								unmount(renderer);
-							};
+		const children = createRawSnippet(() => {
+			return {
+				render: () => '<slot></slot>',
+				setup(node: Element) {
+					$effect.pre(() => {
+						console.log('🚀 ~ setup ~ node:', node);
+						const measure =
+							MeasureLayout && context.visualElement
+								? mount(MeasureLayout, {
+										target: node,
+										props: { visualElement: context.visualElement, ...configAndProps },
+									})
+								: null;
+						const renderer = mount(useRender, {
+							target: node,
+							props: {
+								Component,
+								props,
+								ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+								visualState,
+								isStatic,
+								visualElement: context.visualElement,
+								children: props.children,
+								el: ref,
+							},
 						});
 
-						$effect(() => {
-							context.visualElement?.updateFeatures();
-							ref = context.visualElement?.current;
-						});
-					},
-				};
-			})
-		);
+						return () => {
+							if (measure) unmount(measure);
+							unmount(renderer);
+						};
+					});
+
+					$effect(() => {
+						context.visualElement?.updateFeatures();
+					});
+				},
+			};
+		});
 
 		return Motion(anchor, {
 			children,
