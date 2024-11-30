@@ -16,7 +16,7 @@ import {
 	type Snippet,
 } from 'svelte';
 import { render } from 'svelte/server';
-import { get, writable, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
 import { MotionConfigContext } from '../context/MotionConfigContext';
@@ -27,16 +27,14 @@ import { useMotionRef } from './utils/use-motion-ref';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import { loadFeatures } from './features/load-features';
 import { isBrowser } from '../utils/is-browser';
-import { LayoutGroupContext, type LayoutGroupContextProps } from '../context/LayoutGroupContext';
-import { LazyContext, type LazyContextProps } from '../context/LazyContext';
+import { LayoutGroupContext } from '../context/LayoutGroupContext';
+import { LazyContext } from '../context/LazyContext';
 import { motionComponentSymbol } from './utils/symbol';
 import type { CreateVisualElement } from '../render/types';
 import { invariant, warning } from '../utils/errors';
 import { featureDefinitions } from './features/definitions';
 import Motion from './Motion.svelte';
 import type { Ref } from '../utils/safe-react-types';
-import { setDomContext } from '../context/DOMcontext';
-import type { MeasureLayout } from './features/layout/MeasureLayout';
 import { useContext } from '../context/utils/context.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
@@ -79,7 +77,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
-		let useMeasureLayout: undefined | typeof MeasureLayout = $state(undefined);
+		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
 		let mcc = $state<ReturnType<typeof useContext<MotionConfigContext>>>({} as any);
 
 		$effect.pre(() => {
@@ -109,7 +107,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			 * If we need to measure the element we load this functionality in a
 			 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 			 */
-			useMeasureLayout = layoutProjection.MeasureLayout;
+			MeasureLayout = layoutProjection.MeasureLayout;
 
 			/**
 			 * Create a VisualElement for this component. A VisualElement provides a common
@@ -146,9 +144,10 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 						$effect.pre(() => {
 							console.log('🚀 ~ setup ~ node:', node);
 							const measure =
-								useMeasureLayout && context.visualElement
-									? mount(useMeasureLayout({ visualElement: context.visualElement, ...configAndProps }), {
+								MeasureLayout && context.visualElement
+									? mount(MeasureLayout, {
 											target: node,
+											props: { visualElement: context.visualElement, ...configAndProps },
 										})
 									: null;
 							const renderer = mount(useRender, {
