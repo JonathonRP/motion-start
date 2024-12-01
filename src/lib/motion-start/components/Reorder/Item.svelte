@@ -14,7 +14,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import { useContext } from "../../context/utils/context.svelte";
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
-	import { useMotionValue } from "../../value/use-motion-value";
+	import { useMotionValue } from "../../value/use-motion-value.svelte";
 	import type { Snippet, Component } from "svelte";
 
 	import { useTransform } from "../../value/use-transform";

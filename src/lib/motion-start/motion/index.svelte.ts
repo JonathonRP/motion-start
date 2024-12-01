@@ -9,7 +9,6 @@ import {
 	hydrate,
 	mount,
 	onDestroy,
-	onMount,
 	setContext,
 	unmount,
 	type Component,

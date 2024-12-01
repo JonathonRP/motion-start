@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { fromStore, get } from 'svelte/store';
-import { usePresence } from '../../../components/AnimatePresence/use-presence';
+import { usePresence } from '../../../components/AnimatePresence/use-presence.svelte';
 import { useContext } from '../../../context/utils/context.svelte';
 import { LayoutGroupContext } from '../../../context/LayoutGroupContext';
 import { SwitchLayoutGroupContext } from '../../../context/SwitchLayoutGroupContext';

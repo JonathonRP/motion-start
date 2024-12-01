@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { useAnimationFrame } from '../utils/use-animation-frame';
-import { useMotionValue } from './use-motion-value';
+import { useMotionValue } from './use-motion-value.svelte';
 
 export function useTime() {
 	const time = useMotionValue(0);

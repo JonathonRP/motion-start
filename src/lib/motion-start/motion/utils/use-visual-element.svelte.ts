@@ -3,8 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { getContext, onMount, tick } from 'svelte';
-import { fromStore, get } from 'svelte/store';
+import { fromStore } from 'svelte/store';
 import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
@@ -68,7 +67,7 @@ export function useVisualElement<Instance, RenderState>(
 	}
 
 	let isMounted = false;
-	onMount(() => (isMounted = true));
+	$effect.pre(() => (isMounted = true));
 
 	/**
 	 * Cache this value as we want to know whether HandoffAppearAnimations

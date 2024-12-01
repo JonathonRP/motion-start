@@ -8,7 +8,7 @@ import { tick } from 'svelte';
 import { fromStore, get } from 'svelte/store';
 import type { MotionValue } from '.';
 import { isMotionValue } from './utils/is-motion-value';
-import { useMotionValue } from './use-motion-value';
+import { useMotionValue } from './use-motion-value.svelte';
 import { useContext } from '../context/utils/context.svelte';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { SpringOptions } from '../animation/types';

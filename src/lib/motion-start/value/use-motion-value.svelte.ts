@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { onMount } from 'svelte';
 import { motionValue, type MotionValue } from '.';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import { fromStore, get } from 'svelte/store';
@@ -36,7 +35,7 @@ export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> 
 	 */
 	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
-	onMount(() => {
+	$effect(() => {
 		if (isStatic) {
 			value.on('change', (value) => (initial = value));
 		}

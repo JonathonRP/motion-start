@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { useMotionValueEvent } from '../../utils/use-motion-value-event';
+import { useMotionValueEvent } from '../../utils/use-motion-value-event.svelte';
 import type { MotionValue } from '../../value';
 import type { VisualElement } from '../VisualElement';
 
