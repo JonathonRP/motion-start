@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { motionValue, type MotionValue } from '.';
 import { frame } from '../frameloop';
-import { useMotionValueEvent } from '../utils/use-motion-value-event';
+import { useMotionValueEvent } from '../utils/use-motion-value-event.svelte';
 
 /**
  * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.

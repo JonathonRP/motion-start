@@ -1,4 +1,4 @@
-import { getContext, onMount, setContext } from 'svelte';
+import { getContext, setContext } from 'svelte';
 import { getDomContext, setDomContext } from '../DOMcontext';
 import { writable, type Writable } from 'svelte/store';
 import { uid } from 'uid';
@@ -31,7 +31,7 @@ class Context<T> extends CallableContext<T> {
 	) {
 		super((c?: any) => {
 			let context = null;
-			onMount(() => {
+			$effect(() => {
 				context = getDomContext(this.key, this.c || c);
 			});
 			return getContext<T>(this) || context || this._default;
@@ -39,7 +39,7 @@ class Context<T> extends CallableContext<T> {
 	}
 
 	set Provider(value: UnwrapWritable<T>) {
-		onMount(() => {
+		$effect(() => {
 			setDomContext(this.key, this.c, writable(value));
 		});
 		setContext(this, writable(value));

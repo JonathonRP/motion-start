@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { onMount } from 'svelte';
 import { derived, fromStore, get, readable, toStore, type Readable, type Writable } from 'svelte/store';
 import { useContext } from '../../context/utils/context.svelte';
 import { PresenceContext } from '../../context/PresenceContext';
@@ -70,7 +69,7 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
 	const context = fromStore(useContext(PresenceContext, isCustom));
 	const id = context.current === null ? undefined : incrementId();
-	onMount(() => {
+	$effect(() => {
 		if (context.current !== null) {
 			context.current?.register(id!);
 		}

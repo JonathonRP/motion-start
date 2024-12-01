@@ -7,7 +7,7 @@ import { fromStore, get } from 'svelte/store';
 import { useTransform } from '../value/use-transform';
 import type { MotionValue } from './';
 import { invariant, warning } from '../utils/errors';
-import { useMotionValue } from './use-motion-value';
+import { useMotionValue } from './use-motion-value.svelte';
 import { useContext } from '../context/utils/context.svelte';
 import { MotionContext } from '../context/MotionContext';
 import { tick } from 'svelte';

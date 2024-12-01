@@ -27,7 +27,7 @@ export { domMax } from './render/dom/features-max';
 /**
  * Motion values
  */
-export { useMotionValue } from './value/use-motion-value';
+export { useMotionValue } from './value/use-motion-value.svelte';
 export { useMotionTemplate } from './value/use-motion-template';
 export { resolveMotionValue } from './value/utils/resolve-motion-value';
 export { useTransform } from './value/use-transform';
@@ -38,7 +38,7 @@ export { useElementScroll } from './value/scroll/use-element-scroll';
 export { useViewportScroll } from './value/scroll/use-viewport-scroll';
 export { useTime } from './value/use-time';
 export { useWillChange } from './value/use-will-change';
-export { useMotionValueEvent } from './utils/use-motion-value-event';
+export { useMotionValueEvent } from './utils/use-motion-value-event.svelte';
 
 /**
  * Accessibility
@@ -71,7 +71,7 @@ export { isValidMotionProp } from './motion/utils/valid-prop';
 export {
 	usePresence,
 	useIsPresent,
-} from './components/AnimatePresence/use-presence';
+} from './components/AnimatePresence/use-presence.svelte';
 export { useInView, type UseInViewOptions } from './utils/use-in-view';
 export {
 	useDragControls,
@@ -88,7 +88,7 @@ export {
 	disableInstantTransitions,
 } from './utils/use-instant-transition';
 export { useInstantLayoutTransition } from './projection/use-instant-layout-transition';
-export { useResetProjection } from './projection/use-reset-projection';
+export { useResetProjection } from './projection/use-reset-projection.svelte';
 export { buildTransform } from './render/html/utils/build-transform';
 export { visualElementStore } from './render/store';
 export { animateValue } from './animation/animators/MainThreadAnimation';
@@ -175,7 +175,7 @@ export * from './animation/sequence/types';
  * Deprecated
  */
 export { DeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
-export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state';
+export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state.svelte';
 export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale';
 export { default as AnimateSharedLayout } from './components/AnimateSharedLayout.svelte';
 

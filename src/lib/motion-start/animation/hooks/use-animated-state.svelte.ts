@@ -82,7 +82,7 @@ export function useAnimatedState(initialState: any) {
 		);
 	});
 
-	onMount(() => {
+	$effect.pre(() => {
 		element.mount({});
 		return () => element.unmount();
 	});
