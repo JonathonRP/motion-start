@@ -54,7 +54,7 @@ Copyright (c) 2018 Framer B.V. -->
         ref(node);
     };
 
-    $inspect(el);
+    // $inspect(el);
     // $: typeof ref === "function" ? ref(element) : (ref!.current = element);
 </script>
 

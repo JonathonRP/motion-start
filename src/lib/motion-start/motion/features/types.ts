@@ -57,7 +57,6 @@ export interface FeatureBundle extends FeaturePackages {
 
 export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 
-// TODO: this should be component...
 export type RenderComponent<Instance, RenderState> = Component<{
 	Component: string;
 	props: MotionProps;
