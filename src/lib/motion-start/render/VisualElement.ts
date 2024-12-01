@@ -464,7 +464,7 @@ export abstract class VisualElement<
 	}
 
 	updateFeatures() {
-		console.log('🚀 ~ VisualElement ~ updateFeatures:');
+		console.log('🚀 ~ VisualElement ~ updateFeatures ~ current:', this.current);
 		let key: keyof typeof featureDefinitions = 'animation';
 
 		for (key in featureDefinitions) {
@@ -499,12 +499,12 @@ export abstract class VisualElement<
 	notifyUpdate = () => this.notify('Update', this.latestValues);
 
 	triggerBuild() {
-		console.log('🚀 ~ VisualElement ~ triggerBuild:');
+		console.log('🚀 ~ VisualElement ~ triggerBuild ~ current:', this.current);
 		this.build(this.renderState, this.latestValues, this.props);
 	}
 
 	render = () => {
-		console.log('🚀 ~ VisualElement ~ render:');
+		console.log('🚀 ~ VisualElement ~ render ~ current:', this.current);
 		if (!this.current) return;
 		this.triggerBuild();
 		this.renderInstance(this.current, this.renderState, this.props.style, this.projection);

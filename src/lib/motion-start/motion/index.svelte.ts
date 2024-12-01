@@ -113,6 +113,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				layoutProjection.ProjectionNode
 			);
 
+			$inspect(context);
 			// MotionContext.Provider
 			MotionContext['_c'] = this;
 			MotionContext.Provider = context;
@@ -123,7 +124,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			context.visualElement?.unmount();
 		});
 
-		$inspect(context.visualElement);
 		// style="display: contents"
 		const children = createRawSnippet(() => {
 			return {
@@ -155,10 +155,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 							if (measure) unmount(measure);
 							unmount(renderer);
 						};
-					});
-
-					$effect(() => {
-						context.visualElement?.updateFeatures();
 					});
 				},
 			};

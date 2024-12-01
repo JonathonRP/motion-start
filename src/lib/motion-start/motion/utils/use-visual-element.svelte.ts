@@ -18,6 +18,7 @@ import { isRefObject } from '../../utils/is-ref-object.js';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { microtask } from '../../frameloop/microtask';
 import { useContext } from '$lib/motion-start/context/utils/context.svelte';
+import { tick } from 'svelte';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
@@ -27,35 +28,35 @@ export function useVisualElement<Instance, RenderState>(
 	ProjectionNodeConstructor?: any,
 	isCustom = false
 ): VisualElement<Instance> | undefined {
-	const { visualElement: parent } = fromStore(useContext(MotionContext, isCustom)).current;
+	const { visualElement: parent } = $derived(fromStore(useContext(MotionContext, isCustom)).current);
 
-	const lazyContext = fromStore(useContext(LazyContext, isCustom));
+	const lazyContext = $derived(fromStore(useContext(LazyContext, isCustom)).current);
 
-	const presenceContext = fromStore(useContext(PresenceContext, isCustom));
+	const presenceContext = $derived(fromStore(useContext(PresenceContext, isCustom)).current);
 
-	const reducedMotionConfig = fromStore(useContext(MotionConfigContext)).current.reducedMotion;
+	const reducedMotionConfig = $derived(fromStore(useContext(MotionConfigContext)).current.reducedMotion);
 
-	let visualElementRef: VisualElement<Instance> | undefined = undefined;
+	let visualElementRef: VisualElement<Instance> | undefined = $state(undefined);
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
-	createVisualElement = createVisualElement || lazyContext.current.renderer;
+	createVisualElement = createVisualElement || lazyContext.renderer;
 
 	if (!visualElementRef && createVisualElement) {
 		visualElementRef = createVisualElement(Component, {
 			visualState,
 			parent,
 			props,
-			presenceContext: presenceContext.current,
-			blockInitialAnimation: presenceContext.current?.initial === false,
+			presenceContext,
+			blockInitialAnimation: presenceContext?.initial === false,
 			reducedMotionConfig,
 		});
 	}
 
-	const visualElement: VisualElement<Instance> | undefined = visualElementRef;
+	const visualElement: VisualElement<Instance> | undefined = $derived(visualElementRef);
 
-	const initialLayoutGroupConfig = fromStore(useContext(SwitchLayoutGroupContext, isCustom));
+	const initialLayoutGroupConfig = $derived(fromStore(useContext(SwitchLayoutGroupContext, isCustom)).current);
 
 	if (
 		visualElement &&
@@ -63,11 +64,25 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, initialLayoutGroupConfig.current);
+		createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
 	}
 
 	let isMounted = false;
-	$effect.pre(() => (isMounted = true));
+	$effect.pre(() => {
+		isMounted = true;
+
+		/**
+		 * Check the component has already mounted before calling
+		 * `update` unnecessarily. This ensures we skip the initial update.
+		 */
+		if (visualElement && isMounted) {
+			visualElement.update(props, presenceContext);
+		}
+
+		return () => {
+			isMounted = false;
+		};
+	});
 
 	/**
 	 * Cache this value as we want to know whether HandoffAppearAnimations
@@ -80,24 +95,16 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	$effect(() => {
-		console.log('🚀 ~ useVisualElement ~ afterUpdate', visualElement);
-
-		/**
-		 * Check the component has already mounted before calling
-		 * `update` unnecessarily. This ensures we skip the initial update.
-		 */
-		if (visualElement && isMounted) {
-			visualElement.update(props, presenceContext.current);
-		}
-
 		if (!visualElement) return;
 
 		isMounted = true;
 		window.MotionIsMounted = true;
 
-		// visualElement.updateFeatures();
+		tick().then(() => {
+			visualElement.updateFeatures();
 
-		microtask.render(visualElement.render);
+			microtask.render(visualElement.render);
+		});
 
 		/**
 		 * Ideally this function would always run in a useEffect.
