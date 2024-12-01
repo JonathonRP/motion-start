@@ -4,12 +4,18 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame } from '../frameloop';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 
 export function useForceUpdate(): [VoidFunction, number] {
 	let isMounted = false;
 	const forcedRenderCount = 0;
-	onMount(() => (isMounted = true));
+	$effect.pre(() => {
+		isMounted = true;
+
+		return () => {
+			isMounted = false;
+		};
+	});
 
 	const _forceRender = (_forcedRenderCount: number) => () => {
 		isMounted && _forcedRenderCount++;

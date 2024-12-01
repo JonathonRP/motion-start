@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { motionValue, type MotionValue } from '.';
 import { MotionConfigContext } from '../context/MotionConfigContext';
-import { fromStore, get } from 'svelte/store';
+import { fromStore } from 'svelte/store';
 import { useContext } from '../context/utils/context.svelte';
 
 /**

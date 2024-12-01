@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { tick } from 'svelte';
 import { isAnimationControls } from '../../../animation/utils/is-animation-controls';
 import { createAnimationState } from '../../../render/utils/animation-state';
 import type { VisualElement } from '../../../render/VisualElement';
@@ -23,8 +24,11 @@ export class AnimationFeature extends Feature<unknown> {
 
 	updateAnimationControlsSubscription() {
 		const { animate } = this.node.getProps();
+		// TODO: maybe use $effect
 		if (isAnimationControls(animate)) {
-			this.unmountControls = animate.subscribe(this.node);
+			tick().then(() => {
+				this.unmountControls = animate.subscribe(this.node);
+			});
 		}
 	}
 
