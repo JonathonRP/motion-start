@@ -32,6 +32,8 @@ Copyright (c) 2018 Framer B.V. -->
   import { microtask } from "../../../frameloop/microtask";
   import type { MeasureProps } from "./MeasureLayout";
 
+  interface Props extends MeasureProps {}
+
   let {
     visualElement,
     layoutGroup,
@@ -41,16 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
     drag,
     isPresent,
     safeToRemove,
-  }: {
-    visualElement: MeasureProps["visualElement"];
-    layoutGroup: MeasureProps["layoutGroup"];
-    switchLayoutGroup?: MeasureProps["switchLayoutGroup"];
-    layoutId?: MeasureProps["layoutId"];
-    layoutDependency?: MeasureProps["layoutDependency"];
-    drag?: MeasureProps["drag"];
-    isPresent: MeasureProps["isPresent"];
-    safeToRemove?: MeasureProps["safeToRemove"];
-  } = $props();
+  }: Props = $props();
 
   const { projection } = $derived(visualElement);
   let prevProps;
