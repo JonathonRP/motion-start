@@ -24,11 +24,8 @@ export class AnimationFeature extends Feature<unknown> {
 
 	updateAnimationControlsSubscription() {
 		const { animate } = this.node.getProps();
-		// TODO: maybe use $effect
 		if (isAnimationControls(animate)) {
-			tick().then(() => {
-				this.unmountControls = animate.subscribe(this.node);
-			});
+			this.unmountControls = animate.subscribe(this.node);
 		}
 	}
 

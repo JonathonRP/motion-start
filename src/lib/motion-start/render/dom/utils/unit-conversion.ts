@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fixed } from '../../../utils/fix-process-env.js';
 import type { MotionValue } from '../../../value';
 import { transformPropOrder } from '../../html/utils/transform';
 import type { Box } from '../../../projection/geometry/types';

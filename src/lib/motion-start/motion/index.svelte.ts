@@ -10,6 +10,7 @@ import {
 	mount,
 	onDestroy,
 	setContext,
+	tick,
 	unmount,
 	type Component,
 	type Snippet,
@@ -113,7 +114,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				layoutProjection.ProjectionNode
 			);
 
-			$inspect(context);
 			// MotionContext.Provider
 			MotionContext['_c'] = this;
 			MotionContext.Provider = context;

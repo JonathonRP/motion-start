@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fixed } from '../utils/fix-process-env.js';
 import type { Writable, Unsubscriber } from 'svelte/store';
 import type { AnimationPlaybackControls } from '../animation/types';
 import { frame } from '../frameloop';

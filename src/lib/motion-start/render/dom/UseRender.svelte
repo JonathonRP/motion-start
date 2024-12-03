@@ -50,7 +50,6 @@ Copyright (c) 2018 Framer B.V. -->
     const elementProps = $derived({ ...filteredProps, ...visualProps });
 
     const motion = (node) => {
-        console.log("🚀 ~ motion ~ node:", node);
         ref(node);
     };
 

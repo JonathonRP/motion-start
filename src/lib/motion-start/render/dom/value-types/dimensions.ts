@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fixed } from '../../../utils/fix-process-env.js';
 import { number } from '../../../value/types/numbers';
 import { degrees, percent, px, vh, vw } from '../../../value/types/numbers/units';
 import { testValueType } from './test';

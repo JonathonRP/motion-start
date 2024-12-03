@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { tick } from 'svelte';
 import { anticipate } from '../../easing/anticipate';
 import { backInOut } from '../../easing/back';
 import { circInOut } from '../../easing/circ';
@@ -110,16 +111,16 @@ function isUnsupportedEase(key: string): key is keyof typeof unsupportedEasingFu
 }
 
 export class AcceleratedAnimation<T extends string | number> extends BaseAnimation<T, ResolvedAcceleratedAnimation> {
-	// @ts-expect-error
-	protected options: ValueAnimationOptionsWithDefaults<T> & {
-		name: string;
-		motionValue: MotionValue<T>;
-	};
+	// protected options: ValueAnimationOptionsWithDefaults<T> & {
+	// 	name: string;
+	// 	motionValue: MotionValue<T>;
+	// };
 
-	constructor(options: ValueAnimationOptionsWithRenderContext<T>) {
+	constructor(
+		protected options: ValueAnimationOptionsWithRenderContext<T> & { name: string; motionValue: MotionValue<T> }
+	) {
 		super(options);
 
-		// @ts-expect-error
 		const { name, motionValue, element, keyframes } = this.options;
 
 		this.resolver = new DOMKeyframesResolver<T>(

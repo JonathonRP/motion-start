@@ -465,6 +465,7 @@ export function createProjectionNode<I = unknown>({
 				this.addEventListener(
 					'didUpdate',
 					({ delta, hasLayoutChanged, hasRelativeTargetChanged, layout: newLayout }: LayoutUpdateData) => {
+						console.log('🚀 ~ ProjectionNode ~ mount ~ hasLayoutChanged:', hasLayoutChanged);
 						if (this.isTreeAnimationBlocked()) {
 							this.target = undefined;
 							this.relativeTarget = undefined;

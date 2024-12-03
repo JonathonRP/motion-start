@@ -1,7 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { getDomContext, setDomContext } from '../DOMcontext';
 import { writable, type Writable } from 'svelte/store';
-import { uid } from 'uid';
+import { nanoid } from 'nanoid/non-secure';
 
 type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
 
@@ -23,7 +23,7 @@ class CallableContext<T> extends Function {
 }
 
 class Context<T> extends CallableContext<T> {
-	private _key = `${Symbol('motion-start').toString()}-${uid()}`;
+	private _key = `${Symbol('motion-start').toString()}-${nanoid()}`;
 
 	public constructor(
 		private _default: T,

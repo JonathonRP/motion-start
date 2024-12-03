@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { AnimationFeature } from './animation';
+import { AnimationFeature } from './animation/index.svelte';
 import { ExitAnimationFeature } from './animation/exit';
 import type { FeaturePackages } from './types';
 

@@ -6,14 +6,12 @@ Copyright (c) 2018 Framer B.V.
 import { derived, fromStore, get, readable, toStore, type Readable, type Writable } from 'svelte/store';
 import { useContext } from '../../context/utils/context.svelte';
 import { PresenceContext } from '../../context/PresenceContext';
+import { useId } from '$lib/motion-start/utils/useId';
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
 export type Present = [true];
 export type NotPresent = [false, SafeToRemove];
-
-let counter = 0;
-const incrementId = () => counter++;
 
 export function isPresent(context: PresenceContext) {
 	return context === null ? true : context.isPresent;
@@ -67,22 +65,26 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  * @public
  */
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
-	const context = fromStore(useContext(PresenceContext, isCustom));
-	const id = context.current === null ? undefined : incrementId();
+	const context = fromStore(useContext(PresenceContext, isCustom)).current;
+
+	if (context === null) {
+		return readable([true, null]) satisfies Readable<AlwaysPresent>;
+	}
+
+	const { register } = context;
+
+	const id = useId();
 	$effect(() => {
-		if (context.current !== null) {
-			context.current?.register(id!);
+		if (context !== null) {
+			register(id);
 		}
 	});
 
-	if (context.current === null) {
-		return readable([true, null]) satisfies Readable<AlwaysPresent>;
-	}
 	return derived<Readable<PresenceContext | null>, Present | NotPresent>(
-		toStore(() => context.current),
+		toStore(() => context),
 		($v) =>
 			!$v?.isPresent && $v?.onExitComplete
-				? ([false, () => $v.onExitComplete?.(id!)] satisfies NotPresent)
+				? ([false, () => $v.onExitComplete?.(id)] satisfies NotPresent)
 				: ([true] satisfies Present)
 	);
 };

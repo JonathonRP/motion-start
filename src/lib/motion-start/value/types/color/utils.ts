@@ -24,7 +24,7 @@ export const splitColor =
 	(v: string | Color): V => {
 		if (typeof v !== 'string') return v as any;
 
-		const [a, b, c, alpha] = v.match(floatRegex) as any;
+		const [a, b, c, alpha] = (v?.match(floatRegex) as any) ?? [null, null, null, null];
 
 		return {
 			[aName]: Number.parseFloat(a),
