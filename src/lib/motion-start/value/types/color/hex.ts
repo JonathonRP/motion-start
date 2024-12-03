@@ -32,12 +32,14 @@ function parseHex(v: string): RGBA {
 		a += a;
 	}
 
-	return {
+	const result = {
 		red: Number.parseInt(r, 16),
 		green: Number.parseInt(g, 16),
 		blue: Number.parseInt(b, 16),
 		alpha: a ? Number.parseInt(a, 16) / 255 : 1,
 	};
+
+	return result;
 }
 
 export const hex = {

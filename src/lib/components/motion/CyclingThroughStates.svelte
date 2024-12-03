@@ -23,6 +23,7 @@
         "#9EF4FF",
         "#0FBFFF",
     );
+    $: console.log($backgroundColor, $scale);
 </script>
 
 <Box cls="bg-slate-800 text-black">

@@ -8,8 +8,6 @@ Copyright (c) 2018 Framer B.V.
 // import { interpolate } from 'popmotion';
 // import type { CustomValueType } from '../types';
 
-import { fixed } from './fix-process-env';
-
 import type { EasingFunction } from '../easing/types';
 import type { CustomValueType } from '../types';
 import { interpolate } from './interpolate';

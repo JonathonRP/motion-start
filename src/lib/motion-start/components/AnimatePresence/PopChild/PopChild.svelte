@@ -1,14 +1,6 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-
-<script context="module" module lang="ts">
-    let presenceId = 0;
-    function getPresenceId() {
-        const id = presenceId;
-        presenceId++;
-        return id;
-    }
-</script>
+<svelte:options runes />
 
 <script lang="ts">
     import { createRawSnippet, mount } from "svelte";
@@ -17,6 +9,7 @@ Copyright (c) 2018 Framer B.V. -->
     import type { Props, MeasureProps, Size } from "./types";
     import type { RefObject } from "../../../utils/safe-react-types";
     import { fromStore } from "svelte/store";
+    import { useId } from "$lib/motion-start/utils/useId";
 
     let { isPresent, children }: Props = $props();
 
@@ -24,7 +17,11 @@ Copyright (c) 2018 Framer B.V. -->
         return {
             render: () => "<slot></slot>",
             setup(node) {
+                let prevIsPresent = $state(measureProps().isPresent);
                 $effect(() => {
+                    prevIsPresent = measureProps().isPresent;
+                });
+                $effect.pre(() => {
                     const { children, childRef, sizeRef } = measureProps();
                     childRef.current = node as HTMLElement;
 
@@ -34,11 +31,7 @@ Copyright (c) 2018 Framer B.V. -->
 
                     const elementMeasurements =
                         childRef.current!.getBoundingClientRect()!;
-                    if (
-                        elementMeasurements &&
-                        prevProps.isPresent &&
-                        !isPresent
-                    ) {
+                    if (elementMeasurements && prevIsPresent && !isPresent) {
                         const size = sizeRef.current!;
                         size.height = elementMeasurements.height || 0;
                         size.width = elementMeasurements.width || 0;
@@ -52,7 +45,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     // PopChild ---
 
-    const id = getPresenceId();
+    const id = useId();
     let ref: RefObject<HTMLElement>;
     let size: RefObject<Size> = {
         current: {
@@ -62,9 +55,8 @@ Copyright (c) 2018 Framer B.V. -->
             left: 0,
         },
     };
-    $: prevProps = { isPresent };
 
-    $: ({ nonce } = fromStore(useContext(MotionConfigContext)).current);
+    const { nonce } = fromStore(useContext(MotionConfigContext)).current;
 
     /**
      * We create and inject a style block so we can apply this explicit
@@ -75,7 +67,7 @@ Copyright (c) 2018 Framer B.V. -->
      * styles directly on the DOM node, we might be overwriting
      * styles set via the style prop.
      */
-    $effect(() => {
+    $effect.pre(() => {
         const { width, height, top, left } = size.current!;
         if (isPresent || !ref.current || !width || !height) return;
 

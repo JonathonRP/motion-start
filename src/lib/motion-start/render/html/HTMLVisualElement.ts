@@ -50,10 +50,6 @@ export class HTMLVisualElement extends DOMVisualElement<HTMLElement, HTMLRenderS
 	}
 
 	build(renderState: HTMLRenderState, latestValues: ResolvedValues, props: MotionProps) {
-		console.log(
-			'🚀 ~ HTMLVisualElement ~ build ~ buildHTMLStyles:',
-			buildHTMLStyles(renderState, latestValues, props.transformTemplate)
-		);
 		buildHTMLStyles(renderState, latestValues, props.transformTemplate);
 	}
 

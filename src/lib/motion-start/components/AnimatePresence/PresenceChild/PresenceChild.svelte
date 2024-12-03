@@ -3,12 +3,6 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script module lang="ts">
-    let presenceId = 0;
-    function getPresenceId() {
-        const id = presenceId;
-        presenceId++;
-        return id;
-    }
     function newChildrenMap(): Map<number, boolean> {
         return new Map<number, boolean>();
     }
@@ -20,6 +14,7 @@ Copyright (c) 2018 Framer B.V. -->
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
+    import { useId } from "$lib/motion-start/utils/useId.js";
 
     interface Props extends PresenceChildProps {}
 
@@ -35,7 +30,7 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = getPresenceId();
+    const id = useId();
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 

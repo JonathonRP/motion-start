@@ -20,14 +20,16 @@ const featureProps = {
 
 type KeysOf<T> = T extends T ? keyof T : never;
 
-type RequiredProp<T, U extends 'isEnabled' | KeysOf<T>> = {
+type RequiredProp<T, U extends KeysOf<T>> = {
 	[K in keyof T]?: T[K] | undefined;
 } & {
 	[K in keyof T as Extract<K, U>]: T[K];
 };
 
 export const featureDefinitions: {
-	[K in keyof FeatureDefinitions]: Expand<RequiredProp<FeatureDefinitions[K], 'isEnabled'>>;
+	[K in keyof FeatureDefinitions]: Expand<
+		RequiredProp<FeatureDefinitions[K], Extract<KeysOf<FeatureDefinitions[K]>, 'isEnabled'>>
+	>;
 } = {};
 
 for (const key in featureProps) {
