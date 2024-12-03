@@ -1,15 +1,11 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from "..";
-import type { CustomValueType } from "../../types";
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
+import type { MotionValue } from '..';
 import { isCustomValue } from '../../utils/resolve-value.js';
+import type { CustomValueType } from '../../types';
 import { isMotionValue } from './is-motion-value.js';
 
 /**
@@ -20,10 +16,8 @@ import { isMotionValue } from './is-motion-value.js';
  * @internal
  */
 function resolveMotionValue(value?: string | number | CustomValueType | MotionValue): string | number {
-    var unwrappedValue = isMotionValue(value) ? value.get() : value;
-    return isCustomValue(unwrappedValue)
-        ? unwrappedValue.toValue()
-        : unwrappedValue;
+	const unwrappedValue = isMotionValue(value) ? value.get() : value;
+	return isCustomValue(unwrappedValue) ? unwrappedValue.toValue() : unwrappedValue;
 }
 
 export { resolveMotionValue };

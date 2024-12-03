@@ -1,21 +1,17 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { FeatureComponents  } from './types';
-/** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import AnimationState from './AnimationState.svelte';
-import Exit from './Exit.svelte';
-/**
- * @public
- */
-const animations: FeatureComponents = {
-    animation: AnimationState,
-    exit: Exit ,
+import { AnimationFeature } from './animation/index.svelte';
+import { ExitAnimationFeature } from './animation/exit';
+import type { FeaturePackages } from './types';
+
+export const animations: FeaturePackages = {
+	animation: {
+		Feature: AnimationFeature,
+	},
+	exit: {
+		Feature: ExitAnimationFeature,
+	},
 };
-
-export { animations };

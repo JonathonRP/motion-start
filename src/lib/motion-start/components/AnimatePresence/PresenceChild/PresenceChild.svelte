@@ -1,37 +1,38 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
-<script context="module" lang="ts">
-    let presenceId = 0;
-    function getPresenceId() {
-        const id = presenceId;
-        presenceId++;
-        return id;
-    }
+<script module lang="ts">
     function newChildrenMap(): Map<number, boolean> {
         return new Map<number, boolean>();
     }
 </script>
 
 <script lang="ts">
-    import { afterUpdate, setContext, tick } from "svelte";
-    import { setDomContext } from "../../../context/DOMcontext.js";
+    import { tick } from "svelte";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
+    import PopChild from "../PopChild/PopChild.svelte";
+    import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
+    import { useId } from "$lib/motion-start/utils/useId.js";
 
-    type $$Props = PresenceChildProps;
+    interface Props extends PresenceChildProps {}
 
-    export let isPresent: $$Props["isPresent"],
-        onExitComplete: $$Props["onExitComplete"] = undefined,
-        initial: $$Props["initial"] = undefined,
-        custom: $$Props["custom"] = undefined,
-        presenceAffectsLayout: $$Props["presenceAffectsLayout"],
-        isCustom: $$Props["isCustom"];
+    let {
+        isPresent,
+        onExitComplete,
+        initial,
+        custom,
+        presenceAffectsLayout,
+        mode,
+        isCustom,
+        children,
+    }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = getPresenceId();
+    const id = useId();
 
-    $: refresh = presenceAffectsLayout ? undefined : isPresent;
+    const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
     const memoContext = (flag?: boolean) => {
         return {
@@ -54,25 +55,34 @@ Copyright (c) 2018 Framer B.V. -->
             },
         };
     };
-    let context = PresenceContext();
+    let context = useContext(PresenceContext, isCustom);
 
-    afterUpdate(() => {
+    $effect(() => {
+        context.set(memoContext(refresh));
+
         if (presenceAffectsLayout) {
             context.set(memoContext());
         }
     });
 
-    $: context.set(memoContext(refresh));
-
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
-    $: keyset(isPresent);
-    $: tick().then(() => {
-        !isPresent && !presenceChildren.size && onExitComplete?.();
+
+    $effect(() => {
+        keyset(isPresent);
+        tick().then(() => {
+            !isPresent && !presenceChildren.size && onExitComplete?.();
+        });
     });
-    setContext(PresenceContext, context);
-    setDomContext("Presence", isCustom, context);
+
+    PresenceContext.Provider = $context;
 </script>
 
-<slot />
+{#if mode === "popLayout"}
+    <PopChild {isPresent}>
+        {@render children?.()}
+    </PopChild>
+{:else}
+    {@render children?.()}
+{/if}

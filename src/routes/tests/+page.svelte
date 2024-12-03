@@ -186,7 +186,7 @@
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-green-500">Passed test</p>
+                    <p class="text-red-500">Failed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>
@@ -317,7 +317,7 @@
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-green-500">Passed test</p>
+                    <p class="text-red-500">Failed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>
@@ -372,7 +372,7 @@
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-green-500">Passed test</p>
+                    <p class="text-red-500">Failed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>

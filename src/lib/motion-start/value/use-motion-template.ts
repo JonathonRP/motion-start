@@ -2,9 +2,10 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from ".";
+import type { MotionValue } from '.';
 
-import { useCombineMotionValues } from "./use-combine-values"
+import { useCombineMotionValues } from './use-combine-values.svelte';
+import { isMotionValue } from './utils/is-motion-value';
 
 /**
  * Combine multiple motion values into a new one using a string template literal.
@@ -29,29 +30,31 @@ import { useCombineMotionValues } from "./use-combine-values"
  * @public
  */
 
-export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: MotionValue[]) => {
-    /**
-    * Create a function that will build a string from the latest motion values.
-    */
-    let numFragments = fragments.length;
-    const buildValue = () => {
-        let output = ``
+export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: Array<MotionValue | number | string>) => {
+	/**
+	 * Create a function that will build a string from the latest motion values.
+	 */
+	let numFragments = fragments.length;
+	const buildValue = () => {
+		let output = ``;
 
-        for (let i = 0; i < numFragments; i++) {
-            output += fragments[i]
-            const value = values[i]
-            if (value) output += values[i].get()
-        }
+		for (let i = 0; i < numFragments; i++) {
+			output += fragments[i];
+			const value = values[i];
+			if (value) output += isMotionValue(value) ? value.get() : value;
+		}
 
-        return output
-    }
-    const value = useCombineMotionValues(values, buildValue) as any;
-    value.resetInner = value.reset;
+		return output;
+	};
+	const value: any = useCombineMotionValues(values.filter(isMotionValue), buildValue);
+	value.resetInner = value.reset;
 
-    value.reset = (f: TemplateStringsArray, ...vs: MotionValue[]) => {
-        numFragments = f.length;
-        value.resetInner(vs,buildValue)
-    }
+	value.reset = (f: TemplateStringsArray, ...vs: MotionValue[]) => {
+		numFragments = f.length;
+		value.resetInner(vs, buildValue);
+	};
 
-    return value as MotionValue<string> & { reset: (fragments: TemplateStringsArray, ...values: MotionValue[]) => void };
-}
+	return value as MotionValue<string> & {
+		reset: (fragments: TemplateStringsArray, ...values: MotionValue[]) => void;
+	};
+};

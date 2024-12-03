@@ -1,49 +1,59 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Writable } from "svelte/store";
-import type { Transition } from "../types";
-import type { TransformPoint2D } from "../types/geometry";
+
+import type { TransformPoint } from '../projection/geometry/types';
+import type { Transition } from '../types';
+import { createContext } from './utils/context.svelte';
+
+export type ReducedMotionConfig = 'always' | 'never' | 'user';
+
 /**
  * @public
  */
-export interface MotionConfigContextObject {
-    /**
-     * @internal
-     */
-    transformPagePoint: TransformPoint2D;
-    /**
-     * Determines whether this is a static context ie the Framer canvas. If so,
-     * it'll disable all dynamic functionality.
-     *
-     * @internal
-     */
-    isStatic: boolean;
-    /**
-     * Defines a new default transition for the entire tree.
-     *
-     * @public
-     */
-    transition?: Transition;
+export interface MotionConfigContext {
+	/**
+	 * Internal, exported only for usage in Framer
+	 */
+	transformPagePoint: TransformPoint;
+
+	/**
+	 * Internal. Determines whether this is a static context ie the Framer canvas. If so,
+	 * it'll disable all dynamic functionality.
+	 */
+	isStatic: boolean;
+
+	/**
+	 * Defines a new default transition for the entire tree.
+	 *
+	 * @public
+	 */
+	transition?: Transition;
+
+	/**
+	 * If true, will respect the device prefersReducedMotion setting by switching
+	 * transform animations off.
+	 *
+	 * @public
+	 */
+	reducedMotion?: ReducedMotionConfig;
+
+	/**
+	 * A custom `nonce` attribute used when wanting to enforce a Content Security Policy (CSP).
+	 * For more details see:
+	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src#unsafe_inline_styles
+	 *
+	 * @public
+	 */
+	nonce?: string;
 }
-/**
- * @public
- */
-// export declare const MotionConfigContext: () => Writable<MotionConfigContextObject>
-
-
-import { writable } from "svelte/store";
-import { getDomContext } from "./DOMcontext";
-
 
 /**
  * @public
  */
-// @ts-expect-error
-var MotionConfigContext = (c?: any): Writable<MotionConfigContextObject> => getDomContext("MotionConfig", c) || writable({
-    transformPagePoint: function (p) { return p; },
-    isStatic: false,
+export const MotionConfigContext = createContext<MotionConfigContext>({
+	transformPagePoint: (p) => p,
+	isStatic: false,
+	reducedMotion: 'never',
 });
-
-export { MotionConfigContext };

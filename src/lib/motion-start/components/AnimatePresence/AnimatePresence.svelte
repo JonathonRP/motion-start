@@ -1,43 +1,31 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
-    import {
-        SharedLayoutContext,
-        isSharedLayout,
-    } from "../../context/SharedLayoutContext.js";
+    import { useContext } from "../../context/utils/context.svelte.js";
+    import { LayoutGroupContext } from "../../context/LayoutGroupContext";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-    import type { Writable } from "svelte/store";
-    import {
-        type SharedLayoutSyncMethods,
-        type SyncLayoutBatcher,
-    } from "../AnimateSharedLayout/types.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
-    export let list: $$Props["list"] = undefined,
+    export let exitBeforeEnter: $$Props["exitBeforeEnter"] = undefined,
         custom: $$Props["custom"] = undefined,
         initial: $$Props["initial"] = true,
         onExitComplete: $$Props["onExitComplete"] = undefined,
-        exitBeforeEnter: $$Props["exitBeforeEnter"] = undefined,
         presenceAffectsLayout = true,
+        mode: $$Props["mode"] = "sync",
+        list: $$Props["list"] = undefined,
         show: $$Props["show"] = undefined,
         isCustom = false;
 
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
-    const layoutContext =
-        getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
-            SharedLayoutContext,
-        ) || SharedLayoutContext(isCustom);
+    const layoutContext = useContext(LayoutGroupContext, isCustom);
 
     $: forceRender = () => {
-        if (isSharedLayout($layoutContext)) {
-            $layoutContext.forceUpdate();
-        }
+        $layoutContext.forceRender?.();
         _list = [..._list];
     };
 
@@ -77,7 +65,7 @@ Copyright (c) 2018 Framer B.V. -->
         })),
     ];
 
-    $: if (!isInitialRender) {
+    $: if (!isInitialRender || initial) {
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
             ...filteredChildren.map((v) => ({
@@ -137,7 +125,7 @@ Copyright (c) 2018 Framer B.V. -->
                 // Defer re-rendering until all exiting children have indeed left
                 if (!exiting.size) {
                     presentChildren = [...filteredChildren];
-                    forceRender();
+                    forceRender?.();
                     onExitComplete && onExitComplete();
                 }
             };
@@ -177,9 +165,10 @@ Copyright (c) 2018 Framer B.V. -->
 {#each childrenToRender as child (getChildKey(child))}
     <PresenceChild
         isPresent={child.present}
-        initial={initial ? undefined : false}
+        initial={!isInitialRender || initial ? undefined : false}
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
+        {mode}
         onExitComplete={child.onExit}
         {isCustom}
     >

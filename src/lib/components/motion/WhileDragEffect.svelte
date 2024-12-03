@@ -1,10 +1,10 @@
 <script>
     import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
+    import { motion } from "$lib/motion-start";
 </script>
 
 <Box cls="bg-slate-800 flex text-black">
-    <Motion.div
+    <motion.div
         drag={true}
         whileHover={{
             opacity: 1,
@@ -22,6 +22,6 @@
         transition={{
             duration: 0.2,
         }}
-        class="box">Drag</Motion.div
+        class="box">Drag</motion.div
     >
 </Box>

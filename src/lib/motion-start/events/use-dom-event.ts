@@ -1,40 +1,19 @@
-/** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { VisualElement } from "../index.js";
-export interface UseDomEventProps {
-    /**
-     * Ref object that's been provided to the element you want to bind the listener to.
-     */
-    ref: { current: Node } | VisualElement<EventTarget>,
-    /**
-     * Name of the event you want listen for.
-     */
-    eventName: string,
-    /**
-     * Function to fire when receiving the event.
-     */
-    handler?: EventListener,
-    /**
-     * Options to pass to `Event.addEventListener`.
-     */
-    options?: AddEventListenerOptions
-}
+import { onDestroy, tick } from 'svelte';
+import type { RefObject } from '../utils/safe-react-types';
+import { addDomEvent } from './add-dom-event';
+
 /**
  * Attaches an event listener directly to the provided DOM element.
  *
- * Bypassing Sveltes's event system can be desirable, for instance when attaching non-passive
+ * Bypassing React's event system can be desirable, for instance when attaching non-passive
  * event handlers.
  *
  * ```jsx
- * <script>
- *  import { useDomEvent } from 'svelte-motion'
- *  let ref;
- * </script>
+ * const ref = useRef(null)
  *
- * <UseDomEvent ref={{current:ref}} eventName="wheel" handler={onWheel} options={{passive: false}/>
- * <div bind:this={ref}/>
+ * useDomEvent(ref, 'wheel', onWheel, { passive: false })
+ *
+ * return <div ref={ref} />
  * ```
  *
  * @param ref - React.RefObject that's been provided to the element you want to bind the listener to.
@@ -44,17 +23,32 @@ export interface UseDomEventProps {
  *
  * @public
  */
+export function useDomEvent(
+	ref: RefObject<EventTarget>,
+	eventName: string,
+	handler?: EventListener | undefined,
+	options?: AddEventListenerOptions
+) {
+	let cleanup = () => {};
 
-export function addDomEvent(
-    target: EventTarget,
-    eventName: string,
-    handler: EventListener,
-    options?: AddEventListenerOptions
-  ) {
-    target.addEventListener(eventName, handler, options);
-    return function () {
-      return target.removeEventListener(eventName, handler, options);
-    };
-  }
-export { default as UseDomEvent } from './UseDomEvent.svelte';
+	const effect = (
+		ref: RefObject<EventTarget>,
+		eventName: string,
+		handler?: EventListener | undefined,
+		options?: AddEventListenerOptions
+	) => {
+		cleanup();
+		if (!ref) {
+			return () => {};
+		}
+		const element = ref.current;
 
+		if (handler && element) {
+			return addDomEvent(element, eventName, handler, options);
+		}
+		return () => {};
+	};
+
+	tick().then(() => (cleanup = effect(ref, eventName, handler, options)));
+	onDestroy(cleanup);
+}

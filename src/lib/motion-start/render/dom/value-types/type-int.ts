@@ -1,22 +1,11 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { fixed } from '../../../utils/fix-process-env';
-import { number } from 'style-value-types';
+import { number } from '../../../value/types/numbers';
 
-var int = Object.assign(Object.assign({}, number), { transform: Math.round }) as {
-	transform: (x: number) => number;
-	test: (v: any) => boolean;
-	parse: (v: any) => any;
-	createTransformer?: ((template: string) => import('style-value-types').Transformer) | undefined;
-	default?: any;
-	getAnimatableNone?: ((v: any) => any) | undefined;
+export const int = {
+	...number,
+	transform: Math.round,
 };
-
-export { int };

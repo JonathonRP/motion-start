@@ -1,11 +1,27 @@
 import type { Writable } from 'svelte/store';
 import type { MotionContextProps } from './MotionContext';
-import type { SharedLayoutSyncMethods } from '../components/AnimateSharedLayout/types';
+import type { MotionConfigContext } from './MotionConfigContext';
+import type { SwitchLayoutGroupContext } from './SwitchLayoutGroupContext';
+import type { PresenceContext } from './PresenceContext';
+import type { ReorderContext } from '../components/Reorder/types';
+import type { LazyContext } from './LazyContext';
+import type { LayoutGroupContext } from './LayoutGroupContext';
 
 export const getDomContext = (
 	name: string,
 	el: any
-): Writable<MotionContextProps | SharedLayoutSyncMethods> | undefined => {
+):
+	| Writable<
+			MotionContextProps &
+				SwitchLayoutGroupContext &
+				MotionConfigContext &
+				(ReorderContext<any> | null) &
+				(PresenceContext | null) &
+				LazyContext &
+				LayoutGroupContext &
+				string
+	  >
+	| undefined => {
 	if (!el || !window) {
 		return undefined;
 	}

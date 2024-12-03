@@ -1,29 +1,31 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { MotionContextProps } from ".";
-import type { MotionProps } from "../../motion/types";
-
-
-/** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { checkIfControllingVariants, isVariantLabel } from '../../render/utils/variants.js';
+import type { MotionContextProps } from '.';
+import type { MotionProps } from '../../motion/types';
+import { isVariantLabel } from '../../render/utils/is-variant-label';
+import { isControllingVariants } from '../../render/utils/is-controlling-variants';
+import { tick } from 'svelte';
 
-function getCurrentTreeVariants(props: MotionProps, context: MotionContextProps) {
-    if (checkIfControllingVariants(props)) {
-        var initial = props.initial, animate = props.animate;
-        return {
-            initial: initial === false || isVariantLabel(initial)
-                ? initial
-                : undefined,
-            animate: isVariantLabel(animate) ? animate : undefined,
-        };
-    }
-    return props.inherit !== false ? (context || {}) : {};
+export function getCurrentTreeVariants(props: MotionProps, context: MotionContextProps): MotionContextProps {
+	if (isControllingVariants(props)) {
+		const { initial, animate } = props;
+		return {
+			initial: initial === false || isVariantLabel(initial) ? (initial as any) : undefined,
+			animate: isVariantLabel(animate) ? animate : undefined,
+		};
+	}
+
+	tick().then(() => {
+		if (isControllingVariants(props)) {
+			const { initial, animate } = props;
+			return {
+				initial: initial === false || isVariantLabel(initial) ? (initial as any) : undefined,
+				animate: isVariantLabel(animate) ? animate : undefined,
+			};
+		}
+	});
+	return props.inherit !== false ? context : {};
 }
-
-export { getCurrentTreeVariants };

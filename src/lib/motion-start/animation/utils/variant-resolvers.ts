@@ -1,15 +1,33 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionValue } from '../../value';
+
+import { MotionValue } from '../../value';
+
 type VariantNameList = string[];
 type VariantName = string | VariantNameList;
 type UnresolvedVariant = VariantName | MotionValue;
-export type resolveVariantLabels = (variant?: UnresolvedVariant | undefined) => VariantNameList;
+
+const labelsToArray = (label?: VariantName): VariantNameList => {
+	if (!label) {
+		return [];
+	}
+	if (Array.isArray(label)) {
+		return label;
+	}
+	return [label];
+};
+
+export const resolveVariantLabels = (variant?: UnresolvedVariant): VariantNameList => {
+	const unresolvedVariant = variant instanceof MotionValue ? (variant.get() as string) : variant;
+
+	return Array.from(new Set(labelsToArray(unresolvedVariant)));
+};
+
 /**
  * Hooks in React sometimes accept a dependency array as their final argument. (ie useEffect/useMemo)
  * When values in this array change, React re-runs the dependency. However if the array
  * contains a variable number of items, React throws an error.
  */
-export type asDependencyList = (list: VariantNameList) => string[];
+export const asDependencyList = (list: VariantNameList): string[] => [list.join(',')];

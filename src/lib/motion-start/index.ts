@@ -1,139 +1,183 @@
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-export { FramerTreeLayoutContext } from './context/SharedLayoutContext.js';
 
-export { UseGestures } from './gestures/use-gestures.js';
-export { UsePanGesture } from './gestures/use-pan-gesture.js';
-export { UseTapGesture } from './gestures/use-tap-gesture.js';
-
-export { default as MotionSSR } from './motion/MotionSSR.svelte';
-
-export { UseAnimation } from './animation/use-animation.js';
-
-export { default as Mdiv, default as MotionDiv } from './components/MotionDiv.svelte';
-
-// ----------------------------------------------------------------------------------------------
-
-/** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
 /**
  * Components
  */
-export { AnimatePresence } from './components/AnimatePresence/index.js';
-export { AnimateSharedLayout } from './components/AnimateSharedLayout/index.js';
-export { LazyMotion } from './components/LazyMotion/index.js';
-export { MotionConfig } from './components/MotionConfig/index.js';
-export { motion, createDomMotionComponent, motion as Motion } from './render/dom/motion.js';
-export { m, m as M } from './render/dom/motion-minimal.js';
+export { motion } from './render/components/motion/proxy';
+export { m } from './render/components/m/proxy';
+export { AnimatePresence } from './components/AnimatePresence';
+export { MotionConfig } from './components/MotionConfig';
+export { LazyMotion } from './components/LazyMotion';
+export { LayoutGroup } from './components/LayoutGroup';
+export { Reorder } from './components/Reorder';
+
+export * from './dom';
+export * from './three-entry';
+
 /**
  * Features
  */
-export { featureBundle, animations, drag, gestureAnimations } from './render/dom/featureBundle.js';
+export { domMin } from './render/dom/features-min';
+export { domAnimation } from './render/dom/features-animation';
+export { domMax } from './render/dom/features-max';
+
 /**
  * Motion values
  */
-export { MotionValue, motionValue, type PassiveEffect, type Subscriber } from './value/index.js';
-export { useElementScroll } from './value/scroll/use-element-scroll.js';
-export { useViewportScroll } from './value/scroll/use-viewport-scroll.js';
-export { useMotionTemplate } from './value/use-motion-template.js';
-export { useMotionValue } from './value/use-motion-value.js';
-export { useSpring } from './value/use-spring.js';
-export { useTransform } from './value/use-transform.js';
-export { useVelocity } from './value/use-velocity.js';
-export { resolveMotionValue } from './value/utils/resolve-motion-value.js';
+export { useMotionValue } from './value/use-motion-value.svelte';
+export { useMotionTemplate } from './value/use-motion-template';
+export { resolveMotionValue } from './value/utils/resolve-motion-value';
+export { useTransform } from './value/use-transform';
+export { useSpring } from './value/use-spring.svelte';
+export { useVelocity } from './value/use-velocity';
+export { useScroll, type UseScrollOptions } from './value/use-scroll';
+export { useElementScroll } from './value/scroll/use-element-scroll';
+export { useViewportScroll } from './value/scroll/use-viewport-scroll';
+export { useTime } from './value/use-time';
+export { useWillChange } from './value/use-will-change';
+export { useMotionValueEvent } from './utils/use-motion-value-event.svelte';
+
 /**
  * Accessibility
  */
-export { useReducedMotion } from './utils/use-reduced-motion.js';
+export { useReducedMotion } from './utils/reduced-motion/use-reduced-motion';
+export { useReducedMotionConfig } from './utils/reduced-motion/use-reduced-motion-config';
+
 /**
  * Utils
  */
-export { animate } from './animation/animate.js';
-export { animationControls } from './animation/animation-controls.js';
-export type { AnimationControls } from './animation/types.js';
-export { useAnimation } from './animation/use-animation.js';
-export { useIsPresent, usePresence } from './components/AnimatePresence/use-presence.js';
-export { createCrossfader } from './components/AnimateSharedLayout/utils/crossfader.js';
-export { UseDomEvent } from './events/use-dom-event.js';
-export type { PanInfo } from './gestures/PanSession.js';
-export { DragControls, useDragControls } from './gestures/drag/use-drag-controls.js';
-export type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers, TapInfo } from './gestures/types.js';
-export { createMotionComponent } from './motion/index.js';
-export { isValidMotionProp } from './motion/utils/valid-prop.js';
-export { addScaleCorrection } from './render/dom/projection/scale-correction.js';
-export { snapshotViewportBox } from './render/dom/projection/utils.js';
-export { batchLayout, flushLayout } from './render/dom/utils/batch-layout.js';
-export { visualElement } from './render/index.js';
-export type { VisualElement } from './render/types.js';
-export { animateVisualElement } from './render/utils/animation.js';
-export { transform } from './utils/transform.js';
-export { useCycle } from './utils/use-cycle.js';
+export { animationControls } from './animation/hooks/animation-controls';
+export { useAnimate } from './animation/hooks/use-animate';
+export { useAnimateMini } from './animation/hooks/use-animate-style';
+export {
+	useAnimation,
+	useAnimationControls,
+} from './animation/hooks/use-animation';
+export { useAnimationFrame } from './utils/use-animation-frame';
+export { animateVisualElement } from './animation/interfaces/visual-element';
+export type {
+	HoverHandlers,
+	TapHandlers,
+	PanHandlers,
+	FocusHandlers,
+	TapInfo,
+} from './gestures/types';
+export type { PanInfo } from './gestures/pan/PanSession';
+export { useCycle, type CycleState, type Cycle } from './utils/use-cycle';
+export { isValidMotionProp } from './motion/utils/valid-prop';
+export {
+	usePresence,
+	useIsPresent,
+} from './components/AnimatePresence/use-presence.svelte';
+export { useInView, type UseInViewOptions } from './utils/use-in-view';
+export {
+	useDragControls,
+	DragControls,
+} from './gestures/drag/use-drag-controls';
+export { useDomEvent } from './events/use-dom-event';
+export { createRendererMotionComponent } from './motion/index.svelte';
+export { isMotionComponent } from './motion/utils/is-motion-component';
+export { unwrapMotionComponent } from './motion/utils/unwrap-motion-component';
+export { VisualElement } from './render/VisualElement';
+export { addScaleCorrector } from './projection/styles/scale-correction';
+export {
+	useInstantTransition,
+	disableInstantTransitions,
+} from './utils/use-instant-transition';
+export { useInstantLayoutTransition } from './projection/use-instant-layout-transition';
+export { useResetProjection } from './projection/use-reset-projection.svelte';
+export { buildTransform } from './render/html/utils/build-transform';
+export { visualElementStore } from './render/store';
+export { animateValue } from './animation/animators/MainThreadAnimation';
+export { color } from './value/types/color';
+export { complex } from './value/types/complex';
+export { px } from './value/types/numbers/units';
+export type { ValueType } from './value/types/types';
+export { MotionGlobalConfig } from './utils/GlobalConfig';
+export { AcceleratedAnimation } from './animation/animators/AcceleratedAnimation';
+
+/**
+ * Appear animations
+ */
+export { startOptimizedAppearAnimation } from './animation/optimized-appear/start';
+export { optimizedAppearDataAttribute } from './animation/optimized-appear/data-id';
+export { spring } from './animation/generators/spring';
+export { findSpring } from './animation/generators/spring/find';
+
 /**
  * Contexts
  */
-export { LayoutGroupContext } from './context/LayoutGroupContext.js';
-export { MotionConfigContext } from './context/MotionConfigContext.js';
-export { PresenceContext } from './context/PresenceContext.js';
+export { MotionContext } from './context/MotionContext';
+export { MotionConfigContext } from './context/MotionConfigContext';
+export { PresenceContext } from './context/PresenceContext';
+export { LayoutGroupContext } from './context/LayoutGroupContext';
+export { SwitchLayoutGroupContext } from './context/SwitchLayoutGroupContext';
+
 /**
  * Types
  */
-export type { AnimationOptions, AnimationPlaybackControls } from './animation/animate.js';
-export type { AnimatePresenceProps } from './components/AnimatePresence/types.js';
-export type {
-	SharedLayoutAnimationConfig,
-	SharedLayoutProps,
-	SharedLayoutSyncMethods,
-	SyncLayoutLifecycles,
-	VisibilityAction,
-} from './components/AnimateSharedLayout/types.js';
-export { createBatcher } from './components/AnimateSharedLayout/utils/batcher.js';
-export type { LazyProps } from './components/LazyMotion/types.js';
-export type { MotionConfigProps } from './components/MotionConfig/index.js';
-export type { SharedLayoutContext } from './context/SharedLayoutContext.js';
-export type { EventInfo } from './events/types.js';
-export type { DragElastic, DragHandlers, DraggableProps } from './gestures/drag/types.js';
-export type { LayoutProps } from './motion/features/layout/types.js';
-export * from './motion/features/types.js';
+export type { ForwardRefComponent } from './render/html/types';
+export type { DOMMotionComponents } from './render/dom/types';
+export type { SVGMotionProps, SVGAttributesAsMotionValues } from './render/svg/types';
+export type { AnimationLifecycles } from './render/types';
+export type { ScrollMotionValues } from './value/scroll/utils';
 export type {
 	AnimationProps,
-	MotionAdvancedProps,
 	MotionProps,
+	MotionAdvancedProps,
 	MotionStyle,
 	MotionTransform,
-	RelayoutInfo,
-	ResolveLayoutTransition,
 	VariantLabels,
-} from './motion/types.js';
-export type { CustomDomComponent } from './render/dom/motion-proxy.js';
-// export type { ForwardRefComponent, HTMLMotionProps } from "./render/html/types.js";
-// export type { SVGAttributesAsMotionValues, SVGMotionProps } from "./render/svg/types.js";
-export { FlatTree } from './render/utils/flat-tree.js';
-export type { VisualElementLifecycles } from './render/utils/lifecycles.js';
+} from './motion/types';
 export type {
-	CustomValueType,
-	EasingFunction,
-	Inertia,
-	Keyframes,
-	KeyframesTarget,
-	None,
 	Orchestration,
 	Repeat,
-	ResolvedKeyframesTarget,
-	ResolvedSingleTarget,
-	ResolvedValueTarget,
-	SingleTarget,
+	Tween,
 	Spring,
+	Keyframes,
+	Inertia,
+	None,
 	Target,
 	TargetAndTransition,
 	Transition,
-	Tween,
+	ResolvedKeyframesTarget,
+	KeyframesTarget,
+	CustomValueType,
+	ResolvedSingleTarget,
+	SingleTarget,
+	ResolvedValueTarget,
 	ValueTarget,
 	Variant,
 	Variants,
-} from './types.js';
-export * from './types/geometry.js';
-export type { ScrollMotionValues } from './value/scroll/utils.js';
+} from './types';
+export type { EventInfo } from './events/types';
+export * from './motion/features/types';
+export type {
+	DraggableProps,
+	DragHandlers,
+	DragElastic,
+} from './gestures/drag/types';
+export type { LayoutProps } from './motion/features/layout/types';
+export type { AnimatePresenceProps } from './components/AnimatePresence/types';
+export type { MotionConfigProps } from './components/MotionConfig';
+export type { LazyProps } from './components/LazyMotion/types';
+export { FlatTree } from './render/utils/flat-tree';
+export type { CreateVisualElement } from './render/types';
+export * from './projection/geometry/types';
+export type { IProjectionNode } from './projection/node/types';
+export * from './animation/types';
+export * from './animation/sequence/types';
+
+/**
+ * Deprecated
+ */
+export { DeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
+export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state.svelte';
+export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale';
+export { default as AnimateSharedLayout } from './components/AnimateSharedLayout.svelte';
+
+// Keep explict delay in milliseconds export for BC with Framer
+export { delay, type DelayedFunction } from './utils/delay';

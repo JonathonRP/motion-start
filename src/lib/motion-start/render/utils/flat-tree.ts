@@ -1,34 +1,30 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { WithDepth } from './compare-by-depth';
 
-class FlatTree {
-	private children: any[] = [];
+import type { VisualElement } from '../VisualElement';
+import { addUniqueItem, removeItem } from '../../utils/array';
+import { compareByDepth, type WithDepth } from './compare-by-depth';
+
+export class FlatTree<I = VisualElement<unknown>> {
+	private children: (I & WithDepth)[] = [];
+
 	private isDirty = false;
-	add = (child: WithDepth) => {
+
+	add(child: I & WithDepth) {
 		addUniqueItem(this.children, child);
 		this.isDirty = true;
-	};
-	remove = (child: WithDepth) => {
+	}
+
+	remove(child: I & WithDepth) {
 		removeItem(this.children, child);
 		this.isDirty = true;
-	};
-	forEach = (callback: (child: WithDepth) => void) => {
+	}
+
+	forEach(callback: (child: I & WithDepth) => void) {
 		this.isDirty && this.children.sort(compareByDepth);
-		var numChildren = this.children.length;
-		for (var i = 0; i < numChildren; i++) {
-			callback(this.children[i]);
-		}
-	};
+		this.isDirty = false;
+		this.children.forEach(callback);
+	}
 }
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { addUniqueItem, removeItem } from '../../utils/array.js';
-import { compareByDepth } from './compare-by-depth.js';
-
-export { FlatTree };

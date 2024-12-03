@@ -1,18 +1,27 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-function addUniqueItem<T>(arr: T[], item: T) {
-    arr.indexOf(item) === -1 && arr.push(item);
-}
-function removeItem<T>(arr: T[], item: T) {
-    var index = arr.indexOf(item);
-    index > -1 && arr.splice(index, 1);
+export function addUniqueItem<T>(arr: T[], item: T) {
+	if (arr.indexOf(item) === -1) arr.push(item);
 }
 
-export { addUniqueItem, removeItem };
+export function removeItem<T>(arr: T[], item: T) {
+	const index = arr.indexOf(item);
+	if (index > -1) arr.splice(index, 1);
+}
+
+// Adapted from array-move
+export function moveItem<T>([...arr]: T[], fromIndex: number, toIndex: number) {
+	const startIndex = fromIndex < 0 ? arr.length + fromIndex : fromIndex;
+
+	if (startIndex >= 0 && startIndex < arr.length) {
+		const endIndex = toIndex < 0 ? arr.length + toIndex : toIndex;
+
+		const [item] = arr.splice(fromIndex, 1);
+		arr.splice(endIndex, 0, item);
+	}
+
+	return arr;
+}

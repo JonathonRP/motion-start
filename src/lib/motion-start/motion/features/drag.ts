@@ -1,24 +1,21 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { FeatureComponents } from "./types";
-
-
-/** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { UsePanGesture } from '../../gestures/use-pan-gesture.js';
-import { UseDrag } from '../../gestures/drag/use-drag.js';
+import { DragGesture } from '../../gestures/drag';
+import { PanGesture } from '../../gestures/pan';
+import { HTMLProjectionNode } from '../../projection/node/HTMLProjectionNode';
+import { MeasureLayout } from './layout/MeasureLayout';
+import type { FeaturePackages } from './types';
 
-/**
- * @public
- */
-const drag:FeatureComponents = {
-    pan: UsePanGesture,
-    drag: UseDrag
-}
-
-export { drag };
+export const drag: FeaturePackages = {
+	pan: {
+		Feature: PanGesture,
+	},
+	drag: {
+		Feature: DragGesture,
+		ProjectionNode: HTMLProjectionNode,
+		MeasureLayout,
+	},
+};

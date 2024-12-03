@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
+    import { motion, useMotionValue, useTransform } from "$lib/motion-start";
 
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     const height = 70;
@@ -20,11 +20,11 @@
 </script>
 
 <!-- style={{ transform: "translateZ(0)" }} -->
-<Motion.div
+<motion.div
     whileTap={{ cursor: "grabbing" }}
     class="w-[150px] h-[150px] rounded-[30px] border border-primary overflow-hidden cursor-grab relative"
 >
-    <Motion.div
+    <motion.div
         style={{
             width: "150px",
             height: useMotionValue(getHeight(items)),
@@ -47,9 +47,9 @@
                 {item}
             </div>
         {/each}
-    </Motion.div>
-</Motion.div>
-<Motion.div
+    </motion.div>
+</motion.div>
+<motion.div
     style={{
         width,
         transformOrigin: "0%",
@@ -58,4 +58,4 @@
         top: "10px",
     }}
     class="h-[6px] bg-[#fff] rounded-full"
-></Motion.div>
+></motion.div>

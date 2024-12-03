@@ -1,55 +1,46 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionComponentConfig, MotionProps } from "../../motion";
-import type { TargetProjection } from "../utils/state";
-import type { SVGRenderState } from "./types";
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { buildSVGAttrs } from './utils/build-attrs.js';
-import { createSvgRenderState } from './utils/create-render-state.js';
-import { renderSVG } from './utils/render.js';
-import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
+import type { MotionComponentConfig } from '../../motion/index.svelte';
+import type { SVGRenderState } from './types';
+import { renderSVG } from './utils/render';
+import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values';
+import { makeUseVisualState } from '../../motion/utils/use-visual-state';
+import { createSvgRenderState } from './utils/create-render-state';
+import { buildSVGAttrs } from './utils/build-attrs';
+import { isSVGTag } from './utils/is-svg-tag';
+import { frame } from '../../frameloop/frame';
+import type { ScrapeMotionValuesFromProps } from '../types';
 
-var svgMotionConfig = {
-        //@ts-ignore
-        scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
-        createRenderState: createSvgRenderState,
-        onMount: function (props:MotionProps, instance:SVGGraphicsElement, _a: { renderState: any; latestValues: any; }) {
-            var renderState = _a.renderState, latestValues = _a.latestValues;
-            try {
-                renderState.dimensions =
-                    typeof (instance as SVGGraphicsElement).getBBox ===
-                        "function"
-                        ? instance.getBBox()
-                        : instance.getBoundingClientRect();
-            }
-            catch (e) {
-                // Most likely trying to measure an unrendered element under Firefox
-                renderState.dimensions = {
-                    x: 0,
-                    y: 0,
-                    width: 0,
-                    height: 0,
-                };
-            }
-            if (isPath(instance)) {
-                //@ts-ignore
-                renderState.totalPathLength = instance.getTotalLength();
-            }
-            buildSVGAttrs(renderState, latestValues, undefined, undefined, { enableHardwareAcceleration: false }, props.transformTemplate);
-            // TODO: Replace with direct assignment
-            // @ts-expect-error
-            renderSVG(instance, renderState);
-        },
-    } satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>
-function isPath(element: SVGGraphicsElement) {
-    return element.tagName === "path";
-}
+export const svgMotionConfig: Partial<MotionComponentConfig<SVGElement, SVGRenderState>> = {
+	useVisualState: makeUseVisualState({
+		scrapeMotionValuesFromProps: scrapeSVGProps as ScrapeMotionValuesFromProps,
+		createRenderState: createSvgRenderState,
+		onMount: (props, instance, { renderState, latestValues }) => {
+			frame.read(() => {
+				try {
+					renderState.dimensions =
+						typeof (instance as SVGGraphicsElement).getBBox === 'function'
+							? (instance as SVGGraphicsElement).getBBox()
+							: (instance.getBoundingClientRect() as DOMRect);
+				} catch (e) {
+					// Most likely trying to measure an unrendered element under Firefox
+					renderState.dimensions = {
+						x: 0,
+						y: 0,
+						width: 0,
+						height: 0,
+					};
+				}
+			});
 
-export { svgMotionConfig };
+			frame.render(() => {
+				buildSVGAttrs(renderState, latestValues, isSVGTag(instance.tagName), props.transformTemplate);
 
+				renderSVG(instance, renderState);
+			});
+		},
+	}),
+} satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>;

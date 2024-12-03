@@ -1,17 +1,12 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { VisualElement } from '../../render/types';
+
+import type { VisualElement } from '../../render/VisualElement';
 import type { VisualState } from './use-visual-state';
-import type { Ref } from '../types';
-
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-
 import { isRefObject } from '../../utils/is-ref-object.js';
+import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 
 /**
  * Creates a ref function that, when called, hydrates the provided
@@ -21,18 +16,23 @@ function useMotionRef<Instance, RenderState>(
 	visualState: VisualState<Instance, RenderState>,
 	visualElement?: VisualElement<Instance> | null,
 	externalRef?: Ref<Instance>
-): Ref<Instance> {
-	return (instance) => {
-		var _a;
-		instance && ((_a = visualState.mount) === null || _a === void 0 ? void 0 : _a.call(visualState, instance));
+): RefCallBack<Instance> {
+	return (instance: Instance) => {
+		instance && visualState.mount && visualState.mount(instance);
+
 		if (visualElement) {
-			instance ? visualElement.mount(instance) : visualElement.unmount();
+			if (instance) {
+				visualElement.mount(instance);
+			} else {
+				visualElement.unmount();
+			}
 		}
+
 		if (externalRef) {
 			if (typeof externalRef === 'function') {
 				externalRef(instance);
-			} else if (isRefObject(externalRef)) {// @ts-expect-error
-				externalRef.current = instance;
+			} else if (isRefObject(externalRef)) {
+				(externalRef as any).current = instance;
 			}
 		}
 	};

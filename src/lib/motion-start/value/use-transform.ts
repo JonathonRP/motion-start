@@ -1,12 +1,12 @@
-import type { TransformOptions } from '../utils/transform';
 /** 
- based on framer-motion@4.1.17,
- Copyright (c) 2018 Framer B.V.
- */
-import type { MotionValue } from '.';
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
 
-import { transform } from '../utils/transform';
-import { useCombineMotionValues } from './use-combine-values';
+import type { MotionValue } from '.';
+import { transform, type TransformOptions } from '../utils/transform';
+import { useCombineMotionValues } from './use-combine-values.svelte';
+import { useComputed } from './use-computed';
 
 export type InputRange = number[];
 type SingleTransformer<I, O> = (input: I) => O;
@@ -153,29 +153,32 @@ export function useTransform<I, O>(
  * @public
  */
 export function useTransform<I, O>(
+	input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[],
+	transformer: MultiTransformer<I, O>
+): MotionValue<O>;
+export function useTransform<I, O>(transformer: () => O): MotionValue<O>;
+export function useTransform<I, O>(
 	input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
 	inputRangeOrTransformer?: InputRange | Transformer<I, O>,
 	outputRange?: O[],
 	options?: TransformOptions<O>
 ) {
-	type Input = typeof input;
-	type inputRangeOrTransformer = typeof inputRangeOrTransformer;
-	type OutputRange = typeof outputRange;
-	type Options = typeof options;// @ts-expect-error
 	const latest: I & (string | number)[] & number & any[{}] = [] as any;
-
 	const update = (
-		input: Input,
-		inputRangeOrTransformer?: inputRangeOrTransformer,
-		outputRange?: OutputRange,
-		options?: Options
+		_input: typeof input,
+		_inputRangeOrTransformer?: typeof inputRangeOrTransformer,
+		_outputRange?: typeof outputRange,
+		_options?: typeof options
 	) => {
+		if (typeof _input === 'function') {
+			return useComputed(_input);
+		}
 		const transformer =
 			typeof inputRangeOrTransformer === 'function'
 				? inputRangeOrTransformer
 				: transform(inputRangeOrTransformer!, outputRange!, options);
 		const values = Array.isArray(input) ? input : [input];
-		const _transformer = Array.isArray(input) ? transformer : ([latest]: any[]) => transformer(latest);
+		const _transformer = Array.isArray(input) ? transformer : ([_latest]: any[]) => transformer(_latest);
 		return [
 			values,
 			() => {
@@ -193,8 +196,21 @@ export function useTransform<I, O>(
 
 	(comb as any).updateInner = comb.reset;
 
-	comb.reset = (input, inputRangeOrTransformer?, outputRange?: OutputRange, options?: Options) =>
+	comb.reset = (input, inputRangeOrTransformer, outputRange, options) =>
 		(comb as any).updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
 	return comb;
 }
-// export { default as UseTransform } from './UseTransform.svelte';
+
+function useListTransform<I, O>(values: MotionValue<I>[], transformer: MultiTransformer<I, O>) {
+	const latest: I[] = [];
+
+	return useCombineMotionValues(values, () => {
+		latest.length = 0;
+		const numValues = values.length;
+		for (let i = 0; i < numValues; i++) {
+			latest[i] = values[i].get();
+		}
+
+		return transformer(latest);
+	});
+}

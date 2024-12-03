@@ -1,38 +1,18 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 import type { Writable } from 'svelte/store';
-type Cycle = (i?: number) => void;
-type CycleState<T> = [T, Cycle];
+import { wrap } from './wrap';
+import { get, writable } from 'svelte/store';
+import { tick } from 'svelte';
 
+export type Cycle = (i?: number) => void;
+export type CycleState<T> = [Writable<T>, Cycle];
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
 /**
  * Cycles through a series of visual properties. Can be used to toggle between or cycle through animations. It works similar to `useState` in React. It is provided an initial array of possible states, and returns an array of two arguments.
- *
- * @library
- *
- * ```jsx
- * import * as React from "react"
- * import { Frame, useCycle } from "framer"
- *
- * export function MyComponent() {
- *   const [x, cycleX] = useCycle(0, 50, 100)
- *
- *   return (
- *     <Frame
- *       animate={{ x: x }}
- *       onTap={() => cycleX()}
- *      />
- *    )
- * }
- * ```
- *
- * @motion
  *
  * An index value can be passed to the returned `cycle` function to cycle to a specific index.
  *
@@ -44,7 +24,7 @@ Copyright (c) 2018 Framer B.V.
  *   const [x, cycleX] = useCycle(0, 50, 100)
  *
  *   return (
- *     <MotionDiv
+ *     <motion.div
  *       animate={{ x: x }}
  *       onTap={() => cycleX()}
  *      />
@@ -57,22 +37,20 @@ Copyright (c) 2018 Framer B.V.
  *
  * @public
  */
-// export { default as UseCycle } from './UseCycle.svelte';
-import { wrap } from "popmotion";
-import { writable } from 'svelte/store';
+export function useCycle<T>(...items: T[]): CycleState<T> {
+	let index = 0;
+	const item = writable(items[index]) as Writable<T> & {
+		/** Cycle through to next value or set the next value by index. */
+		cycle: (next?: number) => void;
+	};
 
-export const useCycle = <T>(...items: T[]) => {
-    let index = 0;
-    const x = (writable(items[index]) as any) satisfies Writable<T> & {
-        /** Cycle through to next value or set the next value by index. */
-        next: (index?: number) => void
-    }
-    const next = (i?: number) => {
-        index = typeof i !== "number" ?
-            wrap(0, items.length, index + 1) :
-            i;
-        x.set(items[index])
-    }
-    x.next = next;
-    return x;
+	item.cycle = (next?: number) => {
+		index = typeof next !== 'number' ? wrap(0, items.length, index + 1) : next;
+		item.set(items[index]);
+	};
+
+	// The array will change on each call, but by putting items.length at
+	// the front of this array, we guarantee the dependency comparison will match up
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	return [item, item.cycle];
 }
