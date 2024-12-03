@@ -38,9 +38,9 @@
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.453.0",
 		"mode-watcher": "^0.4.1",
+		"nanoid": "^5.0.9",
 		"tailwind-merge": "^2.5.5",
-		"tailwind-variants": "^0.2.1",
-		"uid": "^2.0.2"
+		"tailwind-variants": "^0.2.1"
 	},
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
