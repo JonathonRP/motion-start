@@ -71,9 +71,7 @@
 		"release": "bun --bun run build && bun --bun changeset publish"
 	},
 	"dependencies": {
-		"framesync": "^6.1.2",
-		"popmotion": "^11.0.5",
-		"style-value-types": "5.1.2"
+		"nanoid": "^5.0.9"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.0",
