@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.2
+
+### Patch Changes
+
+- 25f1b6e: export MotionSSR
+
 ## 0.1.1
 
 ### Patch Changes
