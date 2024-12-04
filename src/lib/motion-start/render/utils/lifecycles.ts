@@ -161,7 +161,7 @@ function createLifecycles() {
 	} as any;
 	managers.forEach((manager, i) => {
 		lifecycles['on' + names[i]] = (handler: (...args: any) => void) => manager.add(handler);
-		lifecycles['notify' + names[i]] = (...args) => {
+		lifecycles['notify' + names[i]] = (...args: any[]) => {
 			return manager.notify.apply(manager, args);
 		};
 	});

@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { buildHTMLStyles } from "./utils/build-styles.js";
 
   import { createHtmlRenderState } from "./utils/create-render-state.js";
-  let { visualState, isStatic, props } = $props();
+  let { visualState, isStatic, props, children } = $props();
   const memo = (variantLabelsAsDependency?: string | boolean | undefined) => {
     let state = createHtmlRenderState();
 
@@ -25,4 +25,4 @@ Copyright (c) 2018 Framer B.V. -->
   const styles = $derived(memo(visualState));
 </script>
 
-<slot {styles} />
+{@render children(styles)}

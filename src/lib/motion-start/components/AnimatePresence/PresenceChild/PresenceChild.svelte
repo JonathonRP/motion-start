@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
-<script context="module" lang="ts">
+<script context="module" lang="ts" module>
     let presenceId = 0;
     function getPresenceId() {
         const id = presenceId;

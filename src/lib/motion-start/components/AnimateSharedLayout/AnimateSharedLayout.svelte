@@ -111,7 +111,7 @@ Copyright (c) 2018 Framer B.V. -->
      * Create a handler which we can use to flush the children animations
      */
     const handler = {
-      measureLayout: (child: PresenceChild) => child.updateLayoutMeasurement(),
+      measureLayout: (child: any) => child.updateLayoutMeasurement(),
       layoutReady: (child: VisualElement) => {
         if (child.getLayoutId() !== undefined) {
           const stack = getStack(child);

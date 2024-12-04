@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Component } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { CreateVisualElement, VisualElement } from '../../render/types';
 import type { MotionProps, Ref } from '../types';
 import type { VisualState } from '../utils/use-visual-state';
@@ -13,6 +13,7 @@ export interface FeatureProps {
 	props: MotionProps;
 	visualElement: VisualElement;
 	isCustom: any;
+	children: Snippet;
 }
 export type FeatureNames = {
 	animation: true;

@@ -6,7 +6,7 @@ import type { Properties } from 'csstype';
 import type { AnimationControls } from '../animation/types';
 import type { DraggableProps } from '../gestures/drag/types';
 import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types';
-import type { VisualElementLifecycles } from '../render/utils/lifecycles.svelte';
+import type { VisualElementLifecycles } from '../render/utils/lifecycles.ts';
 import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from '../types';
 import type { MotionValue } from '../value';
 import type { LayoutProps } from './features/layout/types';
