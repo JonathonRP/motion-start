@@ -1,5 +1,13 @@
 # motion-start
 
+## 0.1.1
+
+### Patch Changes
+
+- 98cfaba: chore: 🤖 release
+- 4f1b2e7: enable layout animation feature
+- 9f5a69c: fix layout animations
+
 ## 0.1.0
 
 ### Minor Changes
