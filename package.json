@@ -12,14 +12,20 @@
 		"ur": "https://github.com/JonathonRP/motion-start.git"
 	},
 	"type": "module",
-	"files": [
-		"dist"
-	],
-	"main": "./dist/index.js",
-	"bin": "./dist/index.js",
+	"files": ["dist", "!dist/**/*.test.*", "!dist/**/*.spec.*"],
+	"module": "./dist/index.js",
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"exports": "./dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
+		},
+		"./MotionSSR": {
+			"types": "./dist/motion/MotionSSR.svelte.d.ts",
+			"svelte": "./dist/motion/MotionSSR.svelte"
+		}
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && bun --bun package",
