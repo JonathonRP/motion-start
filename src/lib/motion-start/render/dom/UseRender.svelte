@@ -32,7 +32,7 @@ Copyright (c) 2018 Framer B.V. -->
   {isStatic}
   {props}
 >
-  {#snippet children(visualProps)}
+  {#snippet children(visualProps: any)}
     <slot {motion} props={{ ...filteredProps, ...visualProps }} />
   {/snippet}
 </svelte:component>

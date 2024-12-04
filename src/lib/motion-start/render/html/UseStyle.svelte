@@ -27,6 +27,8 @@ Copyright (c) 2018 Framer B.V. -->
   };
 </script>
 
-<UseInitialMotionValues {props} {visualState} {isStatic} let:styles={s1}>
-  <slot styles={toStyle({ s1, props, style })} />
+<UseInitialMotionValues {props} {visualState} {isStatic}>
+  {#snippet children(s1: any)}
+    <slot styles={toStyle({ s1, props, style })} />
+  {/snippet}
 </UseInitialMotionValues>

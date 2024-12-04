@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { SpringOptions } from "popmotion";
-import { MotionValue } from ".";
+import type { SpringOptions } from 'popmotion';
+import type { MotionValue } from '.';
 
 /** 
 based on framer-motion@4.1.16,
@@ -11,12 +11,12 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { fixed } from '../utils/fix-process-env';
-import { getContext } from "svelte"
-import { MotionConfigContext, type MotionConfigContextObject } from "../context/MotionConfigContext"
+import { getContext } from 'svelte';
+import { MotionConfigContext, type MotionConfigContextObject } from '../context/MotionConfigContext';
 import { get, type Writable } from 'svelte/store';
-import { useMotionValue } from "./use-motion-value";
-import { isMotionValue } from "./utils/is-motion-value";
-import { animate } from "popmotion"
+import { useMotionValue } from './use-motion-value';
+import { isMotionValue } from './utils/is-motion-value';
+import { animate } from 'popmotion';
 
 /**
  * Creates a `MotionValue` that, when `set`, will use a spring animation to animate to its new state.
@@ -38,47 +38,43 @@ import { animate } from "popmotion"
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
+	const mcc = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
 
-    const mcc = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+	let activeSpringAnimation: { stop: () => void } | null = null;
 
-    let activeSpringAnimation: { stop: () => void } | null = null;
+	const value = useMotionValue(isMotionValue(source) ? source.get() : source) as MotionValue<any> & {
+		reset: (_: any, config: SpringOptions) => void;
+	};
 
-    let value = useMotionValue(isMotionValue(source) ? source.get() : source) as MotionValue<any> & { reset: (_: any, config: SpringOptions) => void };
+	const update = (_source: typeof source, _config: typeof config) => {
+		value.attach((v, set) => {
+			const { isStatic } = get(mcc);
 
-    let cleanup: () => void;
-    const update = (_source: typeof source, _config: typeof config) => {
-        value.attach((v, set) => {
+			if (isStatic) {
+				return set(v);
+			}
+			if (activeSpringAnimation) {
+				activeSpringAnimation.stop();
+			}
+			activeSpringAnimation = animate({
+				from: value.get(),
+				to: v,
+				velocity: value.getVelocity(),
+				..._config,
+				onUpdate: set,
+			});
 
+			return value.get();
+		});
 
-            const { isStatic } = get(mcc);
+		return isMotionValue(_source) ? _source.onChange((v) => value.set(Number.parseFloat(v))) : undefined;
+	};
 
-            if (isStatic) {
-                return set(v);
-            }
-            if (activeSpringAnimation) {
-                activeSpringAnimation.stop();
-            }
-            activeSpringAnimation = animate({
-                from: value.get(),
-                to: v,
-                velocity: value.getVelocity(),
-                ..._config,
-                onUpdate: set,
-            })
+	update(source, config);
 
-            return value.get();
-        })
-        cleanup?.()
-        return isMotionValue(_source) ?
-            _source.onChange(v => value.set(parseFloat(v))) :
-            undefined
-    }
+	value.reset = update;
 
-    update(source, config);
-
-    value.reset = update;
-
-    return value;
-}
+	return value;
+};
 
 //export { default as UseSpring } from './UseSpring.svelte';
