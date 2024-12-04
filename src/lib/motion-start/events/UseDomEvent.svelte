@@ -1,10 +1,14 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
+
 <script lang="ts">
-  import { onDestroy } from "svelte";
+  import { onDestroy, type Snippet } from "svelte";
   import { addDomEvent, type UseDomEventProps } from "./use-dom-event.js";
 
-  type $$Props = UseDomEventProps;
+  interface Props extends UseDomEventProps {
+    children?: Snippet;
+  }
 
   /**
    * Attaches an event listener directly to the provided DOM element.
@@ -27,12 +31,20 @@ Copyright (c) 2018 Framer B.V. -->
    *
    * @public
    */
-  export let ref: $$Props["ref"],
-    eventName: $$Props["eventName"],
-    handler: $$Props["handler"] = undefined,
-    options: $$Props["options"] = undefined;
+  let {
+    ref,
+    eventName,
+    handler = undefined,
+    options = undefined,
+    children,
+  }: Props = $props();
   let cleanup = () => {};
-  const effect = (ref?:any, eventName?:any, handler?:any, options?:any) => {
+  const _cleanup = (
+    ref?: any,
+    eventName?: any,
+    handler?: any,
+    options?: any,
+  ) => {
     cleanup();
     if (!ref) {
       return () => {};
@@ -45,8 +57,10 @@ Copyright (c) 2018 Framer B.V. -->
     return () => {};
   };
 
-  $: cleanup = effect(ref, eventName, handler, options);
+  $effect(() => {
+    cleanup = _cleanup(ref, eventName, handler, options);
+  });
   onDestroy(cleanup);
 </script>
 
-<slot />
+{@render children?.()}

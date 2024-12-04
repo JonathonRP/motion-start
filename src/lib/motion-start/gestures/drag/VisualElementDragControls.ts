@@ -274,9 +274,9 @@ class VisualElementDragControls {
 		this.panSession = new PanSession(
 			originEvent,
 			{
-				onSessionStart,// @ts-expect-error
-				onStart,// @ts-expect-error
-				onMove,// @ts-expect-error
+				onSessionStart, // @ts-expect-error
+				onStart, // @ts-expect-error
+				onMove, // @ts-expect-error
 				onSessionEnd,
 			},
 			{ transformPagePoint: transformPagePoint }
@@ -300,7 +300,8 @@ class VisualElementDragControls {
 		 */
 		if (this.constraints && !this.hasMutatedConstraints) {
 			eachAxis((axis) => {
-				if (this.getAxisMotionValue(axis)) {// @ts-expect-error
+				if (this.getAxisMotionValue(axis)) {
+					// @ts-expect-error
 					this.constraints[axis] = rebaseAxisConstraints(layout[axis], this.constraints[axis]);
 				}
 			});
@@ -404,7 +405,7 @@ class VisualElementDragControls {
 		var min = calcConstrainedMinPoint(
 			point[axis],
 			axisLength,
-			axisProgress,// @ts-expect-error
+			axisProgress, // @ts-expect-error
 			(_a = this.constraints) === null || _a === void 0 ? void 0 : _a[axis],
 			this.elastic[axis]
 		);
@@ -442,8 +443,9 @@ class VisualElementDragControls {
 		var _a = this.props,
 			layout = _a.layout,
 			layoutId = _a.layoutId;
-		var dragKey = '_drag' + axis.toUpperCase();// @ts-expect-error
-		if (this.props[dragKey]) {// @ts-expect-error
+		var dragKey = '_drag' + axis.toUpperCase(); // @ts-expect-error
+		if (this.props[dragKey]) {
+			// @ts-expect-error
 			return this.props[dragKey];
 		} else if (!layout && layoutId === undefined) {
 			return this.visualElement.getValue(axis, 0);
@@ -476,12 +478,13 @@ class VisualElementDragControls {
 		var constraints = this.constraints || {};
 		if (isRelative && Object.keys(constraints).length && this.isLayoutDrag()) {
 			var projectionParent = this.visualElement.getProjectionParent();
-			if (projectionParent) {// @ts-expect-error
+			if (projectionParent) {
+				// @ts-expect-error
 				var relativeConstraints_1 = calcRelativeOffset(projectionParent.projection.targetFinal, constraints);
 				eachAxis((axis) => {
 					var _a = relativeConstraints_1[axis],
 						min = _a.min,
-						max = _a.max;// @ts-expect-error
+						max = _a.max; // @ts-expect-error
 					constraints[axis] = {
 						min: isNaN(min) ? undefined : min,
 						max: isNaN(max) ? undefined : max,
@@ -573,7 +576,7 @@ class VisualElementDragControls {
 				// Calculate the position of the targetBox relative to the constraintsBox using the
 				// previously calculated progress
 				var _a = calcPositionFromProgress(
-						this.visualElement.projection.target[axis],// @ts-expect-error
+						this.visualElement.projection.target[axis], // @ts-expect-error
 						this.constraintsBox[axis],
 						boxProgress[axis]
 					),
@@ -589,7 +592,8 @@ class VisualElementDragControls {
 		setTimeout(flushLayout, 1);
 	};
 	updateConstraints = (onReady?: () => void) => {
-		this.cancelLayout = batchLayout((read, write) => {// @ts-expect-error
+		this.cancelLayout = batchLayout((read, write) => {
+			// @ts-expect-error
 			var ancestors = collectProjectingAncestors(_this.visualElement);
 			write(() => ancestors.forEach((element) => element.resetTransform()));
 			read(() => updateLayoutMeasurement(this.visualElement));

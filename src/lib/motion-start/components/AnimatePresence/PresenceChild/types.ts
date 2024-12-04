@@ -1,10 +1,11 @@
-import type { VariantLabels } from "../../../motion/types";
+import type { Snippet } from 'svelte';
+import type { VariantLabels } from '../../../motion/types';
 export interface PresenceChildProps {
-    // children: React.ReactElement<any>;
-    isPresent: boolean;
-    onExitComplete?: () => void;
-    initial?: false | VariantLabels;
-    custom?: any;
-    presenceAffectsLayout: boolean;
-    isCustom: boolean
+	children?: Snippet;
+	isPresent: boolean;
+	onExitComplete?: () => void;
+	initial?: false | VariantLabels;
+	custom?: any;
+	presenceAffectsLayout: boolean;
+	isCustom: boolean;
 }

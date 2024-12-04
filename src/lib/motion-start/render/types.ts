@@ -13,7 +13,7 @@ import type { AxisBox2D, Point2D } from '../types/geometry';
 import type { MotionValue } from '../value';
 import type { AnimationState } from './utils/animation-state';
 import type { FlatTree } from './utils/flat-tree';
-import type { LifecycleManager } from './utils/lifecycles';
+import type { LifecycleManager } from './utils/lifecycles.svelte';
 import type { LayoutState, TargetProjection } from './utils/state';
 import type {
 	Booleanish,

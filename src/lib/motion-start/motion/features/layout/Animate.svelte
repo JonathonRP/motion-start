@@ -39,8 +39,9 @@ Copyright (c) 2018 Framer B.V. -->
   import { axisBox } from "../../../utils/geometry/index.js";
   import { tweenAxis } from "./utils";
   import type { Axis, AxisBox2D } from "$lib/motion-start/types/geometry.js";
+  import type { VisualElement } from "$lib/motion-start/render/types.js";
 
-  export let visualElement,
+  export let visualElement: VisualElement,
     //initial = undefined,
     //style = undefined,
     //transformTemplate = undefined,
@@ -125,29 +126,11 @@ Copyright (c) 2018 Framer B.V. -->
     y: undefined,
   } as any satisfies AxisBox2D;
 
-  let unsubLayoutReady: () => void;
-
   let isAnimatingTree = false;
 
-  onMount(() => {
-    visualElement.animateMotionValue = startAnimation;
-    visualElement.enableLayoutProjection();
-    unsubLayoutReady = visualElement.onLayoutUpdate(animateF);
-    visualElement.layoutSafeToRemove = function () {
-      safeToRemove();
-    };
-
-    addScaleCorrection(defaultScaleCorrectors);
-  });
-
-  onDestroy(() => {
-    unsubLayoutReady();
-    eachAxis((axis) => stopAxisAnimation[axis]?.());
-  });
-
   const animateF = (
-    target: { [x: string]: { max: any }; x: any; y: any },
-    origin: { [x: string]: any; x: any; y: any },
+    target: AxisBox2D,
+    origin: AxisBox2D,
     {
       originBox,
       targetBox,
@@ -233,7 +216,7 @@ Copyright (c) 2018 Framer B.V. -->
    * API to accept more custom animations like
    */
   const animateAxis = (
-    axis: string,
+    axis: "x" | "y",
     target: Axis,
     origin: Axis,
     { transition: _transition } = {} as any,
@@ -312,4 +295,25 @@ Copyright (c) 2018 Framer B.V. -->
 
     return animation;
   };
+
+  const subLayoutReady = () => {
+    visualElement.animateMotionValue = startAnimation;
+    visualElement.enableLayoutProjection();
+    const unsubLayoutReady = visualElement.onLayoutUpdate(animateF);
+    visualElement.layoutSafeToRemove = function () {
+      safeToRemove();
+    };
+
+    addScaleCorrection(defaultScaleCorrectors);
+
+    return () => {
+      unsubLayoutReady();
+      eachAxis((axis) => stopAxisAnimation[axis]?.());
+    };
+  };
+
+  onMount(subLayoutReady);
+  // beforeUpdate(subLayoutReady);
+
+  // afterUpdate(subLayoutReady);
 </script>

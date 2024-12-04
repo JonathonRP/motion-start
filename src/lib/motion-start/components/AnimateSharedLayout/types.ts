@@ -2,6 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+// import type { Snippet } from 'svelte';
 import type { VisualElement } from '../../render/types';
 import type { Transition } from '../../types';
 import type { AxisBox2D } from '../../types/geometry';
@@ -28,7 +29,7 @@ export interface SharedLayoutProps {
 	/**
 	 * @public
 	 */
-	//children: React.ReactNode;
+	// children: Snippet;
 	/**
 	 * When combined with `AnimatePresence`, `SharedLayoutProps` can customise how to visually switch
 	 * between `layoutId` components as new ones enter and leave the tree.
