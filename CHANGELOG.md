@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.3
+
+### Patch Changes
+
+- 61bcd64: fix export path for svelte comp
+
 ## 0.1.2
 
 ### Patch Changes
