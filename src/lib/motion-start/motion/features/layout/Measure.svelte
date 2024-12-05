@@ -3,8 +3,8 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-  import { getContext, onMount } from "svelte";
-  import { get, type Writable } from "svelte/store";
+  import { flushSync, getContext, onMount } from "svelte";
+  import { type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
     ScaleCorrectionParentContext,
@@ -36,6 +36,7 @@ Copyright (c) 2018 Framer B.V. -->
       }
     });
   });
+
   /**
    * If this is a child of a SyncContext, notify it that it needs to re-render. It will then
    * handle the snapshotting.
@@ -67,7 +68,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   $effect(() => {
     if (update === undefined) return;
-    updater(update);
+    updater();
   });
 
   if (update === undefined) {
@@ -86,6 +87,7 @@ Copyright (c) 2018 Framer B.V. -->
     });
 
     if (!isSharedLayout(syncLayout)) {
+      flushSync();
       syncLayout.flush();
     }
 
@@ -103,7 +105,5 @@ Copyright (c) 2018 Framer B.V. -->
       },
     ]),
   );
-  $effect(() => {
-    afterU();
-  });
+  $effect.pre(afterU);
 </script>
