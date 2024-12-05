@@ -9,5 +9,4 @@ export interface PresenceChildProps {
 	custom?: any;
 	presenceAffectsLayout: boolean;
 	mode: 'sync' | 'popLayout' | 'wait';
-	isCustom: boolean;
 }

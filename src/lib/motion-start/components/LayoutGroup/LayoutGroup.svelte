@@ -1,10 +1,11 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script lang="ts" context="module" module>
   type InheritOption = boolean | "id";
 
-  export interface Props {
+  export interface LayoutGroupProps {
     id?: string;
     inherit?: InheritOption;
   }
@@ -21,19 +22,23 @@ Copyright (c) 2018 Framer B.V. -->
   import { nodeGroup } from "../../projection/node/group";
   import { useForceUpdate } from "../../utils/use-force-update";
   import type { MutableRefObject } from "../../utils/safe-react-types";
+  import { fromStore } from "svelte/store";
+  import type { Snippet } from "svelte";
 
-  type $$Props = Props;
+  interface Props extends LayoutGroupProps {
+    isCustom?: boolean;
+    children?: Snippet;
+  }
 
-  export let id: $$Props["id"] = undefined,
-    inherit: $$Props["inherit"] = true,
-    isCustom = false;
+  let { id, inherit = true, isCustom = false, children }: Props = $props();
 
-  const layoutGroupContext = useContext(LayoutGroupContext, isCustom);
+  const layoutGroupContext = fromStore(
+    useContext(LayoutGroupContext, isCustom),
+  ).current;
 
-  const deprecatedLayoutGroupContext = useContext(
-    DeprecatedLayoutGroupContext,
-    isCustom,
-  );
+  const deprecatedLayoutGroupContext = fromStore(
+    useContext(DeprecatedLayoutGroupContext, isCustom),
+  ).current;
 
   const [forceRender, key] = useForceUpdate();
 
@@ -41,42 +46,35 @@ Copyright (c) 2018 Framer B.V. -->
     current: null,
   } as MutableRefObject<LayoutGroupContext | null>;
 
-  const upstreamId = $layoutGroupContext.id || $deprecatedLayoutGroupContext;
+  const upstreamId = $derived(
+    layoutGroupContext.id || deprecatedLayoutGroupContext,
+  );
 
-  if (context.current === null) {
-    if (shouldInheritId(inherit!) && upstreamId) {
-      id = id ? upstreamId + "-" + id : upstreamId;
+  $effect(() => {
+    if (context.current === null) {
+      if (shouldInheritId(inherit!) && upstreamId) {
+        id = id ? upstreamId + "-" + id : upstreamId;
+      }
+
+      context.current = {
+        id,
+        group: shouldInheritGroup(inherit!)
+          ? layoutGroupContext.group || nodeGroup()
+          : nodeGroup(),
+      };
     }
+  });
 
-    context.current = {
-      id,
-      group: shouldInheritGroup(inherit!)
-        ? $layoutGroupContext.group || nodeGroup()
-        : nodeGroup(),
-    };
-  }
-
-  $: if (context.current === null) {
-    if (shouldInheritId(inherit!) && upstreamId) {
-      id = id ? upstreamId + "-" + id : upstreamId;
-    }
-
-    context.current = {
-      id,
-      group: shouldInheritGroup(inherit!)
-        ? $layoutGroupContext.group || nodeGroup()
-        : nodeGroup(),
-    };
-  }
-
-  const memo = (_key: typeof key) => {
+  const memo = $derived((_key: typeof key) => {
     return {
       ...context.current,
       forceRender,
     };
-  };
+  });
 
-  $: LayoutGroupContext.Provider = memo(key);
+  $effect(() => {
+    LayoutGroupContext.Provider = memo(key);
+  });
 </script>
 
-<slot />
+{@render children?.()}

@@ -1,28 +1,37 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script lang="ts">
   import { useContext } from "../../context/utils/context.svelte.js";
   import { MotionConfigContext } from "../../context/MotionConfigContext.js";
   import type { MotionConfigProps } from "./index.js";
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
+  import { fromStore } from "svelte/store";
 
-  type $$Props = MotionConfigProps;
+  interface Props extends MotionConfigProps {
+    isCustom?: boolean;
+  }
 
-  export let isValidProp: $$Props["isValidProp"] = undefined,
-    transformPagePoint: $$Props["transformPagePoint"] = undefined,
-    isStatic: $$Props["isStatic"] = undefined,
-    transition: $$Props["transition"] = undefined,
-    isCustom = false;
+  let {
+    isValidProp,
+    transformPagePoint,
+    isStatic,
+    transition,
+    isCustom = false,
+    children,
+  }: Props = $props();
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
-  const mcc = useContext(MotionConfigContext, isCustom);
+  let mcc = fromStore(useContext(MotionConfigContext, isCustom)).current;
   /**
    * Inherit props from any parent MotionConfig components
    */
-  let config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
-  $: config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
+  const config = $derived({
+    ...mcc,
+    ...{ transformPagePoint, isStatic, transition },
+  });
 
   /**
    * Don't allow isStatic to change between renders as it affects how many hooks
@@ -37,15 +46,13 @@ Copyright (c) 2018 Framer B.V. -->
   MotionConfigContext.Provider = config as any;
 
   const memo = (..._args: any[]) => config;
-  $: {
-    useContext(MotionConfigContext).set(
-      memo(
-        JSON.stringify(config.transition),
-        config.transformPagePoint,
-        config.reducedMotion,
-      ) as any,
-    );
-  }
+  $effect(() => {
+    mcc = memo(
+      JSON.stringify(config.transition),
+      config.transformPagePoint,
+      config.reducedMotion,
+    ) as any;
+  });
 </script>
 
-<slot />
+{@render children?.()}
