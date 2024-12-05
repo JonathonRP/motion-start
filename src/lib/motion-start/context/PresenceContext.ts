@@ -11,7 +11,7 @@ import { createContext } from './utils/context.svelte';
  * @public
  */
 export interface PresenceContext {
-	id: number;
+	id: string;
 	isPresent: boolean;
 	register: (id: string | number) => () => void;
 	onExitComplete?: (id: string | number) => void;

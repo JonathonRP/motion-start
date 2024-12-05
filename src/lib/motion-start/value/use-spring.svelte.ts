@@ -43,12 +43,14 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
-	const value = useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source) as MotionValue<number> & {
-		reset: (_: MotionValue<number>, config: SpringOptions) => void;
-	};
+	const value = $state<
+		MotionValue<number> & {
+			reset: (_: MotionValue<number>, config: SpringOptions) => void;
+		}
+	>(useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source) as any);
 
-	let latestValue = value.get();
-	let latestSetter: (v: number) => void = () => {};
+	let latestValue = $state(value.get());
+	let latestSetter: (v: number) => void = $state(() => {});
 
 	const startAnimation = () => {
 		/**

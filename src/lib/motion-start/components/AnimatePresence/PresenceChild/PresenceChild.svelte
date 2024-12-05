@@ -3,8 +3,9 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script module lang="ts">
-    function newChildrenMap(): Map<number, boolean> {
-        return new Map<number, boolean>();
+    import { SvelteMap } from "svelte/reactivity";
+    function newChildrenMap(): Map<string | number, boolean> {
+        return new SvelteMap<string | number, boolean>();
     }
 </script>
 
@@ -15,8 +16,11 @@ Copyright (c) 2018 Framer B.V. -->
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
+    import { fromStore } from "svelte/store";
 
-    interface Props extends PresenceChildProps {}
+    interface Props extends PresenceChildProps {
+        isCustom?: boolean;
+    }
 
     let {
         isPresent,
@@ -30,7 +34,7 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = useId();
+    const id = $state(useId());
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
@@ -40,7 +44,7 @@ Copyright (c) 2018 Framer B.V. -->
             initial,
             isPresent,
             custom,
-            onExitComplete: (childId: number) => {
+            onExitComplete: (childId: string | number) => {
                 presenceChildren.set(childId, true);
                 let allComplete = true;
                 presenceChildren.forEach((isComplete) => {
@@ -49,20 +53,20 @@ Copyright (c) 2018 Framer B.V. -->
 
                 allComplete && onExitComplete?.();
             },
-            register: (childId: number) => {
+            register: (childId: string | number) => {
                 presenceChildren.set(childId, false);
                 return () => presenceChildren.delete(childId);
             },
         };
     };
-    let context = useContext(PresenceContext, isCustom);
+    let context = fromStore(useContext(PresenceContext, isCustom)).current;
 
     $effect(() => {
-        context.set(memoContext(refresh));
-
         if (presenceAffectsLayout) {
-            context.set(memoContext());
+            context = memoContext();
         }
+
+        context = memoContext(refresh);
     });
 
     const keyset = (flag?: boolean) => {
@@ -76,7 +80,8 @@ Copyright (c) 2018 Framer B.V. -->
         });
     });
 
-    PresenceContext.Provider = $context;
+    PresenceContext["_c"] = isCustom;
+    PresenceContext.Provider = context;
 </script>
 
 {#if mode === "popLayout"}

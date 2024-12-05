@@ -1,5 +1,6 @@
 <!--based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script lang="ts" context="module" module>
   function isLazyBundle(
@@ -10,7 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, type Snippet } from "svelte";
 
   import { useContext } from "../../context/utils/context.svelte";
   import { LazyContext } from "../../context/LazyContext";
@@ -22,8 +23,12 @@ Copyright (c) 2018 Framer B.V. -->
   import type { CreateVisualElement } from "../../render/types";
   import type { LazyProps } from "./types";
   import type { Ref } from "../../utils/safe-react-types";
+  import { fromStore } from "svelte/store";
 
-  type $$Props = LazyProps;
+  interface Props extends LazyProps {
+    isCustom?: boolean;
+    children?: Snippet;
+  }
 
   /**
    * Used in conjunction with the `m` component to reduce bundle size.
@@ -60,9 +65,7 @@ Copyright (c) 2018 Framer B.V. -->
    *
    * @public
    */
-  export let features: $$Props["features"],
-    strict: $$Props["strict"] = false,
-    isCustom = false;
+  let { features, strict, isCustom = false, children }: Props = $props();
 
   let _ = !isLazyBundle(features);
   let loadedRenderer: Ref<undefined | CreateVisualElement<any>> = {
@@ -72,11 +75,13 @@ Copyright (c) 2018 Framer B.V. -->
   /**
    * If this is a synchronous load, load features immediately
    */
-  $: if (!isLazyBundle(features) && _) {
-    const { renderer, ...loadedFeatures } = features;
-    loadedRenderer.current = renderer;
-    loadFeatures(loadedFeatures);
-  }
+  $effect(() => {
+    if (!isLazyBundle(features) && _) {
+      const { renderer, ...loadedFeatures } = features;
+      loadedRenderer.current = renderer;
+      loadFeatures(loadedFeatures);
+    }
+  });
 
   onMount(() => {
     if (isLazyBundle(features)) {
@@ -89,12 +94,13 @@ Copyright (c) 2018 Framer B.V. -->
     }
   });
 
+  LazyContext["_c"] = isCustom;
   LazyContext.Provider = { renderer: loadedRenderer.current, strict } as any;
 
-  $: useContext(LazyContext).set({
+  fromStore(useContext(LazyContext)).current = {
     renderer: loadedRenderer.current,
     strict,
-  } as any);
+  } as any;
 </script>
 
-<slot />
+{@render children?.()}
