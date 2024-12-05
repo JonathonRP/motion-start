@@ -12,11 +12,7 @@
 		"ur": "https://github.com/JonathonRP/motion-start.git"
 	},
 	"type": "module",
-	"files": [
-		"dist",
-		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
-	],
+	"files": ["dist", "!dist/**/*.test.*", "!dist/**/*.spec.*"],
 	"module": "./dist/index.js",
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -25,7 +21,7 @@
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
 		},
-		"./MotionSSR": {
+		"./MotionSSR.svelte": {
 			"types": "./dist/motion/MotionSSR.svelte.d.ts",
 			"svelte": "./dist/motion/MotionSSR.svelte"
 		}
@@ -84,19 +80,6 @@
 		"node": ">=20"
 	},
 	"sideEffects": false,
-	"keywords": [
-		"svelte animation",
-		"svelte",
-		"animation",
-		"gestures",
-		"drag",
-		"spring",
-		"popmotion",
-		"framer-motion"
-	],
-	"trustedDependencies": [
-		"@biomejs/biome",
-		"@sveltejs/kit",
-		"esbuild"
-	]
+	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
+	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
 }
