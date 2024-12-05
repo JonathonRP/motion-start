@@ -21,7 +21,7 @@
     <svelte:boundary onerror={console.log}>
         <button class="switch" data-active={active} onclick={toggleSwitch}>
             <motion.div
-                silly={2 * !active}
+                active={1 * active}
                 layout
                 transition={spring}
                 onLayoutUpdate={(...args) => console.log("change", args)}

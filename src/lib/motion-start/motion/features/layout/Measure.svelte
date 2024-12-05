@@ -1,8 +1,9 @@
 <!-- based on framer-motion@4.1.16,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script lang="ts">
-  import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
+  import { getContext, onMount } from "svelte";
   import { get, type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
@@ -11,7 +12,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
 
-  export let visualElement, syncLayout, framerSyncLayout, update;
+  let { visualElement, syncLayout, framerSyncLayout, update } = $props();
 
   const scaleCorrectionContext = getContext<Writable<any[]>>(
     ScaleCorrectionContext,
@@ -42,7 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
    * If it is stand-alone component, add it to the batcher.
    */
 
-  let updated = false;
+  let updated = $state(false);
   const updater = (nc = false) => {
     if (updated) {
       return null;
@@ -50,7 +51,7 @@ Copyright (c) 2018 Framer B.V. -->
     updated = true;
 
     // in React the updater function is called on children first, in Svelte the child does not call it.
-    get(scaleCorrectionContext).forEach((v) => {
+    $scaleCorrectionContext.forEach((v) => {
       v.updater?.(true);
     });
 
@@ -64,15 +65,21 @@ Copyright (c) 2018 Framer B.V. -->
     return null;
   };
 
-  $: update !== undefined && updater(update);
+  $effect(() => {
+    if (update === undefined) return;
+    updater(update);
+  });
 
   if (update === undefined) {
-    beforeUpdate(updater);
+    $effect.pre(() => {
+      updater();
+    });
   }
+
   const afterU = (nc = false) => {
     updated = false;
     /* Second part of the updater calling in child layouts first.*/
-    const scc = get(scaleCorrectionContext);
+    const scc = $scaleCorrectionContext;
 
     scc.forEach((v: any, i) => {
       v.afterU?.(true);
@@ -96,5 +103,7 @@ Copyright (c) 2018 Framer B.V. -->
       },
     ]),
   );
-  afterUpdate(afterU);
+  $effect(() => {
+    afterU();
+  });
 </script>
