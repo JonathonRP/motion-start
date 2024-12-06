@@ -6,7 +6,6 @@ Copyright (c) 2018 Framer B.V.
 import type { Writable } from 'svelte/store';
 import { wrap } from './wrap';
 import { get, writable } from 'svelte/store';
-import { tick } from 'svelte';
 
 export type Cycle = (i?: number) => void;
 export type CycleState<T> = [Writable<T>, Cycle];

@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { onMount, tick } from 'svelte';
 import type { TargetAndTransition } from '../../types';
 import type { ResolvedValues } from '../../render/types';
 import { makeUseVisualState } from '../../motion/utils/use-visual-state';
@@ -67,20 +66,18 @@ export function useAnimatedState(initialState: any) {
 		{ initialState }
 	);
 
-	tick().then(() => {
-		element = new StateVisualElement(
-			{
-				props: {
-					onUpdate: (v) => {
-						animationState = { ...v };
-					},
+	element = new StateVisualElement(
+		{
+			props: {
+				onUpdate: (v) => {
+					animationState = { ...v };
 				},
-				visualState,
-				presenceContext: null,
 			},
-			{ initialState }
-		);
-	});
+			visualState,
+			presenceContext: null,
+		},
+		{ initialState }
+	);
 
 	$effect.pre(() => {
 		element.mount({});

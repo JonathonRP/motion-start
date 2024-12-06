@@ -16,19 +16,7 @@ export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 	let initialTimestamp = 0;
 	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
-	if (isStatic) return;
-
-	const provideTimeSinceStart = ({ timestamp, delta }: FrameData) => {
-		if (!initialTimestamp) initialTimestamp = timestamp;
-
-		callback(timestamp - initialTimestamp, delta);
-	};
-
-	frame.update(provideTimeSinceStart, true);
-
-	tick().then(() => {
-		const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
-
+	$effect(() => {
 		if (isStatic) return;
 
 		const provideTimeSinceStart = ({ timestamp, delta }: FrameData) => {
@@ -38,8 +26,22 @@ export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
 		};
 
 		frame.update(provideTimeSinceStart, true);
+
 		return () => cancelFrame(provideTimeSinceStart);
 	});
 
-	return () => cancelFrame(provideTimeSinceStart);
+	// tick().then(() => {
+	// const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
+
+	// if (isStatic) return;
+
+	// const provideTimeSinceStart = ({ timestamp, delta }: FrameData) => {
+	// 	if (!initialTimestamp) initialTimestamp = timestamp;
+
+	// 	callback(timestamp - initialTimestamp, delta);
+	// };
+
+	// frame.update(provideTimeSinceStart, true);
+	// return () => cancelFrame(provideTimeSinceStart);
+	// });
 }

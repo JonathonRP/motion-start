@@ -63,7 +63,7 @@ Copyright (c) 2018 Framer B.V. -->
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
 		} & { children?: Snippet } = $props();
 
-	const Component = motion[as as keyof typeof motion] as Component<
+	motion.groupItem = motion[as as keyof typeof motion] as Component<
 		Omit<HTMLMotionProps<any>, "children"> & {
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
 		} & {
@@ -71,7 +71,7 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 	>;
 
-	const context = useContext(ReorderContext, Component);
+	const context = useContext(ReorderContext, motion.groupItem);
 	const point = $state({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
@@ -89,7 +89,7 @@ Copyright (c) 2018 Framer B.V. -->
 	const { axis, registerItem, updateOrder } = $derived($context!);
 </script>
 
-<Component
+<motion.groupItem
 	drag={axis}
 	{...props}
 	dragSnapToOrigin
@@ -113,4 +113,4 @@ Copyright (c) 2018 Framer B.V. -->
 	ignoreStrict
 >
 	{@render children?.()}
-</Component>
+</motion.groupItem>

@@ -33,7 +33,7 @@ export { resolveMotionValue } from './value/utils/resolve-motion-value';
 export { useTransform } from './value/use-transform';
 export { useSpring } from './value/use-spring.svelte';
 export { useVelocity } from './value/use-velocity';
-export { useScroll, type UseScrollOptions } from './value/use-scroll';
+export { useScroll, type UseScrollOptions } from './value/use-scroll.svelte';
 export { useElementScroll } from './value/scroll/use-element-scroll';
 export { useViewportScroll } from './value/scroll/use-viewport-scroll';
 export { useTime } from './value/use-time';
@@ -55,8 +55,8 @@ export { useAnimateMini } from './animation/hooks/use-animate-style';
 export {
 	useAnimation,
 	useAnimationControls,
-} from './animation/hooks/use-animation';
-export { useAnimationFrame } from './utils/use-animation-frame';
+} from './animation/hooks/use-animation.svelte';
+export { useAnimationFrame } from './utils/use-animation-frame.svelte';
 export { animateVisualElement } from './animation/interfaces/visual-element';
 export type {
 	HoverHandlers,
@@ -72,12 +72,12 @@ export {
 	usePresence,
 	useIsPresent,
 } from './components/AnimatePresence/use-presence.svelte';
-export { useInView, type UseInViewOptions } from './utils/use-in-view';
+export { useInView, type UseInViewOptions } from './utils/use-in-view.svelte';
 export {
 	useDragControls,
 	DragControls,
 } from './gestures/drag/use-drag-controls';
-export { useDomEvent } from './events/use-dom-event';
+export { useDomEvent } from './events/use-dom-event.svelte';
 export { createRendererMotionComponent } from './motion/index.svelte';
 export { isMotionComponent } from './motion/utils/is-motion-component';
 export { unwrapMotionComponent } from './motion/utils/unwrap-motion-component';
@@ -86,7 +86,7 @@ export { addScaleCorrector } from './projection/styles/scale-correction';
 export {
 	useInstantTransition,
 	disableInstantTransitions,
-} from './utils/use-instant-transition';
+} from './utils/use-instant-transition.svelte';
 export { useInstantLayoutTransition } from './projection/use-instant-layout-transition';
 export { useResetProjection } from './projection/use-reset-projection.svelte';
 export { buildTransform } from './render/html/utils/build-transform';

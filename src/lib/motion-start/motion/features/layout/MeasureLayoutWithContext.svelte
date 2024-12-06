@@ -46,9 +46,9 @@ Copyright (c) 2018 Framer B.V. -->
   }: Props = $props();
 
   const { projection } = $derived(visualElement);
-  let prevProps;
+  let prevProps: Pick<Props, "isPresent" | "layoutDependency">;
 
-  $effect(() => {
+  $effect.pre(() => {
     prevProps = {
       isPresent,
       layoutDependency,
@@ -81,22 +81,21 @@ Copyright (c) 2018 Framer B.V. -->
     }
 
     globalProjectionState.hasEverUpdated = true;
+
+    return () => {
+      // component will unmount
+      if (projection) {
+        projection.scheduleCheckAfterUnmount();
+        if (layoutGroup && layoutGroup.group)
+          layoutGroup.group.remove(projection);
+        if (switchLayoutGroup && switchLayoutGroup.deregister)
+          switchLayoutGroup.deregister(projection);
+      }
+    };
   });
 
-  /**
-   * If this is a child of a SyncContext, notify it that it needs to re-render. It will then
-   * handle the snapshotting.
-   *
-   * If it is stand-alone component, add it to the batcher.
-   */
-
-  let updated = false;
-  const updater = () => {
-    if (updated) {
-      return;
-    }
-    updated = true;
-
+  // getSnapshotBeforeUpdate
+  $effect.pre(() => {
     if (!projection) return;
 
     /**
@@ -135,20 +134,10 @@ Copyright (c) 2018 Framer B.V. -->
         });
       }
     }
+  });
 
-    return;
-  };
-
-  // $: isPresent !== undefined && updater(isPresent);
-
-  // getSnapshotBeforeUpdate
-  if (safeToRemove === undefined) {
-    $effect(updater);
-  }
-
-  const afterU = (nc = false) => {
-    updated = false;
-
+  // componentDidUupdate
+  $effect(() => {
     if (projection) {
       projection.root!.didUpdate();
 
@@ -157,19 +146,6 @@ Copyright (c) 2018 Framer B.V. -->
           _safeToRemove();
         }
       });
-    }
-  };
-
-  // componentDidUupdate
-  $effect(afterU);
-
-  onDestroy(() => {
-    if (projection) {
-      projection.scheduleCheckAfterUnmount();
-      if (layoutGroup && layoutGroup.group)
-        layoutGroup.group.remove(projection);
-      if (switchLayoutGroup && switchLayoutGroup.deregister)
-        switchLayoutGroup.deregister(projection);
     }
   });
 </script>

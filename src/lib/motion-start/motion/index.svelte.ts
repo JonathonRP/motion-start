@@ -5,6 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import {
 	createRawSnippet,
+	flushSync,
 	getContext,
 	hydrate,
 	mount,
@@ -71,12 +72,15 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 	const MotionComponent: Component<
 		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
-	> = (anchor, { externalRef, ref, ...props }) => {
+	> = (anchor, { externalRef, ref, ...restProps }) => {
+		const props = $derived(restProps);
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
 		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
+
+		$inspect(props);
 
 		const configAndProps = $derived({
 			...fromStore(useContext(MotionConfigContext)).current,
@@ -150,6 +154,8 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 								el: ref,
 							},
 						});
+
+						flushSync();
 
 						return () => {
 							if (measure) unmount(measure);

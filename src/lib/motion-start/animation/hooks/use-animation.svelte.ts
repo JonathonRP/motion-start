@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
+import type { AnimationControls } from '../types';
 import { animationControls } from './animation-controls';
 
 /**
@@ -55,18 +55,12 @@ import { animationControls } from './animation-controls';
  *
  * @public
  */
-export const useAnimationControls = () => {
+export function useAnimationControls(): AnimationControls {
 	const controls = animationControls();
 
-	(() => {
-		const cleanup: any = {};
-		tick().then((v) => (cleanup.clean = controls.mount()));
-		return () => {
-			cleanup.clean?.();
-		};
-	})();
+	$effect.pre(controls.mount);
 
 	return controls;
-};
+}
 
 export const useAnimation = useAnimationControls;

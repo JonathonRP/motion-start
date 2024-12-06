@@ -10,7 +10,6 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-    import { tick } from "svelte";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
@@ -61,7 +60,7 @@ Copyright (c) 2018 Framer B.V. -->
     };
     let context = fromStore(useContext(PresenceContext, isCustom)).current;
 
-    $effect(() => {
+    $effect.pre(() => {
         if (presenceAffectsLayout) {
             context = memoContext();
         }
@@ -73,15 +72,13 @@ Copyright (c) 2018 Framer B.V. -->
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
 
-    $effect(() => {
+    $effect.pre(() => {
         keyset(isPresent);
-        tick().then(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
-        });
-    });
+        !isPresent && !presenceChildren.size && onExitComplete?.();
 
-    PresenceContext["_c"] = isCustom;
-    PresenceContext.Provider = context;
+        PresenceContext["_c"] = isCustom;
+        PresenceContext.Provider = context;
+    });
 </script>
 
 {#if mode === "popLayout"}

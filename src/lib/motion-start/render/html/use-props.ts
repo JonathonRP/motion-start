@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
 import { isForcedMotionValue } from '../../motion/utils/is-forced-motion-value';
 import type { MotionValue } from '../../value';
 import { isMotionValue } from '../../value/utils/is-motion-value';
@@ -35,7 +34,7 @@ function useInitialMotionValues({ transformTemplate }: MotionProps, visualState:
 	};
 	let visualProps = memo(visualState);
 
-	tick().then(() => (visualProps = memo(visualState)));
+	visualProps = memo(visualState);
 
 	return visualProps;
 }

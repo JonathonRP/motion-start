@@ -20,7 +20,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { LayoutGroupContext } from "../../context/LayoutGroupContext";
   import { DeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
   import { nodeGroup } from "../../projection/node/group";
-  import { useForceUpdate } from "../../utils/use-force-update";
+  import { useForceUpdate } from "../../utils/use-force-update.svelte";
   import type { MutableRefObject } from "../../utils/safe-react-types";
   import { fromStore } from "svelte/store";
   import type { Snippet } from "svelte";
