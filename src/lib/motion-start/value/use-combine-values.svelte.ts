@@ -46,7 +46,7 @@ export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: 
 		subscribe();
 	};
 
-	$effect(() => {
+	$effect.pre(() => {
 		const scheduleUpdate = () => frame.preRender(updateValue, false, true);
 		const subscriptions = values.map((v) => v.on('change', scheduleUpdate));
 

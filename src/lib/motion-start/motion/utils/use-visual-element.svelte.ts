@@ -18,7 +18,6 @@ import { isRefObject } from '../../utils/is-ref-object.js';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { microtask } from '../../frameloop/microtask';
 import { useContext } from '$lib/motion-start/context/utils/context.svelte';
-import { flushSync, tick } from 'svelte';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
@@ -71,15 +70,13 @@ export function useVisualElement<Instance, RenderState>(
 	$effect.pre(() => {
 		isMounted = true;
 
-		tick().then(() => {
-			/**
-			 * Check the component has already mounted before calling
-			 * `update` unnecessarily. This ensures we skip the initial update.
-			 */
-			if (visualElement && isMounted) {
-				visualElement.update(props, presenceContext);
-			}
-		});
+		/**
+		 * Check the component has already mounted before calling
+		 * `update` unnecessarily. This ensures we skip the initial update.
+		 */
+		if (visualElement && isMounted) {
+			visualElement.update(props, presenceContext);
+		}
 
 		return () => {
 			isMounted = false;
@@ -96,40 +93,36 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	$effect.pre(() => {
+	$effect(() => {
 		if (!visualElement) return;
 
 		isMounted = true;
 		window.MotionIsMounted = true;
 
-		tick().then(() => {
-			visualElement.updateFeatures();
-			microtask.render(visualElement.render);
+		visualElement.updateFeatures();
+		microtask.render(visualElement.render);
 
-			/**
-			 * Ideally this function would always run in a useEffect.
-			 *
-			 * However, if we have optimised appear animations to handoff from,
-			 * it needs to happen synchronously to ensure there's no flash of
-			 * incorrect styles in the event of a hydration error.
-			 *
-			 * So if we detect a situtation where optimised appear animations
-			 * are running, we use useLayoutEffect to trigger animations.
-			 */
-			if (wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
-		});
+		/**
+		 * Ideally this function would always run in a useEffect.
+		 *
+		 * However, if we have optimised appear animations to handoff from,
+		 * it needs to happen synchronously to ensure there's no flash of
+		 * incorrect styles in the event of a hydration error.
+		 *
+		 * So if we detect a situtation where optimised appear animations
+		 * are running, we use useLayoutEffect to trigger animations.
+		 */
+		if (wantsHandoff && visualElement.animationState) {
+			visualElement.animationState.animateChanges();
+		}
 	});
 
 	$effect(() => {
 		if (!visualElement) return;
 
-		tick().then(() => {
-			if (!wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
-		});
+		if (!wantsHandoff && visualElement.animationState) {
+			visualElement.animationState.animateChanges();
+		}
 
 		if (wantsHandoff) {
 			// This ensures all future calls to animateChanges() in this component will run in useEffect
@@ -151,14 +144,11 @@ function createProjectionNode(
 	initialPromotionConfig?: InitialPromotionConfig
 ) {
 	const { layoutId, layout, drag, dragConstraints, layoutScroll, layoutRoot } = props;
-	console.log('🚀 ~ layout:', layout);
 
 	visualElement.projection = new ProjectionNodeConstructor(
 		visualElement.latestValues,
 		props['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent)
 	) as IProjectionNode<unknown>;
-
-	console.log('🚀 ~ projection:', visualElement.projection);
 
 	visualElement.projection.setOptions({
 		layoutId,

@@ -4,7 +4,6 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createScrollMotionValues } from './scroll/utils';
-import { tick } from 'svelte';
 import type { RefObject } from '../utils/safe-react-types';
 import { warning } from '../utils/errors';
 import { scroll } from '../render/dom/scroll';
@@ -26,7 +25,7 @@ function refWarning(name: string, ref?: RefObject<HTMLElement>) {
 export function useScroll({ container, target, layoutEffect = true, ...options }: UseScrollOptions = {}) {
 	const values = createScrollMotionValues();
 
-	tick().then(() => {
+	$effect.pre(() => {
 		refWarning('target', target);
 		refWarning('container', container);
 

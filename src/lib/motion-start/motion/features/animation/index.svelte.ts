@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
 import { isAnimationControls } from '../../../animation/utils/is-animation-controls';
 import { createAnimationState } from '../../../render/utils/animation-state';
 import type { VisualElement } from '../../../render/VisualElement';

@@ -19,7 +19,7 @@
 >
     <button class="switch" data-active={active} onclick={toggleSwitch}>
         <motion.div
-            animateLayout={1 * !active}
+            active={1 * !active}
             layout
             class="handle"
             transition={spring}

@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
 import type { MotionProps } from '../../motion/types';
 import { copyRawValuesOnly } from '../html/use-props';
 import type { ResolvedValues } from '../types';
@@ -24,7 +23,7 @@ export function useSvgProps(props: MotionProps, visualState: ResolvedValues, _is
 	};
 	let visualProps = memo(visualState);
 
-	tick().then(() => (visualProps = memo(visualState)));
+	visualProps = memo(visualState);
 
 	if (props.style) {
 		const rawStyles = {};

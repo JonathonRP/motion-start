@@ -5,7 +5,6 @@ Copyright (c) 2018 Framer B.V.
 
 import type { RefObject } from './safe-react-types';
 import { inView, type InViewOptions } from '../render/dom/viewport';
-import { tick } from 'svelte';
 
 export interface UseInViewOptions extends Omit<InViewOptions, 'root' | 'amount'> {
 	root?: RefObject<Element>;
@@ -14,9 +13,9 @@ export interface UseInViewOptions extends Omit<InViewOptions, 'root' | 'amount'>
 }
 
 export function useInView(ref: RefObject<Element>, { root, margin, amount, once = false }: UseInViewOptions = {}) {
-	let isInView = false;
+	let isInView = $state(false);
 
-	tick().then(() => {
+	$effect(() => {
 		if (!ref.current || (once && isInView)) return;
 
 		const onEnter = () => {

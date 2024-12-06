@@ -29,26 +29,20 @@ export function useDomEvent(
 	handler?: EventListener | undefined,
 	options?: AddEventListenerOptions
 ) {
-	let cleanup = () => {};
+	const initDomEvent =
+		(
+			ref: RefObject<EventTarget>,
+			eventName: string,
+			handler?: EventListener | undefined,
+			options?: AddEventListenerOptions
+		) =>
+		() => {
+			const element = ref.current;
 
-	const effect = (
-		ref: RefObject<EventTarget>,
-		eventName: string,
-		handler?: EventListener | undefined,
-		options?: AddEventListenerOptions
-	) => {
-		cleanup();
-		if (!ref) {
-			return () => {};
-		}
-		const element = ref.current;
+			if (handler && element) {
+				return addDomEvent(element, eventName, handler, options);
+			}
+		};
 
-		if (handler && element) {
-			return addDomEvent(element, eventName, handler, options);
-		}
-		return () => {};
-	};
-
-	tick().then(() => (cleanup = effect(ref, eventName, handler, options)));
-	onDestroy(cleanup);
+	$effect.pre(initDomEvent(ref, eventName, handler, options));
 }

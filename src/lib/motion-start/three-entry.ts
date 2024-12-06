@@ -23,4 +23,4 @@ export { addPointerEvent } from './events/add-pointer-event';
 export { addPointerInfo } from './events/event-info';
 export { isMotionValue } from './value/utils/is-motion-value';
 export { isBrowser } from './utils/is-browser';
-export { useForceUpdate } from './utils/use-force-update';
+export { useForceUpdate } from './utils/use-force-update.svelte';

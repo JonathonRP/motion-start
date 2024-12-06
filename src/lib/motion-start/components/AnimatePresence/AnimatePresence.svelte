@@ -9,7 +9,7 @@ Copyright (c) 2018 Framer B.V. -->
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { fromStore } from "svelte/store";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
-    import type { Snippet } from "svelte";
+    import { onMount, untrack, type Snippet } from "svelte";
 
     type Props = AnimatePresenceProps<ConditionalGeneric<T>> & {
         isCustom?: boolean;
@@ -44,10 +44,10 @@ Copyright (c) 2018 Framer B.V. -->
         return child.key || "";
     }
 
-    let isInitialRender = true;
+    let isInitialRender = $state(true);
     const filteredChildren = $derived(_list);
 
-    let presentChildren = filteredChildren;
+    let presentChildren = $state(filteredChildren);
     let allChildren = new SvelteMap<string | number, { key: number }>();
     let exiting = new SvelteSet<"" | number>();
     const updateChildLookup = (
@@ -59,24 +59,26 @@ Copyright (c) 2018 Framer B.V. -->
             allChild.set(key, child);
         });
     };
-    $effect(() => updateChildLookup(filteredChildren, allChildren));
+    $effect(() => {
+        updateChildLookup(filteredChildren, allChildren);
+    });
 
     let childrenToRender: {
         present: boolean;
         item: any;
         key: any;
         onExit: undefined | (() => void);
-    }[] = [
+    }[] = $state([
         ...filteredChildren.map((v) => ({
             present: true,
             item: v,
             key: v.key,
             onExit: undefined,
         })),
-    ];
+    ]);
 
-    $effect(() => {
-        if (!isInitialRender || initial) {
+    $effect.pre(() => {
+        if (!isInitialRender) {
             // If this is a subsequent render, deal with entering and exiting children
             childrenToRender = [
                 ...filteredChildren.map((v) => ({
@@ -89,8 +91,8 @@ Copyright (c) 2018 Framer B.V. -->
 
             // Diff the keys of the currently-present and target children to update our
             // exiting list.
-            const presentKeys = presentChildren.map(getChildKey);
-            const targetKeys = filteredChildren.map(getChildKey);
+            const presentKeys = untrack(() => presentChildren).map(getChildKey);
+            const targetKeys = untrack(() => filteredChildren).map(getChildKey);
             // Diff the present children with our target children and mark those that are exiting
             const numPresent = presentKeys.length;
             for (let i = 0; i < numPresent; i++) {
@@ -131,7 +133,7 @@ Copyright (c) 2018 Framer B.V. -->
                     if (removeIndex < 0) {
                         return;
                     }
-                    presentChildren.splice(removeIndex, 1);
+                    untrack(() => presentChildren).splice(removeIndex, 1);
 
                     // Defer re-rendering until all exiting children have indeed left
                     if (!exiting.size) {
@@ -141,7 +143,7 @@ Copyright (c) 2018 Framer B.V. -->
                     }
                 };
 
-                childrenToRender.splice(insertionIndex, 0, {
+                untrack(() => childrenToRender).splice(insertionIndex, 0, {
                     present: false,
                     item: child,
                     key: getChildKey(child),
@@ -167,7 +169,7 @@ Copyright (c) 2018 Framer B.V. -->
             );
         });
         */
-            presentChildren = childrenToRender;
+            presentChildren = untrack(() => childrenToRender);
         } else {
             isInitialRender = false;
         }
@@ -177,7 +179,7 @@ Copyright (c) 2018 Framer B.V. -->
 {#each childrenToRender as child (getChildKey(child))}
     <PresenceChild
         isPresent={child.present}
-        initial={!isInitialRender || initial ? undefined : false}
+        initial={initial ? undefined : false}
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         {mode}

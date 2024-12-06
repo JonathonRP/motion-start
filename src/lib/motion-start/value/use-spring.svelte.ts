@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
 import { fromStore } from 'svelte/store';
 import type { MotionValue } from '.';
 import { isMotionValue } from './utils/is-motion-value';
@@ -81,7 +80,7 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 		}
 	};
 
-	const update = (_config: typeof config) => {
+	const insertEffect = (_config: typeof config) => () => {
 		value.attach((v, set) => {
 			const { isStatic } = mcc.current;
 
@@ -98,17 +97,17 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 		}, stopAnimation);
 	};
 
-	$effect(() => {
-		update(config);
-	});
-
-	tick().then(() => {
+	const layoutEffect = (_value: typeof value) => () => {
 		if (isMotionValue(source)) {
 			return source.on('change', (v) => value.set(Number.parseFloat(v)));
 		}
-	});
+	};
 
-	value.reset = (_value, _config) => update(_config);
+	$effect.pre(insertEffect(config));
+
+	$effect.pre(layoutEffect(value));
+
+	value.reset = (_value, _config) => insertEffect(_config);
 
 	return value;
 };

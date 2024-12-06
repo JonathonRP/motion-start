@@ -84,7 +84,7 @@ Copyright (c) 2018 Framer B.V. -->
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
 		} & { children?: Snippet } = $props();
 
-	const Component = motion[as as keyof typeof motion] as Component<
+	motion.group = motion[as as keyof typeof motion] as Component<
 		Omit<HTMLMotionProps<any>, "children"> & {
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
 		} & {
@@ -132,6 +132,6 @@ Copyright (c) 2018 Framer B.V. -->
 	});
 </script>
 
-<Component {...props} bind:ref ignoreStrict>
+<motion.group {...props} bind:ref ignoreStrict>
 	{@render children?.()}
-</Component>
+</motion.group>

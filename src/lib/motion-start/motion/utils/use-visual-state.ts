@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { tick } from 'svelte';
 import { get } from 'svelte/store';
 import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import type { MotionProps } from '../types';
@@ -62,11 +61,9 @@ export const makeUseVisualState =
 
 		let state = make();
 
-		tick().then(() => {
-			if (!isStatic) {
-				state = make();
-			}
-		});
+		if (!isStatic) {
+			state = make();
+		}
 
 		return state;
 	};

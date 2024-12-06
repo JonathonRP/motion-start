@@ -74,7 +74,7 @@ export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present 
 	const { register } = context;
 
 	const id = useId();
-	$effect(() => {
+	$effect.pre(() => {
 		if (context !== null) {
 			register(id);
 		}

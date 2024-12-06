@@ -75,15 +75,13 @@ Copyright (c) 2018 Framer B.V. -->
   /**
    * If this is a synchronous load, load features immediately
    */
-  $effect(() => {
-    if (!isLazyBundle(features) && _) {
-      const { renderer, ...loadedFeatures } = features;
-      loadedRenderer.current = renderer;
-      loadFeatures(loadedFeatures);
-    }
-  });
+  if (!isLazyBundle(features) && _) {
+    const { renderer, ...loadedFeatures } = features;
+    loadedRenderer.current = renderer;
+    loadFeatures(loadedFeatures);
+  }
 
-  onMount(() => {
+  $effect.pre(() => {
     if (isLazyBundle(features)) {
       features().then(({ renderer, ...loadedFeatures }) => {
         loadFeatures(loadedFeatures);

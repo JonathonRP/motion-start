@@ -39,14 +39,16 @@ Copyright (c) 2018 Framer B.V. -->
    */
   //config.isStatic = useConstant(() => config.isStatic)
 
-  /**
-   * Creating a new config context object will re-render every `motion` component
-   * every time it renders. So we only want to create a new one sparingly.
-   */
-  MotionConfigContext.Provider = config as any;
+  $effect.pre(() => {
+    /**
+     * Creating a new config context object will re-render every `motion` component
+     * every time it renders. So we only want to create a new one sparingly.
+     */
+    MotionConfigContext.Provider = config as any;
+  });
 
   const memo = (..._args: any[]) => config;
-  $effect(() => {
+  $effect.pre(() => {
     mcc = memo(
       JSON.stringify(config.transition),
       config.transformPagePoint,
