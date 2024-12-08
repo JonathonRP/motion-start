@@ -420,6 +420,7 @@ export abstract class VisualElement<
 
 	private bindToMotionValue(key: string, value: MotionValue) {
 		if (this.valueSubscriptions.has(key)) {
+			// this is to insure it runs on unmount and not during mount of keyed element
 			$effect(() => () => {
 				this.valueSubscriptions.get(key)!();
 			});
