@@ -7,7 +7,7 @@ import { addPointerEvent } from '../events/add-pointer-event';
 import { pipe } from '../utils/pipe';
 import { isDragActive } from './drag/utils/lock';
 import type { EventInfo } from '../events/types';
-import type { VisualElement } from '../render/VisualElement';
+import type { VisualElement } from '../render/VisualElement.svelte';
 import { Feature } from '../motion/features/Feature';
 import { frame } from '../frameloop';
 

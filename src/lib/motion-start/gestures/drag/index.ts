@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { Feature } from '../../motion/features/Feature';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import { noop } from '../../utils/noop';
 import { VisualElementDragControls } from './VisualElementDragControls';
 

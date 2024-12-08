@@ -13,6 +13,7 @@ import {
 	setContext,
 	tick,
 	unmount,
+	untrack,
 	type Component,
 	type Snippet,
 } from 'svelte';
@@ -72,8 +73,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 	const MotionComponent: Component<
 		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
-	> = (anchor, { externalRef, ref, ...restProps }) => {
-		const props = $derived(restProps);
+	> = (anchor, { externalRef, ref, ...props }) => {
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
@@ -123,52 +123,127 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			MotionContext.Provider = context;
 		}
 
-		onDestroy(() => {
+		const measure =
+			MeasureLayout && context.visualElement
+				? MeasureLayout(anchor, { visualElement: context.visualElement, ...configAndProps })
+				: null;
+		const renderer = useRender(anchor, {
+			Component,
+			props,
+			ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+			visualState,
+			isStatic,
+			visualElement: context.visualElement,
+			children: props.children,
+			el: ref,
+		});
+
+		$effect(() => () => {
 			// Since useMotionRef is not called on destroy, the visual element is unmounted here
 			context.visualElement?.unmount();
+
+			if (measure) unmount(measure);
+			unmount(renderer);
 		});
+
+		// $effect(() => {
+		// 	measure =
+		// 		MeasureLayout && context.visualElement
+		// 			? MeasureLayout(anchor, { visualElement: context.visualElement, ...configAndProps })
+		// 			: null;
+		// 	renderer = useRender(anchor, {
+		// 		Component,
+		// 		props,
+		// 		ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+		// 		visualState,
+		// 		isStatic,
+		// 		visualElement: context.visualElement,
+		// 		children: props.children,
+		// 		el: ref,
+		// 	});
+
+		// 	return () => {
+		// 		if (measure) unmount(measure);
+		// 		unmount(renderer);
+		// 	};
+		// });
+
+		// $effect(() => () => {
+		// 	// Since useMotionRef is not called on destroy, the visual element is unmounted here
+		// 	context.visualElement?.unmount();
+		// });
+
+		// $effect(() => {
+		// 	measure =
+		// 		MeasureLayout && context.visualElement
+		// 			? mount(MeasureLayout, {
+		// 					target: anchor,
+		// 					props: { visualElement: context.visualElement, ...configAndProps },
+		// 				})
+		// 			: null;
+		// 	renderer = mount(useRender, {
+		// 		target: anchor,
+		// 		props: {
+		// 			Component,
+		// 			props,
+		// 			ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+		// 			visualState,
+		// 			isStatic,
+		// 			visualElement: context.visualElement,
+		// 			children: props.children,
+		// 			el: ref,
+		// 		},
+		// 	});
+
+		// 	// flushSync();
+
+		// 	return () => {
+		// 		if (measure) unmount(measure);
+		// 		unmount(renderer);
+		// 	};
+		// });
 
 		// style="display: contents"
-		const children = createRawSnippet(() => {
-			return {
-				render: () => '<slot></slot>',
-				setup(target: Element) {
-					$effect.pre(() => {
-						const measure =
-							MeasureLayout && context.visualElement
-								? hydrate(MeasureLayout, {
-										target,
-										props: { visualElement: context.visualElement, ...configAndProps },
-									})
-								: null;
-						const renderer = hydrate(useRender, {
-							target,
-							props: {
-								Component,
-								props,
-								ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-								visualState,
-								isStatic,
-								visualElement: context.visualElement,
-								children: props.children,
-								el: ref,
-							},
-						});
+		// const children = createRawSnippet(() => {
+		// 	return {
+		// 		render: () => '<slot></slot>',
+		// 		setup(target: Element) {
+		// 			$effect.pre(() => {
+		// 				const measure =
+		// 					MeasureLayout && context.visualElement
+		// 						? hydrate(MeasureLayout, {
+		// 								target,
+		// 								props: { visualElement: context.visualElement, ...configAndProps },
+		// 							})
+		// 						: null;
+		// 				const renderer = hydrate(useRender, {
+		// 					target,
+		// 					props: {
+		// 						Component,
+		// 						props,
+		// 						ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+		// 						visualState,
+		// 						isStatic,
+		// 						visualElement: context.visualElement,
+		// 						children: props.children,
+		// 						el: ref,
+		// 					},
+		// 				});
 
-						flushSync();
+		// 				flushSync();
 
-						return () => {
-							if (measure) unmount(measure);
-							unmount(renderer);
-						};
-					});
-				},
-			};
-		});
+		// 				return () => {
+		// 					if (measure) unmount(measure);
+		// 					unmount(renderer);
+		// 				};
+		// 			});
+		// 		},
+		// 	};
+		// });
 
-		return Motion(anchor, {
-			children,
-		});
+		// return Motion(anchor, {
+		// 	children,
+		// });
 	};
 
 	(MotionComponent as any)[motionComponentSymbol] = Component;

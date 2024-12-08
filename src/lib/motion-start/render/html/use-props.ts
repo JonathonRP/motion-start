@@ -32,9 +32,7 @@ function useInitialMotionValues({ transformTemplate }: MotionProps, visualState:
 
 		return Object.assign({}, state.vars, state.style);
 	};
-	let visualProps = memo(visualState);
-
-	visualProps = memo(visualState);
+	const visualProps = memo(visualState);
 
 	return visualProps;
 }

@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { createBox } from '../../projection/geometry/models';
 import type { ResolvedValues } from '../types';
-import { VisualElement } from '../VisualElement';
+import { VisualElement } from '../VisualElement.svelte';
 
 interface ObjectRenderState {
 	output: ResolvedValues;

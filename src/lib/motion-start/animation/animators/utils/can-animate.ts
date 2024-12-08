@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedKeyframes } from '../../../render/utils/KeyframesResolver';
+import type { ResolvedKeyframes } from '../../../render/utils/KeyframesResolver.svelte';
 import { warning } from '../../../utils/errors';
 import { isGenerator } from '../../generators/utils/is-generator';
 import type { AnimationGeneratorType } from '../../types';

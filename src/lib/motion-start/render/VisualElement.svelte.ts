@@ -25,9 +25,9 @@ import { updateMotionValuesFromProps } from './utils/motion-values';
 import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
 import { featureDefinitions } from '../motion/features/definitions';
-import type { PresenceContextProps } from '../context/PresenceContext';
+import type { PresenceContext } from '../context/PresenceContext';
 import { visualElementStore } from './store';
-import { KeyframeResolver } from './utils/KeyframesResolver';
+import { KeyframeResolver } from './utils/KeyframesResolver.svelte';
 import { isNumericalString } from '../utils/is-numerical-string';
 import { isZeroValueString } from '../utils/is-zero-value-string';
 import { findValueType } from './dom/value-types/find';
@@ -243,8 +243,8 @@ export abstract class VisualElement<
 	props: MotionProps;
 	prevProps?: MotionProps;
 
-	presenceContext: PresenceContextProps | null;
-	prevPresenceContext?: PresenceContextProps | null;
+	presenceContext: PresenceContext | null;
+	prevPresenceContext?: PresenceContext | null;
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -420,7 +420,9 @@ export abstract class VisualElement<
 
 	private bindToMotionValue(key: string, value: MotionValue) {
 		if (this.valueSubscriptions.has(key)) {
-			this.valueSubscriptions.get(key)!();
+			$effect(() => () => {
+				this.valueSubscriptions.get(key)!();
+			});
 		}
 
 		const valueIsTransform = transformProps.has(key);

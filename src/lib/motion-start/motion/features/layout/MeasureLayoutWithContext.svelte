@@ -26,7 +26,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { frame } from "../../../frameloop";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import { addScaleCorrector } from "../../../projection/styles/scale-correction";
   import { globalProjectionState } from "../../../projection/node/state";
   import { microtask } from "../../../frameloop/microtask";
