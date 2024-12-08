@@ -8,7 +8,7 @@ import { backInOut } from '../../easing/back';
 import { circInOut } from '../../easing/circ';
 import type { EasingDefinition } from '../../easing/types';
 import { DOMKeyframesResolver } from '../../render/dom/DOMKeyframesResolver';
-import type { ResolvedKeyframes } from '../../render/utils/KeyframesResolver';
+import type { ResolvedKeyframes } from '../../render/utils/KeyframesResolver.svelte';
 import { noop } from '../../utils/noop';
 import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
 import type { MotionValue } from '../../value';

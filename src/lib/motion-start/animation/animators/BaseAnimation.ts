@@ -8,7 +8,7 @@ import {
 	type KeyframeResolver,
 	type ResolvedKeyframes,
 	flushKeyframeResolvers,
-} from '../../render/utils/KeyframesResolver';
+} from '../../render/utils/KeyframesResolver.svelte';
 import { instantAnimationState } from '../../utils/use-instant-transition-state';
 import type {
 	AnimationPlaybackControls,

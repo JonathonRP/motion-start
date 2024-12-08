@@ -8,9 +8,13 @@ import { getVariableValue } from './utils/css-variables-conversion';
 import { isCSSVariableToken } from './utils/is-css-variable';
 import { isNumOrPxType, positionalKeys, positionalValues } from './utils/unit-conversion';
 import { findDimensionValueType } from './value-types/dimensions';
-import { KeyframeResolver, type OnKeyframesResolved, type UnresolvedKeyframes } from '../utils/KeyframesResolver';
+import {
+	KeyframeResolver,
+	type OnKeyframesResolved,
+	type UnresolvedKeyframes,
+} from '../utils/KeyframesResolver.svelte';
 import { makeNoneKeyframesAnimatable } from '../html/utils/make-none-animatable';
-import type { VisualElement } from '../VisualElement';
+import type { VisualElement } from '../VisualElement.svelte';
 import type { MotionValue } from '../../value';
 
 export class DOMKeyframesResolver<T extends string | number> extends KeyframeResolver<T> {

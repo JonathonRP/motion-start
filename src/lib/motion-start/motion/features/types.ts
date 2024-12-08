@@ -5,12 +5,13 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionProps } from '../types';
 import type { VisualState } from '../utils/use-visual-state';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature';
 import type { MeasureLayout } from './layout/MeasureLayout';
 import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 import type { Component, Snippet } from 'svelte';
+import type { SvelteHTMLElements } from 'svelte/elements';
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
@@ -57,12 +58,14 @@ export interface FeatureBundle extends FeaturePackages {
 
 export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 
-export type RenderComponent<Instance, RenderState> = Component<{
-	Component: string;
-	props: MotionProps;
-	ref: RefCallBack<Instance>;
-	visualState: VisualState<Instance, RenderState>;
-	isStatic: boolean;
-	visualElement?: VisualElement<Instance>;
-	children?: Snippet;
-}>;
+export type RenderComponent<Instance, RenderState> = Component<
+	{
+		Component: string;
+		props: MotionProps;
+		ref: RefCallBack<Instance>;
+		visualState: VisualState<Instance, RenderState>;
+		isStatic: boolean;
+		visualElement?: VisualElement<Instance>;
+		children?: Snippet;
+	} & { el: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this'] }
+>;

@@ -9,7 +9,7 @@ import { useContext } from '../../../context/utils/context.svelte';
 import { LayoutGroupContext } from '../../../context/LayoutGroupContext';
 import { SwitchLayoutGroupContext } from '../../../context/SwitchLayoutGroupContext';
 import type { MotionProps } from '../../types';
-import type { VisualElement } from '../../../render/VisualElement';
+import type { VisualElement } from '../../../render/VisualElement.svelte';
 import { default as MeasureLayoutWithContext } from './MeasureLayoutWithContext.svelte';
 import type { Component } from 'svelte';
 

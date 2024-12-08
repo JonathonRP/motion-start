@@ -9,7 +9,7 @@ import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state';
@@ -22,7 +22,7 @@ import { useContext } from '$lib/motion-start/context/utils/context.svelte';
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
 	visualState: VisualState<Instance, RenderState>,
-	props: MotionProps,
+	_props: MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: any,
 	isCustom = false
@@ -36,6 +36,8 @@ export function useVisualElement<Instance, RenderState>(
 	const reducedMotionConfig = $derived(fromStore(useContext(MotionConfigContext)).current.reducedMotion);
 
 	let visualElementRef: VisualElement<Instance> | undefined = $state(undefined);
+
+	const props = $derived(_props);
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
@@ -121,6 +123,7 @@ export function useVisualElement<Instance, RenderState>(
 		if (!visualElement) return;
 
 		if (!wantsHandoff && visualElement.animationState) {
+			console.log('animate', visualElement.animationState);
 			visualElement.animationState.animateChanges();
 		}
 

@@ -4,14 +4,14 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { TargetAndTransition, TargetResolver } from '../types';
-import type { VisualElement } from '../render/VisualElement';
+import type { VisualElement } from '../render/VisualElement.svelte';
 import type { Easing } from '../easing/types';
 import type { Driver } from './animators/drivers/types';
 import type { SVGPathProperties, VariantLabels } from '../motion/types';
 import type { SVGAttributes } from '../render/svg/types-attributes';
 import type { ProgressTimeline } from '../render/dom/scroll/observe';
 import type { MotionValue } from '../value';
-import type { KeyframeResolver, OnKeyframesResolved } from '../render/utils/KeyframesResolver';
+import type { KeyframeResolver, OnKeyframesResolved } from '../render/utils/KeyframesResolver.svelte';
 import type { KeyframeGenerator } from './generators/types';
 
 export interface AnimationPlaybackLifecycles<V> {

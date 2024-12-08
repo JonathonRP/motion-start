@@ -81,7 +81,7 @@ export { useDomEvent } from './events/use-dom-event.svelte';
 export { createRendererMotionComponent } from './motion/index.svelte';
 export { isMotionComponent } from './motion/utils/is-motion-component';
 export { unwrapMotionComponent } from './motion/utils/unwrap-motion-component';
-export { VisualElement } from './render/VisualElement';
+export { VisualElement } from './render/VisualElement.svelte';
 export { addScaleCorrector } from './projection/styles/scale-correction';
 export {
 	useInstantTransition,

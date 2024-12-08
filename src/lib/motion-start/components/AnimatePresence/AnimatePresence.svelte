@@ -9,7 +9,7 @@ Copyright (c) 2018 Framer B.V. -->
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { fromStore } from "svelte/store";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
-    import { onMount, untrack, type Snippet } from "svelte";
+    import { untrack, type Snippet } from "svelte";
 
     type Props = AnimatePresenceProps<ConditionalGeneric<T>> & {
         isCustom?: boolean;

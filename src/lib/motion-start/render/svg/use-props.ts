@@ -21,9 +21,7 @@ export function useSvgProps(props: MotionProps, visualState: ResolvedValues, _is
 			style: { ...state.style },
 		};
 	};
-	let visualProps = memo(visualState);
-
-	visualProps = memo(visualState);
+	const visualProps = memo(visualState);
 
 	if (props.style) {
 		const rawStyles = {};

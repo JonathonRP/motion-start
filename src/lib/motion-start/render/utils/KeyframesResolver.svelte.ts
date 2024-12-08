@@ -3,9 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { onMount, tick } from 'svelte';
 import { frame } from '../../frameloop';
 import type { MotionValue } from '../../value';
-import type { VisualElement } from '../VisualElement';
+import type { VisualElement } from '../VisualElement.svelte';
 import { removeNonTranslationalTransform } from '../dom/utils/unit-conversion';
 
 export type UnresolvedKeyframes<T extends string | number> = Array<T | null>;
@@ -20,7 +21,7 @@ function measureAllKeyframes() {
 	if (anyNeedsMeasurement) {
 		const resolversToMeasure = Array.from(toResolve).filter((resolver: KeyframeResolver) => resolver.needsMeasurement);
 		const elementsToMeasure = new Set(resolversToMeasure.map((resolver) => resolver.element));
-		const transformsToRestore = new Map<VisualElement, [string, string | number][]>();
+		const transformsToRestore = new Map<VisualElement<unknown, unknown>, [string, string | number][]>();
 
 		/**
 		 * Write pass
@@ -65,12 +66,14 @@ function measureAllKeyframes() {
 	anyNeedsMeasurement = false;
 	isScheduled = false;
 
+	console.log(toResolve);
 	toResolve.forEach((resolver) => resolver.complete());
 
 	toResolve.clear();
 }
 
 function readAllKeyframes() {
+	console.log(toResolve);
 	toResolve.forEach((resolver) => {
 		resolver.readKeyframes();
 
@@ -143,19 +146,25 @@ export class KeyframeResolver<T extends string | number = any> {
 	}
 
 	scheduleResolve() {
-		this.isScheduled = true;
-		if (this.isAsync) {
-			toResolve.add(this);
+		// this is to insure it runs on mount and not during unmount of keyed element
+		$effect.root(() => {
+			$effect(() => {
+				this.isScheduled = true;
+				if (this.isAsync) {
+					toResolve.add(this);
+					console.log(toResolve);
 
-			if (!isScheduled) {
-				isScheduled = true;
-				frame.read(readAllKeyframes);
-				frame.resolveKeyframes(measureAllKeyframes);
-			}
-		} else {
-			this.readKeyframes();
-			this.complete();
-		}
+					if (!isScheduled) {
+						isScheduled = true;
+						frame.read(readAllKeyframes);
+						frame.resolveKeyframes(measureAllKeyframes);
+					}
+				} else {
+					this.readKeyframes();
+					this.complete();
+				}
+			});
+		});
 	}
 
 	readKeyframes() {

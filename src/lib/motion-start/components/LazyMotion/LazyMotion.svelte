@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { onMount, type Snippet } from "svelte";
+  import { type Snippet } from "svelte";
 
   import { useContext } from "../../context/utils/context.svelte";
   import { LazyContext } from "../../context/LazyContext";

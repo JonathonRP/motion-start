@@ -11,11 +11,10 @@ Copyright (c) 2018 Framer B.V. -->
   import { isSVGComponent } from "./utils/is-svg-component";
   import { useSvgProps } from "../svg/use-props";
   import { useHTMLProps } from "../html/use-props";
-  import type { SvelteHTMLElements } from "svelte/elements";
 
   type Props = Parameters<
     RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>
-  >[1] & { el: SvelteHTMLElements[typeof Component]["this"] };
+  >[1];
 
   let {
     Component,
