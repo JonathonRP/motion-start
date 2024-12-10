@@ -9,13 +9,13 @@ Copyright (c) 2018 Framer B.V. -->
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { fromStore } from "svelte/store";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
-    import { untrack, type Snippet } from "svelte";
+    import { onDestroy, untrack, type Snippet } from "svelte";
     import { type ComponentKey, getChildKey } from "./utils.js";
     import { invariant } from "../../utils/errors.js";
 
     type Props = AnimatePresenceProps<ConditionalGeneric<T>> & {
         isCustom?: boolean;
-        children?: Snippet<[ConditionalGeneric<T> | { key: number }]>;
+        children?: Snippet<[typeof list | { key: number }]>;
     };
 
     let {
@@ -35,88 +35,26 @@ Copyright (c) 2018 Framer B.V. -->
 
     let _list = $state(list !== undefined ? list : show ? [{ key: 1 }] : []);
 
-    const presentChildren = $derived(_list);
+    let presentChildren = $state(_list);
     const presentKeys = $derived(presentChildren.map(getChildKey));
 
     let isInitialRender = $state(true);
 
-    let pendingPresentChildren = $state(presentChildren);
-    let diffedChildren = $state(presentChildren);
-    let renderedChildren = $state(presentChildren);
-
-    let exitComplete = new SvelteMap<ComponentKey, boolean>();
-
-    // $inspect(presentChildren);
-    $effect(() => {
-        console.log("effect");
-        list;
-        isInitialRender = false;
-        pendingPresentChildren = presentChildren;
-
-        /**
-         * Update complete status of exiting children.
-         */
-        for (let i = 0; i < renderedChildren.length; i++) {
-            const key = getChildKey(renderedChildren[i]);
-
-            if (!presentKeys.includes(key)) {
-                if (exitComplete.get(key) !== true) {
-                    exitComplete.set(key, false);
-                }
-            } else {
-                exitComplete.delete(key);
-            }
-        }
-    });
-
-    const exitingChildren = $state<(ConditionalGeneric<T> | { key: number })[]>(
-        [],
+    let renderedChildren = $state(
+        presentChildren.map((v) => ({
+            present: true,
+            item: v,
+            key: v.key,
+            onExit: undefined,
+        })),
     );
 
-    if (presentChildren !== diffedChildren) {
-        let nextChildren = [...presentChildren];
-
-        /**
-         * Loop through all the currently rendered components and decide which
-         * are exiting.
-         */
-        for (let i = 0; i < renderedChildren.length; i++) {
-            const child = renderedChildren[i];
-            const key = getChildKey(child);
-
-            if (!presentKeys.includes(key)) {
-                nextChildren.splice(i, 0, child);
-                exitingChildren.push(child);
-            }
-        }
-
-        /**
-         * If we're in "wait" mode, and we have exiting children, we want to
-         * only render these until they've all exited.
-         */
-        if (mode === "wait" && exitingChildren.length) {
-            nextChildren = exitingChildren;
-        }
-
-        renderedChildren = nextChildren;
-        diffedChildren = presentChildren;
-
-        /**
-         * Early return to ensure once we've set state with the latest diffed
-         * children, we can immediately re-render.
-         */
-        // return
-    }
-
-    if (
-        process.env.NODE_ENV !== "production" &&
-        mode === "wait" &&
-        renderedChildren.length > 1
-    ) {
-        console.warn(
-            `You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
-        );
-    }
+    let exitComplete = new SvelteMap<ComponentKey, boolean>(
+        _list.map(getChildKey).map((key) => {
+            return [key, !!key];
+        }),
+    );
+    const exitingChildren = new SvelteSet<number>();
 
     const layoutContext = fromStore(
         useContext(LayoutGroupContext, isCustom),
@@ -125,67 +63,113 @@ Copyright (c) 2018 Framer B.V. -->
         layoutContext.forceRender?.();
         _list = [..._list];
     });
-</script>
 
-{#each renderedChildren.map((child) => {
-    const key = getChildKey(child);
-    const isPresent = presentChildren === renderedChildren || presentKeys.includes(key);
-    return { key, isPresent, item: child, onExit() {
-            console.log("exit");
-            if (exitComplete.has(key)) {
-                exitComplete.set(key, true);
-            } else {
-                return;
+    $effect.pre(() => {
+        if (!isInitialRender) {
+            /**
+             * Update complete status of exiting children.
+             */
+            for (let i = 0; i < presentKeys.length; i++) {
+                const key = presentKeys[i];
+
+                if (!presentKeys.includes(key)) {
+                    if (exitComplete.has(key)) {
+                        exitingChildren.add(key!);
+                    }
+                } else {
+                    exitingChildren.delete(key!);
+                }
             }
 
-            let isEveryExitComplete = true;
-            exitComplete.forEach((isExitComplete) => {
-                if (!isExitComplete) isEveryExitComplete = false;
+            let nextChildren = [...presentChildren];
+
+            /**
+             * Loop through all the currently rendered components and decide which
+             * are exiting.
+             */
+            for (let i = 0; i < renderedChildren.length; i++) {
+                const child = renderedChildren[i];
+                const key = getChildKey(child);
+
+                if (!presentKeys.includes(key)) {
+                    nextChildren.splice(i, 0, child);
+                    exitingChildren.add(key!);
+                }
+            }
+
+            /**
+             * If we're in "wait" mode, and we have exiting children, we want to
+             * only render these until they've all exited.
+             */
+            if (mode === "wait" && exitingChildren.size) {
+                nextChildren = [...exitingChildren].map((key) => ({ key }));
+            }
+
+            exitingChildren.forEach((key) => {
+                const child = presentChildren.find((e) => e.key === key);
+                renderedChildren.splice(presentKeys.indexOf(key), 0, {
+                    present: false,
+                    item: child,
+                    key: getChildKey(child),
+                    onExit:
+                        !isInitialRender &&
+                        exitComplete.has(key) &&
+                        !_list.includes(child)
+                            ? () => {
+                                  exitingChildren.delete(key!);
+
+                                  // Remove this child from the present children
+                                  const removeIndex = presentChildren.findIndex(
+                                      (presentChild) =>
+                                          presentChild.key === key,
+                                  );
+
+                                  if (removeIndex < 0) {
+                                      return;
+                                  }
+                                  presentChildren.splice(removeIndex, 1);
+
+                                  // Defer re-rendering until all exiting children have indeed left
+                                  if (!exitingChildren.size) {
+                                      renderedChildren = [..._list];
+                                      forceRender?.();
+                                      onExitComplete && onExitComplete();
+                                  }
+                              }
+                            : undefined,
+                });
             });
 
-            if (isEveryExitComplete) {
-                forceRender?.();
-                renderedChildren = pendingPresentChildren;
+            /**
+             * Early return to ensure once we've set state with the latest diffed
+             * children, we can immediately re-render.
+             */
+            presentChildren = renderedChildren;
+            return;
+        } else {
+            isInitialRender = false;
+        }
 
-                onExitComplete && onExitComplete();
-            }
+        if (
+            process.env.NODE_ENV !== "production" &&
+            mode === "wait" &&
+            renderedChildren.length > 1
+        ) {
+            console.warn(
+                `You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
+            );
+        }
+    });
+</script>
 
-            // allChildren.delete(key);
-            //         exiting.delete(key);
-
-            //         // Remove this child from the present children
-            //         const removeIndex = presentChildren.findIndex(
-            //             (presentChild) => presentChild.key === key,
-            //         );
-
-            //         if (removeIndex < 0) {
-            //             return;
-            //         }
-            //         untrack(() => presentChildren).splice(removeIndex, 1);
-
-            //         // Defer re-rendering until all exiting children have indeed left
-            //         if (!exiting.size) {
-            //             presentChildren = [...filteredChildren];
-            //             forceRender?.();
-            //             onExitComplete && onExitComplete();
-            //         }
-            //     };
-
-            //     untrack(() => childrenToRender).splice(insertionIndex, 0, {
-            //         present: false,
-            //         item: child,
-            //         key: getChildKey(child),
-            //         onExit,
-            //     });
-        } };
-}) as child (getChildKey(child))}
+{#each renderedChildren as child (child.key)}
     <PresenceChild
-        isPresent={child.isPresent}
-        initial={!isInitialRender || initial ? undefined : false}
-        custom={child.isPresent ? custom : undefined}
-        {presenceAffectsLayout}
         {mode}
-        onExitComplete={child.isPresent ? undefined : child.onExit}
+        isPresent={child.present}
+        initial={!isInitialRender || initial ? undefined : false}
+        custom={child.onExit ? custom : undefined}
+        {presenceAffectsLayout}
+        onExitComplete={child.onExit}
         {isCustom}
     >
         {@render children?.(child.item)}

@@ -101,13 +101,14 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	$effect(() => {
+		console.log('useVisualElement effect');
 		if (!visualElement) return;
 
 		isMounted = true;
 		window.MotionIsMounted = true;
 
-		visualElement.updateFeatures();
-		microtask.render(() => visualElement.render);
+		untrack(() => visualElement.updateFeatures());
+		microtask.render(() => untrack(() => visualElement.render));
 
 		/**
 		 * Ideally this function would always run in a useEffect.
@@ -122,6 +123,10 @@ export function useVisualElement<Instance, RenderState>(
 		if (wantsHandoff && untrack(() => visualElement.animationState)) {
 			untrack(() => visualElement.animationState?.animateChanges());
 		}
+
+		return () => {
+			console.log('useVisualElement effect cleanup');
+		};
 	});
 
 	$effect(() => {
