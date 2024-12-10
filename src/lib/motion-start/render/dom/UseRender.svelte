@@ -26,6 +26,8 @@ Copyright (c) 2018 Framer B.V. -->
     el = $bindable(),
   }: Props = $props();
 
+  $inspect(props);
+
   const { latestValues } = $derived(visualState);
   const useVisualProps = $derived(
     isSVGComponent(Component) ? useSvgProps : useHTMLProps,

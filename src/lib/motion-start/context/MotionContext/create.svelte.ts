@@ -14,7 +14,7 @@ export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = 
 		getCurrentTreeVariants(props, fromStore(useContext(MotionContext, isCustom)).current)
 	);
 
-	const memo = $derived.by(() => (_initial: string | boolean | undefined, _animate: string | boolean | undefined) => ({
+	const memo = $derived.by(() => (_initial: string | false | undefined, _animate: string | false | undefined) => ({
 		initial,
 		animate,
 	}));
@@ -22,6 +22,6 @@ export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = 
 	return memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
 }
 
-function variantLabelsAsDependency(prop: undefined | string | string[] | boolean) {
+function variantLabelsAsDependency(prop: undefined | string | string[] | false) {
 	return Array.isArray(prop) ? prop.join(' ') : prop;
 }

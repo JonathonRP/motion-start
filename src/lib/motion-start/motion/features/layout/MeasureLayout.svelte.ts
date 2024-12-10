@@ -23,18 +23,27 @@ interface MeasureContextProps {
 export type MeasureProps = MotionProps & MeasureContextProps & { visualElement: VisualElement<unknown> };
 
 export function MeasureLayout(
-	...[anchor, { isCustom = false, ...props }]: Parameters<
+	...[anchor, _props]: Parameters<
 		Component<MotionProps & { visualElement: VisualElement<unknown>; isCustom?: boolean }>
 	>
 ): ReturnType<Component<MotionProps>> {
+	const { isCustom = false, ...props } = $derived(_props);
 	const [isPresent, safeToRemove] = fromStore(usePresence(isCustom)).current;
 	const layoutGroup = fromStore(useContext(LayoutGroupContext, isCustom)).current;
 	return MeasureLayoutWithContext(anchor, {
 		...props,
-		layoutGroup,
-		switchLayoutGroup: fromStore(useContext(SwitchLayoutGroupContext, isCustom)).current,
-		isPresent,
-		safeToRemove,
+		get layoutGroup() {
+			return layoutGroup;
+		},
+		get switchLayoutGroup() {
+			return fromStore(useContext(SwitchLayoutGroupContext, isCustom)).current;
+		},
+		get isPresent() {
+			return isPresent;
+		},
+		get safeToRemove() {
+			return safeToRemove;
+		},
 	});
 
 	// return new Proxy({} as Component<MotionProps>, {

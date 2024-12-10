@@ -31,7 +31,7 @@ class Context<T> extends CallableContext<T> {
 	) {
 		super((c?: any) => {
 			let context = null;
-			$effect.pre(() => {
+			$effect.root(() => {
 				context = getDomContext(this.key, this.c || c);
 			});
 			return getContext<T>(this) || context || this._default;
@@ -39,7 +39,7 @@ class Context<T> extends CallableContext<T> {
 	}
 
 	set Provider(value: UnwrapWritable<T>) {
-		$effect.pre(() => {
+		$effect.root(() => {
 			setDomContext(this.key, this.c, writable(value));
 		});
 		setContext(this, writable(value));

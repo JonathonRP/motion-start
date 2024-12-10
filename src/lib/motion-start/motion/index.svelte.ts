@@ -73,14 +73,24 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 	const MotionComponent: Component<
 		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
-	> = (anchor, { externalRef, ref, ...props }) => {
+	> = (anchor, _props) => {
+		const { externalRef, children, ...props } = $derived(_props);
+		// const props = () =>
+		// 	new Proxy(restProps, {
+		// 		get(target, key: keyof typeof restProps) {
+		// 			return target[key];
+		// 		},
+		// 		set(target, key: keyof typeof restProps, value) {
+		// 			target[key] = value;
+		// 		},
+		// 	});
+		$inspect(props);
+
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
 		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
-
-		$inspect(props);
 
 		const configAndProps = $derived({
 			...fromStore(useContext(MotionConfigContext)).current,
@@ -113,7 +123,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			context.visualElement = useVisualElement<Instance, RenderState>(
 				Component,
 				visualState,
-				configAndProps,
+				() => configAndProps,
 				createVisualElement,
 				layoutProjection.ProjectionNode
 			);
@@ -125,26 +135,82 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 		const measure =
 			MeasureLayout && context.visualElement
-				? MeasureLayout(anchor, { visualElement: context.visualElement, ...configAndProps })
+				? MeasureLayout(anchor, {
+						get visualElement() {
+							return context.visualElement;
+						},
+						...new Proxy(configAndProps, {
+							get(target, key) {
+								return target[key];
+							},
+						}),
+					})
 				: null;
+
 		const renderer = useRender(anchor, {
-			Component,
-			props,
-			ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-			visualState,
-			isStatic,
-			visualElement: context.visualElement,
-			children: props.children,
-			el: ref,
+			get Component() {
+				return Component;
+			},
+			get props() {
+				return props;
+			},
+			get ref() {
+				return useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef);
+			},
+			get visualState() {
+				return visualState;
+			},
+			get isStatic() {
+				return isStatic;
+			},
+			get visualElement() {
+				return context.visualElement;
+			},
+			get children() {
+				return children;
+			},
+			get el() {
+				return props.ref;
+			},
+			set el(val) {
+				props.ref = val;
+			},
 		});
 
-		$effect(() => () => {
-			// Since useMotionRef is not called on destroy, the visual element is unmounted here
-			context.visualElement?.unmount();
+		$effect(() => {
+			// measure =
+			// 	MeasureLayout && context.visualElement
+			// 		? mount(MeasureLayout, {
+			// 				anchor,
+			// 				props: { visualElement: context.visualElement, ...configAndProps },
+			// 			})
+			// 		: null;
 
-			if (measure) unmount(measure);
-			unmount(renderer);
+			// renderer = mount(useRender, {
+			// 	anchor,
+			// 	props: {
+			// 		Component,
+			// 		props,
+			// 		ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
+			// 		visualState,
+			// 		isStatic,
+			// 		visualElement: context.visualElement,
+			// 		children,
+			// 		el: ref,
+			// 	},
+			// });
+
+			return () => {
+				// Since useMotionRef is not called on destroy, the visual element is unmounted here
+				context.visualElement?.unmount();
+
+				if (measure) unmount(measure);
+				unmount(renderer);
+			};
 		});
+
+		// console.log(props);
+		// console.log(configAndProps);
 
 		// $effect(() => {
 		// 	measure =

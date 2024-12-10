@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import { rootProjectionNode } from './node/HTMLProjectionNode';
 
 export function useResetProjection() {
-	const reset = $derived.by(() => {
+	const reset = $derived(() => {
 		const root = rootProjectionNode.current;
 		if (!root) return;
 		root.resetTree();

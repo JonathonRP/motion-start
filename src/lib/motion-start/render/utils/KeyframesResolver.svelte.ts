@@ -66,14 +66,12 @@ function measureAllKeyframes() {
 	anyNeedsMeasurement = false;
 	isScheduled = false;
 
-	console.log(toResolve);
 	toResolve.forEach((resolver) => resolver.complete());
 
 	toResolve.clear();
 }
 
 function readAllKeyframes() {
-	console.log(toResolve);
 	toResolve.forEach((resolver) => {
 		resolver.readKeyframes();
 
@@ -152,7 +150,6 @@ export class KeyframeResolver<T extends string | number = any> {
 				this.isScheduled = true;
 				if (this.isAsync) {
 					toResolve.add(this);
-					console.log(toResolve);
 
 					if (!isScheduled) {
 						isScheduled = true;

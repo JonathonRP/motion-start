@@ -30,7 +30,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { addScaleCorrector } from "../../../projection/styles/scale-correction";
   import { globalProjectionState } from "../../../projection/node/state";
   import { microtask } from "../../../frameloop/microtask";
-  import type { MeasureProps } from "./MeasureLayout";
+  import type { MeasureProps } from "./MeasureLayout.svelte";
 
   interface Props extends MeasureProps {}
 

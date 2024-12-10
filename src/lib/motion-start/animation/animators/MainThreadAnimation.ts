@@ -184,7 +184,6 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 	}
 
 	onPostResolved() {
-		console.log('post resolve');
 		const { autoplay = true } = this.options;
 
 		this.play();
@@ -379,7 +378,6 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 	}
 
 	play() {
-		console.log('play', this.isStopped);
 		if (!this.resolver.isScheduled) {
 			this.resolver.resume();
 		}
@@ -439,7 +437,6 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 	 * animation.stop is returned as a reference from a useEffect.
 	 */
 	stop = () => {
-		console.log(new Error().stack?.toString());
 		this.resolver.cancel();
 		this.isStopped = true;
 		if (this.state === 'idle') return;

@@ -11,6 +11,7 @@ export class ExitAnimationFeature extends Feature<unknown> {
 	private id: number = id++;
 
 	update() {
+		console.log('update');
 		if (!this.node.presenceContext) return;
 
 		const { isPresent, onExitComplete } = this.node.presenceContext;
