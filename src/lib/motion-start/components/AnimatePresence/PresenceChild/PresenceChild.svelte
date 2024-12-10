@@ -16,6 +16,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
     import { fromStore } from "svelte/store";
+    import { tick, untrack } from "svelte";
 
     interface Props extends PresenceChildProps {
         isCustom?: boolean;
@@ -37,7 +38,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
-    const memoContext = (flag?: boolean) => {
+    const memoContext = $derived((flag?: boolean) => {
         return {
             id,
             initial,
@@ -57,15 +58,16 @@ Copyright (c) 2018 Framer B.V. -->
                 return () => presenceChildren.delete(childId);
             },
         };
-    };
+    });
     let context = fromStore(useContext(PresenceContext, isCustom)).current;
 
     $effect(() => {
         if (presenceAffectsLayout) {
-            context = memoContext();
+            context = untrack(() => memoContext());
+            return;
         }
 
-        context = memoContext(refresh);
+        context = untrack(() => memoContext(refresh));
     });
 
     const keyset = (flag?: boolean) => {
@@ -73,9 +75,13 @@ Copyright (c) 2018 Framer B.V. -->
     };
 
     $effect(() => {
-        keyset(isPresent);
-        !isPresent && !presenceChildren.size && onExitComplete?.();
+        keyset(untrack(() => isPresent));
 
+        untrack(() => !isPresent) &&
+            !presenceChildren.size &&
+            onExitComplete?.();
+    });
+    $effect(() => {
         PresenceContext["_c"] = isCustom;
         PresenceContext.Provider = context;
     });
@@ -83,8 +89,10 @@ Copyright (c) 2018 Framer B.V. -->
 
 {#if mode === "popLayout"}
     <PopChild {isPresent}>
-        {@render children?.()}
+        {#if isPresent}
+            {@render children?.()}
+        {/if}
     </PopChild>
-{:else}
+{:else if isPresent}
     {@render children?.()}
 {/if}
