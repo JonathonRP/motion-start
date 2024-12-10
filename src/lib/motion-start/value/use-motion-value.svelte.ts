@@ -26,7 +26,7 @@ import { useContext } from '../context/utils/context.svelte';
  * @public
  */
 export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> {
-	const value = $derived(motionValue(initial));
+	const value = motionValue(initial);
 
 	/**
 	 * If this motion value is being used in static mode, like on
@@ -36,12 +36,10 @@ export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> 
 	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 	if (isStatic) {
-		const setLatest = $derived((value) => {
-			initial = value;
-		});
-		$effect.pre(() => {
-			value.on('change', setLatest);
-		});
+		const setLatest = (_value) => {
+			initial = _value;
+		};
+		$effect.pre(() => value.on('change', setLatest));
 	}
 
 	return value;

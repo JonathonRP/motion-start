@@ -38,15 +38,11 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
-	const mcc = fromStore(useContext(MotionConfigContext, isCustom));
+	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
-	const value = $state<
-		MotionValue<number> & {
-			reset: (_: MotionValue<number>, config: SpringOptions) => void;
-		}
-	>(useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source) as any);
+	const value = $state(useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source));
 
 	let latestValue = $state(value.get());
 	let latestSetter: (v: number) => void = $state(() => {});
@@ -82,8 +78,6 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 
 	const insertEffect = (_config: typeof config) => () => {
 		value.attach((v, set) => {
-			const { isStatic } = mcc.current;
-
 			if (isStatic) {
 				return set(v);
 			}
@@ -106,8 +100,6 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 	$effect.pre(insertEffect(config));
 
 	$effect.pre(layoutEffect(value));
-
-	value.reset = (_value, _config) => insertEffect(_config);
 
 	return value;
 };

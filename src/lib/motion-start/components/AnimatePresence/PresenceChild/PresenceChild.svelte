@@ -23,8 +23,8 @@ Copyright (c) 2018 Framer B.V. -->
 
     let {
         isPresent,
-        onExitComplete = undefined,
-        initial = undefined,
+        onExitComplete,
+        initial,
         custom = undefined,
         presenceAffectsLayout,
         mode = "wait",
@@ -60,7 +60,7 @@ Copyright (c) 2018 Framer B.V. -->
     };
     let context = fromStore(useContext(PresenceContext, isCustom)).current;
 
-    $effect.pre(() => {
+    $effect(() => {
         if (presenceAffectsLayout) {
             context = memoContext();
         }
@@ -72,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
 
-    $effect.pre(() => {
+    $effect(() => {
         keyset(isPresent);
         !isPresent && !presenceChildren.size && onExitComplete?.();
 

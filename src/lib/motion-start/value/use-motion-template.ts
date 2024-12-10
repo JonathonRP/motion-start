@@ -34,7 +34,7 @@ export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: Ar
 	/**
 	 * Create a function that will build a string from the latest motion values.
 	 */
-	let numFragments = fragments.length;
+	const numFragments = fragments.length;
 	const buildValue = () => {
 		let output = ``;
 
@@ -46,15 +46,5 @@ export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: Ar
 
 		return output;
 	};
-	const value: any = useCombineMotionValues(values.filter(isMotionValue), buildValue);
-	value.resetInner = value.reset;
-
-	value.reset = (f: TemplateStringsArray, ...vs: MotionValue[]) => {
-		numFragments = f.length;
-		value.resetInner(vs, buildValue);
-	};
-
-	return value as MotionValue<string> & {
-		reset: (fragments: TemplateStringsArray, ...values: MotionValue[]) => void;
-	};
+	return useCombineMotionValues(values.filter(isMotionValue), buildValue);
 };

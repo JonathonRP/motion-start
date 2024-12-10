@@ -8,7 +8,7 @@ import type { VisualState } from '../utils/use-visual-state';
 import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature';
-import type { MeasureLayout } from './layout/MeasureLayout';
+import type { MeasureLayout } from './layout/MeasureLayout.svelte';
 import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
