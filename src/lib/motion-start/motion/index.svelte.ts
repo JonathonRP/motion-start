@@ -125,7 +125,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				visualState,
 				() => configAndProps,
 				createVisualElement,
-				layoutProjection.ProjectionNode
+				() => layoutProjection.ProjectionNode
 			);
 
 			// MotionContext.Provider

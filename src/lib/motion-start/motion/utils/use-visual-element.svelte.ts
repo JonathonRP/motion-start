@@ -22,10 +22,10 @@ import { untrack } from 'svelte';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
-	visualState: VisualState<Instance, RenderState>,
+	_visualState: VisualState<Instance, RenderState>,
 	_props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	ProjectionNodeConstructor?: any,
+	projectionNodeConstructor?: () => any,
 	isCustom = false
 ): VisualElement<Instance> | undefined {
 	const { visualElement: parent } = $derived(fromStore(useContext(MotionContext, isCustom)).current);
@@ -38,9 +38,11 @@ export function useVisualElement<Instance, RenderState>(
 
 	let visualElementRef: VisualElement<Instance> | undefined = $state(undefined);
 
-	const props = $derived(_props);
+	const props = $derived(_props());
+	const visualState = $derived(_visualState);
+	const ProjectionNodeConstructor = $derived(projectionNodeConstructor?.());
 
-	$inspect(props());
+	$inspect(props);
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
@@ -51,9 +53,7 @@ export function useVisualElement<Instance, RenderState>(
 		visualElementRef = createVisualElement(Component, {
 			visualState,
 			parent,
-			get props() {
-				return props();
-			},
+			props,
 			presenceContext,
 			blockInitialAnimation: presenceContext?.initial === false,
 			reducedMotionConfig,
@@ -70,19 +70,20 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElementRef!, props(), ProjectionNodeConstructor, initialLayoutGroupConfig);
+		createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
 	}
 
 	let isMounted = false;
 	$effect.pre(() => {
+		// props.children?.();
 		isMounted = true;
 
 		/**
 		 * Check the component has already mounted before calling
 		 * `update` unnecessarily. This ensures we skip the initial update.
 		 */
-		if (untrack(() => visualElement) && isMounted) {
-			untrack(() => visualElement?.update(props(), presenceContext));
+		if (visualElement && isMounted) {
+			visualElement?.update(props, presenceContext);
 		}
 
 		return () => {
@@ -101,14 +102,13 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	$effect(() => {
-		console.log('useVisualElement effect');
 		if (!visualElement) return;
 
 		isMounted = true;
 		window.MotionIsMounted = true;
 
-		untrack(() => visualElement.updateFeatures());
-		microtask.render(() => untrack(() => visualElement.render));
+		visualElement.updateFeatures();
+		microtask.render(() => visualElement.render);
 
 		/**
 		 * Ideally this function would always run in a useEffect.
@@ -120,20 +120,16 @@ export function useVisualElement<Instance, RenderState>(
 		 * So if we detect a situtation where optimised appear animations
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
-		if (wantsHandoff && untrack(() => visualElement.animationState)) {
-			untrack(() => visualElement.animationState?.animateChanges());
+		if (wantsHandoff && visualElement.animationState) {
+			visualElement.animationState?.animateChanges();
 		}
-
-		return () => {
-			console.log('useVisualElement effect cleanup');
-		};
 	});
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (!visualElement) return;
 
-		if (!wantsHandoff && untrack(() => visualElement.animationState)) {
-			untrack(() => visualElement.animationState?.animateChanges());
+		if (!wantsHandoff && visualElement.animationState) {
+			visualElement.animationState?.animateChanges();
 		}
 
 		if (wantsHandoff) {
