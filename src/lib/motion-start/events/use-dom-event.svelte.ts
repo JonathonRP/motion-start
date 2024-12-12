@@ -1,4 +1,3 @@
-import { onDestroy, tick } from 'svelte';
 import type { RefObject } from '../utils/safe-react-types';
 import { addDomEvent } from './add-dom-event';
 
@@ -44,5 +43,7 @@ export function useDomEvent(
 			}
 		};
 
-	$effect.pre(initDomEvent(ref, eventName, handler, options));
+	const cleanup = initDomEvent(ref, eventName, handler, options);
+
+	$effect.pre(() => cleanup);
 }

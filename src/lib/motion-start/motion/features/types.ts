@@ -62,10 +62,10 @@ export type RenderComponent<Instance, RenderState> = Component<
 	{
 		Component: string;
 		props: MotionProps;
-		ref: RefCallBack<Instance>;
+		// ref: RefCallBack<Instance>;
 		visualState: VisualState<Instance, RenderState>;
 		isStatic: boolean;
 		visualElement?: VisualElement<Instance>;
 		children?: Snippet;
-	} & { el: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this'] }
+	} & { ref: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this'] }
 >;

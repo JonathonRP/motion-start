@@ -72,9 +72,9 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
 	const MotionComponent: Component<
-		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null }
+		MotionComponentProps<Props> & { externalRef?: Ref<Instance> | undefined; ref?: Instance | null | undefined }
 	> = (anchor, _props) => {
-		const { externalRef, children, ...props } = $derived(_props);
+		const { externalRef, ref, children, ...props } = $derived(_props);
 		// const props = () =>
 		// 	new Proxy(restProps, {
 		// 		get(target, key: keyof typeof restProps) {
@@ -84,7 +84,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		// 			target[key] = value;
 		// 		},
 		// 	});
-		$inspect(props);
 
 		/**
 		 * If we need to measure the element we load this functionality in a
@@ -155,7 +154,10 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				return props;
 			},
 			get ref() {
-				return useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef);
+				return ref as Instance;
+			},
+			set ref(v: Instance) {
+				useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef)(v);
 			},
 			get visualState() {
 				return visualState;
@@ -168,12 +170,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			},
 			get children() {
 				return children;
-			},
-			get el() {
-				return props.ref;
-			},
-			set el(val) {
-				props.ref = val;
 			},
 		});
 
