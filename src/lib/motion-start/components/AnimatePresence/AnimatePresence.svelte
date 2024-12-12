@@ -35,12 +35,16 @@ Copyright (c) 2018 Framer B.V. -->
 
     let _list = $state(list !== undefined ? list : show ? [{ key: 1 }] : []);
 
+    $effect(() => {
+        _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
+    });
+
     let presentChildren = $state(_list);
     const presentKeys = $derived(presentChildren.map(getChildKey));
 
     let isInitialRender = $state(true);
 
-    let renderedChildren = $state(
+    const renderedChildren = $derived(
         presentChildren.map((v) => ({
             present: true,
             item: v,
@@ -64,7 +68,7 @@ Copyright (c) 2018 Framer B.V. -->
         _list = [..._list];
     });
 
-    $effect.pre(() => {
+    $effect(() => {
         if (!isInitialRender) {
             /**
              * Update complete status of exiting children.
@@ -112,9 +116,7 @@ Copyright (c) 2018 Framer B.V. -->
                     item: child,
                     key: getChildKey(child),
                     onExit:
-                        !isInitialRender &&
-                        exitComplete.has(key) &&
-                        !_list.includes(child)
+                        exitComplete.has(key) && child
                             ? () => {
                                   exitingChildren.delete(key!);
 
@@ -131,7 +133,7 @@ Copyright (c) 2018 Framer B.V. -->
 
                                   // Defer re-rendering until all exiting children have indeed left
                                   if (!exitingChildren.size) {
-                                      renderedChildren = [..._list];
+                                      presentChildren = [..._list];
                                       forceRender?.();
                                       onExitComplete && onExitComplete();
                                   }
@@ -144,8 +146,8 @@ Copyright (c) 2018 Framer B.V. -->
              * Early return to ensure once we've set state with the latest diffed
              * children, we can immediately re-render.
              */
-            presentChildren = renderedChildren;
-            return;
+            // presentChildren = renderedChildren;
+            // return;
         } else {
             isInitialRender = false;
         }

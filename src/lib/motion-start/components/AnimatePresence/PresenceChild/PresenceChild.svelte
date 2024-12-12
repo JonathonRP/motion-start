@@ -16,7 +16,6 @@ Copyright (c) 2018 Framer B.V. -->
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
     import { fromStore } from "svelte/store";
-    import { tick, untrack } from "svelte";
 
     interface Props extends PresenceChildProps {
         isCustom?: boolean;
@@ -59,40 +58,37 @@ Copyright (c) 2018 Framer B.V. -->
             },
         };
     });
-    let context = fromStore(useContext(PresenceContext, isCustom)).current;
+    let context = $derived(fromStore(useContext(PresenceContext, isCustom)));
 
-    $effect(() => {
+    $effect.pre(() => {
         if (presenceAffectsLayout) {
-            context = untrack(() => memoContext());
-            return;
+            context.current = memoContext();
         }
 
-        context = untrack(() => memoContext(refresh));
+        context.current = memoContext(refresh);
     });
 
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
 
-    $effect(() => {
-        keyset(untrack(() => isPresent));
+    $inspect(isPresent);
 
-        untrack(() => !isPresent) &&
-            !presenceChildren.size &&
-            onExitComplete?.();
-    });
-    $effect(() => {
+    $effect.pre(() => {
+        console.log(isPresent);
+        keyset(isPresent);
+
+        !isPresent && !presenceChildren.size && onExitComplete?.();
+
         PresenceContext["_c"] = isCustom;
-        PresenceContext.Provider = context;
+        PresenceContext.Provider = context.current;
     });
 </script>
 
 {#if mode === "popLayout"}
     <PopChild {isPresent}>
-        {#if isPresent}
-            {@render children?.()}
-        {/if}
+        {@render children?.()}
     </PopChild>
-{:else if isPresent}
+{:else}
     {@render children?.()}
 {/if}

@@ -50,10 +50,10 @@ const useVisualState = makeUseVisualState({
  * on any version.
  */
 export function useAnimatedState(initialState: any) {
-	let animationState = initialState;
-	const visualState = useVisualState({}, false);
+	let animationState = $state(initialState);
+	const visualState = $derived(useVisualState({}, false));
 
-	let element = new StateVisualElement(
+	const element = new StateVisualElement(
 		{
 			props: {
 				onUpdate: (v) => {
@@ -65,19 +65,7 @@ export function useAnimatedState(initialState: any) {
 		},
 		{ initialState }
 	);
-
-	element = new StateVisualElement(
-		{
-			props: {
-				onUpdate: (v) => {
-					animationState = { ...v };
-				},
-			},
-			visualState,
-			presenceContext: null,
-		},
-		{ initialState }
-	);
+	$inspect(element);
 
 	$effect.pre(() => {
 		element.mount({});

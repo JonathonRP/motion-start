@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { get } from 'svelte/store';
+import { fromStore } from 'svelte/store';
 import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import type { MotionProps } from '../types';
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
@@ -55,9 +55,9 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean, isCustom = false): VisualState<I, RS> => {
-		const context = useContext(MotionContext, isCustom);
-		const presenceContext = useContext(PresenceContext, isCustom);
-		const make = () => makeState(config, props, get(context), get(presenceContext));
+		const context = fromStore(useContext(MotionContext, isCustom));
+		const presenceContext = fromStore(useContext(PresenceContext, isCustom));
+		const make = () => makeState(config, props, context.current, presenceContext.current);
 
 		let state = make();
 

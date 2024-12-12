@@ -19,14 +19,13 @@ Copyright (c) 2018 Framer B.V. -->
   let {
     Component,
     props,
-    ref,
     visualState,
     isStatic,
     children,
-    el = $bindable(),
+    ref = $bindable(),
   }: Props = $props();
 
-  $inspect(props);
+  // $inspect(props);
 
   const { latestValues } = $derived(visualState);
   const useVisualProps = $derived(
@@ -47,10 +46,6 @@ Copyright (c) 2018 Framer B.V. -->
 
   const elementProps = $derived({ ...filteredProps, ...visualProps });
 
-  const motion = (node) => {
-    ref(node);
-  };
-
   // $inspect(el);
   // $: typeof ref === "function" ? ref(element) : (ref!.current = element);
 </script>
@@ -58,8 +53,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:element
   this={Component}
   {...elementProps}
-  bind:this={el}
-  use:ref
+  bind:this={ref}
   {...isSVGComponent(Component) ? { xmlns: "http://www.w3.org/2000/svg" } : {}}
 >
   {@render children?.()}

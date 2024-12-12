@@ -8,7 +8,7 @@ export function useInstantTransition() {
 	const startInstantLayoutTransition = useInstantLayoutTransition();
 	let unlockOnFrameRef = $state<number | undefined>(undefined);
 
-	$effect(() => {
+	$effect.pre(() => {
 		/**
 		 * Unblock after two animation frames, otherwise this will unblock too soon.
 		 */

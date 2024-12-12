@@ -308,7 +308,6 @@ export abstract class VisualElement<
 	constructor(visualOptions: VisualElementOptions<Instance, RenderState>, options: Options = {} as any) {
 		const { parent, props, presenceContext, reducedMotionConfig, blockInitialAnimation, visualState } =
 			$derived(visualOptions);
-		$inspect(props, parent, visualState);
 		const { latestValues, renderState } = visualState;
 		this.latestValues = latestValues;
 		this.baseTarget = { ...latestValues };
@@ -415,7 +414,7 @@ export abstract class VisualElement<
 	private bindToMotionValue(key: string, value: MotionValue) {
 		if (this.valueSubscriptions.has(key)) {
 			// this is to insure it runs on unmount and not during mount of keyed element
-			$effect(() => () => {
+			$effect.pre(() => () => {
 				this.valueSubscriptions.get(key)!();
 			});
 		}

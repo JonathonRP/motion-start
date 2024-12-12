@@ -17,6 +17,8 @@ export class ExitAnimationFeature extends Feature<unknown> {
 		const { isPresent, onExitComplete } = this.node.presenceContext;
 		const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
 
+		console.log(isPresent, prevIsPresent);
+
 		if (!this.node.animationState || isPresent === prevIsPresent) {
 			return;
 		}
