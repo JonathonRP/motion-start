@@ -1,6 +1,6 @@
 <script>
+  import Box from "../Box.svelte";
   import { motion, layoutAnimation } from "$lib/motion-start";
-  // import Motion from "$lib/motion-start/motion/MotionSSR.svelte";
 
   const spring = {
     type: "spring",
@@ -20,20 +20,14 @@
 <div
   class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
 >
-  <svelte:boundary onerror={console.log}>
-    <button class="switch" data-active={active} onclick={toggleSwitch}>
-      <motion.div
-        {layout}
-        transition={spring}
-        onLayoutUpdate={(...args) => console.log("change", args)}
-        class="handle"
-      />
-    </button>
-
-    {#snippet failed(error, reset)}
-      <p>broken, check console</p>
-    {/snippet}
-  </svelte:boundary>
+  <button class="switch" data-active={active} onclick={toggleSwitch}>
+    <motion.div
+      active={1 * !active}
+      layout
+      class="handle"
+      transition={spring}
+    />
+  </button>
 </div>
 
 <style>

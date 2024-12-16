@@ -26,18 +26,15 @@ Copyright (c) 2018 Framer B.V. -->
   import type { Snippet } from "svelte";
 
   interface Props extends LayoutGroupProps {
-    isCustom?: boolean;
     children?: Snippet;
   }
 
-  let { id, inherit = true, isCustom = false, children }: Props = $props();
+  let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = fromStore(
-    useContext(LayoutGroupContext, isCustom),
-  ).current;
+  const layoutGroupContext = fromStore(useContext(LayoutGroupContext)).current;
 
   const deprecatedLayoutGroupContext = fromStore(
-    useContext(DeprecatedLayoutGroupContext, isCustom),
+    useContext(DeprecatedLayoutGroupContext),
   ).current;
 
   const [forceRender, key] = useForceUpdate();

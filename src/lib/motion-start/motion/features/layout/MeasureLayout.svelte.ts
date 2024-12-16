@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fromStore, get } from 'svelte/store';
+import { fromStore } from 'svelte/store';
 import { usePresence } from '../../../components/AnimatePresence/use-presence.svelte';
 import { useContext } from '../../../context/utils/context.svelte';
 import { LayoutGroupContext } from '../../../context/LayoutGroupContext';
@@ -23,20 +23,18 @@ interface MeasureContextProps {
 export type MeasureProps = MotionProps & MeasureContextProps & { visualElement: VisualElement<unknown> };
 
 export function MeasureLayout(
-	...[anchor, _props]: Parameters<
-		Component<MotionProps & { visualElement: VisualElement<unknown>; isCustom?: boolean }>
-	>
+	...[anchor, _props]: Parameters<Component<MotionProps & { visualElement: VisualElement<unknown> }>>
 ): ReturnType<Component<MotionProps>> {
-	const { isCustom = false, ...props } = $derived(_props);
-	const [isPresent, safeToRemove] = fromStore(usePresence(isCustom)).current;
-	const layoutGroup = fromStore(useContext(LayoutGroupContext, isCustom)).current;
+	const { ...props } = $derived(_props);
+	const [isPresent, safeToRemove] = fromStore(usePresence()).current;
+	const layoutGroup = fromStore(useContext(LayoutGroupContext)).current;
 	return MeasureLayoutWithContext(anchor, {
 		...props,
 		get layoutGroup() {
 			return layoutGroup;
 		},
 		get switchLayoutGroup() {
-			return fromStore(useContext(SwitchLayoutGroupContext, isCustom)).current;
+			return fromStore(useContext(SwitchLayoutGroupContext)).current;
 		},
 		get isPresent() {
 			return isPresent;

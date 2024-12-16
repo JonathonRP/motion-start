@@ -8,9 +8,9 @@ import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { useReducedMotion } from './use-reduced-motion';
 import { fromStore, get } from 'svelte/store';
 
-export function useReducedMotionConfig(isCustom = false) {
+export function useReducedMotionConfig() {
 	const reducedMotionPreference = useReducedMotion();
-	const { reducedMotion } = fromStore(useContext(MotionConfigContext, isCustom)).current;
+	const { reducedMotion } = fromStore(useContext(MotionConfigContext)).current;
 
 	if (reducedMotion === 'never') {
 		return false;

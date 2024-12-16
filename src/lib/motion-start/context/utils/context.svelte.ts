@@ -1,7 +1,5 @@
-import { getContext, setContext } from 'svelte';
-import { getDomContext, setDomContext } from '../DOMcontext';
+import { getContext, onMount, setContext, untrack } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
-import { nanoid } from 'nanoid/non-secure';
 
 type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
 
@@ -9,55 +7,41 @@ type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
 interface CallableContext<T> {
 	readonly prototype: CallableContext<T>;
 
-	(c?: any): T;
+	(): T;
 }
 
 class CallableContext<T> extends Function {
 	// @ts-expect-error
 	// biome-ignore lint/complexity/noBannedTypes: <explanation>
 	// biome-ignore lint/correctness/noUnreachableSuper: <explanation>
-	constructor(f: (c?: any) => T) {
+	constructor(f: () => T) {
 		// biome-ignore lint/correctness/noConstructorReturn: <explanation>
 		return Object.setPrototypeOf(f, new.target.prototype);
 	}
 }
 
-class Context<T> extends CallableContext<T> {
-	private _key = `${Symbol('motion-start').toString()}-${nanoid()}`;
+class Context<T extends Writable<UnwrapWritable<T>>> extends CallableContext<T> {
+	#state: T | undefined = undefined;
 
-	public constructor(
-		private _default: T,
-		private _c?: any
-	) {
-		super((c?: any) => {
-			let context = null;
-			$effect.root(() => {
-				context = getDomContext(this.key, this.c || c);
-			});
-			return getContext<T>(this) || context || this._default;
+	public constructor(private initial: T) {
+		super(() => {
+			this.#state = getContext<T>(this);
+
+			return this.#state || this.initial;
 		});
+		this.#state = this.initial;
 	}
 
 	set Provider(value: UnwrapWritable<T>) {
-		$effect.root(() => {
-			setDomContext(this.key, this.c, writable(value));
-		});
-		setContext(this, writable(value));
-	}
-
-	get key() {
-		return this._key;
-	}
-
-	get c() {
-		return this._c;
+		$inspect.trace('set context');
+		setContext(this, this.#state || this.initial).set(value);
 	}
 }
 
-export function createContext<T>(defaultValue: T, c?: any) {
-	return new Context<Writable<T>>(writable(defaultValue), c);
+export function createContext<T>(defaultValue: T) {
+	return new Context<Writable<T>>(writable(defaultValue));
 }
 
-export function useContext<T>(context: Context<T>, c?: any) {
-	return context(c);
+export function useContext<T>(context: Context<Writable<T>>) {
+	return context();
 }

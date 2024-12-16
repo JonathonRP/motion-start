@@ -15,8 +15,8 @@ import { instantAnimationState } from '../../utils/use-instant-transition-state'
 import type { VisualElement } from '../../render/VisualElement.svelte';
 import { getFinalKeyframe } from '../animators/waapi/utils/get-final-keyframe';
 import { frame } from '../../frameloop/frame';
-import { AcceleratedAnimation } from '../animators/AcceleratedAnimation';
-import { MainThreadAnimation } from '../animators/MainThreadAnimation';
+import { AcceleratedAnimation } from '../animators/AcceleratedAnimation.svelte';
+import { MainThreadAnimation } from '../animators/MainThreadAnimation.svelte';
 import { GroupPlaybackControls } from '../GroupPlaybackControls';
 import { isTransitionDefined } from '../utils/is-transition-defined';
 

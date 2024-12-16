@@ -71,7 +71,7 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 	>;
 
-	const context = useContext(ReorderContext, motion.groupItem);
+	const context = useContext(ReorderContext);
 	const point = $state({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),

@@ -6,7 +6,7 @@
   let i = 0;
 </script>
 
-<Box cls="flex flex-col gap-10 bg-slate-900">
+<Box cls="flex-col gap-10">
   {#key i}
     <motion.div
       animate={{

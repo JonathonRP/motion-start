@@ -9,17 +9,13 @@ import type { MotionProps } from '../../motion/types';
 import { getCurrentTreeVariants } from './utils';
 import { useContext } from '../utils/context.svelte';
 
-export function useCreateMotionContext<Instance>(props: MotionProps, isCustom = false): MotionContextProps<Instance> {
-	const { initial, animate } = $state(
-		getCurrentTreeVariants(props, fromStore(useContext(MotionContext, isCustom)).current)
-	);
+export function useCreateMotionContext<Instance>(props: MotionProps): MotionContextProps<Instance> {
+	const motionContext = fromStore(useContext(MotionContext));
 
-	const memo = $derived.by(() => (_initial: string | false | undefined, _animate: string | false | undefined) => ({
-		initial,
-		animate,
-	}));
-
-	return memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
+	return {
+		initial: getCurrentTreeVariants(props, motionContext.current).initial,
+		animate: getCurrentTreeVariants(props, motionContext.current).animate,
+	};
 }
 
 function variantLabelsAsDependency(prop: undefined | string | string[] | false) {

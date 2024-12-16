@@ -11,7 +11,7 @@ import { spring } from '../generators/spring/index';
 import { inertia } from '../generators/inertia';
 import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes';
 import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
-import { BaseAnimation } from './BaseAnimation';
+import { BaseAnimation } from './BaseAnimation.svelte';
 import type { AnimationState, KeyframeGenerator } from '../generators/types';
 import { pipe } from '../../utils/pipe';
 import { mix } from '../../utils/mix';

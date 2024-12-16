@@ -3,7 +3,7 @@
     import { motion } from "$lib/motion-start";
 </script>
 
-<Box cls="bg-slate-800 flex gap-3 md:gap-10 text-black">
+<Box cls="gap-3 md:gap-10">
     <motion.div
         whileTap={{
             rotate: 45,

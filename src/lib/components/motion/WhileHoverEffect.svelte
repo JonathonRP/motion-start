@@ -3,7 +3,7 @@
     import { motion } from "$lib/motion-start";
 </script>
 
-<Box cls="bg-slate-800 flex gap-3 md:gap-10 flex-col md:flex-row text-black">
+<Box cls="gap-3 md:gap-10 flex-col md:flex-row">
     <motion.div
         whileHover={{
             scale: 0.86,

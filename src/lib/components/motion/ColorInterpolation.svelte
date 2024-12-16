@@ -1,4 +1,5 @@
 <script>
+    import Box from "../Box.svelte";
     import { motion, useMotionValue, useTransform } from "$lib/motion-start";
     let x = useMotionValue(0);
     let background = useTransform(
@@ -9,21 +10,23 @@
 </script>
 
 <!-- Color Interpolation -->
-<motion.div
-    style={{
-        background,
-    }}
-    class=" h-[350px] border border-dashed flex justify-center items-center rounded-3xl"
->
+<Box cls="grid cols-1 rows-1 justify-stretch">
     <motion.div
         style={{
-            x: x,
+            background,
         }}
-        drag="x"
-        dragConstraints={{ right: 0, left: 0 }}
-        whileTap={{ cursor: "grabbing" }}
-        class="w-32 h-32 text-black rounded-full bg-white cursor-grab flex justify-center items-center select-none"
+        class="h-full w-full border border-dashed flex justify-center items-center rounded-3xl"
     >
-        Drag me
+        <motion.div
+            style={{
+                x: x,
+            }}
+            drag="x"
+            dragConstraints={{ right: 0, left: 0 }}
+            whileTap={{ cursor: "grabbing" }}
+            class="w-32 h-32 text-black rounded-full bg-white cursor-grab flex justify-center items-center select-none"
+        >
+            Drag me
+        </motion.div>
     </motion.div>
-</motion.div>
+</Box>

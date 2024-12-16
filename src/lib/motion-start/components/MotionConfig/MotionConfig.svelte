@@ -9,22 +9,19 @@ Copyright (c) 2018 Framer B.V. -->
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
   import { fromStore } from "svelte/store";
 
-  interface Props extends MotionConfigProps {
-    isCustom?: boolean;
-  }
+  interface Props extends MotionConfigProps {}
 
   let {
     isValidProp,
     transformPagePoint,
     isStatic,
     transition,
-    isCustom = false,
     children,
   }: Props = $props();
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
-  let mcc = fromStore(useContext(MotionConfigContext, isCustom)).current;
+  let mcc = fromStore(useContext(MotionConfigContext)).current;
   /**
    * Inherit props from any parent MotionConfig components
    */

@@ -54,13 +54,12 @@ function makeState<I, RS>(
 
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
-	(props: MotionProps, isStatic: boolean, isCustom = false): VisualState<I, RS> => {
-		const context = fromStore(useContext(MotionContext, isCustom));
-		const presenceContext = fromStore(useContext(PresenceContext, isCustom));
+	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
+		const context = fromStore(useContext(MotionContext));
+		const presenceContext = fromStore(useContext(PresenceContext));
 		const make = () => makeState(config, props, context.current, presenceContext.current);
 
 		let state = make();
-
 		if (!isStatic) {
 			state = make();
 		}

@@ -11,7 +11,7 @@ import { useContext } from '../context/utils/context.svelte';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { SpringOptions } from '../animation/types';
 import { frame, frameData } from '../frameloop';
-import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
+import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation.svelte';
 
 function toNumber(v: string | number) {
 	if (typeof v === 'number') return v;
@@ -37,8 +37,8 @@ function toNumber(v: string | number) {
  *
  * @public
  */
-export const useSpring = (source: MotionValue | number, config: SpringOptions = {}, isCustom = false) => {
-	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
+export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
+	const { isStatic } = fromStore(useContext(MotionConfigContext)).current;
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 

@@ -85,7 +85,7 @@
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
 		"@tsconfig/svelte": "^5.0.4",
-		"@types/node": "^20.17.9",
+		"@types/node": "^20.17.10",
 		"@vitest/ui": "latest",
 		"bits-ui": "^2.11.0",
 		"class-variance-authority": "^0.7.1",

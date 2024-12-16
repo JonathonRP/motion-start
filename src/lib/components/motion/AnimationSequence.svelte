@@ -21,7 +21,7 @@
     };
 </script>
 
-<Box cls="bg-slate-800 text-black">
+<Box>
     <motion.div animate={controls} onTap={startCode} class="box">Tap</motion.div
     >
 </Box>
