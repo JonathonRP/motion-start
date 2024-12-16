@@ -25,7 +25,7 @@
     );
 </script>
 
-<Box cls="bg-slate-800 text-black">
+<Box>
     <motion.div
         animate={{
             scale: $scale,

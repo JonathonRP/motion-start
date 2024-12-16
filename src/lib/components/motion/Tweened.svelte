@@ -1,12 +1,11 @@
 <script>
     import Box from "../Box.svelte";
     import Button from "../ui/button/button.svelte";
-    // import { Motion } from "svelte-motion"
     import { motion } from "$lib/motion-start";
     let i = 0;
 </script>
 
-<Box cls="flex flex-col gap-10 bg-slate-900">
+<Box cls="flex-col gap-10">
     {#key i}
         <motion.div
             animate={{

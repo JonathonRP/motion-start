@@ -91,13 +91,13 @@ export { useInstantLayoutTransition } from './projection/use-instant-layout-tran
 export { useResetProjection } from './projection/use-reset-projection.svelte';
 export { buildTransform } from './render/html/utils/build-transform';
 export { visualElementStore } from './render/store';
-export { animateValue } from './animation/animators/MainThreadAnimation';
+export { animateValue } from './animation/animators/MainThreadAnimation.svelte';
 export { color } from './value/types/color';
 export { complex } from './value/types/complex';
 export { px } from './value/types/numbers/units';
 export type { ValueType } from './value/types/types';
 export { MotionGlobalConfig } from './utils/GlobalConfig';
-export { AcceleratedAnimation } from './animation/animators/AcceleratedAnimation';
+export { AcceleratedAnimation } from './animation/animators/AcceleratedAnimation.svelte';
 
 /**
  * Appear animations

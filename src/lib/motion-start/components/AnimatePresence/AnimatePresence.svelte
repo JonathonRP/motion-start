@@ -3,18 +3,18 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" generics="T extends {key:any}">
+    import { Previous } from "runed";
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
     import { useContext } from "../../context/utils/context.svelte.js";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { fromStore } from "svelte/store";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
-    import { onDestroy, untrack, type Snippet } from "svelte";
+    import { onDestroy, onMount, untrack, type Snippet } from "svelte";
     import { type ComponentKey, getChildKey } from "./utils.js";
     import { invariant } from "../../utils/errors.js";
 
     type Props = AnimatePresenceProps<ConditionalGeneric<T>> & {
-        isCustom?: boolean;
         children?: Snippet<[typeof list | { key: number }]>;
     };
 
@@ -27,7 +27,6 @@ Copyright (c) 2018 Framer B.V. -->
         mode = "sync",
         list,
         show,
-        isCustom = false,
         children,
     }: Props = $props();
 
@@ -35,69 +34,55 @@ Copyright (c) 2018 Framer B.V. -->
 
     let _list = $state(list !== undefined ? list : show ? [{ key: 1 }] : []);
 
-    $effect(() => {
-        _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
-    });
+    let presentChildren = $derived(_list);
+    let presentKeys = $derived(presentChildren.map(getChildKey));
 
-    let presentChildren = $state(_list);
-    const presentKeys = $derived(presentChildren.map(getChildKey));
+    let isInitialRender = true;
 
-    let isInitialRender = $state(true);
-
-    const renderedChildren = $derived(
-        presentChildren.map((v) => ({
+    let renderedChildren = $derived([
+        ...presentChildren.map((v) => ({
             present: true,
             item: v,
             key: v.key,
             onExit: undefined,
         })),
+    ]);
+
+    let exitingChildren = new Previous(() =>
+        renderedChildren.map((v) => ({ ...v, present: false })),
     );
 
-    let exitComplete = new SvelteMap<ComponentKey, boolean>(
-        _list.map(getChildKey).map((key) => {
-            return [key, !!key];
-        }),
-    );
-    const exitingChildren = new SvelteSet<number>();
+    const exitingKeys = new SvelteSet<number>();
 
-    const layoutContext = fromStore(
-        useContext(LayoutGroupContext, isCustom),
-    ).current;
-    const forceRender = $derived(() => {
-        layoutContext.forceRender?.();
+    const layoutContext = fromStore(useContext(LayoutGroupContext));
+    const forceRender = () => {
+        layoutContext.current.forceRender?.();
         _list = [..._list];
+    };
+
+    $inspect(exitingChildren);
+
+    onMount(() => {
+        isInitialRender = false;
     });
 
-    $effect(() => {
-        if (!isInitialRender) {
+    $effect.pre(() => {
+        if (
+            !isInitialRender &&
+            exitingChildren.current &&
+            exitingChildren.current.length !== 0
+        ) {
+            let nextChildren = [...presentChildren];
             /**
              * Update complete status of exiting children.
              */
-            for (let i = 0; i < presentKeys.length; i++) {
-                const key = presentKeys[i];
-
-                if (!presentKeys.includes(key)) {
-                    if (exitComplete.has(key)) {
-                        exitingChildren.add(key!);
-                    }
-                } else {
-                    exitingChildren.delete(key!);
-                }
-            }
-
-            let nextChildren = [...presentChildren];
-
-            /**
-             * Loop through all the currently rendered components and decide which
-             * are exiting.
-             */
-            for (let i = 0; i < renderedChildren.length; i++) {
+            for (let i = 0; i < _list.length; i++) {
                 const child = renderedChildren[i];
-                const key = getChildKey(child);
+                const key = _list[i].key;
 
                 if (!presentKeys.includes(key)) {
                     nextChildren.splice(i, 0, child);
-                    exitingChildren.add(key!);
+                    exitingKeys.add(key!);
                 }
             }
 
@@ -105,18 +90,18 @@ Copyright (c) 2018 Framer B.V. -->
              * If we're in "wait" mode, and we have exiting children, we want to
              * only render these until they've all exited.
              */
-            if (mode === "wait" && exitingChildren.size) {
-                nextChildren = [...exitingChildren].map((key) => ({ key }));
+            if (mode === "wait" && exitingKeys.size) {
+                renderedChildren.length = 0;
             }
 
-            exitingChildren.forEach((key) => {
-                const child = presentChildren.find((e) => e.key === key);
+            exitingKeys.forEach((key) => {
+                const child = nextChildren.find((e) => e.key === key);
                 renderedChildren.splice(presentKeys.indexOf(key), 0, {
                     present: false,
                     item: child,
                     key: getChildKey(child),
                     onExit:
-                        exitComplete.has(key) && child
+                        exitingKeys.has(key) && child
                             ? () => {
                                   exitingChildren.delete(key!);
 
@@ -133,7 +118,7 @@ Copyright (c) 2018 Framer B.V. -->
 
                                   // Defer re-rendering until all exiting children have indeed left
                                   if (!exitingChildren.size) {
-                                      presentChildren = [..._list];
+                                      _list = [..._list];
                                       forceRender?.();
                                       onExitComplete && onExitComplete();
                                   }
@@ -146,25 +131,22 @@ Copyright (c) 2018 Framer B.V. -->
              * Early return to ensure once we've set state with the latest diffed
              * children, we can immediately re-render.
              */
-            // presentChildren = renderedChildren;
-            // return;
-        } else {
-            isInitialRender = false;
-        }
-
-        if (
-            process.env.NODE_ENV !== "production" &&
-            mode === "wait" &&
-            renderedChildren.length > 1
-        ) {
-            console.warn(
-                `You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
-            );
+            // untrack(() => (renderedChildren = nextChildren));
         }
     });
+
+    if (
+        process.env.NODE_ENV !== "production" &&
+        mode === "wait" &&
+        renderedChildren.length > 1
+    ) {
+        console.warn(
+            `You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
+        );
+    }
 </script>
 
-{#each renderedChildren as child (child.key)}
+{#each renderedChildren as child (getChildKey(child))}
     <PresenceChild
         {mode}
         isPresent={child.present}
@@ -172,7 +154,6 @@ Copyright (c) 2018 Framer B.V. -->
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
-        {isCustom}
     >
         {@render children?.(child.item)}
     </PresenceChild>

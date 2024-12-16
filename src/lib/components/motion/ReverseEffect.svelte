@@ -4,7 +4,7 @@
     let i = 0;
 </script>
 
-<Box cls="bg-slate-800 flex">
+<Box>
     {#key i}
         <motion.div
             animate={{

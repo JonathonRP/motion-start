@@ -13,8 +13,9 @@ import { htmlMotionConfig } from '../html/config-motion';
 import { createUseRender } from '../dom/use-render';
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
+import type { MotionProps } from '$lib/motion-start/motion/types';
 
-type MotionComponent<P, TElement extends keyof SvelteHTMLElements> = Component<
+type MotionComponent<P extends MotionProps, TElement extends keyof SvelteHTMLElements> = Component<
 	MotionComponentProps<
 		P & { children?: Snippet; ref?: SvelteHTMLElements[TElement]['this'] } & Omit<SvelteHTMLElements[TElement], 'style'>
 	>
@@ -24,10 +25,10 @@ export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,
 	createVisualElement?: CreateVisualElement<any>
 ) {
-	return function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = 'div'>(
-		Component: TagName | string,
-		{ forwardMotionProps } = { forwardMotionProps: false }
-	) {
+	return function createMotionComponent<
+		Props extends MotionProps,
+		TagName extends keyof DOMMotionComponents | string = 'div',
+	>(Component: TagName | string, { forwardMotionProps } = { forwardMotionProps: false }) {
 		const baseConfig = isSVGComponent(Component) ? svgMotionConfig : htmlMotionConfig;
 
 		const config = {

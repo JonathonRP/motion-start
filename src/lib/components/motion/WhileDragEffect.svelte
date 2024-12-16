@@ -3,7 +3,7 @@
     import { motion } from "$lib/motion-start";
 </script>
 
-<Box cls="bg-slate-800 flex text-black">
+<Box>
     <motion.div
         drag={true}
         whileHover={{

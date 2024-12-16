@@ -4,7 +4,6 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame } from '../frameloop';
-import { tick } from 'svelte';
 
 export function useForceUpdate(): [VoidFunction, number] {
 	let isMounted = $state(false);

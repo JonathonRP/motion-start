@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { TargetAndTransition } from '../../types';
 import type { ResolvedValues } from '../../render/types';
-import { makeUseVisualState } from '../../motion/utils/use-visual-state';
+import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
 import { createBox } from '../../projection/geometry/models';
 import { VisualElement } from '../../render/VisualElement.svelte';
 import { animateVisualElement } from '../interfaces/visual-element';
@@ -51,7 +51,7 @@ const useVisualState = makeUseVisualState({
  */
 export function useAnimatedState(initialState: any) {
 	let animationState = $state(initialState);
-	const visualState = $derived(useVisualState({}, false));
+	const visualState = useVisualState({}, false);
 
 	const element = new StateVisualElement(
 		{
@@ -65,7 +65,6 @@ export function useAnimatedState(initialState: any) {
 		},
 		{ initialState }
 	);
-	$inspect(element);
 
 	$effect.pre(() => {
 		element.mount({});

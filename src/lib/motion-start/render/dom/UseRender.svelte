@@ -21,8 +21,8 @@ Copyright (c) 2018 Framer B.V. -->
     props,
     visualState,
     isStatic,
-    children,
     ref = $bindable(),
+    children,
   }: Props = $props();
 
   // $inspect(props);

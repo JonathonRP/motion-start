@@ -1,4 +1,3 @@
-import { onDestroy } from 'svelte';
 import type { AnimationScope } from '../types';
 import { createScopedAnimate } from '../animate';
 
@@ -11,7 +10,7 @@ export function useAnimate<T extends Element = any>() {
 
 		const animate = createScopedAnimate(scope);
 
-		onDestroy(() => {
+		$effect.pre(() => () => {
 			scope.animations.forEach((animation) => animation.stop);
 		});
 

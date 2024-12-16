@@ -12,36 +12,31 @@ import { PresenceContext } from '../../context/PresenceContext';
 import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { MotionProps } from '../types';
-import type { VisualState } from './use-visual-state';
+import type { VisualState } from './use-visual-state.svelte';
 import type { IProjectionNode } from '../../projection/node/types';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { microtask } from '../../frameloop/microtask';
 import { useContext } from '$lib/motion-start/context/utils/context.svelte';
-import { tick } from 'svelte';
+import { untrack } from 'svelte';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
-	_visualState: VisualState<Instance, RenderState>,
-	_props: () => MotionProps,
+	visualState: VisualState<Instance, RenderState>,
+	props: MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	projectionNodeConstructor?: () => any,
-	isCustom = false
+	ProjectionNodeConstructor?: any
 ): VisualElement<Instance> | undefined {
-	const { visualElement: parent } = $derived(fromStore(useContext(MotionContext, isCustom)).current);
+	const { visualElement: parent } = fromStore(useContext(MotionContext)).current;
 
-	const lazyContext = $derived(fromStore(useContext(LazyContext, isCustom)));
+	const lazyContext = fromStore(useContext(LazyContext));
 
-	const presenceContext = $derived(fromStore(useContext(PresenceContext, isCustom)));
-	$inspect(presenceContext.current);
+	const presenceContext = fromStore(useContext(PresenceContext));
+	// $inspect(presenceContext.current);
 
 	const reducedMotionConfig = fromStore(useContext(MotionConfigContext)).current.reducedMotion;
 
 	let visualElementRef: VisualElement<Instance> | undefined = $state(undefined);
-
-	const props = $derived.by(_props);
-	const visualState = $derived(_visualState);
-	const ProjectionNodeConstructor = $derived(projectionNodeConstructor?.());
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
@@ -61,7 +56,7 @@ export function useVisualElement<Instance, RenderState>(
 
 	const visualElement: VisualElement<Instance> | undefined = $derived(visualElementRef);
 
-	const initialLayoutGroupConfig = $derived(fromStore(useContext(SwitchLayoutGroupContext, isCustom)));
+	const initialLayoutGroupConfig = fromStore(useContext(SwitchLayoutGroupContext));
 
 	if (
 		visualElement &&
@@ -75,12 +70,16 @@ export function useVisualElement<Instance, RenderState>(
 	let isMounted = false;
 	$effect.pre(() => {
 		isMounted = true;
+		/**
+		 * Check the component has already mounted before calling
+		 * `update` unnecessarily. This ensures we skip the initial update.
+		 */
 		if (visualElement && isMounted) {
 			/**
-			 * Check the component has already mounted before calling
-			 * `update` unnecessarily. This ensures we skip the initial update.
+			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			visualElement?.update(props, presenceContext.current);
+			props;
+			untrack(() => visualElement.update(props, presenceContext.current));
 		}
 
 		return () => {
@@ -98,7 +97,7 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	$effect.pre(() => {
+	$effect(() => {
 		if (!visualElement?.current) return;
 
 		isMounted = true;
@@ -118,15 +117,11 @@ export function useVisualElement<Instance, RenderState>(
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
 		if (wantsHandoff && visualElement.animationState) {
-			visualElement.animationState?.animateChanges();
+			visualElement.animationState.animateChanges();
 		}
-	});
-
-	$effect.pre(() => {
-		if (!visualElement) return;
 
 		if (!wantsHandoff && visualElement.animationState) {
-			visualElement.animationState?.animateChanges();
+			visualElement.animationState.animateChanges();
 		}
 
 		if (wantsHandoff) {

@@ -7,6 +7,7 @@ import { motionValue, type MotionValue } from '.';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import { fromStore } from 'svelte/store';
 import { useContext } from '../context/utils/context.svelte';
+import { untrack } from 'svelte';
 
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.
@@ -25,7 +26,7 @@ import { useContext } from '../context/utils/context.svelte';
  *
  * @public
  */
-export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> {
+export function useMotionValue<T>(initial: T): MotionValue<T> {
 	const value = motionValue(initial);
 
 	/**
@@ -33,13 +34,13 @@ export function useMotionValue<T>(initial: T, isCustom = false): MotionValue<T> 
 	 * the Framer canvas, force components to rerender when the motion
 	 * value is updated.
 	 */
-	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
+	const { isStatic } = fromStore(useContext(MotionConfigContext)).current;
 
 	if (isStatic) {
 		const setLatest = (_value) => {
 			initial = _value;
 		};
-		$effect.pre(() => value.on('change', setLatest));
+		$effect.pre(() => untrack(() => value.on('change', setLatest)));
 	}
 
 	return value;

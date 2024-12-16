@@ -9,11 +9,11 @@ import type { ConditionalGeneric } from '.';
 
 export const Children$ = writable<{ key: string }[]>();
 
-export type ComponentKey = number | undefined;
+export type ComponentKey = string | number;
 
 export const getChildKey = (child: {
 	key: ComponentKey;
-}): ComponentKey => child.key;
+}): ComponentKey => `${child.key || ''}`;
 
 function isSvelteComponent(thing: { prototype: { $destroy: any }; render: any }) {
 	return thing && typeof window !== 'undefined'

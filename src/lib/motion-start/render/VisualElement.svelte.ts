@@ -308,7 +308,7 @@ export abstract class VisualElement<
 	constructor(visualOptions: VisualElementOptions<Instance, RenderState>, options: Options = {} as any) {
 		const { parent, props, presenceContext, reducedMotionConfig, blockInitialAnimation, visualState } =
 			$derived(visualOptions);
-		const { latestValues, renderState } = visualState;
+		const { latestValues, renderState } = $derived(visualState);
 		this.latestValues = latestValues;
 		this.baseTarget = { ...latestValues };
 		this.initialValues = props.initial ? { ...latestValues } : {};
@@ -413,10 +413,7 @@ export abstract class VisualElement<
 
 	private bindToMotionValue(key: string, value: MotionValue) {
 		if (this.valueSubscriptions.has(key)) {
-			// this is to insure it runs on unmount and not during mount of keyed element
-			$effect.pre(() => () => {
-				this.valueSubscriptions.get(key)!();
-			});
+			this.valueSubscriptions.get(key)!();
 		}
 
 		const valueIsTransform = transformProps.has(key);

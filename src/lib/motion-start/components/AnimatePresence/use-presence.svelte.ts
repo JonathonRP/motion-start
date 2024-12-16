@@ -37,8 +37,8 @@ export function isPresent(context: PresenceContext) {
  *
  * @public
  */
-export const useIsPresent = (isCustom = false): Readable<boolean> => {
-	const presenceContext = useContext(PresenceContext, isCustom);
+export const useIsPresent = (): Readable<boolean> => {
+	const presenceContext = useContext(PresenceContext);
 	return derived(presenceContext, ($v) => ($v === null ? true : $v.isPresent));
 };
 
@@ -64,24 +64,24 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  *
  * @public
  */
-export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
-	const context = fromStore(useContext(PresenceContext, isCustom)).current;
+export const usePresence = (): Readable<AlwaysPresent | Present | NotPresent> => {
+	const context = fromStore(useContext(PresenceContext));
 
-	if (context === null) {
+	if (context.current === null) {
 		return readable([true, null]) satisfies Readable<AlwaysPresent>;
 	}
 
-	const { register } = context;
+	const { register } = context.current;
 
 	const id = useId();
 	$effect.pre(() => {
-		if (context !== null) {
+		if (context.current !== null) {
 			register(id);
 		}
 	});
 
 	return derived<Readable<PresenceContext | null>, Present | NotPresent>(
-		toStore(() => context),
+		toStore(() => context.current),
 		($v) =>
 			!$v?.isPresent && $v?.onExitComplete
 				? ([false, () => $v.onExitComplete?.(id)] satisfies NotPresent)

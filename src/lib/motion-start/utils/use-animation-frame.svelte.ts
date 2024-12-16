@@ -11,9 +11,9 @@ import type { FrameData } from '../frameloop/types';
 
 export type FrameCallback = (timestamp: number, delta: number) => void;
 
-export function useAnimationFrame(callback: FrameCallback, isCustom = false) {
+export function useAnimationFrame(callback: FrameCallback) {
 	let initialTimestamp = 0;
-	const { isStatic } = fromStore(useContext(MotionConfigContext, isCustom)).current;
+	const { isStatic } = fromStore(useContext(MotionConfigContext)).current;
 
 	$effect.pre(() => {
 		if (isStatic) return;

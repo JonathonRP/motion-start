@@ -43,10 +43,10 @@ let hasWarned = false;
  *
  * @deprecated
  */
-export function useInvertedScale(scale?: Partial<ScaleMotionValues>, isCustom = false): ScaleMotionValues {
+export function useInvertedScale(scale?: Partial<ScaleMotionValues>): ScaleMotionValues {
 	let parentScaleX = useMotionValue(1);
 	let parentScaleY = useMotionValue(1);
-	const mc = fromStore(useContext(MotionContext, isCustom));
+	const mc = fromStore(useContext(MotionContext));
 	const { visualElement } = mc.current;
 
 	invariant(

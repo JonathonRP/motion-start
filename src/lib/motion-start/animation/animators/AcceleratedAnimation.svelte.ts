@@ -14,8 +14,8 @@ import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-c
 import type { MotionValue } from '../../value';
 import { isGenerator } from '../generators/utils/is-generator';
 import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
-import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation';
-import { MainThreadAnimation } from './MainThreadAnimation';
+import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation.svelte';
+import { MainThreadAnimation } from './MainThreadAnimation.svelte';
 import { acceleratedValues } from './utils/accelerated-values';
 import { startWaapiAnimation } from './waapi';
 import { isWaapiSupportedEasing } from './waapi/easing';

@@ -26,7 +26,6 @@ Copyright (c) 2018 Framer B.V. -->
   import { fromStore } from "svelte/store";
 
   interface Props extends LazyProps {
-    isCustom?: boolean;
     children?: Snippet;
   }
 
@@ -65,7 +64,7 @@ Copyright (c) 2018 Framer B.V. -->
    *
    * @public
    */
-  let { features, strict, isCustom = false, children }: Props = $props();
+  let { features, strict, children }: Props = $props();
 
   let _ = !isLazyBundle(features);
   let loadedRenderer: Ref<undefined | CreateVisualElement<any>> = {
@@ -92,7 +91,6 @@ Copyright (c) 2018 Framer B.V. -->
     }
   });
 
-  LazyContext["_c"] = isCustom;
   LazyContext.Provider = { renderer: loadedRenderer.current, strict } as any;
 
   fromStore(useContext(LazyContext)).current = {

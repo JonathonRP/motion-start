@@ -143,22 +143,19 @@ export class KeyframeResolver<T extends string | number = any> {
 	}
 
 	scheduleResolve() {
-		// this is to insure it runs on mount and not during unmount of keyed element
-		$effect.root(() => {
-			this.isScheduled = true;
-			if (this.isAsync) {
-				toResolve.add(this);
+		this.isScheduled = true;
+		if (this.isAsync) {
+			toResolve.add(this);
 
-				if (!isScheduled) {
-					isScheduled = true;
-					frame.read(readAllKeyframes);
-					frame.resolveKeyframes(measureAllKeyframes);
-				}
-			} else {
-				this.readKeyframes();
-				this.complete();
+			if (!isScheduled) {
+				isScheduled = true;
+				frame.read(readAllKeyframes);
+				frame.resolveKeyframes(measureAllKeyframes);
 			}
-		});
+		} else {
+			this.readKeyframes();
+			this.complete();
+		}
 	}
 
 	readKeyframes() {

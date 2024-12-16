@@ -5,7 +5,7 @@
     let i = 0;
 </script>
 
-<Box cls="bg-slate-800 flex-col gap-20" minHeight={350}>
+<Box cls="flex-col gap-20">
     {#key i}
         <motion.div
             animate={{

@@ -1,4 +1,5 @@
 <script>
+    import Box from "../Box.svelte";
     import { motion } from "$lib/motion-start";
 
     const spring = {
@@ -12,20 +13,24 @@
     function toggleSwitch() {
         active = !active;
     }
+
+    // active={1 * !active} do we still need this??
 </script>
 
-<div
-    class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
->
-    <button class="switch" data-active={active} onclick={toggleSwitch}>
-        <motion.div
-            active={1 * !active}
-            layout
-            class="handle"
-            transition={spring}
-        />
-    </button>
-</div>
+<Box>
+    <div
+        class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
+    >
+        <button class="switch" data-active={active} onclick={toggleSwitch}>
+            <motion.div
+                active={1 * !active}
+                layout
+                class="handle"
+                transition={spring}
+            />
+        </button>
+    </div>
+</Box>
 
 <style>
     .switch {
