@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { MotionProps } from '../../../motion/types';
 import type { HTMLRenderState } from '../types';
 import type { ResolvedValues } from '../../types';
-import { buildTransform } from './build-transform';
+import { buildTransform } from './build-transform.svelte';
 import { isCSSVariableName } from '../../dom/utils/is-css-variable';
 import { transformProps } from './transform.svelte';
 import { getValueAsType } from '../../dom/value-types/get-as-type';

@@ -89,7 +89,7 @@ export {
 } from './utils/use-instant-transition.svelte';
 export { useInstantLayoutTransition } from './projection/use-instant-layout-transition.svelte';
 export { useResetProjection } from './projection/use-reset-projection.svelte';
-export { buildTransform } from './render/html/utils/build-transform';
+export { buildTransform } from './render/html/utils/build-transform.svelte';
 export { visualElementStore } from './render/store.svelte';
 export { animateValue } from './animation/animators/MainThreadAnimation.svelte';
 export { color } from './value/types/color';
