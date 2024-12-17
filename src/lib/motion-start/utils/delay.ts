@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame, cancelFrame } from '../frameloop';
-import { time } from '../frameloop/sync-time';
+import { time } from '../frameloop/sync-time.svelte';
 import type { FrameData } from '../frameloop/types';
 import { secondsToMilliseconds } from './time-conversion';
 

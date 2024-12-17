@@ -9,10 +9,10 @@ import type { Easing } from '../easing/types';
 import type { Driver } from './animators/drivers/types';
 import type { SVGPathProperties, VariantLabels } from '../motion/types';
 import type { SVGAttributes } from '../render/svg/types-attributes';
-import type { ProgressTimeline } from '../render/dom/scroll/observe';
-import type { MotionValue } from '../value';
+import type { ProgressTimeline } from '../render/dom/scroll/observe.svelte';
+import type { MotionValue } from '../value/index.svelte';
 import type { KeyframeResolver, OnKeyframesResolved } from '../render/utils/KeyframesResolver.svelte';
-import type { KeyframeGenerator } from './generators/types';
+import type { KeyframeGenerator } from './generators/types.svelte';
 
 export interface AnimationPlaybackLifecycles<V> {
 	onUpdate?: (latest: V) => void;

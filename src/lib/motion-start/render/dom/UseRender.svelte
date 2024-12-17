@@ -9,8 +9,8 @@ Copyright (c) 2018 Framer B.V. -->
   import type { SVGRenderState } from "../svg/types";
   import { filterProps } from "./utils/filter-props";
   import { isSVGComponent } from "./utils/is-svg-component";
-  import { useSvgProps } from "../svg/use-props";
-  import { useHTMLProps } from "../html/use-props";
+  import { useSvgProps } from "../svg/use-props.svelte";
+  import { useHTMLProps } from "../html/use-props.svelte";
 
   type Props = Parameters<
     RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>

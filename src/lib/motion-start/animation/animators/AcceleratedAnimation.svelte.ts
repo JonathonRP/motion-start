@@ -7,22 +7,22 @@ import { anticipate } from '../../easing/anticipate';
 import { backInOut } from '../../easing/back';
 import { circInOut } from '../../easing/circ';
 import type { EasingDefinition } from '../../easing/types';
-import { DOMKeyframesResolver } from '../../render/dom/DOMKeyframesResolver';
+import { DOMKeyframesResolver } from '../../render/dom/DOMKeyframesResolver.svelte';
 import type { ResolvedKeyframes } from '../../render/utils/KeyframesResolver.svelte';
 import { noop } from '../../utils/noop';
 import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
-import type { MotionValue } from '../../value';
+import type { MotionValue } from '../../value/index.svelte';
 import { isGenerator } from '../generators/utils/is-generator';
 import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
 import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation.svelte';
 import { MainThreadAnimation } from './MainThreadAnimation.svelte';
-import { acceleratedValues } from './utils/accelerated-values';
-import { startWaapiAnimation } from './waapi';
-import { isWaapiSupportedEasing } from './waapi/easing';
-import { attachTimeline } from './waapi/utils/attach-timeline';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
-import { supportsLinearEasing } from './waapi/utils/supports-linear-easing';
-import { supportsWaapi } from './waapi/utils/supports-waapi';
+import { acceleratedValues } from './utils/accelerated-values.svelte';
+import { startWaapiAnimation } from './waapi/index.svelte';
+import { isWaapiSupportedEasing } from './waapi/easing.svelte';
+import { attachTimeline } from './waapi/utils/attach-timeline.svelte';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.svelte';
+import { supportsLinearEasing } from './waapi/utils/supports-linear-easing.svelte';
+import { supportsWaapi } from './waapi/utils/supports-waapi.svelte';
 
 /**
  * 10ms is chosen here as it strikes a balance between smooth

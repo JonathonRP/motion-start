@@ -1,5 +1,5 @@
 import { frame } from '../frameloop';
-import { useInstantLayoutTransition } from '../projection/use-instant-layout-transition';
+import { useInstantLayoutTransition } from '../projection/use-instant-layout-transition.svelte';
 import { useForceUpdate } from './use-force-update.svelte';
 import { instantAnimationState } from './use-instant-transition-state';
 

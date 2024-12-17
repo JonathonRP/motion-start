@@ -23,7 +23,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import type { Ref } from "../../utils/safe-react-types";
 	import type { Box } from "../../projection/geometry/types";
-	import type { PanInfo } from "../../gestures/pan/PanSession";
+	import type { PanInfo } from "../../gestures/pan/PanSession.svelte";
 
 	type Props<V> = {
 		/**

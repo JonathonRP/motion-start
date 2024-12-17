@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { fromStore, get } from 'svelte/store';
 import { useTransform } from '../value/use-transform';
-import type { MotionValue } from './';
+import type { MotionValue } from './index.svelte';
 import { invariant, warning } from '../utils/errors';
 import { useMotionValue } from './use-motion-value.svelte';
 import { useContext } from '../context/utils/context.svelte';

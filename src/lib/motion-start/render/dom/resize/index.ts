@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { ElementOrSelector } from '../../../animation/types';
-import { resizeElement } from './handle-element';
-import { resizeWindow } from './handle-window';
+import { resizeElement } from './handle-element.svelte';
+import { resizeWindow } from './handle-window.svelte';
 import type { ResizeHandler } from './types';
 
 export function resize(onResize: ResizeHandler<Window>): VoidFunction;

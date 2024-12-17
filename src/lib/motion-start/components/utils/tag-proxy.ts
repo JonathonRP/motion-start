@@ -7,7 +7,7 @@ export type CreateComponent<Props> = (
 type BindProps<ComponentProps, TagProps> = ComponentProps & Omit<TagProps, keyof ComponentProps>;
 
 type BoundComponents<ComponentProps, TagsWithProps> = {
-	[K in keyof TagsWithProps]: ComponentType<PropsWithChildren<BindProps<ComponentProps, TagsWithProps[K]>>>;
+	[K in keyof TagsWithProps]: Component<BindProps<ComponentProps, TagsWithProps[K]> & { children: Snippet }>;
 };
 
 export function tagProxy<ComponentProps extends {}, TagsWithProps>(createComponent: CreateComponent<ComponentProps>) {

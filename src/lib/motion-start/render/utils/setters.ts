@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { TargetAndTransition, TargetResolver } from '../../types';
 import { resolveFinalValueInKeyframes } from '../../utils/resolve-value';
-import { motionValue } from '../../value';
+import { motionValue } from '../../value/index.svelte';
 import type { VisualElement } from '../VisualElement.svelte';
 import { resolveVariant } from './resolve-dynamic-variants';
 

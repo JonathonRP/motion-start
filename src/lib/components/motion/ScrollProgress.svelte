@@ -18,8 +18,6 @@
         [0, -getHeight(items) + size],
         ["calc(0% - 0px)", "calc(100% - 40px)"],
     );
-
-    const scrollHeight = useMotionValue(getHeight(items));
 </script>
 
 <!-- style={{ transform: "translateZ(0)" }} -->
@@ -32,7 +30,7 @@
         <motion.div
             style={{
                 width: "150px",
-                height: scrollHeight,
+                height: useMotionValue(getHeight(items)),
                 y: scrollY,
             }}
             drag="y"

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { MotionValue } from '..';
+import { MotionValue } from '../index.svelte';
 import type { WillChange } from './types';
 import { getWillChangeName } from './get-will-change-name';
 import { addUniqueItem } from '../../utils/array';

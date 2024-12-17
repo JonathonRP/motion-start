@@ -15,8 +15,8 @@ import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
 import type { IProjectionNode } from '../../projection/node/types';
 import { isRefObject } from '../../utils/is-ref-object.js';
-import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
-import { microtask } from '../../frameloop/microtask';
+import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id.svelte';
+import { microtask } from '../../frameloop/microtask.svelte';
 import { useContext } from '$lib/motion-start/context/utils/context.svelte';
 import { untrack } from 'svelte';
 
