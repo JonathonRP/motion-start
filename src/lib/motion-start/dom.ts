@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-export { motionValue, MotionValue } from './value';
-export type { PassiveEffect, Subscriber } from './value';
-export { animate, createScopedAnimate } from './animation/animate';
-export { animateMini } from './animation/animators/waapi/animate-style';
+export { motionValue, MotionValue } from './value/index.svelte';
+export type { PassiveEffect, Subscriber } from './value/index.svelte';
+export { animate, createScopedAnimate } from './animation/animate/index.svelte';
+export { animateMini } from './animation/animators/waapi/animate-style.svelte';
 export { scroll } from './render/dom/scroll';
 export { scrollInfo } from './render/dom/scroll/track';
 export { inView } from './render/dom/viewport';
@@ -27,14 +27,14 @@ export * from './easing/types';
 /**
  * Animation generators
  */
-export { spring } from './animation/generators/spring';
-export { inertia } from './animation/generators/inertia';
-export { keyframes } from './animation/generators/keyframes';
+export { spring } from './animation/generators/spring/index.svelte';
+export { inertia } from './animation/generators/inertia.svelte';
+export { keyframes } from './animation/generators/keyframes.svelte';
 
 /**
  * Utils
  */
-export { stagger } from './animation/utils/stagger';
+export { stagger } from './animation/utils/stagger.svelte';
 export { transform } from './utils/transform';
 export { clamp } from './utils/clamp';
 export { delayInSeconds as delay, type DelayedFunction } from './utils/delay';
@@ -50,4 +50,4 @@ export * from './frameloop';
 /**
  * Deprecated
  */
-export { sync, cancelSync } from './frameloop/index-legacy';
+export { sync, cancelSync } from './frameloop/index-legacy.svelte';

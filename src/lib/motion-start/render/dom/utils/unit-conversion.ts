@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionValue } from '../../../value';
-import { transformPropOrder } from '../../html/utils/transform';
+import type { MotionValue } from '../../../value/index.svelte';
+import { transformPropOrder } from '../../html/utils/transform.svelte';
 import type { Box } from '../../../projection/geometry/types';
 import type { VisualElement } from '../../VisualElement.svelte';
 import type { ValueType } from '../../../value/types/types';

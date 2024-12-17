@@ -6,9 +6,9 @@ Copyright (c) 2018 Framer B.V.
 import type { TargetAndTransition } from '../../types';
 import type { ResolvedValues } from '../../render/types';
 import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
-import { createBox } from '../../projection/geometry/models';
+import { createBox } from '../../projection/geometry/models.svelte';
 import { VisualElement } from '../../render/VisualElement.svelte';
-import { animateVisualElement } from '../interfaces/visual-element';
+import { animateVisualElement } from '../interfaces/visual-element.svelte';
 
 interface AnimatedStateOptions {
 	initialState: ResolvedValues;

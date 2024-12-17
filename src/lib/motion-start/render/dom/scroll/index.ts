@@ -5,8 +5,8 @@ Copyright (c) 2018 Framer B.V.
 
 import type { ScrollOptions, OnScroll, OnScrollWithInfo } from './types';
 import { scrollInfo } from './track';
-import type { GroupPlaybackControls } from '../../../animation/GroupPlaybackControls';
-import { type ProgressTimeline, observeTimeline } from './observe';
+import type { GroupPlaybackControls } from '../../../animation/GroupPlaybackControls.svelte';
+import { type ProgressTimeline, observeTimeline } from './observe.svelte';
 import { supportsScrollTimeline } from './supports';
 
 declare class ScrollTimeline implements ProgressTimeline {

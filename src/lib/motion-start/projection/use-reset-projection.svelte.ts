@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { rootProjectionNode } from './node/HTMLProjectionNode';
+import { rootProjectionNode } from './node/HTMLProjectionNode.svelte';
 
 export function useResetProjection() {
 	const reset = $derived(() => {

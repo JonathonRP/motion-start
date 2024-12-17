@@ -7,21 +7,21 @@ import {
 	KeyframeResolver as DefaultKeyframeResolver,
 	type ResolvedKeyframes,
 } from '../../render/utils/KeyframesResolver.svelte';
-import { spring } from '../generators/spring/index';
-import { inertia } from '../generators/inertia';
-import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes';
+import { spring } from '../generators/spring/index.svelte';
+import { inertia } from '../generators/inertia.svelte';
+import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes.svelte';
 import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
 import { BaseAnimation } from './BaseAnimation.svelte';
-import type { AnimationState, KeyframeGenerator } from '../generators/types';
+import type { AnimationState, KeyframeGenerator } from '../generators/types.svelte';
 import { pipe } from '../../utils/pipe';
 import { mix } from '../../utils/mix';
-import { calcGeneratorDuration } from '../generators/utils/calc-duration';
+import { calcGeneratorDuration } from '../generators/utils/calc-duration.svelte';
 import type { DriverControls } from './drivers/types';
 import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
 import { clamp } from '../../utils/clamp';
 import { invariant } from '../../utils/errors';
-import { frameloopDriver } from './drivers/driver-frameloop';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
+import { frameloopDriver } from './drivers/driver-frameloop.svelte';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.svelte';
 import { isGenerator } from '../generators/utils/is-generator';
 
 type GeneratorFactory = (options: ValueAnimationOptions<any>) => KeyframeGenerator<any>;
@@ -67,34 +67,34 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 	 * The driver that's controlling the animation loop. Normally this is a requestAnimationFrame loop
 	 * but in tests we can pass in a synchronous loop.
 	 */
-	private driver?: DriverControls;
+	private driver?: DriverControls = $state();
 
 	/**
 	 * The time at which the animation was paused.
 	 */
-	private holdTime: number | null = null;
+	private holdTime: number | null = $state(null);
 
 	/**
 	 * The time at which the animation was cancelled.
 	 */
-	private cancelTime: number | null = null;
+	private cancelTime: number | null = $state(null);
 
 	/**
 	 * The current time of the animation.
 	 */
-	private currentTime = 0;
+	private currentTime = $state(0);
 
 	/**
 	 * Playback speed as a factor. 0 would be stopped, -1 reverse and 2 double speed.
 	 */
-	private playbackSpeed = 1;
+	private playbackSpeed = $state(1);
 
 	/**
 	 * The state of the animation to apply when the animation is resolved. This
 	 * allows calls to the public API to control the animation before it is resolved,
 	 * without us having to resolve it first.
 	 */
-	private pendingPlayState: AnimationPlayState = 'running';
+	private pendingPlayState: AnimationPlayState = $state('running');
 
 	/**
 	 * The time at which the animation was started.

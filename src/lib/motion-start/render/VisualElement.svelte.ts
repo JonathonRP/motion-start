@@ -12,29 +12,29 @@ import type { IProjectionNode } from '../projection/node/types';
 import { initPrefersReducedMotion } from '../utils/reduced-motion';
 import { hasReducedMotionListener, prefersReducedMotion } from '../utils/reduced-motion/state';
 import { SubscriptionManager } from '../utils/subscription-manager';
-import { motionValue, type MotionValue } from '../value';
+import { motionValue, type MotionValue } from '../value/index.svelte';
 import { isMotionValue } from '../value/utils/is-motion-value';
-import { transformProps } from './html/utils/transform';
+import { transformProps } from './html/utils/transform.svelte';
 import type { ResolvedValues, VisualElementEventCallbacks, VisualElementOptions } from './types';
-import type { AnimationState } from './utils/animation-state';
+import type { AnimationState } from './utils/animation-state.svelte';
 import {
 	isControllingVariants as checkIsControllingVariants,
 	isVariantNode as checkIsVariantNode,
 } from './utils/is-controlling-variants';
-import { updateMotionValuesFromProps } from './utils/motion-values';
+import { updateMotionValuesFromProps } from './utils/motion-values.svelte';
 import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
-import { featureDefinitions } from '../motion/features/definitions';
+import { featureDefinitions } from '../motion/features/definitions.svelte';
 import type { PresenceContext } from '../context/PresenceContext';
-import { visualElementStore } from './store';
+import { visualElementStore } from './store.svelte';
 import { KeyframeResolver } from './utils/KeyframesResolver.svelte';
 import { isNumericalString } from '../utils/is-numerical-string';
 import { isZeroValueString } from '../utils/is-zero-value-string';
 import { findValueType } from './dom/value-types/find';
 import { complex } from '../value/types/complex';
 import { getAnimatableNone } from './dom/value-types/animatable-none';
-import { createBox } from '../projection/geometry/models';
-import { time } from '../frameloop/sync-time';
+import { createBox } from '../projection/geometry/models.svelte';
+import { time } from '../frameloop/sync-time.svelte';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';

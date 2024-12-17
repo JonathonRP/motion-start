@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame } from '../../frameloop';
-import type { MotionValue } from '../../value';
+import type { MotionValue } from '../../value/index.svelte';
 import type { VisualElement } from '../VisualElement.svelte';
 import { removeNonTranslationalTransform } from '../dom/utils/unit-conversion';
 

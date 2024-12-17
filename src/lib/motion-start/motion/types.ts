@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Properties } from 'csstype';
-import type { MotionValue } from '../value';
+import type { MotionValue } from '../value/index.svelte';
 import type { AnimationControls } from '../animation/types';
 import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from '../types';
 import type { DraggableProps } from '../gestures/drag/types';

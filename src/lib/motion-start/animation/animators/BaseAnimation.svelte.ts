@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { time } from '../../frameloop/sync-time';
+import { time } from '../../frameloop/sync-time.svelte';
 import {
 	type KeyframeResolver,
 	type ResolvedKeyframes,
@@ -16,8 +16,8 @@ import type {
 	ValueAnimationOptions,
 	ValueAnimationOptionsWithRenderContext,
 } from '../types';
-import { canAnimate } from './utils/can-animate';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
+import { canAnimate } from './utils/can-animate.svelte';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.svelte';
 
 /**
  * Maximum time allowed between an animation being created and it being

@@ -15,7 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   import { useContext } from "../../context/utils/context.svelte";
   import { LazyContext } from "../../context/LazyContext";
-  import { loadFeatures } from "../../motion/features/load-features";
+  import { loadFeatures } from "../../motion/features/load-features.svelte";
   import type {
     FeatureBundle,
     LazyFeatureBundle,

@@ -1,5 +1,5 @@
 import type { RefObject } from '../utils/safe-react-types';
-import { addDomEvent } from './add-dom-event';
+import { addDomEvent } from './add-dom-event.svelte';
 
 /**
  * Attaches an event listener directly to the provided DOM element.

@@ -69,7 +69,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { LayoutGroupContext } from "../context/LayoutGroupContext";
     import { LazyContext } from "../context/LazyContext";
     import { invariant, warning } from "../utils/errors";
-    import { featureDefinitions } from "./features/definitions";
+    import { featureDefinitions } from "./features/definitions.svelte";
     import type { Ref } from "../utils/safe-react-types";
     import { useContext } from "../context/utils/context.svelte";
     import type { MotionComponentConfig } from "./index.svelte";
@@ -105,25 +105,25 @@ Copyright (c) 2018 Framer B.V. -->
      * If we need to measure the element we load this functionality in a
      * separate class component in order to gain access to getSnapshotBeforeUpdate.
      */
-    let MeasureLayout:
-        | undefined
+    let MeasureLayout = $state<
         | Component<
               MotionProps & { visualElement: VisualElement<unknown, unknown> }
-          > = $state(undefined);
+          >
+        | undefined
+    >(undefined);
 
-    const config = fromStore(useContext(MotionConfigContext)).current;
     const layoutId = useLayoutId(props);
 
     const configAndProps = $derived({
-        ...config,
+        ...fromStore(useContext(MotionConfigContext)).current,
         ...props,
         layoutId,
     });
 
     const { isStatic } = $derived(configAndProps);
 
-    const context = useCreateMotionContext<Instance>(props);
-    const visualState = useVisualState(props, isStatic);
+    const context = $derived(useCreateMotionContext<Instance>(props));
+    const visualState = $derived(useVisualState(props, isStatic));
 
     $effect.pre(() => {
         if (!isStatic && isBrowser) {
@@ -143,18 +143,22 @@ Copyright (c) 2018 Framer B.V. -->
              * for more performant animations and interactions
              */
             configAndProps;
-            context.visualElement = untrack(() =>
-                useVisualElement<Instance, RenderState>(
-                    as,
-                    visualState,
-                    configAndProps,
-                    createVisualElement,
-                    layoutProjection.ProjectionNode,
-                ),
+            untrack(
+                () =>
+                    (context.visualElement = useVisualElement<
+                        Instance,
+                        RenderState
+                    >(
+                        as,
+                        visualState,
+                        configAndProps,
+                        createVisualElement,
+                        layoutProjection.ProjectionNode,
+                    )),
             );
 
             // MotionContext.Provider
-            MotionContext.Provider = context;
+            untrack(() => (MotionContext.Provider = context));
         }
 
         return () => {
