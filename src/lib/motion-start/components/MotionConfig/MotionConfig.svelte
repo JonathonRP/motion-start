@@ -8,6 +8,7 @@ Copyright (c) 2018 Framer B.V. -->
   import type { MotionConfigProps } from "./index.js";
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
   import { fromStore } from "svelte/store";
+  import { untrack } from "svelte";
 
   interface Props extends MotionConfigProps {}
 
@@ -21,14 +22,18 @@ Copyright (c) 2018 Framer B.V. -->
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
-  let mcc = fromStore(useContext(MotionConfigContext)).current;
+  let mcc = fromStore(useContext(MotionConfigContext));
   /**
    * Inherit props from any parent MotionConfig components
    */
-  const config = $derived({
-    ...mcc,
-    ...{ transformPagePoint, isStatic, transition },
-  });
+  const config = {
+    ...mcc.current,
+    ...{
+      transformPagePoint: transformPagePoint!,
+      isStatic: isStatic!,
+      transition,
+    },
+  };
 
   /**
    * Don't allow isStatic to change between renders as it affects how many hooks
@@ -41,16 +46,18 @@ Copyright (c) 2018 Framer B.V. -->
      * Creating a new config context object will re-render every `motion` component
      * every time it renders. So we only want to create a new one sparingly.
      */
-    MotionConfigContext.Provider = config as any;
-  });
+    MotionConfigContext.Provider = config;
 
-  const memo = (..._args: any[]) => config;
-  $effect.pre(() => {
-    mcc = memo(
-      JSON.stringify(config.transition),
-      config.transformPagePoint,
-      config.reducedMotion,
-    ) as any;
+    const memo = (..._args: any[]) => config;
+
+    untrack(
+      () =>
+        (mcc.current = memo(
+          JSON.stringify(config.transition),
+          config.transformPagePoint,
+          config.reducedMotion,
+        )),
+    );
   });
 </script>
 

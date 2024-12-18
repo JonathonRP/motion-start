@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { type Snippet } from "svelte";
+  import { untrack, type Snippet } from "svelte";
 
   import { useContext } from "../../context/utils/context.svelte";
   import { LazyContext } from "../../context/LazyContext";
@@ -91,12 +91,20 @@ Copyright (c) 2018 Framer B.V. -->
     }
   });
 
-  LazyContext.Provider = { renderer: loadedRenderer.current, strict } as any;
+  LazyContext.Provider = {
+    renderer: loadedRenderer.current!,
+    strict: strict!,
+  };
 
-  fromStore(useContext(LazyContext)).current = {
-    renderer: loadedRenderer.current,
-    strict,
-  } as any;
+  $effect(() => {
+    untrack(
+      () =>
+        (fromStore(useContext(LazyContext)).current = {
+          renderer: loadedRenderer.current!,
+          strict: strict!,
+        }),
+    );
+  });
 </script>
 
 {@render children?.()}

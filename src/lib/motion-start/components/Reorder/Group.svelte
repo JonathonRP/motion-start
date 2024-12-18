@@ -15,7 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="V">
 	import { invariant } from "../../utils/errors";
 	import type { SvelteHTMLElements } from "svelte/elements";
-	import { setContext, type Component, type Snippet } from "svelte";
+	import { untrack, type Component, type Snippet } from "svelte";
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
@@ -96,7 +96,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
 
-	const context: ReorderContextProps<V> = {
+	const context: ReorderContextProps<V> = $derived({
 		axis,
 		registerItem: (value, layout) => {
 			// If the entry was already added, update it rather than adding it again
@@ -122,11 +122,11 @@ Copyright (c) 2018 Framer B.V. -->
 				);
 			}
 		},
-	};
-
-	ReorderContext.Provider = context;
+	});
 
 	$effect(() => {
+		untrack(() => (ReorderContext.Provider = context));
+
 		if (!isReordering) return;
 		isReordering = false;
 	});

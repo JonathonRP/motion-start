@@ -10,7 +10,7 @@ import { isSVGComponent } from './utils/is-svg-component';
 
 export const createDomVisualElement: CreateVisualElement<HTMLElement | SVGElement> = (
 	Component: string,
-	options: () => VisualElementOptions<HTMLElement | SVGElement>
+	options: VisualElementOptions<HTMLElement | SVGElement>
 ) => {
 	return isSVGComponent(Component)
 		? new SVGVisualElement(options)
