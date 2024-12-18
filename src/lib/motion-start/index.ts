@@ -9,7 +9,6 @@ Copyright (c) 2018 Framer B.V.
 export { motion } from './render/components/motion/proxy';
 export { m } from './render/components/m/proxy';
 export { AnimatePresence } from './components/AnimatePresence';
-export { AnimatePresenceLegacy } from './components/AnimatePresence';
 export { MotionConfig } from './components/MotionConfig';
 export { LazyMotion } from './components/LazyMotion';
 export { LayoutGroup } from './components/LayoutGroup';
