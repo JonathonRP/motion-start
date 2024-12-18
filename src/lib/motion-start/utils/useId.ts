@@ -1,9 +1,13 @@
 import { nanoid } from 'nanoid/non-secure';
 import { createContext, useContext } from '../context/utils/context.svelte';
-import { fromStore } from 'svelte/store';
+import { fromStore, writable } from 'svelte/store';
+
+const idContext = createContext<() => string>(nanoid);
+const context = writable<() => string>(nanoid);
 
 export const useId = (prefix?: string) => {
-	const idContext = createContext<string>(null as any);
-	idContext.Provider = prefix ? prefix + nanoid() : nanoid();
+	let id = fromStore(context).current;
+	id = () => (prefix ? prefix + id() : id());
+	idContext.Provider = id;
 	return fromStore(useContext(idContext)).current;
 };

@@ -10,12 +10,14 @@ import { getCurrentTreeVariants } from './utils';
 import { useContext } from '../utils/context.svelte';
 
 export function useCreateMotionContext<Instance>(props: MotionProps): MotionContextProps<Instance> {
-	const motionContext = fromStore(useContext(MotionContext));
+	const { initial, animate } = $derived(getCurrentTreeVariants(props, fromStore(useContext(MotionContext)).current));
 
-	return {
-		initial: getCurrentTreeVariants(props, motionContext.current).initial,
-		animate: getCurrentTreeVariants(props, motionContext.current).animate,
-	};
+	const memo = $derived((_initial: string | false | undefined, _animate: string | false | undefined) => ({
+		initial,
+		animate,
+	}));
+
+	return memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
 }
 
 function variantLabelsAsDependency(prop: undefined | string | string[] | false) {

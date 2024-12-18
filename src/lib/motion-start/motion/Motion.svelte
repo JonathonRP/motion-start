@@ -88,6 +88,8 @@ Copyright (c) 2018 Framer B.V. -->
         ...props
     }: MotionCompProps = $props();
 
+    const motionProps = $derived(props);
+
     const {
         Component: as,
         createVisualElement,
@@ -112,18 +114,18 @@ Copyright (c) 2018 Framer B.V. -->
         | undefined
     >(undefined);
 
-    const layoutId = useLayoutId(props);
+    const layoutId = $derived(useLayoutId(motionProps));
 
     const configAndProps = $derived({
         ...fromStore(useContext(MotionConfigContext)).current,
-        ...props,
+        ...motionProps,
         layoutId,
     });
 
     const { isStatic } = $derived(configAndProps);
 
-    const context = $derived(useCreateMotionContext<Instance>(props));
-    const visualState = $derived(useVisualState(props, isStatic));
+    const context = useCreateMotionContext<Instance>(props);
+    const visualState = $derived(useVisualState(motionProps, isStatic));
 
     $effect.pre(() => {
         if (!isStatic && isBrowser) {
@@ -143,28 +145,24 @@ Copyright (c) 2018 Framer B.V. -->
              * for more performant animations and interactions
              */
             configAndProps;
-            untrack(
-                () =>
-                    (context.visualElement = useVisualElement<
-                        Instance,
-                        RenderState
-                    >(
-                        as,
-                        visualState,
-                        configAndProps,
-                        createVisualElement,
-                        layoutProjection.ProjectionNode,
-                    )),
+            context.visualElement = untrack(() =>
+                useVisualElement<Instance, RenderState>(
+                    as,
+                    visualState,
+                    configAndProps,
+                    createVisualElement,
+                    layoutProjection.ProjectionNode,
+                ),
             );
 
             // MotionContext.Provider
             untrack(() => (MotionContext.Provider = context));
         }
+    });
 
-        return () => {
-            // Since useMotionRef is not called on destroy, the visual element is unmounted here
-            context?.visualElement?.unmount();
-        };
+    $effect(() => () => {
+        // Since useMotionRef is not called on destroy, the visual element is unmounted here
+        context?.visualElement?.unmount();
     });
 </script>
 
@@ -173,7 +171,7 @@ Copyright (c) 2018 Framer B.V. -->
 {/if}
 <Renderer
     Component={as}
-    {props}
+    props={motionProps}
     bind:ref={() => ref as Instance,
     (v: Instance) => {
         useMotionRef<Instance, RenderState>(
@@ -181,7 +179,7 @@ Copyright (c) 2018 Framer B.V. -->
             context.visualElement,
             externalRef,
         )(v);
-        return (ref = v);
+        ref = v;
     }}
     {visualState}
     {isStatic}

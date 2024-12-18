@@ -1,4 +1,4 @@
-import { getContext, onMount, setContext, untrack } from 'svelte';
+import { getContext, hasContext, onMount, setContext, untrack } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 
 type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
@@ -21,20 +21,22 @@ class CallableContext<T> extends Function {
 }
 
 class Context<T extends Writable<UnwrapWritable<T>>> extends CallableContext<T> {
-	#state: T | undefined = undefined;
+	#state: T;
 
 	public constructor(private initial: T) {
 		super(() => {
 			this.#state = getContext<T>(this);
+			// $effect(() => {
+			// 	this.#state = getContext<T>(this);
+			// });
 
-			return this.#state || this.initial;
+			return this.#state || initial;
 		});
 		this.#state = this.initial;
 	}
 
 	set Provider(value: UnwrapWritable<T>) {
-		$inspect.trace('set context');
-		setContext(this, this.#state || this.initial).set(value);
+		setContext(this, writable(value));
 	}
 }
 

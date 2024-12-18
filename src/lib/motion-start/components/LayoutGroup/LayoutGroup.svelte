@@ -31,11 +31,11 @@ Copyright (c) 2018 Framer B.V. -->
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = fromStore(useContext(LayoutGroupContext)).current;
+  const layoutGroupContext = fromStore(useContext(LayoutGroupContext));
 
   const deprecatedLayoutGroupContext = fromStore(
     useContext(DeprecatedLayoutGroupContext),
-  ).current;
+  );
 
   const [forceRender, key] = useForceUpdate();
 
@@ -43,9 +43,8 @@ Copyright (c) 2018 Framer B.V. -->
     current: null,
   } as MutableRefObject<LayoutGroupContext | null>;
 
-  const upstreamId = $derived(
-    layoutGroupContext.id || deprecatedLayoutGroupContext,
-  );
+  const upstreamId =
+    layoutGroupContext.current.id || deprecatedLayoutGroupContext.current;
 
   $effect(() => {
     if (context.current === null) {
@@ -56,7 +55,7 @@ Copyright (c) 2018 Framer B.V. -->
       context.current = {
         id,
         group: shouldInheritGroup(inherit!)
-          ? layoutGroupContext.group || nodeGroup()
+          ? layoutGroupContext.current.group || nodeGroup()
           : nodeGroup(),
       };
     }

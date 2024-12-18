@@ -59,12 +59,9 @@ export const makeUseVisualState =
 		const presenceContext = fromStore(useContext(PresenceContext));
 		const make = () => makeState(config, props, context.current, presenceContext.current);
 
-		let state = make();
-		if (!isStatic) {
-			state = make();
-		}
+		const state = make();
 
-		return state;
+		return !isStatic ? make() : state;
 	};
 
 function makeLatestValues(

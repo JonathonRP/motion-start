@@ -16,7 +16,6 @@ Copyright (c) 2018 Framer B.V. -->
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
     import { fromStore, toStore } from "svelte/store";
-    import { untrack } from "svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -31,7 +30,7 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = $state(useId());
+    const id = $derived(useId());
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
@@ -59,12 +58,13 @@ Copyright (c) 2018 Framer B.V. -->
 
     let context = fromStore(useContext(PresenceContext));
 
-    $effect.pre(() => {
+    $effect(() => {
         if (presenceAffectsLayout) {
             context.current = memoContext();
         }
-
-        context.current = memoContext(refresh);
+    });
+    $effect(() => {
+        context = memoContext(refresh);
     });
 
     const keyset = (flag?: boolean) => {
@@ -76,10 +76,7 @@ Copyright (c) 2018 Framer B.V. -->
 
         !isPresent && !presenceChildren.size && onExitComplete?.();
     });
-
     PresenceContext.Provider = context.current;
-
-    $inspect(isPresent);
 </script>
 
 {#if mode === "popLayout"}
