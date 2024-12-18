@@ -2,13 +2,13 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export type { AnimatePresenceProps } from "./types.js";
+export type { AnimatePresenceProps } from './types.js';
 /**
  * `AnimatePresence` enables the animation of components that have been removed from the tree.
- *         
- *  You can provide an array T[] to the `list` prop, where each item has to have a unique `key` attribute. Via slot prop `item` 
+ *
+ *  You can provide an array T[] to the `list` prop, where each item has to have a unique `key` attribute. Via slot prop `item`
  *  single items of the array are passed down to children, so that for each array item one component is rendered.
- *           
+ *
  *  Alternatively you can leave `list` undefined and supply a boolean to the `show` prop. If `true`, the child is rendered.
  *
  * @motion
@@ -41,6 +41,6 @@ export type { AnimatePresenceProps } from "./types.js";
  *
  * @public
  */
-export type ConditionalGeneric<T> = T extends {key:any} ? T : { key: 1}; // Better handling of defaults and the optional list prop
-export { default as AnimatePresence } from './AnimatePresenceTBA.svelte';
+export type ConditionalGeneric<T> = T extends { key: any } ? T : { key: 1 }; // Better handling of defaults and the optional list prop
+export { default as AnimatePresence } from './AnimatePresence.svelte';
 export { PresenceChild } from './PresenceChild/index.js';
