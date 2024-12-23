@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { HTMLProjectionNode } from '../../projection/node/HTMLProjectionNode.svelte';
-import { MeasureLayout } from './layout/MeasureLayout.svelte';
+import MeasureLayout from './layout/MeasureLayout.svelte';
 import type { FeaturePackages } from './types';
 
 export const layout: FeaturePackages = {

@@ -18,7 +18,6 @@ import type { AnimationDefinition } from '../../animation/types';
 import { animateVisualElement } from '../../animation/interfaces/visual-element.svelte';
 import type { ResolvedValues } from '../types';
 import { getVariantContext, type VariantStateContext } from './get-variant-context';
-import { getContext } from 'svelte';
 
 export interface AnimationState {
 	animateChanges: (type?: AnimationType) => Promise<any>;

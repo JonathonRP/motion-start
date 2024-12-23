@@ -101,7 +101,7 @@ Copyright (c) 2018 Framer B.V. -->
             MotionComponentConfig<Instance, RenderState>,
             "Component" | "createVisualElement" | "useVisualState" | "useRender"
         >
-    >("motion");
+    >("motionContexts");
 
     /**
      * If we need to measure the element we load this functionality in a
@@ -124,45 +124,46 @@ Copyright (c) 2018 Framer B.V. -->
 
     const { isStatic } = $derived(configAndProps);
 
-    const context = useCreateMotionContext<Instance>(props);
+    const context = $derived(useCreateMotionContext<Instance>(motionProps));
     const visualState = $derived(useVisualState(motionProps, isStatic));
 
-    $effect.pre(() => {
-        if (!isStatic && isBrowser) {
-            useStrictMode(configAndProps, preloadedFeatures);
+    if (!isStatic && isBrowser) {
+        useStrictMode(configAndProps, preloadedFeatures);
 
-            const layoutProjection = getProjectionFunctionality(configAndProps);
-            /**
-             * If we need to measure the element we load this functionality in a
-             * separate class component in order to gain access to getSnapshotBeforeUpdate.
-             */
-            MeasureLayout = layoutProjection.MeasureLayout;
+        const layoutProjection = $derived(
+            getProjectionFunctionality(configAndProps),
+        );
 
-            /**
-             * Create a VisualElement for this component. A VisualElement provides a common
-             * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-             * providing a way of rendering to these APIs outside of the React render loop
-             * for more performant animations and interactions
-             */
-            configAndProps;
-            context.visualElement = untrack(() =>
-                useVisualElement<Instance, RenderState>(
-                    as,
-                    visualState,
-                    configAndProps,
-                    createVisualElement,
-                    layoutProjection.ProjectionNode,
-                ),
-            );
+        /**
+         * If we need to measure the element we load this functionality in a
+         * separate class component in order to gain access to getSnapshotBeforeUpdate.
+         */
+        MeasureLayout = layoutProjection.MeasureLayout;
 
-            // MotionContext.Provider
-            untrack(() => (MotionContext.Provider = context));
-        }
-    });
+        /**
+         * Create a VisualElement for this component. A VisualElement provides a common
+         * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
+         * providing a way of rendering to these APIs outside of the React render loop
+         * for more performant animations and interactions
+         */
+        context.visualElement = useVisualElement<Instance, RenderState>(
+            as,
+            visualState,
+            () => configAndProps,
+            createVisualElement,
+            layoutProjection.ProjectionNode,
+        );
+    }
 
-    $effect(() => () => {
-        // Since useMotionRef is not called on destroy, the visual element is unmounted here
-        context?.visualElement?.unmount();
+    $effect(() => {
+        // MotionContext.Provider
+        MotionContext.Provider = context;
+
+        return () => {
+            console.log("dismount");
+            // Since useMotionRef is not called on destroy, the visual element is unmounted here
+            context.visualElement?.unmount();
+        };
     });
 </script>
 

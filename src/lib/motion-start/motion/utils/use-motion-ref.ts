@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { VisualState } from './use-visual-state';
+import type { VisualState } from './use-visual-state.svelte';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 
@@ -17,7 +17,7 @@ function useMotionRef<Instance, RenderState>(
 	visualElement?: VisualElement<Instance> | null,
 	externalRef?: Ref<Instance>
 ): RefCallBack<Instance> {
-	return (instance: Instance) => {
+	return (instance: Instance | null) => {
 		instance && visualState.mount && visualState.mount(instance);
 
 		if (visualElement) {

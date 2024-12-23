@@ -3,22 +3,24 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { useContext } from "../../context/utils/context.svelte.js";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
     import { fromStore } from "svelte/store";
-    
+    import { invariant } from "$lib/motion-start/utils/errors.js";
+
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
     export let list: $$Props["list"] = undefined,
+        mode = "sync" as const,
         custom: $$Props["custom"] = undefined,
         initial: $$Props["initial"] = true,
         onExitComplete: $$Props["onExitComplete"] = undefined,
         exitBeforeEnter: $$Props["exitBeforeEnter"] = undefined,
         presenceAffectsLayout = true,
-        show: $$Props["show"] = undefined,
-        isCustom = false;
+        show: $$Props["show"] = undefined;
+
+    invariant(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
 
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
@@ -28,7 +30,6 @@ Copyright (c) 2018 Framer B.V. -->
         layoutContext.current.forceRender?.();
         _list = [..._list];
     };
-
 
     function getChildKey(child: { key: number }) {
         return child.key || "";
@@ -161,17 +162,26 @@ Copyright (c) 2018 Framer B.V. -->
     } else {
         isInitialRender = false;
     }
+
+    if (
+        process.env.NODE_ENV !== "production" &&
+        mode === "wait" &&
+        renderedChildren.length > 1
+    ) {
+        console.warn(
+            `You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
+        );
+    }
 </script>
 
 {#each childrenToRender as child (getChildKey(child))}
     <PresenceChild
-        mode="sync"
+        {mode}
         isPresent={child.present}
         initial={initial ? undefined : false}
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
-        {isCustom}
     >
         <slot item={child.item} />
     </PresenceChild>

@@ -14,7 +14,7 @@ import { frame, frameData } from './frameloop';
 import { mix } from './utils/mix';
 import { animateValue } from './animation/animators/MainThreadAnimation.svelte';
 export { frame, animateValue as animate, mix, frameData };
-export { buildTransform } from './render/html/utils/build-transform';
+export { buildTransform } from './render/html/utils/build-transform.svelte';
 export { addScaleCorrector } from './projection/styles/scale-correction.svelte';
 export { correctBorderRadius } from './projection/styles/scale-border-radius.svelte';
 export { correctBoxShadow } from './projection/styles/scale-box-shadow.svelte';

@@ -15,7 +15,8 @@ Copyright (c) 2018 Framer B.V. -->
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
-    import { fromStore, toStore } from "svelte/store";
+    import { fromStore } from "svelte/store";
+    import { tick } from "svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -30,53 +31,51 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = $derived(useId());
+    const id = useId();
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
-    const memoContext = $derived((flag?: boolean) => {
-        return {
-            id,
-            initial,
-            isPresent,
-            custom,
-            onExitComplete: (childId: string | number) => {
-                presenceChildren.set(childId, true);
-                let allComplete = true;
-                presenceChildren.forEach((isComplete) => {
-                    if (!isComplete) allComplete = false;
-                });
+    const presenceProps = (freshness?: boolean) => ({
+        id,
+        initial,
+        isPresent,
+        custom,
+        onExitComplete: (childId: string | number) => {
+            presenceChildren.set(childId, true);
+            let allComplete = true;
+            presenceChildren.forEach((isComplete) => {
+                if (!isComplete) allComplete = false;
+            });
 
-                allComplete && onExitComplete?.();
-            },
-            register: (childId: string | number) => {
-                presenceChildren.set(childId, false);
-                return () => presenceChildren.delete(childId);
-            },
-        };
+            allComplete && onExitComplete?.();
+        },
+        register: (childId: string | number) => {
+            presenceChildren.set(childId, false);
+            return () => presenceChildren.delete(childId);
+        },
     });
 
-    let context = fromStore(useContext(PresenceContext));
+    let context = fromStore(useContext(PresenceContext)).current;
 
     $effect(() => {
         if (presenceAffectsLayout) {
-            context.current = memoContext();
+            context = presenceProps();
         }
     });
-    $effect(() => {
-        context = memoContext(refresh);
-    });
 
-    const keyset = (flag?: boolean) => {
+    $effect(() => (context = presenceProps(refresh)));
+
+    const keyset = (presence: boolean) =>
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
-    };
 
     $effect(() => {
         keyset(isPresent);
-
-        !isPresent && !presenceChildren.size && onExitComplete?.();
+        tick().then(() => {
+            !isPresent && !presenceChildren.size && onExitComplete?.();
+        });
     });
-    PresenceContext.Provider = context.current;
+
+    PresenceContext.Provider = context;
 </script>
 
 {#if mode === "popLayout"}

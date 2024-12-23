@@ -19,44 +19,46 @@ import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/d
 import { microtask } from '../../frameloop/microtask.svelte';
 import { useContext } from '$lib/motion-start/context/utils/context.svelte';
 import { untrack } from 'svelte';
+import { watch } from 'runed';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
 	visualState: VisualState<Instance, RenderState>,
-	props: MotionProps,
+	_props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: any
-): VisualElement<Instance> | undefined {
-	const { visualElement: parent } = fromStore(useContext(MotionContext)).current;
+): VisualElement<Instance> | null {
+	const props = $derived(_props());
 
-	const lazyContext = fromStore(useContext(LazyContext));
+	const { visualElement: parent } = $derived(fromStore(useContext(MotionContext)).current);
 
-	const presenceContext = fromStore(useContext(PresenceContext));
-	// $inspect(presenceContext.current);
+	const lazyContext = $derived(fromStore(useContext(LazyContext)).current);
+
+	const presenceContext = $derived(fromStore(useContext(PresenceContext)));
 
 	const reducedMotionConfig = fromStore(useContext(MotionConfigContext)).current.reducedMotion;
 
-	let visualElementRef: VisualElement<Instance> | undefined = $state(undefined);
+	const visualElementRef: { current: VisualElement<Instance> | null } = $state({ current: null });
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
-	createVisualElement = createVisualElement || lazyContext.current.renderer;
+	createVisualElement = createVisualElement || lazyContext.renderer;
 
-	if (!visualElementRef && createVisualElement) {
-		visualElementRef = createVisualElement(Component, {
+	if (!visualElementRef.current && createVisualElement) {
+		visualElementRef.current = createVisualElement(Component, {
 			visualState,
 			parent,
 			props,
 			presenceContext: presenceContext.current,
-			blockInitialAnimation: presenceContext.current?.initial === false,
+			blockInitialAnimation: presenceContext ? presenceContext.current?.initial === false : false,
 			reducedMotionConfig,
 		});
 	}
 
-	const visualElement: VisualElement<Instance> | undefined = $derived(visualElementRef);
+	const visualElement = $derived(visualElementRef.current);
 
-	const initialLayoutGroupConfig = fromStore(useContext(SwitchLayoutGroupContext));
+	const initialLayoutGroupConfig = $derived(fromStore(useContext(SwitchLayoutGroupContext)).current);
 
 	if (
 		visualElement &&
@@ -64,7 +66,7 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElementRef!, props, ProjectionNodeConstructor, initialLayoutGroupConfig.current);
+		createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
 	}
 
 	let isMounted = false;
@@ -97,7 +99,7 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (!visualElement?.current) return;
 
 		isMounted = true;
@@ -119,6 +121,10 @@ export function useVisualElement<Instance, RenderState>(
 		if (wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
 		}
+	});
+
+	$effect.pre(() => {
+		if (!visualElement) return;
 
 		if (!wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
@@ -133,22 +139,6 @@ export function useVisualElement<Instance, RenderState>(
 			wantsHandoff = false;
 		}
 	});
-
-	// $effect(() => {
-	// 	if (visualElement) {
-	// 		visualElement.isPresent = isPresent($presenceContext);
-	// 		visualElement.isPresenceRoot = !parent || parent.presenceId !== $presenceContext?.id;
-
-	// 		/**
-	// 		 * Fire a render to ensure the latest state is reflected on-screen.
-	// 		 */
-	// 		visualElement.scheduleRender();
-	// 	}
-	// });
-
-	// $effect(() => () => {
-	// 	visualElement?.notifyUpdate();
-	// });
 
 	return visualElement;
 }

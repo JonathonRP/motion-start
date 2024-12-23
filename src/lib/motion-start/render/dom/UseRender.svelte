@@ -54,7 +54,7 @@ Copyright (c) 2018 Framer B.V. -->
   this={Component}
   {...elementProps}
   bind:this={ref}
-  {...isSVGComponent(Component) ? { xmlns: "http://www.w3.org/2000/svg" } : {}}
+  xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
 >
   {@render children?.()}
 </svelte:element>

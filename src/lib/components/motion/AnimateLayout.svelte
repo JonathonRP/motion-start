@@ -13,8 +13,6 @@
     function toggleSwitch() {
         active = !active;
     }
-
-    // active={1 * !active} do we still need this??
 </script>
 
 <Box>
@@ -24,7 +22,7 @@
         <button class="switch" data-active={active} onclick={toggleSwitch}>
             <motion.div
                 active={1 * !active}
-                layout
+                ut
                 class="handle"
                 transition={spring}
             />
