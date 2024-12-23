@@ -1,4 +1,5 @@
 import { getContext, hasContext, onMount, setContext, untrack } from 'svelte';
+import type { createSubscriber } from 'svelte/reactivity';
 import { writable, type Writable } from 'svelte/store';
 
 type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
@@ -21,22 +22,28 @@ class CallableContext<T> extends Function {
 }
 
 class Context<T extends Writable<UnwrapWritable<T>>> extends CallableContext<T> {
+	// #update: () => void;
+	// #subscribe: ReturnType<typeof createSubscriber>;
 	#state: T;
 
 	public constructor(private initial: T) {
 		super(() => {
+			// this.#subscribe();
 			this.#state = getContext<T>(this);
-			// $effect(() => {
-			// 	this.#state = getContext<T>(this);
-			// });
 
 			return this.#state || initial;
 		});
 		this.#state = this.initial;
+		// this.#subscribe = createSubscriber((update) => {
+		// 	this.#update = update;
+
+		// 	return this.#state?.subscribe(update);
+		// });
 	}
 
 	set Provider(value: UnwrapWritable<T>) {
 		setContext(this, writable(value));
+		// this.#update?.();
 	}
 }
 

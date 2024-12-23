@@ -37,7 +37,7 @@ import { createBox } from '../projection/geometry/models.svelte';
 import { time } from '../frameloop/sync-time.svelte';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
-import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+import { createSubscriber, SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -152,22 +152,22 @@ export abstract class VisualElement<
 	/**
 	 * A reference to the parent VisualElement (if exists).
 	 */
-	parent: VisualElement<unknown> | undefined = $state();
+	parent: VisualElement<unknown> | undefined;
 
 	/**
 	 * A set containing references to this VisualElement's children.
 	 */
-	children = new SvelteSet<VisualElement<unknown>>();
+	children = new Set<VisualElement<unknown>>();
 
 	/**
 	 * The depth of this VisualElement within the overall VisualElement tree.
 	 */
-	depth: number = $state();
+	depth: number;
 
 	/**
 	 * The current render state of this VisualElement. Defined by inherting VisualElements.
 	 */
-	renderState: RenderState = $state();
+	renderState: RenderState;
 
 	/**
 	 * An object containing the latest static values for each of this VisualElement's
@@ -178,15 +178,15 @@ export abstract class VisualElement<
 	/**
 	 * Determine what role this visual element should take in the variant tree.
 	 */
-	isVariantNode = $state(false);
-	isControllingVariants = $state(false);
+	isVariantNode = false;
+	isControllingVariants = false;
 
 	/**
 	 * If this component is part of the variant tree, it should track
 	 * any children that are also part of the tree. This is essentially
 	 * a shadow tree to simplify logic around how to stagger over children.
 	 */
-	variantChildren?: Set<VisualElement<unknown>> = $state();
+	variantChildren?: Set<VisualElement<unknown>>;
 
 	/**
 	 * Decides whether this VisualElement should animate in reduced motion
@@ -195,7 +195,7 @@ export abstract class VisualElement<
 	 * TODO: This is currently set on every individual VisualElement but feels
 	 * like it could be set globally.
 	 */
-	shouldReduceMotion: boolean | null = $state(null);
+	shouldReduceMotion: boolean | null = null;
 
 	/**
 	 * Normally, if a component is controlled by a parent's variants, it can
@@ -205,13 +205,13 @@ export abstract class VisualElement<
 	 *
 	 * TODO: This might be better replaced with a method isParentMounted
 	 */
-	manuallyAnimateOnMount: boolean = $state();
+	manuallyAnimateOnMount: boolean;
 
 	/**
 	 * This can be set by AnimatePresence to force components that mount
 	 * at the same time as it to mount as if they have initial={false} set.
 	 */
-	blockInitialAnimation: boolean = $state();
+	blockInitialAnimation: boolean;
 
 	/**
 	 * A reference to this VisualElement's projection node, used in layout animations.
@@ -230,22 +230,22 @@ export abstract class VisualElement<
 	 */
 	animationState?: AnimationState = $state();
 
-	KeyframeResolver = $state(KeyframeResolver);
+	KeyframeResolver = KeyframeResolver;
 
 	/**
 	 * The options used to create this VisualElement. The Options type is defined
 	 * by the inheriting VisualElement and is passed straight through to the render functions.
 	 */
-	readonly options: Options = $state();
+	readonly options: Options;
 
 	/**
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
-	props: MotionProps = $state<MotionProps>();
-	prevProps?: MotionProps = $state();
+	props: MotionProps = $state();
+	prevProps?: MotionProps;
 
-	presenceContext: PresenceContext | null = $state(null);
-	prevPresenceContext?: PresenceContext | null = $state(null);
+	presenceContext: PresenceContext | null = null;
+	prevPresenceContext?: PresenceContext | null = null;
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -258,43 +258,45 @@ export abstract class VisualElement<
 	 * A map of every subscription that binds the provided or generated
 	 * motion values onChange listeners to this visual element.
 	 */
-	private valueSubscriptions = new SvelteMap<string, VoidFunction>();
+	private valueSubscriptions = new Map<string, VoidFunction>();
 
 	/**
 	 * A reference to the ReducedMotionConfig passed to the VisualElement's host React component.
 	 */
-	private reducedMotionConfig: ReducedMotionConfig | undefined = $state();
+	private reducedMotionConfig: ReducedMotionConfig | undefined;
 
 	/**
 	 * On mount, this will be hydrated with a callback to disconnect
 	 * this visual element from its parent on unmount.
 	 */
-	private removeFromVariantTree: undefined | VoidFunction = $state();
+	private removeFromVariantTree: undefined | VoidFunction;
 
 	/**
 	 * A reference to the previously-provided motion values as returned
 	 * from scrapeMotionValuesFromProps. We use the keys in here to determine
 	 * if any motion values need to be removed after props are updated.
 	 */
-	private prevMotionValues: MotionStyle = $state({});
+	private prevMotionValues: MotionStyle = {};
 
 	/**
 	 * When values are removed from all animation props we need to search
 	 * for a fallback value to animate to. These values are tracked in baseTarget.
 	 */
-	private baseTarget: ResolvedValues = $state();
+	private baseTarget: ResolvedValues;
 
 	/**
 	 * Create an object of the values we initially animated from (if initial prop present).
 	 */
-	private initialValues: ResolvedValues = $state();
+	private initialValues: ResolvedValues;
 
 	/**
 	 * An object containing a SubscriptionManager for each active event.
 	 */
 	private events: {
 		[key: string]: SubscriptionManager<any>;
-	} = $state({});
+	} = {};
+
+	// #subscribe;
 
 	/**
 	 * An object containing an unsubscribe function for each prop event subscription.
@@ -303,12 +305,20 @@ export abstract class VisualElement<
 	 */
 	private propEventSubscriptions: {
 		[key: string]: VoidFunction;
-	} = $state({});
+	} = {};
 
-	constructor(visualOptions: VisualElementOptions<Instance, RenderState>, options: Options = {} as any) {
-		const { parent, props, presenceContext, reducedMotionConfig, blockInitialAnimation, visualState } =
-			$derived(visualOptions);
-		const { latestValues, renderState } = $derived(visualState);
+	constructor(
+		{
+			parent,
+			props,
+			presenceContext,
+			reducedMotionConfig,
+			blockInitialAnimation,
+			visualState,
+		}: VisualElementOptions<Instance, RenderState>,
+		options: Options = {} as any
+	) {
+		const { latestValues, renderState } = visualState;
 		this.latestValues = latestValues;
 		this.baseTarget = { ...latestValues };
 		this.initialValues = props.initial ? { ...latestValues } : {};
@@ -324,7 +334,7 @@ export abstract class VisualElement<
 		this.isControllingVariants = checkIsControllingVariants(props);
 		this.isVariantNode = checkIsVariantNode(props);
 		if (this.isVariantNode) {
-			this.variantChildren = new Set();
+			this.variantChildren = new SvelteSet();
 		}
 
 		this.manuallyAnimateOnMount = Boolean(parent && parent.current);
@@ -348,9 +358,20 @@ export abstract class VisualElement<
 				value.set(latestValues[key], false);
 			}
 		}
+
+		// this.#subscribe = createSubscriber((update) => {
+		// 	for (const eventKey in this.events) {
+		// 		this.events[eventKey].add(update);
+		// 	}
+
+		// 	return () => {
+		// 		this.unmount();
+		// 	};
+		// });
 	}
 
 	mount(instance: Instance) {
+		// this.#subscribe();
 		this.current = instance;
 
 		visualElementStore.set(instance, this as VisualElement<unknown>);

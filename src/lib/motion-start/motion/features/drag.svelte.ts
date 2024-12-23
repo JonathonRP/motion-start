@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import { DragGesture } from '../../gestures/drag/index.svelte';
 import { PanGesture } from '../../gestures/pan/index.svelte';
 import { HTMLProjectionNode } from '../../projection/node/HTMLProjectionNode.svelte';
-import { MeasureLayout } from './layout/MeasureLayout.svelte';
+import MeasureLayout from './layout/MeasureLayout.svelte';
 import type { FeaturePackages } from './types';
 
 export const drag: FeaturePackages = {

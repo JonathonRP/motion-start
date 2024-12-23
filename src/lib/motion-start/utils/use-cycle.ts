@@ -3,9 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Writable } from 'svelte/store';
 import { wrap } from './wrap';
-import { get, writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 export type Cycle = (i?: number) => void;
 export type CycleState<T> = [Writable<T>, Cycle];
@@ -38,12 +37,9 @@ export type CycleState<T> = [Writable<T>, Cycle];
  */
 export function useCycle<T>(...items: T[]): CycleState<T> {
 	let index = 0;
-	const item = writable(items[index]) as Writable<T> & {
-		/** Cycle through to next value or set the next value by index. */
-		cycle: (next?: number) => void;
-	};
+	const item = writable(items[index]);
 
-	item.cycle = (next?: number) => {
+	const cycle = (next?: number) => {
 		index = typeof next !== 'number' ? wrap(0, items.length, index + 1) : next;
 		item.set(items[index]);
 	};
@@ -51,5 +47,5 @@ export function useCycle<T>(...items: T[]): CycleState<T> {
 	// The array will change on each call, but by putting items.length at
 	// the front of this array, we guarantee the dependency comparison will match up
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return [item, item.cycle];
+	return [item, cycle];
 }

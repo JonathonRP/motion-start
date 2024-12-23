@@ -4,11 +4,11 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { MotionProps } from '../types';
-import type { VisualState } from '../utils/use-visual-state';
+import type { VisualState } from '../utils/use-visual-state.svelte';
 import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature.svelte';
-import type { MeasureLayout } from './layout/MeasureLayout.svelte';
+import type MeasureLayout from './layout/MeasureLayout.svelte';
 import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
