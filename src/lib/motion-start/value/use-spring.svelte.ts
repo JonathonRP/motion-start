@@ -3,11 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fromStore } from 'svelte/store';
-import type { MotionValue } from './index.svelte';
+import type { MotionValue } from '.';
 import { isMotionValue } from './utils/is-motion-value';
 import { useMotionValue } from './use-motion-value.svelte';
-import { useContext } from '../context/utils/context.svelte';
+import { useContext } from '../context/utils/context';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { SpringOptions } from '../animation/types';
 import { frame, frameData } from '../frameloop';
@@ -38,7 +37,7 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
-	const { isStatic } = fromStore(useContext(MotionConfigContext)).current;
+	const { isStatic } = $derived(useContext(MotionConfigContext));
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 

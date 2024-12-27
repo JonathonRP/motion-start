@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { calcGeneratorDuration, maxGeneratorDuration } from '../../animation/generators/utils/calc-duration.svelte';
+import { calcGeneratorDuration, maxGeneratorDuration } from '../../animation/generators/utils/calc-duration';
 import type { GeneratorFactory, Transition } from '../../animation/types';
 import { millisecondsToSeconds } from '../../utils/time-conversion';
 

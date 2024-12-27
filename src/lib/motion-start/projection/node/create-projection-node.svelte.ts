@@ -7,19 +7,19 @@ import { frame, cancelFrame } from '../../frameloop';
 import type { AnimationPlaybackControls } from '../../animation/types';
 import type { ResolvedValues } from '../../render/types';
 import { SubscriptionManager } from '../../utils/subscription-manager';
-import { mixValues } from '../animation/mix-values.svelte';
+import { mixValues } from '../animation/mix-values';
 import { copyAxisDeltaInto, copyBoxInto } from '../geometry/copy';
-import { applyBoxDelta, applyTreeDeltas } from '../geometry/delta-apply.svelte';
-import { calcBoxDelta, calcLength, calcRelativeBox, calcRelativePosition, isNear } from '../geometry/delta-calc.svelte';
-import { removeBoxTransforms } from '../geometry/delta-remove.svelte';
+import { applyBoxDelta, applyTreeDeltas } from '../geometry/delta-apply';
+import { calcBoxDelta, calcLength, calcRelativeBox, calcRelativePosition, isNear } from '../geometry/delta-calc';
+import { removeBoxTransforms } from '../geometry/delta-remove';
 import type { Axis, AxisDelta, Box, Delta } from '../geometry/types';
-import { transformBox, translateAxis } from '../geometry/delta-apply.svelte';
+import { transformBox, translateAxis } from '../geometry/delta-apply';
 import type { Point } from '../geometry/types';
-import { getValueTransition } from '../../animation/utils/get-value-transition.svelte';
+import { getValueTransition } from '../../animation/utils/get-value-transition';
 import { aspectRatio, axisDeltaEquals, boxEquals, boxEqualsRounded, isDeltaZero } from '../geometry/utils';
-import { NodeStack } from '../shared/stack.svelte';
-import { scaleCorrectors } from '../styles/scale-correction.svelte';
-import { buildProjectionTransform } from '../styles/transform.svelte';
+import { NodeStack } from '../shared/stack';
+import { scaleCorrectors } from '../styles/scale-correction';
+import { buildProjectionTransform } from '../styles/transform';
 import { eachAxis } from '../utils/each-axis';
 import { has2DTranslate, hasScale, hasTransform } from '../utils/has-transform';
 import type {
@@ -36,22 +36,22 @@ import { FlatTree } from '../../render/utils/flat-tree';
 import type { Transition } from '../../types';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value';
 import type { MotionStyle } from '../../motion/types';
-import { globalProjectionState } from './state.svelte';
+import { globalProjectionState } from './state';
 import { delay } from '../../utils/delay';
 import { mixNumber } from '../../utils/mix/number';
 import type { Process } from '../../frameloop/types';
 import type { ValueAnimationOptions } from '../../animation/types';
 import { frameData } from '../../dom';
 import { isSVGElement } from '../../render/dom/utils/is-svg-element';
-import { animateSingleValue } from '../../animation/animate/single-value.svelte';
+import { animateSingleValue } from '../../animation/animate/single-value';
 import { clamp } from '../../utils/clamp';
-import { frameSteps } from '../../frameloop/frame.svelte';
+import { frameSteps } from '../../frameloop/frame';
 import { noop } from '../../utils/noop';
-import { time } from '../../frameloop/sync-time.svelte';
-import { microtask } from '../../frameloop/microtask.svelte';
+import { time } from '../../frameloop/sync-time';
+import { microtask } from '../../frameloop/microtask';
 import type { VisualElement } from '../../render/VisualElement.svelte';
-import { getOptimisedAppearId } from '../../animation/optimized-appear/get-appear-id.svelte';
-import { createBox, createDelta } from '../geometry/models.svelte';
+import { getOptimisedAppearId } from '../../animation/optimized-appear/get-appear-id';
+import { createBox, createDelta } from '../geometry/models';
 
 const metrics = {
 	type: 'projectionFrame',
@@ -173,7 +173,7 @@ export function createProjectionNode<I = unknown>({
 		 * Options for the node. We use this to configure what kind of layout animations
 		 * we should perform (if any).
 		 */
-		options: ProjectionNodeOptions = {};
+		options: ProjectionNodeOptions = $state({});
 
 		/**
 		 * A snapshot of the element's state just before the current update. This is
@@ -420,6 +420,7 @@ export function createProjectionNode<I = unknown>({
 		 * Lifecycles
 		 */
 		mount(instance: I, isLayoutDirty = this.root.hasTreeAnimated) {
+			$inspect(this.options);
 			if (this.instance) return;
 
 			this.isSVG = isSVGElement(instance);

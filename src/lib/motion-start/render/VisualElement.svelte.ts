@@ -12,29 +12,29 @@ import type { IProjectionNode } from '../projection/node/types';
 import { initPrefersReducedMotion } from '../utils/reduced-motion';
 import { hasReducedMotionListener, prefersReducedMotion } from '../utils/reduced-motion/state';
 import { SubscriptionManager } from '../utils/subscription-manager';
-import { motionValue, type MotionValue } from '../value/index.svelte';
+import { motionValue, type MotionValue } from '../value';
 import { isMotionValue } from '../value/utils/is-motion-value';
-import { transformProps } from './html/utils/transform.svelte';
+import { transformProps } from './html/utils/transform';
 import type { ResolvedValues, VisualElementEventCallbacks, VisualElementOptions } from './types';
-import type { AnimationState } from './utils/animation-state.svelte';
+import type { AnimationState } from './utils/animation-state';
 import {
 	isControllingVariants as checkIsControllingVariants,
 	isVariantNode as checkIsVariantNode,
 } from './utils/is-controlling-variants';
-import { updateMotionValuesFromProps } from './utils/motion-values.svelte';
+import { updateMotionValuesFromProps } from './utils/motion-values';
 import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
-import { featureDefinitions } from '../motion/features/definitions.svelte';
+import { featureDefinitions } from '../motion/features/definitions';
 import type { PresenceContext } from '../context/PresenceContext';
 import { visualElementStore } from './store.svelte';
-import { KeyframeResolver } from './utils/KeyframesResolver.svelte';
+import { KeyframeResolver } from './utils/KeyframesResolver';
 import { isNumericalString } from '../utils/is-numerical-string';
 import { isZeroValueString } from '../utils/is-zero-value-string';
 import { findValueType } from './dom/value-types/find';
 import { complex } from '../value/types/complex';
 import { getAnimatableNone } from './dom/value-types/animatable-none';
-import { createBox } from '../projection/geometry/models.svelte';
-import { time } from '../frameloop/sync-time.svelte';
+import { createBox } from '../projection/geometry/models';
+import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
 import { createSubscriber, SvelteMap, SvelteSet } from 'svelte/reactivity';
@@ -241,7 +241,7 @@ export abstract class VisualElement<
 	/**
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
-	props: MotionProps = $state();
+	props: MotionProps;
 	prevProps?: MotionProps;
 
 	presenceContext: PresenceContext | null = null;
@@ -252,7 +252,7 @@ export abstract class VisualElement<
 	 */
 	private features: {
 		[K in keyof FeatureDefinitions]?: InstanceType<ExtractFeature<FeatureDefinitions[K]>>;
-	} = $state({});
+	} = {};
 
 	/**
 	 * A map of every subscription that binds the provided or generated
@@ -296,8 +296,6 @@ export abstract class VisualElement<
 		[key: string]: SubscriptionManager<any>;
 	} = {};
 
-	// #subscribe;
-
 	/**
 	 * An object containing an unsubscribe function for each prop event subscription.
 	 * For example, every "Update" event can have multiple subscribers via
@@ -306,6 +304,11 @@ export abstract class VisualElement<
 	private propEventSubscriptions: {
 		[key: string]: VoidFunction;
 	} = {};
+
+	/**
+	 * hold subscription to hook into svelte reactivity graph
+	 */
+	// #subscribe;
 
 	constructor(
 		{
@@ -318,7 +321,7 @@ export abstract class VisualElement<
 		}: VisualElementOptions<Instance, RenderState>,
 		options: Options = {} as any
 	) {
-		const { latestValues, renderState } = visualState;
+		const { latestValues, renderState } = $derived(visualState);
 		this.latestValues = latestValues;
 		this.baseTarget = { ...latestValues };
 		this.initialValues = props.initial ? { ...latestValues } : {};

@@ -1,3 +1,4 @@
+<!-- https://codesandbox.io/p/sandbox/gm9n3c?file=/src/index.js -->
 <script>
     import Box from "../Box.svelte";
     import { AnimatePresence } from "$lib/motion-start";

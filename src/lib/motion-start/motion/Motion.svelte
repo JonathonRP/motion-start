@@ -8,8 +8,7 @@ Copyright (c) 2018 Framer B.V. -->
     } & MotionProps;
 
     function useLayoutId({ layoutId }: MotionProps) {
-        const layoutGroupId = fromStore(useContext(LayoutGroupContext)).current
-            .id;
+        const layoutGroupId = $derived(useContext(LayoutGroupContext).id);
         return layoutGroupId && layoutId !== undefined
             ? layoutGroupId + "-" + layoutId
             : layoutId;
@@ -19,7 +18,7 @@ Copyright (c) 2018 Framer B.V. -->
         configAndProps: MotionProps,
         preloadedFeatures?: FeatureBundle,
     ) {
-        const isStrict = fromStore(useContext(LazyContext)).current.strict;
+        const isStrict = $derived(useContext(LazyContext).strict);
 
         /**
          * If we're in development mode, check to make sure we're not rendering a motion component
@@ -57,7 +56,6 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="Props extends MotionProps, Instance, RenderState">
     import { getContext, untrack, type Component } from "svelte";
-    import { fromStore } from "svelte/store";
     import type { MotionProps } from "./types";
     import type { FeatureBundle } from "./features/types";
     import { MotionConfigContext } from "../context/MotionConfigContext";
@@ -69,20 +67,21 @@ Copyright (c) 2018 Framer B.V. -->
     import { LayoutGroupContext } from "../context/LayoutGroupContext";
     import { LazyContext } from "../context/LazyContext";
     import { invariant, warning } from "../utils/errors";
-    import { featureDefinitions } from "./features/definitions.svelte";
+    import { featureDefinitions } from "./features/definitions";
     import type { Ref } from "../utils/safe-react-types";
-    import { useContext } from "../context/utils/context.svelte";
+    import { useContext } from "../context/utils/context";
     import type { MotionComponentConfig } from "./index.svelte";
     import type { VisualElement } from "../render/VisualElement.svelte";
+    import { isSVGComponent } from "../render/dom/utils/is-svg-component";
 
     type MotionCompProps = MotionComponentProps<Props> & {
         externalRef?: Ref<Instance> | undefined;
-        ref?: Instance | null;
+        ref?: Instance | null; // ref: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this']
         children?: import("svelte").Snippet;
     };
 
     let {
-        children,
+        children: grandChildren,
         externalRef,
         ref = $bindable(),
         ...props
@@ -94,7 +93,7 @@ Copyright (c) 2018 Framer B.V. -->
         Component: as,
         createVisualElement,
         useVisualState,
-        useRender: Renderer,
+        useRender: Render,
         preloadedFeatures,
     } = getContext<
         Pick<
@@ -117,7 +116,7 @@ Copyright (c) 2018 Framer B.V. -->
     const layoutId = $derived(useLayoutId(motionProps));
 
     const configAndProps = $derived({
-        ...fromStore(useContext(MotionConfigContext)).current,
+        ...useContext(MotionConfigContext),
         ...motionProps,
         layoutId,
     });
@@ -134,11 +133,13 @@ Copyright (c) 2018 Framer B.V. -->
             getProjectionFunctionality(configAndProps),
         );
 
-        /**
-         * If we need to measure the element we load this functionality in a
-         * separate class component in order to gain access to getSnapshotBeforeUpdate.
-         */
-        MeasureLayout = layoutProjection.MeasureLayout;
+        $effect.pre(() => {
+            /**
+             * If we need to measure the element we load this functionality in a
+             * separate class component in order to gain access to getSnapshotBeforeUpdate.
+             */
+            MeasureLayout = layoutProjection.MeasureLayout;
+        });
 
         /**
          * Create a VisualElement for this component. A VisualElement provides a common
@@ -148,43 +149,42 @@ Copyright (c) 2018 Framer B.V. -->
          */
         context.visualElement = useVisualElement<Instance, RenderState>(
             as,
-            visualState,
+            () => visualState,
             () => configAndProps,
             createVisualElement,
-            layoutProjection.ProjectionNode,
+            () => layoutProjection.ProjectionNode,
         );
     }
 
     $effect(() => {
-        // MotionContext.Provider
         MotionContext.Provider = context;
-
         return () => {
             console.log("dismount");
             // Since useMotionRef is not called on destroy, the visual element is unmounted here
             context.visualElement?.unmount();
         };
     });
+
+    const motionRef = $derived(
+        useMotionRef(visualState, context.visualElement, externalRef),
+    );
 </script>
 
 {#if MeasureLayout && context.visualElement}
     <MeasureLayout visualElement={context.visualElement} {...configAndProps} />
 {/if}
-<Renderer
-    Component={as}
-    props={motionProps}
-    bind:ref={() => ref as Instance,
-    (v: Instance) => {
-        useMotionRef<Instance, RenderState>(
-            visualState,
-            context.visualElement,
-            externalRef,
-        )(v);
-        ref = v;
-    }}
-    {visualState}
-    {isStatic}
-    visualElement={context.visualElement}
->
-    {@render children?.()}
-</Renderer>
+<Render Component={as} props={motionProps} {visualState} {isStatic}>
+    {#snippet children({ elementProps })}
+        <svelte:element
+            this={as}
+            {...elementProps}
+            bind:this={ref}
+            use:motionRef
+            xmlns={isSVGComponent(as)
+                ? "http://www.w3.org/2000/svg"
+                : undefined}
+        >
+            {@render grandChildren?.()}
+        </svelte:element>
+    {/snippet}
+</Render>

@@ -7,7 +7,7 @@ import type { EventInfo } from '../events/types';
 import type { VariantLabels } from '../motion/types';
 import type { Point } from '../projection/geometry/types';
 import type { TargetAndTransition } from '../types';
-import type { PanInfo } from './pan/PanSession.svelte';
+import type { PanInfo } from './pan/PanSession';
 
 export type RemoveEvent = () => void;
 

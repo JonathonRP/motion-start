@@ -3,8 +3,8 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-  import { correctBorderRadius } from "../../../projection/styles/scale-border-radius.svelte";
-  import { correctBoxShadow } from "../../../projection/styles/scale-box-shadow.svelte";
+  import { correctBorderRadius } from "../../../projection/styles/scale-border-radius";
+  import { correctBoxShadow } from "../../../projection/styles/scale-box-shadow";
 
   const defaultScaleCorrectors = {
     borderRadius: {
@@ -27,9 +27,9 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import { frame } from "../../../frameloop";
   import { onMount } from "svelte";
-  import { addScaleCorrector } from "../../../projection/styles/scale-correction.svelte";
-  import { globalProjectionState } from "../../../projection/node/state.svelte";
-  import { microtask } from "../../../frameloop/microtask.svelte";
+  import { addScaleCorrector } from "../../.../../../projection/styles/scale-correction";
+  import { globalProjectionState } from "../../../projection/node/state";
+  import { microtask } from "../../../frameloop/microtask";
   import type { MeasureProps } from "./MeasureLayout.svelte";
 
   interface Props extends MeasureProps {}

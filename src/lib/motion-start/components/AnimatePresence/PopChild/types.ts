@@ -1,4 +1,4 @@
-import type { RefObject } from '$lib/motion-start/utils/safe-react-types';
+import type { RefObject } from '../../../utils/safe-react-types';
 import type { Snippet } from 'svelte';
 
 export interface Size {

@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { derived, fromStore, get, readable, toStore, type Readable, type Writable } from 'svelte/store';
-import { useContext } from '../../context/utils/context.svelte';
+import { derived, readable, toStore, type Readable } from 'svelte/store';
+import { useContext } from '../../context/utils/context';
 import { PresenceContext } from '../../context/PresenceContext';
 import { useId } from '$lib/motion-start/utils/useId';
 
@@ -37,9 +37,9 @@ export function isPresent(context: PresenceContext) {
  *
  * @public
  */
-export const useIsPresent = (): Readable<boolean> => {
-	const presenceContext = useContext(PresenceContext);
-	return derived(presenceContext, ($v) => ($v === null ? true : $v.isPresent));
+export const useIsPresent = (): boolean => {
+	const presenceContext = $derived(useContext(PresenceContext));
+	return isPresent(presenceContext);
 };
 
 /**
@@ -65,23 +65,23 @@ export const useIsPresent = (): Readable<boolean> => {
  * @public
  */
 export const usePresence = (): Readable<AlwaysPresent | Present | NotPresent> => {
-	const context = fromStore(useContext(PresenceContext));
+	const context = $derived(useContext(PresenceContext));
 
-	if (context.current === null) {
+	if (context === null) {
 		return readable([true, null]) satisfies Readable<AlwaysPresent>;
 	}
 
-	const { register } = context.current;
+	const { register } = $derived(context);
 
 	const id = useId();
 	$effect.pre(() => {
-		if (context.current !== null) {
+		if (context !== null) {
 			register(id);
 		}
 	});
 
 	return derived<Readable<PresenceContext | null>, Present | NotPresent>(
-		toStore(() => context.current),
+		toStore(() => context),
 		($v) =>
 			!$v?.isPresent && $v?.onExitComplete
 				? ([false, () => $v.onExitComplete?.(id)] satisfies NotPresent)

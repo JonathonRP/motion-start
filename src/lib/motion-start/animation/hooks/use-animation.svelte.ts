@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { AnimationControls } from '../types';
-import { animationControls } from './animation-controls.svelte';
+import { animationControls } from './animation-controls';
 
 /**
  * Creates `AnimationControls`, which can be used to manually start, stop

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionValue } from './index.svelte';
+import type { MotionValue } from '.';
 import { transform, type TransformOptions } from '../utils/transform';
 import { useCombineMotionValues } from './use-combine-values.svelte';
 import { useComputed } from './use-computed';

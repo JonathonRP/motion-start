@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fromStore } from 'svelte/store';
 import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import type { MotionProps } from '../types';
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
@@ -13,7 +12,7 @@ import {
 	isVariantNode as checkIsVariantNode,
 } from '../../render/utils/is-controlling-variants.js';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
-import { useContext } from '../../context/utils/context.svelte';
+import { useContext } from '../../context/utils/context';
 import { MotionContext, type MotionContextProps } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
 
@@ -55,9 +54,7 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
-		const context = fromStore(useContext(MotionContext));
-		const presenceContext = fromStore(useContext(PresenceContext));
-		const make = () => makeState(config, props, context.current, presenceContext.current);
+		const make = $derived(() => makeState(config, props, useContext(MotionContext), useContext(PresenceContext)));
 
 		const state = make();
 

@@ -13,9 +13,8 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import { untrack, type Snippet } from "svelte";
 
-  import { useContext } from "../../context/utils/context.svelte";
   import { LazyContext } from "../../context/LazyContext";
-  import { loadFeatures } from "../../motion/features/load-features.svelte";
+  import { loadFeatures } from "../../motion/features/load-features";
   import type {
     FeatureBundle,
     LazyFeatureBundle,
@@ -23,7 +22,6 @@ Copyright (c) 2018 Framer B.V. -->
   import type { CreateVisualElement } from "../../render/types";
   import type { LazyProps } from "./types";
   import type { Ref } from "../../utils/safe-react-types";
-  import { fromStore } from "svelte/store";
 
   interface Props extends LazyProps {
     children?: Snippet;
@@ -91,19 +89,11 @@ Copyright (c) 2018 Framer B.V. -->
     }
   });
 
-  LazyContext.Provider = {
-    renderer: loadedRenderer.current!,
-    strict: strict!,
-  };
-
   $effect(() => {
-    untrack(
-      () =>
-        (fromStore(useContext(LazyContext)).current = {
-          renderer: loadedRenderer.current!,
-          strict: strict!,
-        }),
-    );
+    LazyContext.Provider = {
+      renderer: loadedRenderer.current!,
+      strict: strict!,
+    };
   });
 </script>
 

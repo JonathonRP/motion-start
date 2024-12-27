@@ -21,7 +21,7 @@ export * from './three-entry';
  * Features
  */
 export { domMin } from './render/dom/features-min';
-export { domAnimation } from './render/dom/features-animation.svelte';
+export { domAnimation } from './render/dom/features-animation';
 export { domMax } from './render/dom/features-max';
 
 /**
@@ -33,7 +33,7 @@ export { resolveMotionValue } from './value/utils/resolve-motion-value';
 export { useTransform } from './value/use-transform';
 export { useSpring } from './value/use-spring.svelte';
 export { useVelocity } from './value/use-velocity';
-export { useScroll, type UseScrollOptions } from './value/use-scroll.svelte';
+export { useScroll, type UseScrollOptions } from './value/use-scroll';
 export { useElementScroll } from './value/scroll/use-element-scroll';
 export { useViewportScroll } from './value/scroll/use-viewport-scroll';
 export { useTime } from './value/use-time';
@@ -49,15 +49,15 @@ export { useReducedMotionConfig } from './utils/reduced-motion/use-reduced-motio
 /**
  * Utils
  */
-export { animationControls } from './animation/hooks/animation-controls.svelte';
-export { useAnimate } from './animation/hooks/use-animate.svelte';
-export { useAnimateMini } from './animation/hooks/use-animate-style.svelte';
+export { animationControls } from './animation/hooks/animation-controls';
+export { useAnimate } from './animation/hooks/use-animate';
+export { useAnimateMini } from './animation/hooks/use-animate-style';
 export {
 	useAnimation,
 	useAnimationControls,
 } from './animation/hooks/use-animation.svelte';
 export { useAnimationFrame } from './utils/use-animation-frame.svelte';
-export { animateVisualElement } from './animation/interfaces/visual-element.svelte';
+export { animateVisualElement } from './animation/interfaces/visual-element';
 export type {
 	HoverHandlers,
 	TapHandlers,
@@ -65,7 +65,7 @@ export type {
 	FocusHandlers,
 	TapInfo,
 } from './gestures/types';
-export type { PanInfo } from './gestures/pan/PanSession.svelte';
+export type { PanInfo } from './gestures/pan/PanSession';
 export { useCycle, type CycleState, type Cycle } from './utils/use-cycle';
 export { isValidMotionProp } from './motion/utils/valid-prop';
 export {
@@ -76,20 +76,20 @@ export { useInView, type UseInViewOptions } from './utils/use-in-view.svelte';
 export {
 	useDragControls,
 	DragControls,
-} from './gestures/drag/use-drag-controls.svelte';
-export { useDomEvent } from './events/use-dom-event.svelte';
+} from './gestures/drag/use-drag-controls';
+export { useDomEvent } from './events/use-dom-event';
 export { createRendererMotionComponent } from './motion/index.svelte';
 export { isMotionComponent } from './motion/utils/is-motion-component';
 export { unwrapMotionComponent } from './motion/utils/unwrap-motion-component';
 export { VisualElement } from './render/VisualElement.svelte';
-export { addScaleCorrector } from './projection/styles/scale-correction.svelte';
+export { addScaleCorrector } from './projection/styles/scale-correction';
 export {
 	useInstantTransition,
 	disableInstantTransitions,
 } from './utils/use-instant-transition.svelte';
-export { useInstantLayoutTransition } from './projection/use-instant-layout-transition.svelte';
-export { useResetProjection } from './projection/use-reset-projection.svelte';
-export { buildTransform } from './render/html/utils/build-transform.svelte';
+export { useInstantLayoutTransition } from './projection/use-instant-layout-transition';
+export { useResetProjection } from './projection/use-reset-projection';
+export { buildTransform } from './render/html/utils/build-transform';
 export { visualElementStore } from './render/store.svelte';
 export { animateValue } from './animation/animators/MainThreadAnimation.svelte';
 export { color } from './value/types/color';
@@ -97,15 +97,15 @@ export { complex } from './value/types/complex';
 export { px } from './value/types/numbers/units';
 export type { ValueType } from './value/types/types';
 export { MotionGlobalConfig } from './utils/GlobalConfig';
-export { AcceleratedAnimation } from './animation/animators/AcceleratedAnimation.svelte';
+export { AcceleratedAnimation } from './animation/animators/AcceleratedAnimation';
 
 /**
  * Appear animations
  */
-export { startOptimizedAppearAnimation } from './animation/optimized-appear/start.svelte';
-export { optimizedAppearDataAttribute } from './animation/optimized-appear/data-id.svelte';
-export { spring } from './animation/generators/spring/index.svelte';
-export { findSpring } from './animation/generators/spring/find.svelte';
+export { startOptimizedAppearAnimation } from './animation/optimized-appear/start';
+export { optimizedAppearDataAttribute } from './animation/optimized-appear/data-id';
+export { spring } from './animation/generators/spring';
+export { findSpring } from './animation/generators/spring/find';
 
 /**
  * Contexts
@@ -169,14 +169,14 @@ export type { CreateVisualElement } from './render/types';
 export * from './projection/geometry/types';
 export type { IProjectionNode } from './projection/node/types';
 export * from './animation/types';
-export * from './animation/sequence/types.svelte';
+export * from './animation/sequence/types';
 
 /**
  * Deprecated
  */
 export { DeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
-export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state.svelte';
-export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale';
+export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state';
+export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale.svelte';
 
 // Keep explict delay in milliseconds export for BC with Framer
 export { delay, type DelayedFunction } from './utils/delay';

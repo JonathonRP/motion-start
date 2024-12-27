@@ -16,13 +16,12 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { useContext } from "../../context/utils/context.svelte";
+  import { useContext } from "../../context/utils/context";
   import { LayoutGroupContext } from "../../context/LayoutGroupContext";
   import { DeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
-  import { nodeGroup } from "../../projection/node/group.svelte";
+  import { nodeGroup } from "../../projection/node/group";
   import { useForceUpdate } from "../../utils/use-force-update.svelte";
   import type { MutableRefObject } from "../../utils/safe-react-types";
-  import { fromStore } from "svelte/store";
   import type { Snippet } from "svelte";
 
   interface Props extends LayoutGroupProps {
@@ -31,9 +30,9 @@ Copyright (c) 2018 Framer B.V. -->
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = fromStore(useContext(LayoutGroupContext));
+  const layoutGroupContext = $derived(useContext(LayoutGroupContext));
 
-  const deprecatedLayoutGroupContext = fromStore(
+  const deprecatedLayoutGroupContext = $derived(
     useContext(DeprecatedLayoutGroupContext),
   );
 
@@ -43,8 +42,9 @@ Copyright (c) 2018 Framer B.V. -->
     current: null,
   } as MutableRefObject<LayoutGroupContext | null>;
 
-  const upstreamId =
-    layoutGroupContext.current.id || deprecatedLayoutGroupContext.current;
+  const upstreamId = $derived(
+    layoutGroupContext.id || deprecatedLayoutGroupContext,
+  );
 
   $effect(() => {
     if (context.current === null) {
@@ -55,7 +55,7 @@ Copyright (c) 2018 Framer B.V. -->
       context.current = {
         id,
         group: shouldInheritGroup(inherit!)
-          ? layoutGroupContext.current.group || nodeGroup()
+          ? layoutGroupContext.group || nodeGroup()
           : nodeGroup(),
       };
     }
