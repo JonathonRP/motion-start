@@ -9,21 +9,14 @@ Copyright (c) 2018 Framer B.V. -->
   import type { SVGRenderState } from "../svg/types";
   import { filterProps } from "./utils/filter-props";
   import { isSVGComponent } from "./utils/is-svg-component";
-  import { useSvgProps } from "../svg/use-props.svelte";
-  import { useHTMLProps } from "../html/use-props.svelte";
+  import { useSvgProps } from "../svg/use-props";
+  import { useHTMLProps } from "../html/use-props";
 
   type Props = Parameters<
     RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>
   >[1];
 
-  let {
-    Component,
-    props,
-    visualState,
-    isStatic,
-    ref = $bindable(),
-    children,
-  }: Props = $props();
+  let { Component, props, visualState, isStatic, children }: Props = $props();
 
   // $inspect(props);
 
@@ -50,11 +43,4 @@ Copyright (c) 2018 Framer B.V. -->
   // $: typeof ref === "function" ? ref(element) : (ref!.current = element);
 </script>
 
-<svelte:element
-  this={Component}
-  {...elementProps}
-  bind:this={ref}
-  xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
->
-  {@render children?.()}
-</svelte:element>
+{@render children?.({ elementProps })}

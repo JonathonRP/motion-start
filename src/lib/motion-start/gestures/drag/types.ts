@@ -4,10 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { RefObject } from '../../utils/safe-react-types';
-import type { PanInfo } from '../pan/PanSession.svelte';
+import type { PanInfo } from '../pan/PanSession';
 import type { Inertia, TargetAndTransition } from '../../types';
-import type { DragControls } from './use-drag-controls.svelte';
-import type { MotionValue } from '../../value/index.svelte';
+import type { DragControls } from './use-drag-controls';
+import type { MotionValue } from '../../value';
 import type { VariantLabels } from '../../motion/types';
 import type { Axis, BoundingBox } from '../../projection/geometry/types';
 

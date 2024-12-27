@@ -22,7 +22,7 @@
         <button class="switch" data-active={active} onclick={toggleSwitch}>
             <motion.div
                 active={1 * !active}
-                ut
+                layout
                 class="handle"
                 transition={spring}
             />

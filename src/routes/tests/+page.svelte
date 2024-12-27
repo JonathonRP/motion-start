@@ -2,6 +2,7 @@
     import * as Card from "$lib/components/ui/card";
     import {
         AnimateLayout,
+        AnimatePresenceMode,
         AnimatePresenceStack,
         AnimationSequence,
         ColorInterpolation,
@@ -13,6 +14,7 @@
         DurBasedSpring,
         KeyFramesPosition,
         MorphSvg,
+        ReorderList,
         Repeat,
         ReverseEffect,
         ScrollProgress,
@@ -188,8 +190,8 @@
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
                     <p class="text-green-500">Passed test</p>
                     <p>
-                        why does this flicker? VisualElement props state causes
-                        infinite effects, but if not state props don't update.
+                        using svelte effect/.pre to handle useCycle prop change
+                        render causes flickers which is svelte default render.
                     </p>
                 </Card.Footer>
             </Card.Footer>
@@ -376,7 +378,7 @@
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-green-500">Passed test</p>
+                    <p class="text-red-500">Failed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>
@@ -396,6 +398,42 @@
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
                     <p class="text-red-500">Failed test</p>
+                </Card.Footer>
+            </Card.Footer>
+        </Card.Root>
+        <!-- End -->
+        <!-- Start -->
+        <Card.Root>
+            <Card.Header>
+                <Card.Title>Animate Presence Mode</Card.Title>
+                <Card.Description>
+                    Click the box to visualize the effect
+                </Card.Description>
+            </Card.Header>
+            <Card.Content>
+                <AnimatePresenceMode />
+            </Card.Content>
+            <Card.Footer>
+                <Card.Footer class="grid gap-1">
+                    <!-- <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-red-500">Failed test</p> -->
+                </Card.Footer>
+            </Card.Footer>
+        </Card.Root>
+        <!-- End -->
+        <!-- Start -->
+        <Card.Root>
+            <Card.Header>
+                <Card.Title>Reorder List</Card.Title>
+                <Card.Description>Move list items to reorder</Card.Description>
+            </Card.Header>
+            <Card.Content>
+                <ReorderList />
+            </Card.Content>
+            <Card.Footer>
+                <Card.Footer class="grid gap-1">
+                    <!-- <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-red-500">Failed test</p> -->
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>

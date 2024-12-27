@@ -58,14 +58,12 @@ export interface FeatureBundle extends FeaturePackages {
 
 export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 
-export type RenderComponent<Instance, RenderState> = Component<
-	{
-		Component: string;
-		props: MotionProps;
-		// ref: RefCallBack<Instance>;
-		visualState: VisualState<Instance, RenderState>;
-		isStatic: boolean;
-		visualElement?: VisualElement<Instance>;
-		children?: Snippet;
-	} & { ref: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this'] }
->;
+export type RenderComponent<Instance, RenderState> = Component<{
+	Component: string;
+	props: MotionProps;
+	// ref: RefCallBack<Instance>;
+	visualState: VisualState<Instance, RenderState>;
+	isStatic: boolean;
+	visualElement?: VisualElement<Instance>;
+	children?: Snippet<[{ elementProps: any }]>;
+}>;

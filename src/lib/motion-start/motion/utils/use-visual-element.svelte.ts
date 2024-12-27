@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fromStore } from 'svelte/store';
 import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
@@ -15,28 +14,26 @@ import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
 import type { IProjectionNode } from '../../projection/node/types';
 import { isRefObject } from '../../utils/is-ref-object.js';
-import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id.svelte';
-import { microtask } from '../../frameloop/microtask.svelte';
-import { useContext } from '$lib/motion-start/context/utils/context.svelte';
-import { untrack } from 'svelte';
-import { watch } from 'runed';
+import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
+import { microtask } from '../../frameloop/microtask';
+import { useContext } from '$lib/motion-start/context/utils/context';
+import { tick, untrack } from 'svelte';
+import { Debounced, useDebounce, watch } from 'runed';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
-	visualState: VisualState<Instance, RenderState>,
-	_props: () => MotionProps,
+	visualState: () => VisualState<Instance, RenderState>,
+	props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	ProjectionNodeConstructor?: any
+	ProjectionNodeConstructor?: () => any
 ): VisualElement<Instance> | null {
-	const props = $derived(_props());
+	const { visualElement: parent } = $derived(useContext(MotionContext));
 
-	const { visualElement: parent } = $derived(fromStore(useContext(MotionContext)).current);
+	const lazyContext = $derived(useContext(LazyContext));
 
-	const lazyContext = $derived(fromStore(useContext(LazyContext)).current);
+	const presenceContext = $derived(useContext(PresenceContext));
 
-	const presenceContext = $derived(fromStore(useContext(PresenceContext)));
-
-	const reducedMotionConfig = fromStore(useContext(MotionConfigContext)).current.reducedMotion;
+	const reducedMotionContext = $derived(useContext(MotionConfigContext).reducedMotion);
 
 	const visualElementRef: { current: VisualElement<Instance> | null } = $state({ current: null });
 
@@ -47,18 +44,18 @@ export function useVisualElement<Instance, RenderState>(
 
 	if (!visualElementRef.current && createVisualElement) {
 		visualElementRef.current = createVisualElement(Component, {
-			visualState,
+			visualState: visualState(),
 			parent,
-			props,
-			presenceContext: presenceContext.current,
-			blockInitialAnimation: presenceContext ? presenceContext.current?.initial === false : false,
-			reducedMotionConfig,
+			props: props(),
+			presenceContext,
+			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
+			reducedMotionConfig: reducedMotionContext,
 		});
 	}
 
 	const visualElement = $derived(visualElementRef.current);
 
-	const initialLayoutGroupConfig = $derived(fromStore(useContext(SwitchLayoutGroupContext)).current);
+	const initialLayoutGroupConfig = $derived(useContext(SwitchLayoutGroupContext));
 
 	if (
 		visualElement &&
@@ -66,7 +63,7 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
+		createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
 	}
 
 	let isMounted = false;
@@ -80,8 +77,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			props;
-			untrack(() => visualElement.update(props, presenceContext.current));
+			visualElement.update(props(), presenceContext);
 		}
 
 		return () => {
@@ -99,7 +95,7 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	$effect.pre(() => {
+	$effect(() => {
 		if (!visualElement?.current) return;
 
 		isMounted = true;
@@ -123,7 +119,28 @@ export function useVisualElement<Instance, RenderState>(
 		}
 	});
 
-	$effect.pre(() => {
+	watch.pre(
+		() => new Debounced(props, 250),
+		(props) => {
+			if (!visualElement) return;
+
+			visualElement.updateFeatures();
+			microtask.render(() => visualElement.render);
+
+			if (!wantsHandoff && visualElement.animationState) {
+				visualElement.animationState.animateChanges();
+			}
+		},
+		{
+			/**
+			 * only fire on changes...
+			 * this only fires on changes in props
+			 */
+			lazy: true,
+		}
+	);
+
+	$effect(() => {
 		if (!visualElement) return;
 
 		if (!wantsHandoff && visualElement.animationState) {

@@ -13,9 +13,8 @@ Copyright (c) 2018 Framer B.V. -->
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
-    import { useContext } from "$lib/motion-start/context/utils/context.svelte.js";
+    import { useContext } from "$lib/motion-start/context/utils/context.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
-    import { fromStore } from "svelte/store";
     import { tick } from "svelte";
 
     interface Props extends PresenceChildProps {}
@@ -31,11 +30,11 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = useId();
+    const id = $derived(useId());
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
-    const presenceProps = (freshness?: boolean) => ({
+    const presenceProps = $derived((cacheBuster?: boolean | number) => ({
         id,
         initial,
         isPresent,
@@ -53,29 +52,32 @@ Copyright (c) 2018 Framer B.V. -->
             presenceChildren.set(childId, false);
             return () => presenceChildren.delete(childId);
         },
-    });
+    }));
 
-    let context = fromStore(useContext(PresenceContext)).current;
+    let context = $derived({ current: useContext(PresenceContext) });
 
-    $effect(() => {
+    /**
+     * this context needs to allow updating of value - otherwise exit doesn't play.
+     * but also in current state enter/layout animation plays but doesn't if context object is mutated.
+     */
+    $effect.pre(() => {
         if (presenceAffectsLayout) {
-            context = presenceProps();
+            context.current = presenceProps();
         }
+        context.current = presenceProps(refresh);
     });
-
-    $effect(() => (context = presenceProps(refresh)));
 
     const keyset = (presence: boolean) =>
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
 
     $effect(() => {
         keyset(isPresent);
+
         tick().then(() => {
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
+        PresenceContext.Provider = context.current;
     });
-
-    PresenceContext.Provider = context;
 </script>
 
 {#if mode === "popLayout"}

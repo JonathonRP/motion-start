@@ -9,7 +9,7 @@ import type { Writable, Readable } from 'svelte/store';
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { motionValue } from '../../value/index.svelte';
+import { motionValue } from '../../value';
 import { derived } from 'svelte/store';
 // Does this device prefer reduced motion? Returns `null` server-side.
 let prefersReducedMotion: Writable<boolean | null>;

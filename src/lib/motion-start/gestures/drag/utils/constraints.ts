@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { progress as calcProgress } from '../../../utils/progress';
-import { calcLength } from '../../../projection/geometry/delta-calc.svelte';
+import { calcLength } from '../../../projection/geometry/delta-calc';
 import type { Axis, BoundingBox, Box, Point } from '../../../projection/geometry/types';
 import { clamp } from '../../../utils/clamp';
 import { mixNumber } from '../../../utils/mix/number';

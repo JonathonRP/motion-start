@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { Transition } from '../../types';
 import type { ResolvedValues } from '../../render/types';
 import type { Point, Box, Delta } from '../geometry/types';
-import type { NodeStack } from '../shared/stack.svelte';
+import type { NodeStack } from '../shared/stack';
 import type { AnimationPlaybackControls } from '../../animation/types';
 import type { FlatTree } from '../../render/utils/flat-tree';
 import type { InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';

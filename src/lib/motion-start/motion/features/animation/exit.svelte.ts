@@ -11,13 +11,10 @@ export class ExitAnimationFeature extends Feature<unknown> {
 	private id: number = id++;
 
 	update() {
-		// note this never runs
 		if (!this.node.presenceContext) return;
 
 		const { isPresent, onExitComplete, id } = this.node.presenceContext;
 		const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
-
-		$inspect(isPresent, prevIsPresent, id);
 
 		if (!this.node.animationState || isPresent === prevIsPresent) {
 			return;

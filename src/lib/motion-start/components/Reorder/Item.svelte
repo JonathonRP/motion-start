@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="V">
 	import type { SvelteHTMLElements } from "svelte/elements";
 
-	import { useContext } from "../../context/utils/context.svelte";
+	import { useContext } from "../../context/utils/context";
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
@@ -23,7 +23,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import type { Ref } from "../../utils/safe-react-types";
 	import type { Box } from "../../projection/geometry/types";
-	import type { PanInfo } from "../../gestures/pan/PanSession.svelte";
+	import type { PanInfo } from "../../gestures/pan/PanSession";
 
 	type Props<V> = {
 		/**
@@ -82,11 +82,11 @@ Copyright (c) 2018 Framer B.V. -->
 	);
 
 	invariant(
-		Boolean($context),
+		Boolean(context),
 		"Reorder.Item must be a child of Reorder.Group",
 	);
 
-	const { axis, registerItem, updateOrder } = $derived($context!);
+	const { axis, registerItem, updateOrder } = $derived(context!);
 </script>
 
 <motion.groupItem

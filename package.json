@@ -36,10 +36,10 @@
 		"bits-ui": "^0.22.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-svelte": "^0.468.0",
+		"lucide-svelte": "^0.469.0",
 		"mode-watcher": "^0.5.0",
 		"nanoid": "^5.0.9",
-		"tailwind-merge": "^2.5.5",
+		"tailwind-merge": "^2.6.0",
 		"tailwind-variants": "^0.3.0"
 	},
 	"devDependencies": {
@@ -47,7 +47,7 @@
 		"@changesets/cli": "^2.27.11",
 		"@emotion/is-prop-valid": "^1.3.1",
 		"@sveltejs/adapter-auto": "^3.3.1",
-		"@sveltejs/kit": "^2.13.0",
+		"@sveltejs/kit": "^2.15.1",
 		"@sveltejs/package": "^2.3.7",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
@@ -58,16 +58,16 @@
 		"@vitest/ui": "^2.1.8",
 		"csstype": "^3.1.3",
 		"publint": "^0.2.12",
-		"runed": "^0.20.0",
-		"sv": "^0.6.8",
+		"runed": "^0.22.0",
+		"sv": "^0.6.10",
 		"svelte-check": "^4.1.1",
 		"tailwindcss": "^4.0.0-beta.8",
 		"typescript": "^5.7.2",
-		"vite": "^6.0.4",
+		"vite": "^6.0.6",
 		"vitest": "^2.1.8"
 	},
 	"peerDependencies": {
-		"svelte": "^5.15.0"
+		"svelte": "^5.16.0"
 	},
 	"engines": {
 		"bun": ">=1.0.0",

@@ -1,1 +1,1 @@
-export * from './frame.svelte';
+export * from './frame';

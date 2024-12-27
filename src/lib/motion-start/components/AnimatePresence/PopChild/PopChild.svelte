@@ -5,10 +5,9 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
     import { createRawSnippet, mount } from "svelte";
     import { MotionConfigContext } from "../../../context/MotionConfigContext";
-    import { useContext } from "../../../context/utils/context.svelte";
+    import { useContext } from "../../../context/utils/context";
     import type { Props, MeasureProps, Size } from "./types";
     import type { RefObject } from "../../../utils/safe-react-types";
-    import { fromStore } from "svelte/store";
     import { useId } from "$lib/motion-start/utils/useId";
 
     let { isPresent, children }: Props = $props();
@@ -56,7 +55,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     };
 
-    const { nonce } = fromStore(useContext(MotionConfigContext)).current;
+    const { nonce } = $derived(useContext(MotionConfigContext));
 
     /**
      * We create and inject a style block so we can apply this explicit

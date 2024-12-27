@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Batcher } from '../../frameloop/types';
-import type { MotionValue } from '../../value/index.svelte';
-import { optimizedAppearDataAttribute } from './data-id.svelte';
+import type { MotionValue } from '../../value';
+import { optimizedAppearDataAttribute } from './data-id';
 
 /**
  * Expose only the needed part of the VisualElement interface to

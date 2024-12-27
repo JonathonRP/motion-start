@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionValue } from '../index.svelte';
+import type { MotionValue } from '..';
 import { isCustomValue } from '../../utils/resolve-value.js';
 import type { CustomValueType } from '../../types';
 import { isMotionValue } from './is-motion-value.js';

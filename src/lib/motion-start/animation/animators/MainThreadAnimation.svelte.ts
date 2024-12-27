@@ -6,22 +6,22 @@ Copyright (c) 2018 Framer B.V.
 import {
 	KeyframeResolver as DefaultKeyframeResolver,
 	type ResolvedKeyframes,
-} from '../../render/utils/KeyframesResolver.svelte';
-import { spring } from '../generators/spring/index.svelte';
-import { inertia } from '../generators/inertia.svelte';
-import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes.svelte';
+} from '../../render/utils/KeyframesResolver';
+import { spring } from '../generators/spring';
+import { inertia } from '../generators/inertia';
+import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes';
 import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
-import { BaseAnimation } from './BaseAnimation.svelte';
-import type { AnimationState, KeyframeGenerator } from '../generators/types.svelte';
+import { BaseAnimation } from './BaseAnimation';
+import type { AnimationState, KeyframeGenerator } from '../generators/types';
 import { pipe } from '../../utils/pipe';
 import { mix } from '../../utils/mix';
-import { calcGeneratorDuration } from '../generators/utils/calc-duration.svelte';
+import { calcGeneratorDuration } from '../generators/utils/calc-duration';
 import type { DriverControls } from './drivers/types';
 import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
 import { clamp } from '../../utils/clamp';
 import { invariant } from '../../utils/errors';
-import { frameloopDriver } from './drivers/driver-frameloop.svelte';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.svelte';
+import { frameloopDriver } from './drivers/driver-frameloop';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
 import { isGenerator } from '../generators/utils/is-generator';
 
 type GeneratorFactory = (options: ValueAnimationOptions<any>) => KeyframeGenerator<any>;

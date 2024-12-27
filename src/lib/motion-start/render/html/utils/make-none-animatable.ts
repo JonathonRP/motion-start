@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { analyseComplexValue } from '../../../value/types/complex';
 import { getAnimatableNone } from '../../dom/value-types/animatable-none';
-import type { UnresolvedKeyframes } from '../../utils/KeyframesResolver.svelte';
+import type { UnresolvedKeyframes } from '../../utils/KeyframesResolver';
 
 /**
  * If we encounter keyframes like "none" or "0" and we also have keyframes like
