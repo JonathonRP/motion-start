@@ -405,13 +405,11 @@
         <!-- Start -->
         <Card.Root>
             <Card.Header>
-                <Card.Title>Animate Presence Mode</Card.Title>
-                <Card.Description>
-                    Click the box to visualize the effect
-                </Card.Description>
+                <Card.Title>Reorder List</Card.Title>
+                <Card.Description>Move list items to reorder</Card.Description>
             </Card.Header>
             <Card.Content>
-                <AnimatePresenceMode />
+                <ReorderList />
             </Card.Content>
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
@@ -424,11 +422,13 @@
         <!-- Start -->
         <Card.Root>
             <Card.Header>
-                <Card.Title>Reorder List</Card.Title>
-                <Card.Description>Move list items to reorder</Card.Description>
+                <Card.Title>Animate Presence Mode</Card.Title>
+                <Card.Description>
+                    Click the box to visualize the effect
+                </Card.Description>
             </Card.Header>
             <Card.Content>
-                <ReorderList />
+                <AnimatePresenceMode />
             </Card.Content>
             <Card.Footer>
                 <Card.Footer class="grid gap-1">

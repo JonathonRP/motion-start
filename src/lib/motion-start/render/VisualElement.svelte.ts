@@ -9,8 +9,7 @@ import type { FeatureDefinitions } from '../motion/features/types';
 import type { MotionProps, MotionStyle } from '../motion/types';
 import type { Box } from '../projection/geometry/types';
 import type { IProjectionNode } from '../projection/node/types';
-import { initPrefersReducedMotion } from '../utils/reduced-motion';
-import { hasReducedMotionListener, prefersReducedMotion } from '../utils/reduced-motion/state';
+import { prefersReducedMotion } from '../utils/reduced-motion/state';
 import { SubscriptionManager } from '../utils/subscription-manager';
 import { motionValue, type MotionValue } from '../value';
 import { isMotionValue } from '../value/utils/is-motion-value';
@@ -157,7 +156,7 @@ export abstract class VisualElement<
 	/**
 	 * A set containing references to this VisualElement's children.
 	 */
-	children = new Set<VisualElement<unknown>>();
+	children = new SvelteSet<VisualElement<unknown>>();
 
 	/**
 	 * The depth of this VisualElement within the overall VisualElement tree.
@@ -167,7 +166,7 @@ export abstract class VisualElement<
 	/**
 	 * The current render state of this VisualElement. Defined by inherting VisualElements.
 	 */
-	renderState: RenderState;
+	renderState: RenderState = $state<RenderState>()!;
 
 	/**
 	 * An object containing the latest static values for each of this VisualElement's
@@ -216,7 +215,7 @@ export abstract class VisualElement<
 	/**
 	 * A reference to this VisualElement's projection node, used in layout animations.
 	 */
-	projection?: IProjectionNode<unknown> = $state();
+	projection?: IProjectionNode<unknown>;
 
 	/**
 	 * A map of all motion values attached to this visual element. Motion
@@ -308,7 +307,7 @@ export abstract class VisualElement<
 	/**
 	 * hold subscription to hook into svelte reactivity graph
 	 */
-	// #subscribe;
+	#subscribe;
 
 	constructor(
 		{
@@ -321,7 +320,7 @@ export abstract class VisualElement<
 		}: VisualElementOptions<Instance, RenderState>,
 		options: Options = {} as any
 	) {
-		const { latestValues, renderState } = $derived(visualState);
+		const { latestValues, renderState } = visualState;
 		this.latestValues = latestValues;
 		this.baseTarget = { ...latestValues };
 		this.initialValues = props.initial ? { ...latestValues } : {};
@@ -362,19 +361,19 @@ export abstract class VisualElement<
 			}
 		}
 
-		// this.#subscribe = createSubscriber((update) => {
-		// 	for (const eventKey in this.events) {
-		// 		this.events[eventKey].add(update);
-		// 	}
+		this.#subscribe = createSubscriber((update) => {
+			for (const eventKey in this.events) {
+				this.events[eventKey].add(update);
+			}
 
-		// 	return () => {
-		// 		this.unmount();
-		// 	};
-		// });
+			return () => {
+				this.unmount();
+			};
+		});
 	}
 
 	mount(instance: Instance) {
-		// this.#subscribe();
+		this.#subscribe();
 		this.current = instance;
 
 		visualElementStore.set(instance, this as VisualElement<unknown>);
@@ -389,9 +388,9 @@ export abstract class VisualElement<
 
 		this.values.forEach((value, key) => this.bindToMotionValue(key, value));
 
-		if (!hasReducedMotionListener.current) {
-			initPrefersReducedMotion();
-		}
+		// if (!hasReducedMotionListener.current) {
+		// 	initPrefersReducedMotion();
+		// }
 
 		this.shouldReduceMotion =
 			this.reducedMotionConfig === 'never'

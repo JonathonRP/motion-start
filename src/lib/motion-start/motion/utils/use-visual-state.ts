@@ -13,7 +13,7 @@ import {
 } from '../../render/utils/is-controlling-variants.js';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
 import { useContext } from '../../context/utils/context';
-import { MotionContext, type MotionContextProps } from '../../context/MotionContext';
+import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
 
 export interface VisualState<Instance, RenderState> {
@@ -36,7 +36,7 @@ export type UseVisualState<Instance, RenderState> = (
 function makeState<I, RS>(
 	{ scrapeMotionValuesFromProps, createRenderState, onMount }: UseVisualStateConfig<I, RS>,
 	props: MotionProps,
-	context: MotionContextProps,
+	context: MotionContext,
 	presenceContext: PresenceContext | null
 ) {
 	const state: VisualState<I, RS> = {
@@ -54,16 +54,17 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
-		const make = $derived(() => makeState(config, props, useContext(MotionContext), useContext(PresenceContext)));
+		const make = () =>
+			makeState(config, props, useContext(MotionContext).current!, useContext(PresenceContext).current);
 
 		const state = make();
 
-		return !isStatic ? make() : state;
+		return isStatic ? make() : state;
 	};
 
 function makeLatestValues(
 	props: MotionProps,
-	context: MotionContextProps,
+	context: MotionContext,
 	presenceContext: PresenceContext | null,
 	scrapeMotionValues: ScrapeMotionValuesFromProps
 ) {

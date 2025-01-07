@@ -7,7 +7,7 @@ import type { MotionComponentConfig } from '../../motion/index.svelte';
 import type { SVGRenderState } from './types';
 import { renderSVG } from './utils/render';
 import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values';
-import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
+import { makeUseVisualState } from '../../motion/utils/use-visual-state';
 import { createSvgRenderState } from './utils/create-render-state';
 import { buildSVGAttrs } from './utils/build-attrs';
 import { isSVGTag } from './utils/is-svg-tag';

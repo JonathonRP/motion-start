@@ -31,6 +31,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { globalProjectionState } from "../../../projection/node/state";
   import { microtask } from "../../../frameloop/microtask";
   import type { MeasureProps } from "./MeasureLayout.svelte";
+  import { Previous } from "runed";
 
   interface Props extends MeasureProps {}
 
@@ -46,14 +47,7 @@ Copyright (c) 2018 Framer B.V. -->
   }: Props = $props();
 
   const { projection } = $derived(visualElement);
-  let prevProps: Pick<Props, "isPresent" | "layoutDependency">;
-
-  $effect.pre(() => {
-    prevProps = {
-      isPresent,
-      layoutDependency,
-    };
-  });
+  const prevProps = new Previous(() => ({ isPresent, layoutDependency }));
 
   const _safeToRemove = () => {
     safeToRemove && safeToRemove();
@@ -109,7 +103,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     if (
       drag ||
-      prevProps.layoutDependency !== layoutDependency ||
+      prevProps.current?.layoutDependency !== layoutDependency ||
       layoutDependency === undefined
     ) {
       projection.willUpdate();
@@ -117,7 +111,7 @@ Copyright (c) 2018 Framer B.V. -->
       _safeToRemove();
     }
 
-    if (prevProps.isPresent !== isPresent) {
+    if (prevProps.current?.isPresent !== isPresent) {
       if (isPresent) {
         projection.promote();
       } else if (!projection.relegate()) {

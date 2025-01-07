@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
-<script lang="ts" context="module" module>
+<script lang="ts" module>
 	function useDefaultMotionValue(value: any, defaultValue = 0) {
 		return isMotionValue(value) ? value : useMotionValue(defaultValue);
 	}
@@ -71,20 +71,24 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 	>;
 
-	const context = useContext(ReorderContext);
-	const point = $state({
+	const context = $derived(useContext(ReorderContext).current);
+	const point = $derived({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
 	});
 
-	const zIndex = useTransform([point.x, point.y], ([latestX, latestY]) =>
-		latestX || latestY ? 1 : "unset",
+	const zIndex = $derived(
+		useTransform([point.x, point.y], ([latestX, latestY]) =>
+			latestX || latestY ? 1 : "unset",
+		),
 	);
 
-	invariant(
-		Boolean(context),
-		"Reorder.Item must be a child of Reorder.Group",
-	);
+	$effect(() => {
+		invariant(
+			Boolean(context),
+			"Reorder.Item must be a child of Reorder.Group",
+		);
+	});
 
 	const { axis, registerItem, updateOrder } = $derived(context!);
 </script>
@@ -95,8 +99,7 @@ Copyright (c) 2018 Framer B.V. -->
 	dragSnapToOrigin
 	style={{
 		...style,
-		x: point.x,
-		y: point.y,
+		...point,
 		zIndex,
 	}}
 	{layout}

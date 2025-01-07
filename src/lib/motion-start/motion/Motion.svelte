@@ -8,7 +8,8 @@ Copyright (c) 2018 Framer B.V. -->
     } & MotionProps;
 
     function useLayoutId({ layoutId }: MotionProps) {
-        const layoutGroupId = $derived(useContext(LayoutGroupContext).id);
+        const layoutGroupId = useContext(LayoutGroupContext).current?.id;
+
         return layoutGroupId && layoutId !== undefined
             ? layoutGroupId + "-" + layoutId
             : layoutId;
@@ -18,7 +19,7 @@ Copyright (c) 2018 Framer B.V. -->
         configAndProps: MotionProps,
         preloadedFeatures?: FeatureBundle,
     ) {
-        const isStrict = $derived(useContext(LazyContext).strict);
+        const isStrict = useContext(LazyContext).current?.strict;
 
         /**
          * If we're in development mode, check to make sure we're not rendering a motion component
@@ -116,7 +117,7 @@ Copyright (c) 2018 Framer B.V. -->
     const layoutId = $derived(useLayoutId(motionProps));
 
     const configAndProps = $derived({
-        ...useContext(MotionConfigContext),
+        ...useContext(MotionConfigContext).current,
         ...motionProps,
         layoutId,
     });
@@ -124,46 +125,47 @@ Copyright (c) 2018 Framer B.V. -->
     const { isStatic } = $derived(configAndProps);
 
     const context = $derived(useCreateMotionContext<Instance>(motionProps));
-    const visualState = $derived(useVisualState(motionProps, isStatic));
+    const visualState = $derived(useVisualState(motionProps, isStatic!));
 
-    if (!isStatic && isBrowser) {
-        useStrictMode(configAndProps, preloadedFeatures);
+    $effect.pre(() => {
+        if (!isStatic && isBrowser) {
+            useStrictMode(configAndProps, preloadedFeatures);
 
-        const layoutProjection = $derived(
-            getProjectionFunctionality(configAndProps),
-        );
+            const layoutProjection = getProjectionFunctionality(configAndProps);
 
-        $effect.pre(() => {
             /**
              * If we need to measure the element we load this functionality in a
              * separate class component in order to gain access to getSnapshotBeforeUpdate.
              */
             MeasureLayout = layoutProjection.MeasureLayout;
-        });
 
-        /**
-         * Create a VisualElement for this component. A VisualElement provides a common
-         * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-         * providing a way of rendering to these APIs outside of the React render loop
-         * for more performant animations and interactions
-         */
-        context.visualElement = useVisualElement<Instance, RenderState>(
-            as,
-            () => visualState,
-            () => configAndProps,
-            createVisualElement,
-            () => layoutProjection.ProjectionNode,
-        );
-    }
-
-    $effect(() => {
-        MotionContext.Provider = context;
-        return () => {
-            console.log("dismount");
-            // Since useMotionRef is not called on destroy, the visual element is unmounted here
-            context.visualElement?.unmount();
-        };
+            /**
+             * Create a VisualElement for this component. A VisualElement provides a common
+             * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
+             * providing a way of rendering to these APIs outside of the React render loop
+             * for more performant animations and interactions
+             */
+            context.visualElement = untrack(() =>
+                useVisualElement<Instance, RenderState>(
+                    as,
+                    visualState,
+                    configAndProps,
+                    createVisualElement,
+                    layoutProjection.ProjectionNode,
+                ),
+            );
+        }
     });
+
+    MotionContext.Provider = context;
+
+    // $effect(() => {
+    //     return () => {
+    //         console.log("dismount");
+    //         // Since useMotionRef is not called on destroy, the visual element is unmounted here
+    //         context.visualElement?.unmount();
+    //     };
+    // });
 
     const motionRef = $derived(
         useMotionRef(visualState, context.visualElement, externalRef),
@@ -173,7 +175,7 @@ Copyright (c) 2018 Framer B.V. -->
 {#if MeasureLayout && context.visualElement}
     <MeasureLayout visualElement={context.visualElement} {...configAndProps} />
 {/if}
-<Render Component={as} props={motionProps} {visualState} {isStatic}>
+<Render Component={as} props={motionProps} {visualState} isStatic={isStatic!}>
     {#snippet children({ elementProps })}
         <svelte:element
             this={as}

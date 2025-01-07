@@ -3,17 +3,17 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { derived, readable, toStore, type Readable } from 'svelte/store';
 import { useContext } from '../../context/utils/context';
 import { PresenceContext } from '../../context/PresenceContext';
 import { useId } from '$lib/motion-start/utils/useId';
+import { untrack } from 'svelte';
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
 export type Present = [true];
 export type NotPresent = [false, SafeToRemove];
 
-export function isPresent(context: PresenceContext) {
+export function isPresent(context: PresenceContext | null) {
 	return context === null ? true : context.isPresent;
 }
 
@@ -38,8 +38,8 @@ export function isPresent(context: PresenceContext) {
  * @public
  */
 export const useIsPresent = (): boolean => {
-	const presenceContext = $derived(useContext(PresenceContext));
-	return isPresent(presenceContext);
+	const presenceContext = useContext(PresenceContext);
+	return isPresent(presenceContext.current);
 };
 
 /**
@@ -64,27 +64,21 @@ export const useIsPresent = (): boolean => {
  *
  * @public
  */
-export const usePresence = (): Readable<AlwaysPresent | Present | NotPresent> => {
-	const context = $derived(useContext(PresenceContext));
+export const usePresence = (): AlwaysPresent | Present | NotPresent => {
+	const context = useContext(PresenceContext).current;
 
 	if (context === null) {
-		return readable([true, null]) satisfies Readable<AlwaysPresent>;
+		return [true, null] satisfies AlwaysPresent;
 	}
 
-	const { register } = $derived(context);
+	const { isPresent, onExitComplete, register } = context;
 
 	const id = useId();
 	$effect.pre(() => {
-		if (context !== null) {
-			register(id);
-		}
+		register(id);
 	});
 
-	return derived<Readable<PresenceContext | null>, Present | NotPresent>(
-		toStore(() => context),
-		($v) =>
-			!$v?.isPresent && $v?.onExitComplete
-				? ([false, () => $v.onExitComplete?.(id)] satisfies NotPresent)
-				: ([true] satisfies Present)
-	);
+	const safeToRemove = onExitComplete && onExitComplete(id);
+
+	return !isPresent && onExitComplete && safeToRemove ? [false, safeToRemove] : [true];
 };

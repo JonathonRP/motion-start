@@ -45,7 +45,9 @@ Copyright (c) 2018 Framer B.V. -->
     // PopChild ---
 
     const id = useId();
-    let ref: RefObject<HTMLElement>;
+    let ref: RefObject<HTMLElement> = {
+        current: null,
+    };
     let size: RefObject<Size> = {
         current: {
             width: 0,
@@ -55,7 +57,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     };
 
-    const { nonce } = $derived(useContext(MotionConfigContext));
+    const { nonce } = $derived(useContext(MotionConfigContext).current);
 
     /**
      * We create and inject a style block so we can apply this explicit

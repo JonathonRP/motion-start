@@ -37,14 +37,14 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
-	const { isStatic } = $derived(useContext(MotionConfigContext));
+	const { isStatic } = useContext(MotionConfigContext).current!;
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
-	const value = $state(useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source));
+	const value = $derived(useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source));
 
-	let latestValue = $state(value.get());
-	let latestSetter: (v: number) => void = $state(() => {});
+	let latestValue = value.get();
+	let latestSetter: (v: number) => void = () => {};
 
 	const startAnimation = () => {
 		/**

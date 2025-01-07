@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
     import { SvelteMap } from "svelte/reactivity";
     function newChildrenMap(): Map<string | number, boolean> {
-        return new SvelteMap<string | number, boolean>();
+        return new Map<string | number, boolean>();
     }
 </script>
 
@@ -15,7 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "$lib/motion-start/context/utils/context.js";
     import { useId } from "$lib/motion-start/utils/useId.js";
-    import { tick } from "svelte";
+    import { tick, untrack } from "svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -30,53 +30,55 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = $derived(useId());
+    const id = useId();
 
-    const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
+    const memoOnExitComplete = $derived((childId: string | number) => {
+        presenceChildren.set(childId, true);
+        for (const isComplete of presenceChildren.values()) {
+            if (!isComplete) return;
+        }
 
-    const presenceProps = $derived((cacheBuster?: boolean | number) => ({
+        onExitComplete && onExitComplete();
+    });
+
+    const presenceProps = $derived(() => ({
         id,
         initial,
         isPresent,
         custom,
-        onExitComplete: (childId: string | number) => {
-            presenceChildren.set(childId, true);
-            let allComplete = true;
-            presenceChildren.forEach((isComplete) => {
-                if (!isComplete) allComplete = false;
-            });
-
-            allComplete && onExitComplete?.();
-        },
+        onExitComplete: memoOnExitComplete,
         register: (childId: string | number) => {
             presenceChildren.set(childId, false);
             return () => presenceChildren.delete(childId);
         },
     }));
 
-    let context = $derived({ current: useContext(PresenceContext) });
+    const context = useContext(PresenceContext);
 
-    /**
-     * this context needs to allow updating of value - otherwise exit doesn't play.
-     * but also in current state enter/layout animation plays but doesn't if context object is mutated.
-     */
-    $effect.pre(() => {
+    $effect(() => {
+        memoOnExitComplete;
         if (presenceAffectsLayout) {
             context.current = presenceProps();
         }
-        context.current = presenceProps(refresh);
     });
 
-    const keyset = (presence: boolean) =>
-        presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+    const keyset = $derived((presence: boolean) =>
+        presenceChildren.forEach((_, key) => presenceChildren.set(key, false)),
+    );
 
+    PresenceContext.Provider = context.current;
+
+    // $inspect(isPresent);
     $effect(() => {
+        // $inspect.trace();
+        memoOnExitComplete;
+        context.current = presenceProps();
+
         keyset(isPresent);
 
         tick().then(() => {
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
-        PresenceContext.Provider = context.current;
     });
 </script>
 

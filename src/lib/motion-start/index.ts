@@ -50,7 +50,7 @@ export { useReducedMotionConfig } from './utils/reduced-motion/use-reduced-motio
  * Utils
  */
 export { animationControls } from './animation/hooks/animation-controls';
-export { useAnimate } from './animation/hooks/use-animate';
+export { useAnimate } from './animation/hooks/use-animate.svelte';
 export { useAnimateMini } from './animation/hooks/use-animate-style';
 export {
 	useAnimation,
@@ -175,8 +175,8 @@ export * from './animation/sequence/types';
  * Deprecated
  */
 export { DeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
-export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state';
-export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale.svelte';
+export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state.svelte';
+export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale';
 
 // Keep explict delay in milliseconds export for BC with Framer
 export { delay, type DelayedFunction } from './utils/delay';

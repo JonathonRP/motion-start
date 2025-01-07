@@ -1,3 +1,4 @@
+import type { RefObject } from '$lib/motion-start/utils/safe-react-types';
 import { getContext, hasContext, onMount, setContext, untrack } from 'svelte';
 import { createSubscriber } from 'svelte/reactivity';
 import { fromStore, toStore, writable, type Writable } from 'svelte/store';
@@ -8,14 +9,14 @@ type UnwrapWritable<T> = T extends Writable<infer I> ? I : T;
 interface CallableContext<T> {
 	readonly prototype: CallableContext<T>;
 
-	(): UnwrapWritable<T>;
+	(): RefObject<UnwrapWritable<T>>;
 }
 
 class CallableContext<T> extends Function {
 	// @ts-expect-error
 	// biome-ignore lint/complexity/noBannedTypes: <explanation>
 	// biome-ignore lint/correctness/noUnreachableSuper: <explanation>
-	constructor(get: () => UnwrapWritable<T>) {
+	constructor(get: () => RefObject<UnwrapWritable<T>>) {
 		// biome-ignore lint/correctness/noConstructorReturn: <explanation>
 		return Object.setPrototypeOf(get, new.target.prototype);
 	}
@@ -26,9 +27,13 @@ class Context<T extends Writable<UnwrapWritable<T>>> extends CallableContext<T> 
 
 	public constructor(private initial: T) {
 		super(() => {
+			// if (!hasContext(this)) {
+			// 	this.#state = setContext(this, initial);
+			// } else {
 			this.#state = getContext<T>(this);
+			// }
 
-			return fromStore(this.#state || initial).current;
+			return fromStore(this.#state || initial);
 		});
 		this.#state = this.initial;
 	}

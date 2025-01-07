@@ -1,36 +1,30 @@
-// TODO: update
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Writable, Readable } from 'svelte/store';
+import { toStore } from 'svelte/store';
+import { prefersReducedMotion } from 'svelte/motion';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { motionValue } from '../../value';
-import { derived } from 'svelte/store';
 // Does this device prefer reduced motion? Returns `null` server-side.
-let prefersReducedMotion: Writable<boolean | null>;
+// let prefersReducedMotion: Writable<boolean | null>;
 
-function initPrefersReducedMotion() {
-	prefersReducedMotion = motionValue(null);
+// function initPrefersReducedMotion() {
+// 	prefersReducedMotion = motionValue(null);
 
-	if (typeof window === 'undefined') return;
+// 	if (typeof window === 'undefined') return;
 
-	if (window.matchMedia) {
-		const motionMediaQuery = window.matchMedia('(prefers-reduced-motion)');
+// 	if (window.matchMedia) {
+// 		const motionMediaQuery = window.matchMedia('(prefers-reduced-motion)');
 
-		const setReducedMotionPreferences = () => prefersReducedMotion.set(motionMediaQuery.matches);
+// 		const setReducedMotionPreferences = () => prefersReducedMotion.set(motionMediaQuery.matches);
 
-		motionMediaQuery.addListener(setReducedMotionPreferences);
+// 		motionMediaQuery.addListener(setReducedMotionPreferences);
 
-		setReducedMotionPreferences();
-	} else {
-		prefersReducedMotion.set(false);
-	}
-}
+// 		setReducedMotionPreferences();
+// 	} else {
+// 		prefersReducedMotion.set(false);
+// 	}
+// }
 
 /**
  * A hook that returns `true` if we should be using reduced motion based on the current device's Reduced Motion setting.
@@ -59,7 +53,5 @@ function initPrefersReducedMotion() {
  * @public
  */
 export const useReducedMotion = () => {
-	!prefersReducedMotion && initPrefersReducedMotion();
-
-	return derived(prefersReducedMotion, ($v) => $v);
+	return prefersReducedMotion.current;
 };

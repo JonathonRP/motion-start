@@ -17,7 +17,7 @@ import type {
 	ToggleEventHandler,
 } from 'svelte/elements';
 
-import type { VisualState } from '../motion/utils/use-visual-state.svelte';
+import type { VisualState } from '../motion/utils/use-visual-state';
 import type { MotionValue } from '../value';
 import type { Axis, Box } from '../projection/geometry/types';
 import type { VisualElement } from './VisualElement.svelte';
