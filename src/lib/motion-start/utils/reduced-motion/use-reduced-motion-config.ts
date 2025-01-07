@@ -9,7 +9,7 @@ import { useReducedMotion } from './use-reduced-motion';
 
 export function useReducedMotionConfig() {
 	const reducedMotionPreference = useReducedMotion();
-	const { reducedMotion } = $derived(useContext(MotionConfigContext));
+	const { reducedMotion } = useContext(MotionConfigContext).current!;
 
 	if (reducedMotion === 'never') {
 		return false;

@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
-<script lang="ts" context="module" module>
+<script lang="ts" module>
   type InheritOption = boolean | "id";
 
   export interface LayoutGroupProps {
@@ -30,10 +30,10 @@ Copyright (c) 2018 Framer B.V. -->
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = $derived(useContext(LayoutGroupContext));
+  const layoutGroupContext = $derived(useContext(LayoutGroupContext).current);
 
   const deprecatedLayoutGroupContext = $derived(
-    useContext(DeprecatedLayoutGroupContext),
+    useContext(DeprecatedLayoutGroupContext).current,
   );
 
   const [forceRender, key] = useForceUpdate();
@@ -43,7 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
   } as MutableRefObject<LayoutGroupContext | null>;
 
   const upstreamId = $derived(
-    layoutGroupContext.id || deprecatedLayoutGroupContext,
+    layoutGroupContext?.id || deprecatedLayoutGroupContext,
   );
 
   $effect(() => {
@@ -55,7 +55,7 @@ Copyright (c) 2018 Framer B.V. -->
       context.current = {
         id,
         group: shouldInheritGroup(inherit!)
-          ? layoutGroupContext.group || nodeGroup()
+          ? layoutGroupContext?.group || nodeGroup()
           : nodeGroup(),
       };
     }

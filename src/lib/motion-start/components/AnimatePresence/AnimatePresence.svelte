@@ -26,9 +26,9 @@ Copyright (c) 2018 Framer B.V. -->
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
-    $: layoutContext = useContext(LayoutGroupContext);
+    $: layoutContext = useContext(LayoutGroupContext).current;
     $: forceRender = () => {
-        layoutContext.forceRender?.();
+        layoutContext?.forceRender?.();
         _list = [..._list];
     };
 
@@ -37,8 +37,10 @@ Copyright (c) 2018 Framer B.V. -->
     $: pendingPresentChildren = _list;
 
     let presentChildren = pendingPresentChildren;
-    let diffedChildren = new SvelteMap<string | number, { key: number }>();
-    let exiting = new SvelteSet<"" | number>();
+    // $: presentChildren = pendingPresentChildren;
+
+    let diffedChildren = new Map<string | number, { key: number }>();
+    let exiting = new Set<"" | number>();
     const updateChildLookup = (
         children: { key: number }[],
         allChild: Map<string | number, { key: number }>,

@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
-<script lang="ts" context="module" module>
+<script lang="ts" module>
 	function getValue<V>(item: ItemData<V>) {
 		return item.value;
 	}
@@ -124,12 +124,11 @@ Copyright (c) 2018 Framer B.V. -->
 		},
 	});
 
-	ReorderContext.Provider = context;
-
 	$effect(() => {
 		if (!isReordering) return;
 		isReordering = false;
 	});
+	ReorderContext.Provider = context;
 </script>
 
 <motion.group {...props} bind:ref ignoreStrict>

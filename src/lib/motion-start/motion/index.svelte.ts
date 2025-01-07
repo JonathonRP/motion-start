@@ -23,7 +23,7 @@ import type { RenderComponent, FeatureBundle } from './features/types';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import { MotionContext } from '../context/MotionContext';
 import { useVisualElement } from './utils/use-visual-element.svelte';
-import type { UseVisualState } from './utils/use-visual-state.svelte';
+import type { UseVisualState } from './utils/use-visual-state';
 import { useMotionRef } from './utils/use-motion-ref';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import { loadFeatures } from './features/load-features';

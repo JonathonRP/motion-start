@@ -10,7 +10,7 @@ import type { FeaturePackages } from '../../motion/features/types';
 import { isSVGComponent } from '../dom/utils/is-svg-component';
 import { svgMotionConfig } from '../svg/config-motion';
 import { htmlMotionConfig } from '../html/config-motion';
-import { createUseRender } from '../dom/use-render.svelte';
+import { createUseRender } from '../dom/use-render';
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 import type { MotionProps } from '$lib/motion-start/motion/types';

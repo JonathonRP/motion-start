@@ -24,7 +24,7 @@ Copyright (c) 2018 Framer B.V. -->
    * Inherit props from any parent MotionConfig components
    */
   const config = $derived({
-    ...useContext(MotionConfigContext),
+    ...useContext(MotionConfigContext).current,
     ...{
       transformPagePoint: transformPagePoint!,
       isStatic: isStatic!,

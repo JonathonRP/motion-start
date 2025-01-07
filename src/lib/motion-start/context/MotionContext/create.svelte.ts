@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { MotionContext, type MotionContextProps } from '.';
+import { MotionContext } from '.';
 import type { MotionProps } from '../../motion/types';
 import { getCurrentTreeVariants } from './utils';
 import { useContext } from '../utils/context';
 
-export function useCreateMotionContext<Instance>(props: MotionProps): MotionContextProps<Instance> {
-	const { initial, animate } = $derived(getCurrentTreeVariants(props, useContext(MotionContext)));
+export function useCreateMotionContext<Instance>(props: MotionProps): MotionContext<Instance> {
+	const { initial, animate } = getCurrentTreeVariants(props, useContext(MotionContext).current!);
 
 	const memo = $derived((_initial: string | false | undefined, _animate: string | false | undefined) => ({
 		initial,

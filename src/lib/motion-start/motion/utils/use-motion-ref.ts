@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { VisualState } from './use-visual-state.svelte';
+import type { VisualState } from './use-visual-state';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import type { Ref, RefCallBack } from '../../utils/safe-react-types';
 

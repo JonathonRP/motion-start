@@ -46,7 +46,7 @@ let hasWarned = false;
 export function useInvertedScale(scale?: Partial<ScaleMotionValues>): ScaleMotionValues {
 	let parentScaleX = useMotionValue(1);
 	let parentScaleY = useMotionValue(1);
-	const { visualElement } = $derived(useContext(MotionContext));
+	const { visualElement } = useContext(MotionContext).current!;
 
 	invariant(
 		!!(scale || visualElement),

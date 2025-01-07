@@ -68,20 +68,3 @@
         {/each}
     </Reorder.Group>
 </Box>
-
-<style>
-    :global(li svg) {
-        width: 18px;
-        height: 18px;
-        cursor: grab;
-    }
-
-    :global(.background) {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 300px;
-        background: #fff;
-    }
-</style>
