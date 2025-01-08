@@ -33,13 +33,13 @@ export function useMotionValue<T>(initial: T): MotionValue<T> {
 	 * the Framer canvas, force components to rerender when the motion
 	 * value is updated.
 	 */
-	const { isStatic } = $derived(useContext(MotionConfigContext).current!);
+	const { isStatic } = $derived({ ...useContext(MotionConfigContext).current! });
 
 	if (isStatic) {
 		const setLatest = (_value) => {
 			initial = _value;
 		};
-		$effect.pre(() => untrack(() => value.on('change', setLatest)));
+		$effect.pre(() => value.on('change', setLatest));
 	}
 
 	return value;

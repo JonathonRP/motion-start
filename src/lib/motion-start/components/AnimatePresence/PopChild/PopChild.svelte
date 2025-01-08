@@ -57,7 +57,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     };
 
-    const { nonce } = $derived(useContext(MotionConfigContext).current);
+    const { nonce } = $derived({ ...useContext(MotionConfigContext).current! });
 
     /**
      * We create and inject a style block so we can apply this explicit

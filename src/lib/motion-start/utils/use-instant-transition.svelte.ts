@@ -4,7 +4,7 @@ import { useForceUpdate } from './use-force-update.svelte';
 import { instantAnimationState } from './use-instant-transition-state';
 
 export function useInstantTransition() {
-	const [forceUpdate, forcedRenderCount] = $derived(useForceUpdate());
+	const [forceUpdate, forcedRenderCount] = $derived([...useForceUpdate()]);
 	const startInstantLayoutTransition = useInstantLayoutTransition();
 	let unlockOnFrameRef = -1;
 

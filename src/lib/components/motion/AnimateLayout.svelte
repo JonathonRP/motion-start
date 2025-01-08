@@ -21,7 +21,14 @@
   class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
 >
   <button class="switch" data-active={active} onclick={toggleSwitch}>
-    <motion.div {layout} class="handle" transition={spring} />
+    <motion.div
+      {layout}
+      class="handle"
+      transition={spring}
+      onLayoutUpdate={(...args) => {
+        console.log("change", args);
+      }}
+    />
   </button>
 </div>
 

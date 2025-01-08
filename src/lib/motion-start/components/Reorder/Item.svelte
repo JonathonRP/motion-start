@@ -71,7 +71,7 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 	>;
 
-	const context = $derived(useContext(ReorderContext).current);
+	const context = $derived({ ...useContext(ReorderContext).current });
 	const point = $derived({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
@@ -107,11 +107,12 @@ Copyright (c) 2018 Framer B.V. -->
 		event.stopPropagation();
 
 		const { velocity } = gesturePoint;
-		velocity[axis] && updateOrder(value, point[axis].get(), velocity[axis]);
+		velocity[axis] &&
+			updateOrder?.(value, point[axis].get(), velocity[axis]);
 
 		onDrag && onDrag(event, gesturePoint);
 	}}
-	onLayoutMeasure={(measured: Box) => registerItem(value, measured)}
+	onLayoutMeasure={(measured: Box) => registerItem?.(value, measured)}
 	bind:ref
 	ignoreStrict
 >
