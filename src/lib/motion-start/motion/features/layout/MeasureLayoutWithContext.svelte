@@ -46,7 +46,7 @@ Copyright (c) 2018 Framer B.V. -->
     safeToRemove,
   }: Props = $props();
 
-  const { projection } = $derived(visualElement);
+  const { projection } = $derived({ ...visualElement });
   const prevProps = new Previous(() => ({ isPresent, layoutDependency }));
 
   const _safeToRemove = () => {

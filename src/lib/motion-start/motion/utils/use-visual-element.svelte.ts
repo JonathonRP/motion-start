@@ -27,46 +27,59 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: any
 ): VisualElement<Instance> | null {
-	const { visualElement: parent } = $derived(useContext(MotionContext).current!);
+	const [newVisualState, newProps, newProjectionNodeConstructor] = $derived([
+		visualState,
+		props,
+		ProjectionNodeConstructor,
+	]);
 
-	const lazyContext = $derived(useContext(LazyContext).current);
+	const { visualElement: parent } = $derived({ ...useContext(MotionContext).current! });
 
-	const presenceContext = $derived(useContext(PresenceContext).current);
+	const lazyContext = useContext(LazyContext);
+
+	const presenceContext = useContext(PresenceContext);
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext).current?.reducedMotion);
 
 	const visualElementRef: { current: VisualElement<Instance> | null } = $state({ current: null });
 
-	$inspect(presenceContext?.isPresent, presenceContext?.id);
+	$inspect(presenceContext.current?.isPresent, presenceContext.current?.id);
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
-	createVisualElement = createVisualElement || lazyContext?.renderer;
+	createVisualElement = createVisualElement || lazyContext.current?.renderer;
 
 	if (!visualElementRef.current && createVisualElement) {
 		visualElementRef.current = createVisualElement(Component, {
 			visualState,
 			parent,
 			props,
-			presenceContext,
-			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
+			presenceContext: presenceContext.current,
+			blockInitialAnimation: presenceContext ? presenceContext.current?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
 	}
 
-	const visualElement = $derived(visualElementRef.current);
+	let visualElement = $state(visualElementRef.current);
 
-	const initialLayoutGroupConfig = $derived(useContext(SwitchLayoutGroupContext));
+	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext);
 
-	if (
-		visualElement &&
-		!visualElement.projection &&
-		ProjectionNodeConstructor &&
-		(visualElement.type === 'html' || visualElement.type === 'svg')
-	) {
-		createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig!);
-	}
+	$effect.pre(() => {
+		if (
+			visualElement &&
+			!visualElement.projection &&
+			ProjectionNodeConstructor &&
+			(visualElement.type === 'html' || visualElement.type === 'svg')
+		) {
+			createProjectionNode(
+				visualElementRef.current!,
+				props,
+				ProjectionNodeConstructor,
+				initialLayoutGroupConfig.current!
+			);
+		}
+	});
 
 	const isMounted = new IsMounted();
 	$effect.pre(() => {
@@ -78,7 +91,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			visualElement.update(props, presenceContext);
+			visualElement.update(props, presenceContext.current);
 		}
 	});
 
@@ -93,7 +106,8 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	$effect(() => {
-		if (!visualElement?.current) return;
+		visualElement = visualElementRef.current;
+		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
 

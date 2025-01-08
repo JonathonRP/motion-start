@@ -30,11 +30,9 @@ Copyright (c) 2018 Framer B.V. -->
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = $derived(useContext(LayoutGroupContext).current);
+  const layoutGroupContext = useContext(LayoutGroupContext);
 
-  const deprecatedLayoutGroupContext = $derived(
-    useContext(DeprecatedLayoutGroupContext).current,
-  );
+  const deprecatedLayoutGroupContext = useContext(DeprecatedLayoutGroupContext);
 
   const [forceRender, key] = useForceUpdate();
 
@@ -43,7 +41,7 @@ Copyright (c) 2018 Framer B.V. -->
   } as MutableRefObject<LayoutGroupContext | null>;
 
   const upstreamId = $derived(
-    layoutGroupContext?.id || deprecatedLayoutGroupContext,
+    layoutGroupContext.current?.id || deprecatedLayoutGroupContext.current,
   );
 
   $effect(() => {
@@ -55,7 +53,7 @@ Copyright (c) 2018 Framer B.V. -->
       context.current = {
         id,
         group: shouldInheritGroup(inherit!)
-          ? layoutGroupContext?.group || nodeGroup()
+          ? layoutGroupContext.current?.group || nodeGroup()
           : nodeGroup(),
       };
     }
@@ -68,7 +66,7 @@ Copyright (c) 2018 Framer B.V. -->
     };
   });
 
-  $effect(() => {
+  $effect.pre(() => {
     LayoutGroupContext.Provider = memo(key);
   });
 </script>

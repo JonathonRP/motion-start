@@ -23,8 +23,11 @@
             <motion.div
                 active={1 * !active}
                 layout
-                class="handle"
                 transition={spring}
+                onLayoutUpdate={(...args) => {
+                    console.log("change", args);
+                }}
+                class="handle"
             />
         </button>
     </div>

@@ -128,7 +128,10 @@ Copyright (c) 2018 Framer B.V. -->
 		if (!isReordering) return;
 		isReordering = false;
 	});
-	ReorderContext.Provider = context;
+
+	$effect.pre(() => {
+		ReorderContext.Provider = context;
+	});
 </script>
 
 <motion.group {...props} bind:ref ignoreStrict>

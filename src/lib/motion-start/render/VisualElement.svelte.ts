@@ -146,7 +146,7 @@ export abstract class VisualElement<
 	 * A reference to the current underlying Instance, e.g. a HTMLElement
 	 * or Three.Mesh etc.
 	 */
-	current: Instance | null = $state(null);
+	current: Instance | null = null;
 
 	/**
 	 * A reference to the parent VisualElement (if exists).
@@ -156,7 +156,7 @@ export abstract class VisualElement<
 	/**
 	 * A set containing references to this VisualElement's children.
 	 */
-	children = new SvelteSet<VisualElement<unknown>>();
+	children = new Set<VisualElement<unknown>>();
 
 	/**
 	 * The depth of this VisualElement within the overall VisualElement tree.
@@ -166,7 +166,7 @@ export abstract class VisualElement<
 	/**
 	 * The current render state of this VisualElement. Defined by inherting VisualElements.
 	 */
-	renderState: RenderState = $state<RenderState>()!;
+	renderState: RenderState;
 
 	/**
 	 * An object containing the latest static values for each of this VisualElement's
@@ -222,12 +222,12 @@ export abstract class VisualElement<
 	 * values are source of truth for any given animated value. A motion
 	 * value might be provided externally by the component via props.
 	 */
-	values = new SvelteMap<string, MotionValue>();
+	values = new Map<string, MotionValue>();
 
 	/**
 	 * The AnimationState, this is hydrated by the animation Feature.
 	 */
-	animationState?: AnimationState = $state();
+	animationState?: AnimationState;
 
 	KeyframeResolver = KeyframeResolver;
 

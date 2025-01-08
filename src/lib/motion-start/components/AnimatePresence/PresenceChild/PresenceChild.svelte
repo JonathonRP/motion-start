@@ -29,10 +29,10 @@ Copyright (c) 2018 Framer B.V. -->
         children,
     }: Props = $props();
 
-    const presenceChildren = newChildrenMap();
+    const presenceChildren = $derived(newChildrenMap());
     const id = useId();
 
-    const memoOnExitComplete = $derived((childId: string | number) => {
+    const memoExitComplete = $derived((childId: string | number) => {
         presenceChildren.set(childId, true);
         for (const isComplete of presenceChildren.values()) {
             if (!isComplete) return;
@@ -46,7 +46,7 @@ Copyright (c) 2018 Framer B.V. -->
         initial,
         isPresent,
         custom,
-        onExitComplete: memoOnExitComplete,
+        onExitComplete: memoExitComplete,
         register: (childId: string | number) => {
             presenceChildren.set(childId, false);
             return () => presenceChildren.delete(childId);
@@ -56,7 +56,7 @@ Copyright (c) 2018 Framer B.V. -->
     const context = useContext(PresenceContext);
 
     $effect(() => {
-        memoOnExitComplete;
+        memoExitComplete;
         if (presenceAffectsLayout) {
             context.current = presenceProps();
         }
@@ -66,19 +66,21 @@ Copyright (c) 2018 Framer B.V. -->
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false)),
     );
 
-    PresenceContext.Provider = context.current;
-
-    // $inspect(isPresent);
-    $effect(() => {
+    $effect.pre(() => {
         // $inspect.trace();
-        memoOnExitComplete;
+        memoExitComplete;
         context.current = presenceProps();
 
         keyset(isPresent);
+    });
 
-        tick().then(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
-        });
+    $effect.pre(() => {
+        PresenceContext.Provider = context.current;
+    });
+
+    // $inspect(isPresent);
+    $effect(() => {
+        !isPresent && !presenceChildren.size && onExitComplete?.();
     });
 </script>
 
