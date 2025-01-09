@@ -33,13 +33,13 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor,
 	]);
 
-	const { visualElement: parent } = $derived({ ...useContext(MotionContext).current! });
+	const { visualElement: parent } = useContext(MotionContext).current!;
 
 	const lazyContext = useContext(LazyContext);
 
 	const presenceContext = useContext(PresenceContext);
 
-	const reducedMotionContext = $derived(useContext(MotionConfigContext).current?.reducedMotion);
+	const reducedMotionContext = useContext(MotionConfigContext).current?.reducedMotion;
 
 	const visualElementRef: { current: VisualElement<Instance> | null } = $state({ current: null });
 

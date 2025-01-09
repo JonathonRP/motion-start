@@ -124,8 +124,8 @@ Copyright (c) 2018 Framer B.V. -->
 
   const { isStatic } = $derived(configAndProps);
 
-  const context = useCreateMotionContext<Instance>(motionProps);
-  const visualState = useVisualState(motionProps, isStatic!);
+  const context = $derived(useCreateMotionContext<Instance>(motionProps));
+  const visualState = $derived(useVisualState(motionProps, isStatic!));
 
   if (!isStatic && isBrowser) {
     useStrictMode(configAndProps, preloadedFeatures);

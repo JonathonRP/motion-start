@@ -37,7 +37,7 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
-	const { isStatic } = $derived({ ...useContext(MotionConfigContext).current! });
+	const { isStatic } = useContext(MotionConfigContext).current!;
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 

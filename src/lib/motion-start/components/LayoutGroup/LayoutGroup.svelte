@@ -34,7 +34,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   const deprecatedLayoutGroupContext = useContext(DeprecatedLayoutGroupContext);
 
-  const [forceRender, key] = useForceUpdate();
+  const [forceRender, key] = $derived([...useForceUpdate()]);
 
   let context = {
     current: null,
