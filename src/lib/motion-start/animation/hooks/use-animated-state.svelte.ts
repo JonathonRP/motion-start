@@ -53,19 +53,17 @@ export function useAnimatedState(initialState: any) {
 	let animationState = $state(initialState);
 	const visualState = useVisualState({}, false);
 
-	const element = $derived(
-		new StateVisualElement(
-			{
-				props: {
-					onUpdate: (v) => {
-						animationState = { ...v };
-					},
+	const element = new StateVisualElement(
+		{
+			props: {
+				onUpdate: (v) => {
+					animationState = { ...v };
 				},
-				visualState,
-				presenceContext: null,
 			},
-			{ initialState }
-		)
+			visualState,
+			presenceContext: null,
+		},
+		{ initialState }
 	);
 
 	$effect.pre(() => {

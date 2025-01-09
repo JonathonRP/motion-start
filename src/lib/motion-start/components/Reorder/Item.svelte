@@ -71,7 +71,7 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 	>;
 
-	const context = $derived({ ...useContext(ReorderContext).current });
+	const context = useContext(ReorderContext);
 	const point = $derived({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
@@ -90,7 +90,7 @@ Copyright (c) 2018 Framer B.V. -->
 		);
 	});
 
-	const { axis, registerItem, updateOrder } = $derived(context!);
+	const { axis, registerItem, updateOrder } = context.current!;
 </script>
 
 <motion.groupItem
