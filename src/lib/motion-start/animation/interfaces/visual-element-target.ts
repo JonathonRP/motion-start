@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { transformProps } from '../../render/html/utils/transform';
 import type { AnimationTypeState } from '../../render/utils/animation-state';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement';
 import type { TargetAndTransition } from '../../types';
 import type { VisualElementAnimationOptions } from './types';
 import { animateMotionValue } from './motion-value';

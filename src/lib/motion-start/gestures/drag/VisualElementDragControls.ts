@@ -18,7 +18,7 @@ import {
 	defaultElastic,
 	calcOrigin,
 } from './utils/constraints';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement';
 import type { MotionProps } from '../../motion/types';
 import type { Axis, Point } from '../../projection/geometry/types';
 import { createBox } from '../../projection/geometry/models';

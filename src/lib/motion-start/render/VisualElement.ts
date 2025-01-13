@@ -36,7 +36,7 @@ import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
-import { createSubscriber, SvelteMap, SvelteSet } from 'svelte/reactivity';
+import { createSubscriber } from 'svelte/reactivity';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -307,7 +307,12 @@ export abstract class VisualElement<
 	/**
 	 * hold subscription to hook into svelte reactivity graph
 	 */
-	#subscribe;
+	#subscribe: ReturnType<typeof createSubscriber>;
+
+	/**
+	 * hold update callback to hook into svelte reactivity graph
+	 */
+	#update: () => void = () => {};
 
 	constructor(
 		{
@@ -336,7 +341,7 @@ export abstract class VisualElement<
 		this.isControllingVariants = checkIsControllingVariants(props);
 		this.isVariantNode = checkIsVariantNode(props);
 		if (this.isVariantNode) {
-			this.variantChildren = new SvelteSet();
+			this.variantChildren = new Set();
 		}
 
 		this.manuallyAnimateOnMount = Boolean(parent && parent.current);
@@ -362,6 +367,7 @@ export abstract class VisualElement<
 		}
 
 		this.#subscribe = createSubscriber((update) => {
+			this.#update = update;
 			for (const eventKey in this.events) {
 				this.events[eventKey].add(update);
 			}
@@ -588,6 +594,8 @@ export abstract class VisualElement<
 		if (this.handleChildMotionValue) {
 			this.handleChildMotionValue();
 		}
+
+		this.#update();
 	}
 
 	getProps() {

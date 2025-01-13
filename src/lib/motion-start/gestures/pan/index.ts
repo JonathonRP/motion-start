@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { type PanInfo, PanSession } from './PanSession';
 import { addPointerEvent } from '../../events/add-pointer-event';
-import { Feature } from '../../motion/features/Feature.svelte';
+import { Feature } from '../../motion/features/Feature';
 import { noop } from '../../utils/noop';
 import { getContextWindow } from '../../utils/get-context-window';
 import { frame } from '../../frameloop';

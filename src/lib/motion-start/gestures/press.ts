@@ -7,7 +7,7 @@ import { type EventListenerWithPointInfo, extractEventInfo } from '../events/eve
 import type { EventInfo } from '../events/types';
 import { addDomEvent } from '../events/add-dom-event';
 import { addPointerEvent } from '../events/add-pointer-event';
-import { Feature } from '../motion/features/Feature.svelte';
+import { Feature } from '../motion/features/Feature';
 import { pipe } from '../utils/pipe';
 import { isDragActive } from './drag/utils/lock';
 import { isNodeOrChild } from './utils/is-node-or-child';
