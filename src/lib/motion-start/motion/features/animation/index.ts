@@ -5,8 +5,8 @@ Copyright (c) 2018 Framer B.V.
 
 import { isAnimationControls } from '../../../animation/utils/is-animation-controls';
 import { createAnimationState } from '../../../render/utils/animation-state';
-import type { VisualElement } from '../../../render/VisualElement.svelte';
-import { Feature } from '../Feature.svelte';
+import type { VisualElement } from '../../../render/VisualElement';
+import { Feature } from '../Feature';
 
 export class AnimationFeature extends Feature<unknown> {
 	unmountControls?: () => void;

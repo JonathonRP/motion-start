@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { frame } from '../../frameloop';
 import type { MotionValue } from '../../value';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { VisualElement } from '../VisualElement';
 import { removeNonTranslationalTransform } from '../dom/utils/unit-conversion';
 
 export type UnresolvedKeyframes<T extends string | number> = Array<T | null>;

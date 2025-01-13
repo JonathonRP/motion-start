@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { AnimationFeature } from './animation';
-import { ExitAnimationFeature } from './animation/exit.svelte';
+import { ExitAnimationFeature } from './animation/exit';
 import type { FeaturePackages } from './types';
 
 export const animations: FeaturePackages = {

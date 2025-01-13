@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { MotionProps } from '../../types';
-import { Feature } from '../Feature.svelte';
+import { Feature } from '../Feature';
 import { observeIntersection } from './observers';
 
 const thresholdNames = {

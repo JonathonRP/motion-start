@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { addDomEvent } from '../events/add-dom-event';
-import { Feature } from '../motion/features/Feature.svelte';
+import { Feature } from '../motion/features/Feature';
 import { pipe } from '../utils/pipe';
 
 export class FocusGesture extends Feature<Element> {

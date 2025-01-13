@@ -13,8 +13,8 @@ Copyright (c) 2018 Framer B.V. -->
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
-    import { useContext } from "$lib/motion-start/context/utils/context.js";
-    import { useId } from "$lib/motion-start/utils/useId.js";
+    import { useContext } from "../../../context/utils/context.js";
+    import { useId } from "../../../utils/useId.js";
     import { tick, untrack } from "svelte";
 
     interface Props extends PresenceChildProps {}
@@ -74,9 +74,7 @@ Copyright (c) 2018 Framer B.V. -->
         keyset(isPresent);
     });
 
-    $effect.pre(() => {
-        PresenceContext.Provider = context.current;
-    });
+    PresenceContext.Provider = context.current;
 
     // $inspect(isPresent);
     $effect(() => {

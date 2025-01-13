@@ -7,7 +7,7 @@ import type { MotionStyle } from '../../motion/types';
 import { warnOnce } from '../../utils/warn-once';
 import { motionValue } from '../../value';
 import { isMotionValue } from '../../value/utils/is-motion-value';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { VisualElement } from '../VisualElement';
 
 export function updateMotionValuesFromProps<I>(element: VisualElement<I>, next: MotionStyle, prev: MotionStyle) {
 	for (const key in next) {

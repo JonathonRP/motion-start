@@ -1,4 +1,4 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { useContext } from "../../context/utils/context.js";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
-    import { invariant } from "$lib/motion-start/utils/errors.js";
+    import { invariant } from "../../utils/errors.js";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
     import { getChildKey } from "./utils.js";
 

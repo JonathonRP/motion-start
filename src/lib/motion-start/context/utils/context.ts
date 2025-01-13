@@ -1,4 +1,4 @@
-import type { RefObject } from '$lib/motion-start/utils/safe-react-types';
+import type { RefObject } from '../../utils/safe-react-types';
 import { getContext, hasContext, onMount, setContext, untrack } from 'svelte';
 import { createSubscriber } from 'svelte/reactivity';
 import { fromStore, toStore, writable, type Writable } from 'svelte/store';

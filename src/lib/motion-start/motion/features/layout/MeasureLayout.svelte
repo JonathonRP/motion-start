@@ -20,7 +20,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import { LayoutGroupContext } from "../../../context/LayoutGroupContext";
 	import { SwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
 	import type { MotionProps } from "../../types";
-	import type { VisualElement } from "../../../render/VisualElement.svelte";
+	import type { VisualElement } from "../../../render/VisualElement";
 	import MeasureLayoutWithContext from "./MeasureLayoutWithContext.svelte";
 
 	const props: MotionProps & { visualElement: VisualElement<unknown> } =

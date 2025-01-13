@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Feature } from '../../motion/features/Feature.svelte';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import { Feature } from '../../motion/features/Feature';
+import type { VisualElement } from '../../render/VisualElement';
 import { noop } from '../../utils/noop';
 import { VisualElementDragControls } from './VisualElementDragControls';
 
