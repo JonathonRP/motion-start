@@ -25,10 +25,10 @@ export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,
 	createVisualElement?: CreateVisualElement<any>
 ) {
-	return function createMotionComponent<
-		Props extends MotionProps,
-		TagName extends keyof DOMMotionComponents | string = 'div',
-	>(Component: TagName | string, { forwardMotionProps } = { forwardMotionProps: false }) {
+	return function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = 'div'>(
+		Component: TagName | string,
+		{ forwardMotionProps } = { forwardMotionProps: false }
+	) {
 		const baseConfig = isSVGComponent(Component) ? svgMotionConfig : htmlMotionConfig;
 
 		const config = {

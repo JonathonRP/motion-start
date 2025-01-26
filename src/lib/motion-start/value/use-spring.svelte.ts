@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionValue } from '.';
-import { isMotionValue } from './utils/is-motion-value';
-import { useMotionValue } from './use-motion-value.svelte';
-import { useContext } from '../context/utils/context';
-import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { SpringOptions } from '../animation/types';
-import { frame, frameData } from '../frameloop';
+import { useContext } from '../context/use';
 import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation.svelte';
+import { MotionConfigContext } from '../context/MotionConfigContext';
+import { frame } from '../frameloop';
+import type { MotionValue } from '.';
+import { useMotionValue } from './use-motion-value.svelte';
+import { isMotionValue } from './utils/is-motion-value';
 
 function toNumber(v: string | number) {
 	if (typeof v === 'number') return v;
@@ -37,7 +37,7 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
-	const { isStatic } = useContext(MotionConfigContext).current!;
+	const { isStatic } = useContext(MotionConfigContext);
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
@@ -47,15 +47,6 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 	let latestSetter: (v: number) => void = () => {};
 
 	const startAnimation = () => {
-		/**
-		 * If the previous animation hasn't had the chance to even render a frame, render it now.
-		 */
-		const animation = activeSpringAnimation;
-
-		if (animation && animation.time === 0) {
-			animation.sample(frameData.delta);
-		}
-
 		stopAnimation();
 
 		activeSpringAnimation = animateValue({
@@ -75,8 +66,9 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 		}
 	};
 
-	const insertEffect = (_config: typeof config) => () => {
-		value.attach((v, set) => {
+	$effect.pre(() => {
+		JSON.stringify(config);
+		return value.attach((v, set) => {
 			if (isStatic) {
 				return set(v);
 			}
@@ -84,21 +76,19 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 			latestValue = v;
 			latestSetter = set;
 
-			frame.update(startAnimation);
+			frame.postRender(startAnimation);
 
 			return value.get();
 		}, stopAnimation);
-	};
+	});
 
-	const layoutEffect = (_value: typeof value) => () => {
+	const handleChange = $derived((v: any) => value.set(Number.parseFloat(v)));
+
+	$effect.pre(() => {
 		if (isMotionValue(source)) {
-			return source.on('change', (v) => value.set(Number.parseFloat(v)));
+			return source.on('change', handleChange);
 		}
-	};
-
-	$effect.pre(insertEffect(config));
-
-	$effect.pre(layoutEffect(value));
+	});
 
 	return value;
 };

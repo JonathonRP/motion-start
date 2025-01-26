@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { IProjectionNode } from '../projection/node/types';
 import type { Transition } from '../types';
-import { createContext } from './utils/context';
+import { createContext } from './create';
 
 export interface SwitchLayoutGroup {
 	register?: <I>(member: IProjectionNode<I>) => void;

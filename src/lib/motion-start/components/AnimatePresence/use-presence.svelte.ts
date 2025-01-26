@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { useContext } from '../../context/utils/context';
+import { useContext } from '../../context/use';
 import { PresenceContext } from '../../context/PresenceContext';
 import { useId } from '$lib/motion-start/utils/useId';
 import { untrack } from 'svelte';
@@ -39,7 +39,7 @@ export function isPresent(context: PresenceContext | null) {
  */
 export const useIsPresent = (): boolean => {
 	const presenceContext = useContext(PresenceContext);
-	return isPresent(presenceContext.current);
+	return isPresent(presenceContext);
 };
 
 /**
@@ -65,7 +65,7 @@ export const useIsPresent = (): boolean => {
  * @public
  */
 export const usePresence = (): AlwaysPresent | Present | NotPresent => {
-	const context = useContext(PresenceContext).current;
+	const context = useContext(PresenceContext);
 
 	if (context === null) {
 		return [true, null] satisfies AlwaysPresent;

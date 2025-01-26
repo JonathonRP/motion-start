@@ -2,7 +2,7 @@
     import Box from "../Box.svelte";
 
     // Cycling through states
-    import { motion, useCycle, useMotionValue } from "$lib/motion-start";
+    import { motion, useCycle } from "$lib/motion-start";
     let stateText = "State 1";
     // In React
     // const [animate, cycle] = useCycle(
@@ -17,26 +17,21 @@
     // );
     // In Svelte
     let [rotate, cycleRotate] = useCycle(0, 90);
-    let [scale, cycleScale] = useCycle(0.8, 1.2);
-    let x = useCycle(0, 140);
-    let [backgroundColor, cycleBackgroundColor] = useCycle(
-        "#9EF4FF",
-        "#0FBFFF",
+    let [animate, cycle] = useCycle(
+        { scale: 0.8, backgroundColor: "#9EF4FF" },
+        { scale: 1.2, backgroundColor: "#0FBFFF" },
     );
+    let x = useCycle(0, 140);
 </script>
 
 <Box>
     <motion.div
-        animate={{
-            scale: $scale,
-            backgroundColor: $backgroundColor,
-        }}
+        animate={$animate}
         transition={{
             duration: 0.3,
         }}
         onTap={() => {
-            cycleScale();
-            cycleBackgroundColor();
+            cycle();
             if (stateText === "State 1") {
                 stateText = "State 2";
             } else {

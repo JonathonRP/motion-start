@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { CreateVisualElement } from '../render/types';
-import { createContext } from './utils/context';
+import { createContext } from './create';
 
 export interface LazyContext {
 	renderer?: CreateVisualElement<any>;

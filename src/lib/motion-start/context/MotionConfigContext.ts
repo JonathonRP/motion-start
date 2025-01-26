@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { TransformPoint } from '../projection/geometry/types';
 import type { Transition } from '../types';
-import { createContext } from './utils/context';
+import { createContext } from './create';
 
 export type ReducedMotionConfig = 'always' | 'never' | 'user';
 

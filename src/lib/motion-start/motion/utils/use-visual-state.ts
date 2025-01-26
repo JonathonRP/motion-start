@@ -12,7 +12,7 @@ import {
 	isVariantNode as checkIsVariantNode,
 } from '../../render/utils/is-controlling-variants.js';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
-import { useContext } from '../../context/utils/context';
+import { useContext } from '../../context/use';
 import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
 
@@ -54,8 +54,7 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
-		const make = () =>
-			makeState(config, props, useContext(MotionContext).current!, useContext(PresenceContext).current);
+		const make = () => makeState(config, props, useContext(MotionContext), useContext(PresenceContext));
 
 		const state = make();
 

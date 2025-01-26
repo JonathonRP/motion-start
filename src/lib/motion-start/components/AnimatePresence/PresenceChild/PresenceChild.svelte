@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
     import { SvelteMap } from "svelte/reactivity";
     function newChildrenMap(): Map<string | number, boolean> {
-        return new Map<string | number, boolean>();
+        return new SvelteMap<string | number, boolean>();
     }
 </script>
 
@@ -13,7 +13,7 @@ Copyright (c) 2018 Framer B.V. -->
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
-    import { useContext } from "../../../context/utils/context.js";
+    import { useContext } from "../../../context/use";
     import { useId } from "../../../utils/useId.js";
     import { tick, untrack } from "svelte";
 
@@ -29,11 +29,11 @@ Copyright (c) 2018 Framer B.V. -->
         children,
     }: Props = $props();
 
-    const presenceChildren = $derived(newChildrenMap());
+    const presenceChildren = newChildrenMap();
     const id = useId();
 
     const memoExitComplete = $derived((childId: string | number) => {
-        presenceChildren.set(childId, true);
+        untrack(() => presenceChildren.set(childId, true));
         for (const isComplete of presenceChildren.values()) {
             if (!isComplete) return;
         }
@@ -53,7 +53,11 @@ Copyright (c) 2018 Framer B.V. -->
         },
     }));
 
-    const context = useContext(PresenceContext);
+    // FIX: may need to go back to using .current api
+    const context = $derived.by(() => {
+        let presence = $state({ current: useContext(PresenceContext) });
+        return presence;
+    });
 
     $effect(() => {
         memoExitComplete;
@@ -68,18 +72,20 @@ Copyright (c) 2018 Framer B.V. -->
 
     $effect.pre(() => {
         // $inspect.trace();
+        isPresent;
         memoExitComplete;
         context.current = presenceProps();
-
-        keyset(isPresent);
     });
-
-    PresenceContext.Provider = context.current;
 
     // $inspect(isPresent);
     $effect(() => {
-        !isPresent && !presenceChildren.size && onExitComplete?.();
+        keyset(isPresent);
+        tick().then(() => {
+            !isPresent && !presenceChildren.size && onExitComplete?.();
+        });
     });
+
+    PresenceContext.Provider = context.current;
 </script>
 
 {#if mode === "popLayout"}

@@ -16,7 +16,7 @@ import type { IProjectionNode } from '../../projection/node/types';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { microtask } from '../../frameloop/microtask';
-import { useContext } from '../../context/utils/context';
+import { useContext } from '../../context/use';
 import { tick, untrack } from 'svelte';
 import { Debounced, IsMounted, useDebounce, watch } from 'runed';
 
@@ -27,28 +27,28 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: () => any
 ): VisualElement<Instance> | null {
-	const { visualElement: parent } = useContext(MotionContext).current!;
+	const { visualElement: parent } = $derived(useContext(MotionContext));
 
-	const lazyContext = useContext(LazyContext);
+	const lazyContext = $derived(useContext(LazyContext));
 
-	const presenceContext = useContext(PresenceContext);
+	const presenceContext = $derived(useContext(PresenceContext));
 
-	const reducedMotionContext = useContext(MotionConfigContext).current?.reducedMotion;
+	const reducedMotionContext = $derived(useContext(MotionConfigContext)?.reducedMotion);
 
 	const visualElementRef: { current: VisualElement<Instance> | null } = $state({ current: null });
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
-	createVisualElement = createVisualElement || lazyContext.current?.renderer;
+	createVisualElement = createVisualElement || lazyContext?.renderer;
 
 	if (!visualElementRef.current && createVisualElement) {
 		visualElementRef.current = createVisualElement(Component, {
 			visualState: visualState(),
 			parent,
 			props: props(),
-			presenceContext: presenceContext.current,
-			blockInitialAnimation: presenceContext ? presenceContext.current?.initial === false : false,
+			presenceContext,
+			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
 	}
@@ -63,12 +63,7 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor?.() &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(
-			visualElementRef.current!,
-			props(),
-			ProjectionNodeConstructor(),
-			initialLayoutGroupConfig.current!
-		);
+		createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
 	}
 
 	const isMounted = new IsMounted();
@@ -81,7 +76,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			visualElement.update(props(), presenceContext.current);
+			visualElement.update(props(), presenceContext);
 		}
 	});
 
@@ -95,7 +90,10 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
+	// $inspect(presenceContext.current);
+
 	$effect(() => {
+		$inspect(presenceContext);
 		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
@@ -156,6 +154,16 @@ export function useVisualElement<Instance, RenderState>(
 			wantsHandoff = false;
 		}
 	});
+
+	// watch(
+	// 	() => presenceContext.current,
+	// 	() => {
+	// 		visualElement?.updateFeatures();
+
+	// 		microtask.render(() => visualElement.render);
+	// 	},
+	// 	{ lazy: true }
+	// );
 
 	return visualElement;
 }
