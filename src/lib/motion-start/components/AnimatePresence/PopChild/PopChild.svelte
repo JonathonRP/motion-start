@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
     import { createRawSnippet, mount } from "svelte";
     import { MotionConfigContext } from "../../../context/MotionConfigContext";
-    import { useContext } from "../../../context/utils/context";
+    import { useContext } from "../../../context/use";
     import type { Props, MeasureProps, Size } from "./types";
     import type { RefObject } from "../../../utils/safe-react-types";
     import { useId } from "$lib/motion-start/utils/useId";
@@ -46,7 +46,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     const id = useId();
     let ref: RefObject<HTMLElement> = {
-        current: null,
+        current: null!,
     };
     let size: RefObject<Size> = {
         current: {
@@ -57,7 +57,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     };
 
-    const { nonce } = useContext(MotionConfigContext).current!;
+    const { nonce } = useContext(MotionConfigContext);
 
     /**
      * We create and inject a style block so we can apply this explicit
@@ -69,7 +69,7 @@ Copyright (c) 2018 Framer B.V. -->
      * styles set via the style prop.
      */
     $effect.pre(() => {
-        const { width, height, top, left } = size.current!;
+        const { width, height, top, left } = size.current;
         if (isPresent || !ref.current || !width || !height) return;
 
         ref.current.dataset.motionPopId = id.toString();

@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { VisualElement } from '../../render/VisualElement';
-import { createContext } from '../utils/context';
+import { createContext } from '../create';
 
 export interface MotionContext<Instance = unknown> {
 	visualElement?: VisualElement<Instance> | null;

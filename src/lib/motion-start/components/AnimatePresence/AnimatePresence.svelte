@@ -4,16 +4,17 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-    import { useContext } from "../../context/utils/context.js";
+    import { useContext } from "../../context/use";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
     import { invariant } from "../../utils/errors.js";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
     import { getChildKey } from "./utils.js";
+    import { untrack } from "svelte";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
     export let list: $$Props["list"] = undefined,
-        mode = "sync" as const,
+        mode: $$Props["mode"] = "sync" as const,
         custom: $$Props["custom"] = undefined,
         initial: $$Props["initial"] = true,
         onExitComplete: $$Props["onExitComplete"] = undefined,
@@ -26,7 +27,7 @@ Copyright (c) 2018 Framer B.V. -->
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
-    $: layoutContext = useContext(LayoutGroupContext).current;
+    $: layoutContext = useContext(LayoutGroupContext);
     $: forceRender = () => {
         layoutContext?.forceRender?.();
         _list = [..._list];
@@ -39,15 +40,15 @@ Copyright (c) 2018 Framer B.V. -->
     let presentChildren = pendingPresentChildren;
     // $: presentChildren = pendingPresentChildren;
 
-    let diffedChildren = new Map<string | number, { key: number }>();
-    let exiting = new Set<"" | number>();
+    let diffedChildren = new SvelteMap<string | number, { key: number }>();
+    let exiting = new SvelteSet<"" | number>();
     const updateChildLookup = (
         children: { key: number }[],
         allChild: Map<string | number, { key: number }>,
     ) => {
         children.forEach((child) => {
             const key = getChildKey(child);
-            allChild.set(key, child);
+            untrack(() => allChild.set(key, child));
         });
     };
     $: updateChildLookup(pendingPresentChildren, diffedChildren);
@@ -110,8 +111,10 @@ Copyright (c) 2018 Framer B.V. -->
             const insertionIndex = presentKeys.indexOf(key);
 
             const onExit = () => {
-                diffedChildren.delete(key);
-                exiting.delete(key);
+                untrack(() => {
+                    diffedChildren.delete(key);
+                    exiting.delete(key);
+                });
 
                 // Remove this child from the present children
                 const removeIndex = presentChildren.findIndex(

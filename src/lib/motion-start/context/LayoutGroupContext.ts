@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { NodeGroup } from '../projection/node/group';
-import { createContext } from './utils/context';
+import { createContext } from './create';
 
 export interface LayoutGroupContext {
 	id?: string;

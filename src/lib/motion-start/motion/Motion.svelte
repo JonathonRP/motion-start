@@ -2,119 +2,53 @@
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
-<script lang="ts" module>
-  export type MotionComponentProps<Props> = {
-    [K in Exclude<keyof Props, keyof MotionProps>]?: Props[K];
-  } & MotionProps;
-
-  function useLayoutId({ layoutId }: MotionProps) {
-    const layoutGroupId = useContext(LayoutGroupContext).current?.id;
-
-    return layoutGroupId && layoutId !== undefined
-      ? layoutGroupId + "-" + layoutId
-      : layoutId;
-  }
-
-  function useStrictMode(
-    configAndProps: MotionProps,
-    preloadedFeatures?: FeatureBundle,
-  ) {
-    const isStrict = useContext(LazyContext).current?.strict;
-
-    /**
-     * If we're in development mode, check to make sure we're not rendering a motion component
-     * as a child of LazyMotion, as this will break the file-size benefits of using it.
-     */
-    if (
-      process.env.NODE_ENV !== "production" &&
-      preloadedFeatures &&
-      isStrict
-    ) {
-      const strictMessage =
-        "You have rendered a `motion` component within a `LazyMotion` component. This will break tree shaking. Import and render a `m` component instead.";
-      configAndProps.ignoreStrict
-        ? warning(false, strictMessage)
-        : invariant(false, strictMessage);
-    }
-  }
-
-  function getProjectionFunctionality(props: MotionProps) {
-    const { drag, layout } = featureDefinitions;
-
-    if (!drag && !layout) return {};
-
-    const combined = { ...drag, ...layout };
-
-    return {
-      MeasureLayout:
-        drag?.isEnabled(props) || layout?.isEnabled(props)
-          ? combined.MeasureLayout
-          : undefined,
-      ProjectionNode: combined.ProjectionNode,
-    };
-  }
-</script>
-
-<script lang="ts" generics="Props extends MotionProps, Instance, RenderState">
-  import { getContext, untrack, type Component } from "svelte";
-  import type { MotionProps } from "./types";
-  import type { FeatureBundle } from "./features/types";
+<script lang="ts" generics="TProps, Instance, RenderState">
   import { MotionConfigContext } from "../context/MotionConfigContext";
   import { MotionContext } from "../context/MotionContext";
   import { useVisualElement } from "./utils/use-visual-element.svelte";
   import { useMotionRef } from "./utils/use-motion-ref";
   import { useCreateMotionContext } from "../context/MotionContext/create.svelte";
   import { isBrowser } from "../utils/is-browser";
-  import { LayoutGroupContext } from "../context/LayoutGroupContext";
-  import { LazyContext } from "../context/LazyContext";
-  import { invariant, warning } from "../utils/errors";
-  import { featureDefinitions } from "./features/definitions";
   import type { Ref } from "../utils/safe-react-types";
-  import { useContext } from "../context/utils/context";
-  import type { MotionComponentConfig } from "./index.svelte";
-  import type { VisualElement } from "../render/VisualElement";
+  import { useContext } from "../context/use";
+  import {
+    getProjectionFunctionality,
+    useLayoutId,
+    useStrictMode,
+    type MotionComponentConfig,
+    type MotionComponentProps,
+  } from "./index.svelte";
   import { isSVGComponent } from "../render/dom/utils/is-svg-component";
 
-  type MotionCompProps = MotionComponentProps<Props> & {
+  type Props = {
+    props: MotionComponentProps<TProps>;
     externalRef?: Ref<Instance> | undefined;
-    ref?: Instance | null; // ref: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this']
-    children?: import("svelte").Snippet;
+    ref: Instance | null; // ref: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this']
   };
 
   let {
-    children: grandChildren,
-    externalRef,
-    ref = $bindable(),
-    ...props
-  }: MotionCompProps = $props();
-
-  const motionProps = $derived(props);
-
-  const {
-    Component: as,
+    preloadedFeatures,
     createVisualElement,
     useVisualState,
     useRender: Render,
-    preloadedFeatures,
-  } = getContext<
-    Pick<
-      MotionComponentConfig<Instance, RenderState>,
-      "Component" | "createVisualElement" | "useVisualState" | "useRender"
-    >
-  >("motionContexts");
+    Component: as,
+    props,
+    externalRef,
+    ref = $bindable(null),
+  }: Props & MotionComponentConfig<Instance, RenderState> = $props();
 
-  const layoutId = $derived(useLayoutId(motionProps));
+  const layoutId = $derived(useLayoutId(props));
 
   const configAndProps = $derived({
-    ...useContext(MotionConfigContext).current,
-    ...motionProps,
+    ...useContext(MotionConfigContext),
+    ...props,
     layoutId,
   });
 
   const { isStatic } = $derived(configAndProps);
 
-  const context = $derived(useCreateMotionContext<Instance>(motionProps));
-  const visualState = $derived(useVisualState(motionProps, isStatic!));
+  const context = useCreateMotionContext<Instance>(props);
+  const visualState = useVisualState(props, isStatic);
 
   $effect(() => {
     useStrictMode(configAndProps, preloadedFeatures);
@@ -130,7 +64,9 @@ Copyright (c) 2018 Framer B.V. -->
    * If we need to measure the element we load this functionality in a
    * separate class component in order to gain access to getSnapshotBeforeUpdate.
    */
-  const MeasureLayout = $derived(layoutProjection?.MeasureLayout);
+  const MeasureLayout = $derived(
+    !isStatic && isBrowser ? layoutProjection?.MeasureLayout : undefined,
+  );
 
   /**
    * Create a VisualElement for this component. A VisualElement provides a common
@@ -143,10 +79,14 @@ Copyright (c) 2018 Framer B.V. -->
     () => visualState,
     () => configAndProps,
     createVisualElement,
-    () => layoutProjection.ProjectionNode,
+    () => layoutProjection?.ProjectionNode,
   );
 
   MotionContext.Provider = context;
+
+  // const motionRef = $derived(
+  //   useMotionRef(visualState, context.visualElement, externalRef),
+  // );
 
   // $effect(() => {
   //   return () => {
@@ -155,25 +95,24 @@ Copyright (c) 2018 Framer B.V. -->
   //     context.visualElement?.unmount();
   //   };
   // });
-
-  const motionRef = $derived(
-    useMotionRef(visualState, context.visualElement, externalRef),
-  );
 </script>
 
 {#if MeasureLayout && context.visualElement}
   <MeasureLayout visualElement={context.visualElement} {...configAndProps} />
 {/if}
-<Render Component={as} props={motionProps} {visualState} isStatic={isStatic!}>
+<Render Component={as} {props} {visualState} {isStatic}>
   {#snippet children({ elementProps })}
     <svelte:element
       this={as}
       {...elementProps}
-      bind:this={ref}
-      use:motionRef
+      bind:this={() => ref,
+      (v) => {
+        ref = v;
+        useMotionRef(visualState, context.visualElement, externalRef)(ref);
+      }}
       xmlns={isSVGComponent(as) ? "http://www.w3.org/2000/svg" : undefined}
     >
-      {@render grandChildren?.()}
+      {@render props.children?.()}
     </svelte:element>
   {/snippet}
 </Render>

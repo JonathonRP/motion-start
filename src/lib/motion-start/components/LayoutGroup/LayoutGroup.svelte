@@ -16,7 +16,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { useContext } from "../../context/utils/context";
+  import { useContext } from "../../context/use";
   import { LayoutGroupContext } from "../../context/LayoutGroupContext";
   import { DeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
   import { nodeGroup } from "../../projection/node/group";
@@ -36,12 +36,12 @@ Copyright (c) 2018 Framer B.V. -->
 
   const [forceRender, key] = $derived([...useForceUpdate()]);
 
-  let context = {
+  const context = $state<MutableRefObject<LayoutGroupContext | null>>({
     current: null,
-  } as MutableRefObject<LayoutGroupContext | null>;
+  });
 
   const upstreamId = $derived(
-    layoutGroupContext.current?.id || deprecatedLayoutGroupContext.current,
+    layoutGroupContext?.id || deprecatedLayoutGroupContext,
   );
 
   $effect(() => {
@@ -53,7 +53,7 @@ Copyright (c) 2018 Framer B.V. -->
       context.current = {
         id,
         group: shouldInheritGroup(inherit!)
-          ? layoutGroupContext.current?.group || nodeGroup()
+          ? layoutGroupContext?.group || nodeGroup()
           : nodeGroup(),
       };
     }

@@ -420,7 +420,8 @@ export function createProjectionNode<I = unknown>({
 		 * Lifecycles
 		 */
 		mount(instance: I, isLayoutDirty = this.root.hasTreeAnimated) {
-			$inspect(this.options);
+			console.log('🚀 ~ ProjectionNode ~ mount');
+
 			if (this.instance) return;
 
 			this.isSVG = isSVGElement(instance);
@@ -466,7 +467,7 @@ export function createProjectionNode<I = unknown>({
 				this.addEventListener(
 					'didUpdate',
 					({ delta, hasLayoutChanged, hasRelativeTargetChanged, layout: newLayout }: LayoutUpdateData) => {
-						console.log('🚀 ~ ProjectionNode ~ mount ~ hasLayoutChanged:', hasLayoutChanged);
+						console.log('🚀 ~ ProjectionNode ~ didUpdate ~ hasLayoutChanged:', hasLayoutChanged);
 						if (this.isTreeAnimationBlocked()) {
 							this.target = undefined;
 							this.relativeTarget = undefined;

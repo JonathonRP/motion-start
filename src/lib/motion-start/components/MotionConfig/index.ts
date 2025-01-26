@@ -7,7 +7,7 @@ import type { Snippet } from 'svelte';
 import type { MotionConfigContext } from '../../context/MotionConfigContext';
 import type { IsValidProp } from '../../render/dom/utils/filter-props';
 
-export interface MotionConfigProps extends Partial<MotionConfigContext> {
+export interface MotionConfigProps extends MotionConfigContext {
 	children?: Snippet;
 	isValidProp?: IsValidProp;
 }

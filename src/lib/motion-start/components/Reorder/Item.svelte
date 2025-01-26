@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="V">
 	import type { SvelteHTMLElements } from "svelte/elements";
 
-	import { useContext } from "../../context/utils/context";
+	import { useContext } from "../../context/use";
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
@@ -83,14 +83,12 @@ Copyright (c) 2018 Framer B.V. -->
 		),
 	);
 
-	$effect(() => {
-		invariant(
-			Boolean(context),
-			"Reorder.Item must be a child of Reorder.Group",
-		);
-	});
+	invariant(
+		Boolean(context),
+		"Reorder.Item must be a child of Reorder.Group",
+	);
 
-	const { axis, registerItem, updateOrder } = context.current!;
+	const { axis, registerItem, updateOrder } = $derived(context);
 </script>
 
 <motion.groupItem

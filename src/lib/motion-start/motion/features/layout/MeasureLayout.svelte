@@ -16,7 +16,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
 	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte";
-	import { useContext } from "../../../context/utils/context";
+	import { useContext } from "../../../context/use";
 	import { LayoutGroupContext } from "../../../context/LayoutGroupContext";
 	import { SwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
 	import type { MotionProps } from "../../types";
@@ -31,8 +31,8 @@ Copyright (c) 2018 Framer B.V. -->
 
 <MeasureLayoutWithContext
 	{...props}
-	layoutGroup={useContext(LayoutGroupContext).current!}
-	switchLayoutGroup={useContext(SwitchLayoutGroupContext).current!}
+	layoutGroup={useContext(LayoutGroupContext)}
+	switchLayoutGroup={useContext(SwitchLayoutGroupContext)}
 	{isPresent}
 	{safeToRemove}
 />
