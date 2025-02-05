@@ -20,7 +20,6 @@
         "mx-auto w-max mt-8 h-[58px] p-2 flex gap-2 rounded-2xl border supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 backdrop-blur-md",
     );
 
-    let dockElement: HTMLDivElement;
     let mouseX = Number.POSITIVE_INFINITY;
     function handleMouseMove(e: MouseEvent) {
         mouseX = e.pageX;
@@ -39,7 +38,6 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <motion.div
-    bind:ref={dockElement}
     onmousemove={(e) => handleMouseMove(e)}
     onmouseleave={handleMouseLeave}
     class={dockClass}

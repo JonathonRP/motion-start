@@ -8,6 +8,7 @@ import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 import type { HTMLElements } from './supported-elements';
 import type { Component } from 'svelte';
+import type { PropsWithoutRef, RefAttributes } from '../../utils/safe-react-types';
 
 export interface TransformOrigin {
 	originX?: number | string;
@@ -44,21 +45,14 @@ export interface HTMLRenderState {
 /**
  * @public
  */
-export type ForwardRefComponent<T, P extends Record<string, any>> = Component<P & T>;
+export type ForwardRefComponent<T, P extends Record<string, any>> = Component<PropsWithoutRef<P> & RefAttributes<T>>;
 
-export type UnwrapFactoryElement<F> = F extends HTMLAttributes<infer P> ? P : never;
-
-type HTMLAttributesWithoutMotionProps<Attributes extends HTMLAttributes<Element>, Element extends EventTarget> = {
-	[K in Exclude<keyof Attributes, keyof MotionProps>]?: Attributes[K];
-};
+type AttributesWithoutMotionProps<Attributes> = Omit<Attributes, keyof MotionProps>;
 
 /**
  * @public
  */
-export type HTMLMotionProps<TagName extends keyof SvelteHTMLElements> = HTMLAttributesWithoutMotionProps<
-	SvelteHTMLElements[TagName],
-	UnwrapFactoryElement<SvelteHTMLElements[TagName]>
-> &
+export type HTMLMotionProps<Tag extends keyof HTMLElements> = AttributesWithoutMotionProps<SvelteHTMLElements[Tag]> &
 	MotionProps;
 
 /**
@@ -67,5 +61,5 @@ export type HTMLMotionProps<TagName extends keyof SvelteHTMLElements> = HTMLAttr
  * @public
  */
 export type HTMLMotionComponents = {
-	[K in HTMLElements]: ForwardRefComponent<SvelteHTMLElements[K], MotionProps>;
+	[K in keyof HTMLElements]: ForwardRefComponent<HTMLElements[K], HTMLMotionProps<K>>;
 };

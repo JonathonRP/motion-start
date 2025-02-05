@@ -40,15 +40,15 @@ Copyright (c) 2018 Framer B.V. -->
     let presentChildren = pendingPresentChildren;
     // $: presentChildren = pendingPresentChildren;
 
-    let diffedChildren = new SvelteMap<string | number, { key: number }>();
-    let exiting = new SvelteSet<"" | number>();
+    let diffedChildren = new Map<string | number, { key: number }>();
+    let exiting = new Set<"" | number>();
     const updateChildLookup = (
         children: { key: number }[],
         allChild: Map<string | number, { key: number }>,
     ) => {
         children.forEach((child) => {
             const key = getChildKey(child);
-            untrack(() => allChild.set(key, child));
+            allChild.set(key, child);
         });
     };
     $: updateChildLookup(pendingPresentChildren, diffedChildren);
@@ -111,10 +111,8 @@ Copyright (c) 2018 Framer B.V. -->
             const insertionIndex = presentKeys.indexOf(key);
 
             const onExit = () => {
-                untrack(() => {
-                    diffedChildren.delete(key);
-                    exiting.delete(key);
-                });
+                diffedChildren.delete(key);
+                exiting.delete(key);
 
                 // Remove this child from the present children
                 const removeIndex = presentChildren.findIndex(

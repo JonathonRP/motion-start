@@ -9,4 +9,4 @@ import Item from './Item.svelte';
 export const Reorder = {
 	Group,
 	Item,
-};
+} as { Group: typeof Group; Item: typeof Item };

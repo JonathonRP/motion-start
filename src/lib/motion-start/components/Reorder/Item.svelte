@@ -24,6 +24,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { Ref } from "../../utils/safe-react-types";
 	import type { Box } from "../../projection/geometry/types";
 	import type { PanInfo } from "../../gestures/pan/PanSession";
+	import type { PropsWithChildren } from "../../utils/types";
 
 	type Props<V> = {
 		/**
@@ -56,19 +57,19 @@ Copyright (c) 2018 Framer B.V. -->
 		as = "li",
 		onDrag,
 		layout = true,
-		ref = $bindable(),
+		ref: externalRef = $bindable(),
 		...props
 	}: Props<V> &
-		Omit<HTMLMotionProps<any>, "children"> & {
+		HTMLMotionProps<any> & {
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
-		} & { children?: Snippet } = $props();
+		} & PropsWithChildren<{}> = $props();
 
-	motion.groupItem = motion[as as keyof typeof motion] as Component<
-		Omit<HTMLMotionProps<any>, "children"> & {
-			ref?: Ref<SvelteHTMLElements[typeof as]>;
-		} & {
-			children?: Snippet;
-		}
+	const ReorderItem = motion[as as keyof typeof motion] as Component<
+		PropsWithChildren<
+			HTMLMotionProps<any> & {
+				ref?: Ref<SvelteHTMLElements[typeof as]>;
+			}
+		>
 	>;
 
 	const context = useContext(ReorderContext);
@@ -91,7 +92,7 @@ Copyright (c) 2018 Framer B.V. -->
 	const { axis, registerItem, updateOrder } = $derived(context);
 </script>
 
-<motion.groupItem
+<ReorderItem
 	drag={axis}
 	{...props}
 	dragSnapToOrigin
@@ -111,8 +112,8 @@ Copyright (c) 2018 Framer B.V. -->
 		onDrag && onDrag(event, gesturePoint);
 	}}
 	onLayoutMeasure={(measured: Box) => registerItem?.(value, measured)}
-	bind:ref
+	bind:ref={externalRef}
 	ignoreStrict
 >
 	{@render children?.()}
-</motion.groupItem>
+</ReorderItem>

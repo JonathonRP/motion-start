@@ -53,10 +53,12 @@
     <Reorder.Group
         class="list-none p-0 m-0 font-medium text-2xl relative w-[300px]"
         axis="y"
-        onReorder={(newItems) => (initialItems = newItems)}
+        onReorder={(newItems) => {
+            initialItems = newItems;
+        }}
         values={initialItems}
     >
-        {#each initialItems as item (item)}
+        {#snippet children(item)}
             <Reorder.Item
                 class="p-0 m-0 font-medium text-2xl rounded-[5px] mb-[10px] w-full py-[15px] px-[18px] bg-white flex justify-between items-center shrink-0 cursor-grab"
                 value={item}
@@ -65,6 +67,6 @@
             >
                 <span>{item}</span>
             </Reorder.Item>
-        {/each}
+        {/snippet}
     </Reorder.Group>
 </Box>

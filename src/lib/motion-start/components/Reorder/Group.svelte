@@ -26,6 +26,7 @@ Copyright (c) 2018 Framer B.V. -->
 		ReorderContext as ReorderContextProps,
 	} from "./types";
 	import { checkReorder } from "./utils/check-reorder";
+	import type { PropsWithChildren } from "../../utils/types";
 
 	type Props<V> = {
 		/**
@@ -77,19 +78,21 @@ Copyright (c) 2018 Framer B.V. -->
 		axis = "y",
 		onReorder,
 		values,
-		ref = $bindable(),
+		ref: externalRef = $bindable(),
 		...props
 	}: Props<V> &
-		Omit<HTMLMotionProps<any>, "values" | "children"> & {
+		Omit<HTMLMotionProps<any>, "children"> &
+		PropsWithChildren<{}, [(typeof values)[number]]> & {
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
-		} & { children?: Snippet } = $props();
+		} = $props();
 
-	motion.group = motion[as as keyof typeof motion] as Component<
-		Omit<HTMLMotionProps<any>, "children"> & {
-			ref?: Ref<SvelteHTMLElements[typeof as]>;
-		} & {
-			children?: Snippet;
-		}
+	const ReorderGroup = motion[as as keyof typeof motion] as Component<
+		PropsWithChildren<
+			HTMLMotionProps<any> & {
+				ref?: Ref<SvelteHTMLElements[typeof as]>;
+			},
+			[(typeof values)[number]]
+		>
 	>;
 	const order: ItemData<V>[] = [];
 	let isReordering = $state(false);
@@ -124,14 +127,15 @@ Copyright (c) 2018 Framer B.V. -->
 		},
 	});
 
-	$effect(() => {
-		if (!isReordering) return;
+	$effect.pre(() => {
 		isReordering = false;
 	});
 
 	ReorderContext.Provider = context;
 </script>
 
-<motion.group {...props} bind:ref ignoreStrict>
-	{@render children?.()}
-</motion.group>
+<ReorderGroup {...props} bind:ref={externalRef} ignoreStrict>
+	{#each values as value, indx (indx)}
+		{@render children?.(value)}
+	{/each}
+</ReorderGroup>

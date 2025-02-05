@@ -27,11 +27,11 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: () => any
 ): VisualElement<Instance> | null {
-	const { visualElement: parent } = $derived(useContext(MotionContext));
+	const { visualElement: parent } = useContext(MotionContext);
 
-	const lazyContext = $derived(useContext(LazyContext));
+	const lazyContext = useContext(LazyContext);
 
-	const presenceContext = $derived(useContext(PresenceContext));
+	const presenceContext = useContext(PresenceContext);
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext)?.reducedMotion);
 
@@ -93,7 +93,8 @@ export function useVisualElement<Instance, RenderState>(
 	// $inspect(presenceContext.current);
 
 	$effect(() => {
-		$inspect(presenceContext);
+		$inspect.trace();
+		// $inspect(presenceContext);
 		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
