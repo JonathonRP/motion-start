@@ -14,12 +14,11 @@ import { createUseRender } from '../dom/use-render';
 import type { Component, Snippet } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 import type { MotionProps } from '$lib/motion-start/motion/types';
+import type { PropsWithChildren } from '$lib/motion-start/utils/types';
 
-type MotionComponent<P extends MotionProps, TElement extends keyof SvelteHTMLElements> = Component<
-	MotionComponentProps<
-		P & { children?: Snippet; ref?: SvelteHTMLElements[TElement]['this'] } & Omit<SvelteHTMLElements[TElement], 'style'>
-	>
->;
+type MotionComponent<T extends keyof SvelteHTMLElements, P> = T extends keyof DOMMotionComponents
+	? DOMMotionComponents[T]
+	: Component<MotionComponentProps<PropsWithChildren<P>>>;
 
 export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,
@@ -39,6 +38,6 @@ export function createMotionComponentFactory(
 			Component,
 		};
 
-		return createRendererMotionComponent(config as any) as MotionComponent<Props, TagName>;
+		return createRendererMotionComponent(config as any) as MotionComponent<TagName, Props>;
 	};
 }

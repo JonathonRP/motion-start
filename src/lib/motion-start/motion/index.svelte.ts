@@ -70,14 +70,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 }: MotionComponentConfig<Instance, RenderState>) => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
-	const MotionComponent: Component<
-		MotionComponentProps<Props> & {
-			externalRef?: Ref<Instance>;
-			ref: Instance | null;
-		},
-		Record<string, any>,
-		'ref'
-	> = (anchor, props) => {
+	const MotionComponent: Component<MotionComponentProps<Props> & { ref?: Ref<Instance> }> = (anchor, props) => {
 		/**
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
@@ -334,11 +327,8 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			get props() {
 				return props;
 			},
-			get externalRef() {
-				return props.externalRef;
-			},
 			get ref() {
-				return props.ref || null;
+				return props.ref;
 			},
 			set ref(v) {
 				props.ref = v;
@@ -351,13 +341,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 };
 
 export function useLayoutId({ layoutId }: MotionProps) {
-	const layoutGroupId = useContext(LayoutGroupContext)?.id;
+	const layoutGroupId = useContext(LayoutGroupContext).id;
 
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
-	const isStrict = useContext(LazyContext)?.strict;
+	const isStrict = useContext(LazyContext).strict;
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

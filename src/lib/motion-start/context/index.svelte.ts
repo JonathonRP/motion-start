@@ -6,7 +6,7 @@ import { fromStore, toStore, writable, type Writable } from 'svelte/store';
 
 export class Context<T> {
 	readonly #key: symbol;
-	#state = $state<RefObject<T>>({ current: null! });
+	#state = $state<RefObject<T>>({ current: null });
 
 	public constructor(initial: T) {
 		this.#key = Symbol(nanoid());
@@ -14,18 +14,17 @@ export class Context<T> {
 	}
 
 	#create(): T {
-		return setContext(this.#key, this.#state).current;
+		return setContext(this.#key, this.#state).current!;
 	}
 
 	#get(): T {
-		return getContext<RefObject<T>>(this.#key).current;
+		return getContext<RefObject<T>>(this.#key).current!;
 	}
 
 	pipe(...transformers: ((arg?: T) => T)[]) {
-		// do not change order, hard coded and very specific order for a reason.
-		return [this.#create, this.#get, ...transformers].reduce<T>(
+		return [this.#get, ...transformers].reduce<T>(
 			(value, fn) => fn.call(this, value),
-			this.#state.current
+			(!hasContext(this.#key) && this.#create()) || this.#state.current!
 		);
 	}
 

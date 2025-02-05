@@ -1,5 +1,5 @@
 import type { Component, ComponentProps, Snippet } from 'svelte';
 
-export type withChildren<TProps> = TProps & {
-	children?: Snippet;
+export type PropsWithChildren<Props, ArgsT extends unknown[] = []> = Props & {
+	children?: Snippet<ArgsT>;
 };

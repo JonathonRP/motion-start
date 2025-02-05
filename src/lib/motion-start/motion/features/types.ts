@@ -61,9 +61,8 @@ export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 export type RenderComponent<Instance, RenderState> = Component<{
 	Component: string;
 	props: MotionProps;
-	// ref: RefCallBack<Instance>;
+	ref: Ref<Instance>;
 	visualState: VisualState<Instance, RenderState>;
 	isStatic: boolean;
 	visualElement?: VisualElement<Instance>;
-	children?: Snippet<[{ elementProps: any }]>;
 }>;

@@ -12,11 +12,11 @@ import type { Ref, RefCallBack } from '../../utils/safe-react-types';
  * Creates a ref function that, when called, hydrates the provided
  * external ref and VisualElement.
  */
-function useMotionRef<Instance, RenderState>(
+export function useMotionRef<Instance, RenderState>(
 	visualState: VisualState<Instance, RenderState>,
 	visualElement?: VisualElement<Instance> | null,
 	externalRef?: Ref<Instance>
-): RefCallBack<Instance> {
+): Ref<Instance> {
 	return (instance: Instance | null) => {
 		instance && visualState.mount && visualState.mount(instance);
 
@@ -37,5 +37,3 @@ function useMotionRef<Instance, RenderState>(
 		}
 	};
 }
-
-export { useMotionRef };

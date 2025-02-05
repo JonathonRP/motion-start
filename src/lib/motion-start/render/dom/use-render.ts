@@ -13,60 +13,34 @@ import { filterProps } from './utils/filter-props';
 import { isSVGComponent } from './utils/is-svg-component';
 import { Children$ } from '../../components/AnimatePresence/utils';
 import { PresenceContext } from '../../context/PresenceContext';
-import { default as useRender } from './UseRender.svelte';
+import UseRender from './UseRender.svelte';
 
 export function createUseRender(forwardMotionProps = false) {
-	setContext('forwardMotionProps', forwardMotionProps);
-	// const useRender: RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState> = (
-	// 	Component,
-	// 	props,
-	// 	ref,
-	// 	{ latestValues },
-	// 	isStatic
-	// ) => {
-	// 	let useVisualProps = isSVGComponent(Component) ? useSvgProps : useHTMLProps;
-
-	// 	let visualProps = useVisualProps(props as any, latestValues, isStatic, Component);
-
-	// 	let filteredProps = filterProps(props, typeof Component === 'string', forwardMotionProps);
-
-	// 	let elementProps = { ...filteredProps, ...visualProps };
-
-	// 	let element = document.createElement(Component);
-
-	// 	Object.entries<any>(elementProps)
-	// 		.filter(([key]) => !key.startsWith('$'))
-	// 		.forEach(([key, val]) => {
-	// 			element?.setAttribute(key, val);
-	// 		});
-
-	// 	typeof ref === 'function' ? ref(element) : (ref!.current = element);
-
-	// 	// const presenceContext =
-	// 	// 	getContext<ReturnType<typeof PresenceContext>>(PresenceContext) || PresenceContext(Component);
-
-	// 	// presenceContext.update((val) => val?.register());
-	// 	// Children$.update((children$) => [...children$, { key: (element.dataset.key = `ap-${id++}`) }]);
-	// 	afterUpdate(() => {
-	// 		useVisualProps = isSVGComponent(Component) ? useSvgProps : useHTMLProps;
-
-	// 		visualProps = useVisualProps(props as any, latestValues, isStatic, Component);
-
-	// 		filteredProps = filterProps(props, typeof Component === 'string', forwardMotionProps);
-
-	// 		elementProps = { ...filteredProps, ...visualProps, ref };
-
-	// 		element = document.createElement(Component);
-
-	// 		Object.entries<any>(elementProps).forEach(([key, val]) => {
-	// 			element?.setAttribute(key, val);
-	// 		});
-
-	// 		typeof ref === 'function' ? ref(element) : (ref!.current = element);
-	// 		// Children$.update((children$) => [...children$, element]);
-	// 	});
-
-	// 	return element;
-	// };
+	// setContext('forwardMotionProps', forwardMotionProps);
+	const useRender: RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState> = (anchor, props) => {
+		return UseRender(anchor, {
+			get Component() {
+				return props.Component;
+			},
+			get props() {
+				return props.props;
+			},
+			get ref() {
+				return props.ref;
+			},
+			get visualState() {
+				return props.visualState;
+			},
+			get isStatic() {
+				return props.isStatic;
+			},
+			get visualElement() {
+				return props.visualElement;
+			},
+			get forwardMotionProps() {
+				return forwardMotionProps;
+			},
+		});
+	};
 	return useRender;
 }

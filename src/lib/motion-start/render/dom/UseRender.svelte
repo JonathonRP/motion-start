@@ -3,7 +3,6 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-  import { getContext } from "svelte";
   import type { RenderComponent } from "../../motion/features/types";
   import type { HTMLRenderState } from "../html/types";
   import type { SVGRenderState } from "../svg/types";
@@ -14,13 +13,22 @@ Copyright (c) 2018 Framer B.V. -->
 
   type Props = Parameters<
     RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>
-  >[1];
+  >[1] & {
+    forwardMotionProps: boolean;
+  };
 
-  let { Component, props, visualState, isStatic, children }: Props = $props();
+  let {
+    Component,
+    props,
+    ref,
+    visualState,
+    isStatic,
+    forwardMotionProps,
+  }: Props = $props();
 
   // $inspect(props);
-
   const { latestValues } = $derived(visualState);
+  const { children } = $derived(props);
   const useVisualProps = $derived(
     isSVGComponent(Component) ? useSvgProps : useHTMLProps,
   );
@@ -30,17 +38,27 @@ Copyright (c) 2018 Framer B.V. -->
   });
 
   const filteredProps = $derived(
-    filterProps(
-      props,
-      typeof Component === "string",
-      getContext("forwardMotionProps"),
-    ),
+    filterProps(props, typeof Component === "string", forwardMotionProps),
   );
 
-  const elementProps = $derived({ ...filteredProps, ...visualProps });
+  const elementProps = $derived({ ...filteredProps, ...visualProps, ref });
+
+  const motion = $derived((node: HTMLElement | SVGElement | null) => {
+    if (typeof ref === "function") {
+      ref(node);
+    } else {
+      (ref as any).current = node;
+    }
+  });
 
   // $inspect(el);
-  // $: typeof ref === "function" ? ref(element) : (ref!.current = element);
 </script>
 
-{@render children?.({ elementProps })}
+<svelte:element
+  this={Component}
+  {...elementProps}
+  use:motion
+  xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
+>
+  {@render children?.()}
+</svelte:element>

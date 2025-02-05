@@ -16,10 +16,10 @@
     let className: string | undefined = "";
     export { className as class };
 
-    let iconElement: HTMLDivElement;
+    let iconElement: { current: HTMLDivElement | null } = { current: null };
 
     let distanceCalc = useTransform(mint, (val: number) => {
-        const bounds = iconElement?.getBoundingClientRect() ?? {
+        const bounds = iconElement.current?.getBoundingClientRect() ?? {
             x: 0,
             width: 0,
         };
@@ -44,6 +44,6 @@
     );
 </script>
 
-<motion.div style={{ width: width }} bind:ref={iconElement} class={iconClass}>
+<motion.div style={{ width }} ref={iconElement} class={iconClass}>
     <slot></slot>
 </motion.div>

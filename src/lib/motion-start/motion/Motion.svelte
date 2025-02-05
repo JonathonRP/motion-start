@@ -18,69 +18,64 @@ Copyright (c) 2018 Framer B.V. -->
     type MotionComponentConfig,
     type MotionComponentProps,
   } from "./index.svelte";
-  import { isSVGComponent } from "../render/dom/utils/is-svg-component";
+  import { untrack, type Component as ComponentType } from "svelte";
+  import type { MotionProps } from "../types";
 
   type Props = {
     props: MotionComponentProps<TProps>;
-    externalRef?: Ref<Instance> | undefined;
-    ref: Instance | null; // ref: SvelteHTMLElements[Parameters<RenderComponent<Instance, RenderState>>[1]['Component']]['this']
+    ref?: Ref<Instance>;
   };
 
   let {
     preloadedFeatures,
     createVisualElement,
     useVisualState,
-    useRender: Render,
-    Component: as,
+    useRender: Renderer,
+    Component,
     props,
-    externalRef,
-    ref = $bindable(null),
+    ref: externalRef = $bindable(),
   }: Props & MotionComponentConfig<Instance, RenderState> = $props();
-
-  const layoutId = $derived(useLayoutId(props));
-
-  const configAndProps = $derived({
-    ...useContext(MotionConfigContext),
-    ...props,
-    layoutId,
-  });
-
-  const { isStatic } = $derived(configAndProps);
-
-  const context = useCreateMotionContext<Instance>(props);
-  const visualState = useVisualState(props, isStatic);
-
-  $effect(() => {
-    useStrictMode(configAndProps, preloadedFeatures);
-  });
-
-  const layoutProjection = $derived(
-    !isStatic && isBrowser
-      ? getProjectionFunctionality(configAndProps)
-      : undefined,
-  );
 
   /**
    * If we need to measure the element we load this functionality in a
    * separate class component in order to gain access to getSnapshotBeforeUpdate.
    */
-  const MeasureLayout = $derived(
-    !isStatic && isBrowser ? layoutProjection?.MeasureLayout : undefined,
-  );
+  let MeasureLayout: undefined | ComponentType<MotionProps> = $state();
 
-  /**
-   * Create a VisualElement for this component. A VisualElement provides a common
-   * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-   * providing a way of rendering to these APIs outside of the React render loop
-   * for more performant animations and interactions
-   */
-  context.visualElement = useVisualElement<Instance, RenderState>(
-    as,
-    () => visualState,
-    () => configAndProps,
-    createVisualElement,
-    () => layoutProjection?.ProjectionNode,
-  );
+  const configAndProps = $derived({
+    ...useContext(MotionConfigContext),
+    ...props,
+    layoutId: useLayoutId(props),
+  });
+
+  const { isStatic } = $derived(configAndProps);
+
+  const context = useCreateMotionContext<Instance>(props);
+
+  const visualState = $derived(useVisualState(props, isStatic));
+
+  if (!isStatic && isBrowser) {
+    useStrictMode((() => configAndProps)(), preloadedFeatures);
+
+    const layoutProjection = $derived(
+      getProjectionFunctionality(configAndProps),
+    );
+    MeasureLayout = (() => layoutProjection?.MeasureLayout)();
+
+    /**
+     * Create a VisualElement for this component. A VisualElement provides a common
+     * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
+     * providing a way of rendering to these APIs outside of the React render loop
+     * for more performant animations and interactions
+     */
+    context.visualElement = useVisualElement<Instance, RenderState>(
+      Component,
+      () => visualState,
+      () => configAndProps,
+      createVisualElement,
+      () => layoutProjection?.ProjectionNode,
+    );
+  }
 
   MotionContext.Provider = context;
 
@@ -100,19 +95,10 @@ Copyright (c) 2018 Framer B.V. -->
 {#if MeasureLayout && context.visualElement}
   <MeasureLayout visualElement={context.visualElement} {...configAndProps} />
 {/if}
-<Render Component={as} {props} {visualState} {isStatic}>
-  {#snippet children({ elementProps })}
-    <svelte:element
-      this={as}
-      {...elementProps}
-      bind:this={() => ref,
-      (v) => {
-        ref = v;
-        useMotionRef(visualState, context.visualElement, externalRef)(ref);
-      }}
-      xmlns={isSVGComponent(as) ? "http://www.w3.org/2000/svg" : undefined}
-    >
-      {@render props.children?.()}
-    </svelte:element>
-  {/snippet}
-</Render>
+<Renderer
+  {Component}
+  {props}
+  ref={useMotionRef(visualState, context.visualElement, externalRef)}
+  {visualState}
+  {isStatic}
+/>

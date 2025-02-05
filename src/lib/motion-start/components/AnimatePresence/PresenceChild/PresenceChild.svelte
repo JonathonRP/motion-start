@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
     import { SvelteMap } from "svelte/reactivity";
     function newChildrenMap(): Map<string | number, boolean> {
-        return new SvelteMap<string | number, boolean>();
+        return new Map<string | number, boolean>();
     }
 </script>
 
@@ -33,7 +33,7 @@ Copyright (c) 2018 Framer B.V. -->
     const id = useId();
 
     const memoExitComplete = $derived((childId: string | number) => {
-        untrack(() => presenceChildren.set(childId, true));
+        presenceChildren.set(childId, true);
         for (const isComplete of presenceChildren.values()) {
             if (!isComplete) return;
         }
@@ -41,17 +41,22 @@ Copyright (c) 2018 Framer B.V. -->
         onExitComplete && onExitComplete();
     });
 
-    const presenceProps = $derived(() => ({
-        id,
-        initial,
-        isPresent,
-        custom,
-        onExitComplete: memoExitComplete,
-        register: (childId: string | number) => {
-            presenceChildren.set(childId, false);
-            return () => presenceChildren.delete(childId);
-        },
-    }));
+    const presenceProps = $derived(
+        (
+            presence: boolean | number,
+            onExitComplete: typeof memoExitComplete,
+        ) => ({
+            id,
+            initial,
+            isPresent,
+            custom,
+            onExitComplete,
+            register: (childId: string | number) => {
+                presenceChildren.set(childId, false);
+                return () => presenceChildren.delete(childId);
+            },
+        }),
+    );
 
     // FIX: may need to go back to using .current api
     const context = $derived.by(() => {
@@ -59,10 +64,10 @@ Copyright (c) 2018 Framer B.V. -->
         return presence;
     });
 
+    // this is getting called too much?..
     $effect(() => {
-        memoExitComplete;
         if (presenceAffectsLayout) {
-            context.current = presenceProps();
+            context.current = presenceProps(Math.random(), memoExitComplete);
         }
     });
 
@@ -72,17 +77,13 @@ Copyright (c) 2018 Framer B.V. -->
 
     $effect.pre(() => {
         // $inspect.trace();
-        isPresent;
-        memoExitComplete;
-        context.current = presenceProps();
+        context.current = presenceProps(isPresent, memoExitComplete);
     });
 
     // $inspect(isPresent);
     $effect(() => {
         keyset(isPresent);
-        tick().then(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
-        });
+        !isPresent && !presenceChildren.size && onExitComplete?.();
     });
 
     PresenceContext.Provider = context.current;
