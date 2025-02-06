@@ -31,7 +31,7 @@ export function useVisualElement<Instance, RenderState>(
 
 	const lazyContext = useContext(LazyContext);
 
-	const presenceContext = useContext(PresenceContext);
+	const presenceContext = $derived(useContext(PresenceContext));
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext)?.reducedMotion);
 
@@ -93,8 +93,7 @@ export function useVisualElement<Instance, RenderState>(
 	// $inspect(presenceContext.current);
 
 	$effect(() => {
-		$inspect.trace();
-		// $inspect(presenceContext);
+		$inspect(presenceContext);
 		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
@@ -117,27 +116,27 @@ export function useVisualElement<Instance, RenderState>(
 		}
 	});
 
-	// watch.pre(
-	// 	() => visualElement?.getProps()!,
-	// 	(props) => {
-	// 		if (!visualElement) return;
-	// 		visualElement.update(props, presenceContext);
+	watch.pre(
+		props,
+		(_props) => {
+			if (!visualElement) return;
+			visualElement.update(_props, presenceContext);
 
-	// 		visualElement.updateFeatures();
-	// 		microtask.render(() => visualElement.render);
+			visualElement.updateFeatures();
+			microtask.render(() => visualElement.render);
 
-	// 		if (!wantsHandoff && visualElement.animationState) {
-	// 			visualElement.animationState.animateChanges();
-	// 		}
-	// 	},
-	// 	{
-	// 		/**
-	// 		 * only fire on changes...
-	// 		 * this only fires on changes in props
-	// 		 */
-	// 		lazy: true,
-	// 	}
-	// );
+			if (wantsHandoff && visualElement.animationState) {
+				visualElement.animationState.animateChanges();
+			}
+		},
+		{
+			/**
+			 * only fire on changes...
+			 * this only fires on changes in props
+			 */
+			lazy: true,
+		}
+	);
 
 	$effect(() => {
 		if (!visualElement) return;
@@ -155,6 +154,33 @@ export function useVisualElement<Instance, RenderState>(
 			wantsHandoff = false;
 		}
 	});
+
+	watch(
+		props,
+		(_props) => {
+			if (!visualElement) return;
+
+			if (!wantsHandoff && visualElement.animationState) {
+				visualElement.animationState.animateChanges();
+			}
+
+			if (wantsHandoff) {
+				// This ensures all future calls to animateChanges() in this component will run in useEffect
+				queueMicrotask(() => {
+					window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
+				});
+
+				wantsHandoff = false;
+			}
+		},
+		{
+			/**
+			 * only fire on changes...
+			 * this only fires on changes in props
+			 */
+			lazy: true,
+		}
+	);
 
 	// watch(
 	// 	() => presenceContext.current,
