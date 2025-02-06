@@ -59,15 +59,16 @@ Copyright (c) 2018 Framer B.V. -->
     );
 
     // FIX: may need to go back to using .current api
-    const context = $derived.by(() => {
-        let presence = $state({ current: useContext(PresenceContext) });
-        return presence;
-    });
+    // const context = $derived.by(() => {
+    //     let presence = $state({ current: useContext(PresenceContext) });
+    //     return presence;
+    // });
+    let context = useContext(PresenceContext);
 
     // this is getting called too much?..
     $effect(() => {
         if (presenceAffectsLayout) {
-            context.current = presenceProps(Math.random(), memoExitComplete);
+            context = presenceProps(Math.random(), memoExitComplete);
         }
     });
 
@@ -77,7 +78,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     $effect.pre(() => {
         // $inspect.trace();
-        context.current = presenceProps(isPresent, memoExitComplete);
+        context = presenceProps(isPresent, memoExitComplete);
     });
 
     // $inspect(isPresent);
@@ -86,7 +87,7 @@ Copyright (c) 2018 Framer B.V. -->
         !isPresent && !presenceChildren.size && onExitComplete?.();
     });
 
-    PresenceContext.Provider = context.current;
+    PresenceContext.Provider = context;
 </script>
 
 {#if mode === "popLayout"}
