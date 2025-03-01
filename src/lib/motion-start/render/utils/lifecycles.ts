@@ -141,7 +141,7 @@ var names = [
 	'SetAxisTarget',
 	'Unmount',
 ];
-function createLifecycles(...args: any[]) {
+function createLifecycles() {
 	var managers = names.map(() => new SubscriptionManager());
 	var propSubscriptions = {};
 	var lifecycles = {
@@ -161,7 +161,7 @@ function createLifecycles(...args: any[]) {
 	} as any;
 	managers.forEach((manager, i) => {
 		lifecycles['on' + names[i]] = (handler: (...args: any) => void) => manager.add(handler);
-		lifecycles['notify' + names[i]] = () => {
+		lifecycles['notify' + names[i]] = (...args: any[]) => {
 			return manager.notify.apply(manager, args);
 		};
 	});

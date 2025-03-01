@@ -42,7 +42,7 @@ function collectProjectingChildren(visualElement: VisualElement) {
 function updateLayoutMeasurement(visualElement: VisualElement) {
 	if (visualElement.shouldResetTransform()) return;
 	var layoutState = visualElement.getLayoutState();
-	visualElement.notifyBeforeLayoutMeasure(layoutState.layout);
+	(visualElement as any).notifyBeforeLayoutMeasure(layoutState.layout);
 	layoutState.isHydrated = true;
 	layoutState.layout = visualElement.measureViewportBox();
 	layoutState.layoutCorrected = copyAxisBox(layoutState.layout);

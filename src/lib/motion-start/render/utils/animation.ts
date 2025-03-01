@@ -106,7 +106,7 @@ function animateVariant(
 	if (when) {
 		var [first, last] =
 			when === 'beforeChildren' ? [getAnimation, getChildAnimations] : [getChildAnimations, getAnimation];
-			//@ts-expect-error
+		//@ts-expect-error
 		return first().then(last);
 	}
 	return Promise.all([getAnimation(), getChildAnimations(options.delay)]);

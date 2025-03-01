@@ -1,13 +1,15 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script lang="ts">
   import { copyRawValuesOnly } from "../html/use-props.js";
   import { buildSVGAttrs } from "./utils/build-attrs.js";
   import { createSvgRenderState } from "./utils/create-render-state.js";
 
-  export let visualState, props;
-  let memo = (variantLabelsAsDependency?:string | boolean | undefined) => {
+  let { visualState, props, children } = $props();
+
+  let memo = (variantLabelsAsDependency?: string | boolean | undefined) => {
     const state = createSvgRenderState();
     buildSVGAttrs(
       state,
@@ -22,13 +24,15 @@ Copyright (c) 2018 Framer B.V. -->
       style: { ...state.style },
     };
   };
-  $: visualProps = memo(visualState);
+  const visualProps = $derived(memo(visualState));
 
-  $: if (props.style) {
-    const rawStyles = {};
-    copyRawValuesOnly(rawStyles, props.style, props);
-    visualProps.style = { ...rawStyles, ...visualProps.style };
-  }
+  $effect(() => {
+    if (props.style) {
+      const rawStyles = {};
+      copyRawValuesOnly(rawStyles, props.style, props);
+      visualProps.style = { ...rawStyles, ...visualProps.style };
+    }
+  });
 </script>
 
-<slot {visualProps} />
+{@render children?.(visualProps)}

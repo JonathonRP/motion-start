@@ -1,16 +1,17 @@
 <!-- based on framer-motion@4.1.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
 <script lang="ts">
   import { getContext, onDestroy, onMount } from "svelte";
-  import { get, type Writable } from "svelte/store";
+  import { fromStore, get, type Writable } from "svelte/store";
   import {
     MotionConfigContext,
     type MotionConfigContextObject,
   } from "../../context/MotionConfigContext.js";
   import { VisualElementDragControls } from "./VisualElementDragControls.js";
 
-  export let visualElement, props, isCustom;
+  let { visualElement, props, isCustom, children } = $props();
 
   const mcc =
     getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
@@ -31,19 +32,12 @@ Copyright (c) 2018 Framer B.V. -->
       cleanup = groupDragControls.subscribe(dragControls);
     }
   };
-  let { dragControls: groupDragControls } = props;
-  let { transformPagePoint } = get(mcc);
+  const { dragControls: groupDragControls } = $derived(props);
+  const { transformPagePoint } = $derived(fromStore(mcc).current);
 
-  $: ({ dragControls: groupDragControls } = props);
-  //let {transformPagePoint} = get($mcc);
-  $: ({ transformPagePoint } = $mcc);
-  dragControls.setProps({ ...props, transformPagePoint });
+  $effect(() => dragControls.setProps({ ...props, transformPagePoint }));
 
-  //dragControls.setProps({ ...props, transformPagePoint })
-
-  $: dragControls.setProps({ ...props, transformPagePoint });
-
-  $: dragEffect(dragControls);
+  $effect(() => dragEffect(dragControls));
 
   onDestroy(() => {
     if (cleanup) {
@@ -53,4 +47,4 @@ Copyright (c) 2018 Framer B.V. -->
   onMount(() => dragControls.mount(visualElement));
 </script>
 
-<slot />
+{@render children?.()}

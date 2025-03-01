@@ -1,7 +1,8 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
 
-<script context="module" lang="ts">
+<script context="module" lang="ts" module>
     let presenceId = 0;
     function getPresenceId() {
         const id = presenceId;
@@ -14,24 +15,27 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-    import { afterUpdate, setContext, tick } from "svelte";
+    import { setContext, tick } from "svelte";
     import { setDomContext } from "../../../context/DOMcontext.js";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
 
-    type $$Props = PresenceChildProps;
+    interface Props extends PresenceChildProps {}
 
-    export let isPresent: $$Props["isPresent"],
-        onExitComplete: $$Props["onExitComplete"] = undefined,
-        initial: $$Props["initial"] = undefined,
-        custom: $$Props["custom"] = undefined,
-        presenceAffectsLayout: $$Props["presenceAffectsLayout"],
-        isCustom: $$Props["isCustom"];
+    let {
+        isPresent,
+        onExitComplete = undefined,
+        initial = undefined,
+        custom = undefined,
+        presenceAffectsLayout,
+        isCustom,
+        children,
+    }: Props = $props();
 
     const presenceChildren = newChildrenMap();
     const id = getPresenceId();
 
-    $: refresh = presenceAffectsLayout ? undefined : isPresent;
+    const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
     const memoContext = (flag?: boolean) => {
         return {
@@ -56,23 +60,25 @@ Copyright (c) 2018 Framer B.V. -->
     };
     let context = PresenceContext();
 
-    afterUpdate(() => {
+    $effect(() => {
         if (presenceAffectsLayout) {
             context.set(memoContext());
         }
     });
 
-    $: context.set(memoContext(refresh));
+    $effect(() => context.set(memoContext(refresh)));
 
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
     };
-    $: keyset(isPresent);
-    $: tick().then(() => {
-        !isPresent && !presenceChildren.size && onExitComplete?.();
+    $effect(() => {
+        keyset(isPresent);
+        tick().then(() => {
+            !isPresent && !presenceChildren.size && onExitComplete?.();
+        });
     });
     setContext(PresenceContext, context);
     setDomContext("Presence", isCustom, context);
 </script>
 
-<slot />
+{@render children?.()}
