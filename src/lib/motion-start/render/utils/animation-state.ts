@@ -8,7 +8,7 @@ import { isKeyframesTarget } from '../../animation/utils/is-keyframes-target';
 import type { VariantLabels } from '../../motion/types';
 import type { TargetAndTransition } from '../../types';
 import { shallowCompare } from '../../utils/shallow-compare';
-import type { VisualElement } from '../VisualElement';
+import type { VisualElement } from '../VisualElement.svelte';
 import { isVariantLabel } from './is-variant-label';
 import type { AnimationType } from './types';
 import { resolveVariant } from './resolve-dynamic-variants';

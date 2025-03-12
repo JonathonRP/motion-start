@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionProps } from '../types';
 import type { VisualState } from '../utils/use-visual-state';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature';
 import type MeasureLayout from './layout/MeasureLayout.svelte';

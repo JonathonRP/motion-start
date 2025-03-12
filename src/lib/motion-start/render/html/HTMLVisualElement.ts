@@ -18,7 +18,7 @@ import { DOMVisualElement } from '../dom/DOMVisualElement';
 import type { MotionConfigContext } from '../../context/MotionConfigContext';
 import { isMotionValue } from '../../value/utils/is-motion-value';
 import type { ResolvedValues } from '../types';
-import type { VisualElement } from '../VisualElement';
+import type { VisualElement } from '../VisualElement.svelte';
 
 export function getComputedStyle(element: HTMLElement) {
 	return window.getComputedStyle(element);

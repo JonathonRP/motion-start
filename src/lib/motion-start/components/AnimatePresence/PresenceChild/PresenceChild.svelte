@@ -14,7 +14,6 @@ Copyright (c) 2018 Framer B.V. -->
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "../../../context/use";
-    import { useId } from "../../../utils/useId.js";
     import { tick, untrack } from "svelte";
 
     interface Props extends PresenceChildProps {}
@@ -30,7 +29,7 @@ Copyright (c) 2018 Framer B.V. -->
     }: Props = $props();
 
     const presenceChildren = newChildrenMap();
-    const id = useId();
+    const id = $props.id();
 
     const memoExitComplete = $derived((childId: string | number) => {
         presenceChildren.set(childId, true);
@@ -48,7 +47,7 @@ Copyright (c) 2018 Framer B.V. -->
         ) => ({
             id,
             initial,
-            isPresent,
+            isPresent: presence,
             custom,
             onExitComplete,
             register: (childId: string | number) => {

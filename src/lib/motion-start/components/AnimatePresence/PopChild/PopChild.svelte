@@ -8,7 +8,6 @@ Copyright (c) 2018 Framer B.V. -->
     import { useContext } from "../../../context/use";
     import type { Props, MeasureProps, Size } from "./types";
     import type { RefObject } from "../../../utils/safe-react-types";
-    import { useId } from "$lib/motion-start/utils/useId";
 
     let { isPresent, children }: Props = $props();
 
@@ -44,7 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     // PopChild ---
 
-    const id = useId();
+    const id = $props.id();
     let ref: RefObject<HTMLElement> = {
         current: null!,
     };

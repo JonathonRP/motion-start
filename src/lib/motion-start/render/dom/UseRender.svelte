@@ -43,21 +43,21 @@ Copyright (c) 2018 Framer B.V. -->
 
   const elementProps = $derived({ ...filteredProps, ...visualProps, ref });
 
-  const motion = $derived((node: HTMLElement | SVGElement | null) => {
+  let element = $state<HTMLElement | SVGElement | null>(null);
+</script>
+
+<svelte:element
+  this={Component}
+  bind:this={() => element,
+  (node) => {
+    element = node;
     if (typeof ref === "function") {
       ref(node);
     } else {
       (ref as any).current = node;
     }
-  });
-
-  // $inspect(el);
-</script>
-
-<svelte:element
-  this={Component}
+  }}
   {...elementProps}
-  use:motion
   xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
 >
   {@render children?.()}

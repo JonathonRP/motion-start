@@ -38,16 +38,14 @@ export type CustomDomComponent<Props extends Record<string, any>> = Component<
  *
  * @public
  */
-export function createDOMMotionComponentProxy(componentFactory: typeof createMotionComponent): {
-	[P in keyof SvelteHTMLElements]: ReturnType<typeof componentFactory<MotionProps, Exclude<P, number>>>;
+export function createDOMMotionComponentProxy<Props>(componentFactory: typeof createMotionComponent): {
+	[K in keyof DOMMotionComponents]: DOMMotionComponents[K];
 } & {
 	create: typeof componentFactory;
-} {
-	type MotionProxy = {
-		[P in keyof SvelteHTMLElements]: ReturnType<typeof componentFactory<MotionProps, Exclude<P, number>>>;
-	} & {
+} & typeof componentFactory {
+	type MotionProxy = { [K in keyof DOMMotionComponents]: DOMMotionComponents[K] } & {
 		create: typeof componentFactory;
-	};
+	} & typeof componentFactory;
 
 	if (typeof Proxy === 'undefined') {
 		return componentFactory as MotionProxy;
@@ -60,10 +58,10 @@ export function createDOMMotionComponentProxy(componentFactory: typeof createMot
 		return componentFactory(...args);
 	};
 
-	return new Proxy(deprecatedFactoryFunction, {
-		get(_target, key) {
+	return new Proxy(deprecatedFactoryFunction as ReturnType<typeof createDOMMotionComponentProxy>, {
+		get(_target, key: string) {
 			if (key === 'create') return componentFactory;
-			if (typeof key === 'string') return componentFactory<undefined, typeof key>(key);
+			return componentFactory<Props, typeof key>(key);
 		},
-	}) as MotionProxy;
+	});
 }
