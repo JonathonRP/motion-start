@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { TargetAndTransition, TargetResolver } from '../types';
-import type { VisualElement } from '../render/VisualElement';
+import type { VisualElement } from '../render/VisualElement.svelte';
 import type { Easing } from '../easing/types';
 import type { Driver } from './animators/drivers/types';
 import type { SVGPathProperties, VariantLabels } from '../motion/types';

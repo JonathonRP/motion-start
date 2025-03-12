@@ -41,7 +41,10 @@
 				"svelte.plugin.svelte.defaultScriptLanguage": "ts",
 
 				"explorer.sortOrder": "filesFirst",
-				"workbench.editor.labelFormat": "short",
+				"workbench.editor.labelFormat": "default",
+				"workbench.editor.customLabels.patterns": {
+					"**/+*": "${dirname} - ${filename}"
+				},
 
 				"html.format.enable": false,
 				"json.format.enable": false,

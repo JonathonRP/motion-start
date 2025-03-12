@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { useMotionValueEvent } from '../../utils/use-motion-value-event.svelte';
 import type { MotionValue } from '../../value';
-import type { VisualElement } from '../VisualElement';
+import type { VisualElement } from '../VisualElement.svelte';
 
 export function useMotionValueChild(
 	children: MotionValue<number | string>,

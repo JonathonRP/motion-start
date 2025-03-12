@@ -19,7 +19,7 @@ Copyright (c) 2018 Framer B.V. -->
     type MotionComponentProps,
   } from "./index.svelte";
   import { untrack, type Component as ComponentType } from "svelte";
-  import type { MotionProps } from "../types";
+  import type { MotionProps } from "./types";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -55,12 +55,15 @@ Copyright (c) 2018 Framer B.V. -->
   const visualState = $derived(useVisualState(props, isStatic));
 
   if (!isStatic && isBrowser) {
-    useStrictMode((() => configAndProps)(), preloadedFeatures);
+    useStrictMode(configAndProps, preloadedFeatures);
 
     const layoutProjection = $derived(
       getProjectionFunctionality(configAndProps),
     );
-    MeasureLayout = (() => layoutProjection?.MeasureLayout)();
+
+    $effect(() => {
+      MeasureLayout = layoutProjection?.MeasureLayout;
+    });
 
     /**
      * Create a VisualElement for this component. A VisualElement provides a common

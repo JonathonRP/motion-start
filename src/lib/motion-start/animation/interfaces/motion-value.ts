@@ -12,7 +12,7 @@ import type { AnimationPlaybackControls, ValueAnimationOptions } from '../types'
 import type { UnresolvedKeyframes } from '../../render/utils/KeyframesResolver';
 import { MotionGlobalConfig } from '../../utils/GlobalConfig';
 import { instantAnimationState } from '../../utils/use-instant-transition-state';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import { getFinalKeyframe } from '../animators/waapi/utils/get-final-keyframe';
 import { frame } from '../../frameloop/frame';
 import { AcceleratedAnimation } from '../animators/AcceleratedAnimation';

@@ -8,7 +8,7 @@ import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state';
@@ -25,13 +25,13 @@ export function useVisualElement<Instance, RenderState>(
 	visualState: () => VisualState<Instance, RenderState>,
 	props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	ProjectionNodeConstructor?: () => any
+	ProjectionNodeConstructor?: () => new (...args: any[]) => IProjectionNode<unknown>
 ): VisualElement<Instance> | null {
 	const { visualElement: parent } = useContext(MotionContext);
 
 	const lazyContext = useContext(LazyContext);
 
-	const presenceContext = $derived(useContext(PresenceContext));
+	const presenceContext = useContext(PresenceContext);
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext)?.reducedMotion);
 
@@ -43,31 +43,40 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
 	if (!visualElementRef.current && createVisualElement) {
-		visualElementRef.current = createVisualElement(Component, {
-			visualState: visualState(),
+		const options = $derived({
+			get visualState() {
+				return visualState();
+			},
 			parent,
-			props: props(),
+			get props() {
+				return props();
+			},
 			presenceContext,
 			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
+		visualElementRef.current = createVisualElement(Component, options);
 	}
 
 	const visualElement = $derived(visualElementRef.current);
 
 	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext);
 
-	if (
-		visualElement &&
-		!visualElement.projection &&
-		ProjectionNodeConstructor?.() &&
-		(visualElement.type === 'html' || visualElement.type === 'svg')
-	) {
-		createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
-	}
+	$effect(() => {
+		if (
+			visualElement &&
+			!visualElement.projection &&
+			ProjectionNodeConstructor?.() &&
+			(visualElement.type === 'html' || visualElement.type === 'svg')
+		) {
+			createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor(), initialLayoutGroupConfig);
+		}
+	});
 
 	const isMounted = new IsMounted();
 	$effect.pre(() => {
+		props();
+		presenceContext;
 		/**
 		 * Check the component has already mounted before calling
 		 * `update` unnecessarily. This ensures we skip the initial update.
@@ -76,7 +85,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			visualElement.update(props(), presenceContext);
+			untrack(() => visualElement.update(props(), presenceContext));
 		}
 	});
 
@@ -90,10 +99,13 @@ export function useVisualElement<Instance, RenderState>(
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
-	// $inspect(presenceContext.current);
+	$inspect(presenceContext);
 
 	$effect(() => {
-		$inspect(presenceContext);
+		// const logger = console.context('use-visual-element');
+		// $inspect(presenceContext).with(logger.info);
+		// $inspect(props());
+
 		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
@@ -116,27 +128,7 @@ export function useVisualElement<Instance, RenderState>(
 		}
 	});
 
-	watch.pre(
-		props,
-		(_props) => {
-			if (!visualElement) return;
-			visualElement.update(_props, presenceContext);
-
-			visualElement.updateFeatures();
-			microtask.render(() => visualElement.render);
-
-			if (wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
-		},
-		{
-			/**
-			 * only fire on changes...
-			 * this only fires on changes in props
-			 */
-			lazy: true,
-		}
-	);
+	// $inspect(props().animate);
 
 	$effect(() => {
 		if (!visualElement) return;
@@ -155,57 +147,20 @@ export function useVisualElement<Instance, RenderState>(
 		}
 	});
 
-	watch(
-		props,
-		(_props) => {
-			if (!visualElement) return;
-
-			if (!wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
-
-			if (wantsHandoff) {
-				// This ensures all future calls to animateChanges() in this component will run in useEffect
-				queueMicrotask(() => {
-					window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
-				});
-
-				wantsHandoff = false;
-			}
-		},
-		{
-			/**
-			 * only fire on changes...
-			 * this only fires on changes in props
-			 */
-			lazy: true,
-		}
-	);
-
-	// watch(
-	// 	() => presenceContext.current,
-	// 	() => {
-	// 		visualElement?.updateFeatures();
-
-	// 		microtask.render(() => visualElement.render);
-	// 	},
-	// 	{ lazy: true }
-	// );
-
 	return visualElement;
 }
 
 function createProjectionNode(
 	visualElement: VisualElement<any>,
-	props: MotionProps,
-	ProjectionNodeConstructor: any,
+	props: () => MotionProps,
+	ProjectionNodeConstructor: { new (...args: any[]): IProjectionNode<unknown> },
 	initialPromotionConfig?: InitialPromotionConfig
 ) {
-	const { layoutId, layout, drag, dragConstraints, layoutScroll, layoutRoot } = props;
+	const { layoutId, layout, drag, dragConstraints, layoutScroll, layoutRoot } = $derived(props());
 
 	visualElement.projection = new ProjectionNodeConstructor(
 		visualElement.latestValues,
-		props['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent)
+		props()['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent)
 	) as IProjectionNode<unknown>;
 
 	visualElement.projection.setOptions({

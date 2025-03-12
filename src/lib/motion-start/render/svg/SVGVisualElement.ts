@@ -19,7 +19,7 @@ import type { ResolvedValues } from '../types';
 import { createBox } from '../../projection/geometry/models';
 import type { IProjectionNode } from '../../projection/node/types';
 import { isSVGTag } from './utils/is-svg-tag';
-import type { VisualElement } from '../VisualElement';
+import type { VisualElement } from '../VisualElement.svelte';
 
 export class SVGVisualElement extends DOMVisualElement<SVGElement, SVGRenderState, DOMVisualElementOptions> {
 	type = 'svg';
