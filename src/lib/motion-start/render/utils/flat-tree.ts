@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { VisualElement } from '../VisualElement.svelte';
+import type { VisualElement } from '../VisualElement';
 import { addUniqueItem, removeItem } from '../../utils/array';
 import { compareByDepth, type WithDepth } from './compare-by-depth';
 

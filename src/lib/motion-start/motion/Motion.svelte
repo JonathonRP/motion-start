@@ -54,33 +54,31 @@ Copyright (c) 2018 Framer B.V. -->
 
   const visualState = $derived(useVisualState(props, isStatic));
 
-  if (!isStatic && isBrowser) {
-    useStrictMode(configAndProps, preloadedFeatures);
+  $effect(() => {
+    if (!isStatic && isBrowser) {
+      useStrictMode(configAndProps, preloadedFeatures);
 
-    const layoutProjection = $derived(
-      getProjectionFunctionality(configAndProps),
-    );
+      const layoutProjection = getProjectionFunctionality(configAndProps);
 
-    $effect(() => {
       MeasureLayout = layoutProjection?.MeasureLayout;
-    });
 
-    /**
-     * Create a VisualElement for this component. A VisualElement provides a common
-     * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-     * providing a way of rendering to these APIs outside of the React render loop
-     * for more performant animations and interactions
-     */
-    context.visualElement = useVisualElement<Instance, RenderState>(
-      Component,
-      () => visualState,
-      () => configAndProps,
-      createVisualElement,
-      () => layoutProjection?.ProjectionNode,
-    );
-  }
+      /**
+       * Create a VisualElement for this component. A VisualElement provides a common
+       * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
+       * providing a way of rendering to these APIs outside of the React render loop
+       * for more performant animations and interactions
+       */
+      context.visualElement = useVisualElement<Instance, RenderState>(
+        Component,
+        visualState,
+        configAndProps,
+        createVisualElement,
+        layoutProjection?.ProjectionNode,
+      );
+    }
 
-  MotionContext.Provider = context;
+    MotionContext.Provider = context;
+  });
 
   // const motionRef = $derived(
   //   useMotionRef(visualState, context.visualElement, externalRef),

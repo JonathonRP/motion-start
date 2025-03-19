@@ -10,7 +10,7 @@ import { isNumOrPxType, positionalKeys, positionalValues } from './utils/unit-co
 import { findDimensionValueType } from './value-types/dimensions';
 import { KeyframeResolver, type OnKeyframesResolved, type UnresolvedKeyframes } from '../utils/KeyframesResolver';
 import { makeNoneKeyframesAnimatable } from '../html/utils/make-none-animatable';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { VisualElement } from '../VisualElement';
 import type { MotionValue } from '../../value';
 
 export class DOMKeyframesResolver<T extends string | number> extends KeyframeResolver<T> {

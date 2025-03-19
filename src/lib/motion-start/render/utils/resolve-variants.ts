@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionProps } from '../../motion/types';
 import type { TargetAndTransition, TargetResolver } from '../../types';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { VisualElement } from '../VisualElement';
 import type { ResolvedValues } from '../types';
 
 function getValueState<I>(visualElement?: VisualElement<I>): [ResolvedValues, ResolvedValues] {

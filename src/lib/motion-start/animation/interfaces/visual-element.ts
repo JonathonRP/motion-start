@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { resolveVariant } from '../../render/utils/resolve-dynamic-variants';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement';
 import type { AnimationDefinition } from '../types';
 import type { VisualElementAnimationOptions } from './types';
 import { animateTarget } from './visual-element-target';

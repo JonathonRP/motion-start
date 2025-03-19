@@ -11,7 +11,7 @@ import type { AnimationPlaybackControls } from '../../animation/types';
 import type { FlatTree } from '../../render/utils/flat-tree';
 import type { InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import type { MotionStyle } from '../../motion/types';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement';
 
 export interface Measurements {
 	animationId: number;

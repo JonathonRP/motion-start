@@ -8,7 +8,7 @@ import { isKeyframesTarget } from '../../animation/utils/is-keyframes-target';
 import type { VariantLabels } from '../../motion/types';
 import type { TargetAndTransition } from '../../types';
 import { shallowCompare } from '../../utils/shallow-compare';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { VisualElement } from '../VisualElement';
 import { isVariantLabel } from './is-variant-label';
 import type { AnimationType } from './types';
 import { resolveVariant } from './resolve-dynamic-variants';
@@ -312,8 +312,7 @@ export function createAnimationState<I>(visualElement: VisualElement<I>): Animat
 				const motionValue = visualElement.getValue(key);
 				if (motionValue) motionValue.liveStyle = true;
 
-				// @ts-expect-error
-				fallbackAnimation[key] = fallbackTarget ?? null;
+				fallbackAnimation[key] = (fallbackTarget as string | number) ?? null;
 			});
 
 			animations.push({ animation: fallbackAnimation });
