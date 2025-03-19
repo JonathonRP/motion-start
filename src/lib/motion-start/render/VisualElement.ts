@@ -146,7 +146,7 @@ export abstract class VisualElement<
 	 * A reference to the current underlying Instance, e.g. a HTMLElement
 	 * or Three.Mesh etc.
 	 */
-	current: Instance | null = $state(null);
+	current: Instance | null = null;
 
 	/**
 	 * A reference to the parent VisualElement (if exists).
@@ -194,7 +194,7 @@ export abstract class VisualElement<
 	 * TODO: This is currently set on every individual VisualElement but feels
 	 * like it could be set globally.
 	 */
-	shouldReduceMotion: boolean | null = $state(null);
+	shouldReduceMotion: boolean | null = null;
 
 	/**
 	 * Normally, if a component is controlled by a parent's variants, it can
@@ -215,7 +215,7 @@ export abstract class VisualElement<
 	/**
 	 * A reference to this VisualElement's projection node, used in layout animations.
 	 */
-	projection?: IProjectionNode<unknown> = $state();
+	projection?: IProjectionNode<unknown>;
 
 	/**
 	 * A map of all motion values attached to this visual element. Motion
@@ -227,7 +227,7 @@ export abstract class VisualElement<
 	/**
 	 * The AnimationState, this is hydrated by the animation Feature.
 	 */
-	animationState?: AnimationState = $state();
+	animationState?: AnimationState;
 
 	KeyframeResolver = KeyframeResolver;
 
@@ -240,18 +240,18 @@ export abstract class VisualElement<
 	/**
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
-	props: MotionProps = $state() as MotionProps;
-	prevProps?: MotionProps = $state();
+	props: MotionProps;
+	prevProps?: MotionProps;
 
-	presenceContext: PresenceContext | null = $state(null);
-	prevPresenceContext?: PresenceContext | null = $state(null);
+	presenceContext: PresenceContext | null = null;
+	prevPresenceContext?: PresenceContext | null = null;
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
 	 */
 	private features: {
 		[K in keyof FeatureDefinitions]?: InstanceType<ExtractFeature<FeatureDefinitions[K]>>;
-	} = $state({});
+	} = {};
 
 	/**
 	 * A map of every subscription that binds the provided or generated
@@ -293,7 +293,7 @@ export abstract class VisualElement<
 	 */
 	private events: {
 		[key: string]: SubscriptionManager<any>;
-	} = $state({});
+	} = {};
 
 	/**
 	 * An object containing an unsubscribe function for each prop event subscription.
@@ -302,12 +302,30 @@ export abstract class VisualElement<
 	 */
 	private propEventSubscriptions: {
 		[key: string]: VoidFunction;
-	} = $state({});
+	} = {};
 
-	constructor(visualOptions: VisualElementOptions<Instance, RenderState>, options: Options = {} as any) {
-		const { parent, props, presenceContext, reducedMotionConfig, blockInitialAnimation, visualState } =
-			$derived(visualOptions);
-		const { latestValues, renderState } = $derived(visualState);
+	/**
+	 * hold subscription to hook into svelte reactivity graph
+	 */
+	#subscribe: ReturnType<typeof createSubscriber>;
+
+	/**
+	 * hold update callback to hook into svelte reactivity graph
+	 */
+	#update: () => void;
+
+	constructor(
+		{
+			parent,
+			props,
+			presenceContext,
+			reducedMotionConfig,
+			blockInitialAnimation,
+			visualState,
+		}: VisualElementOptions<Instance, RenderState>,
+		options: Options = {} as any
+	) {
+		const { latestValues, renderState } = visualState;
 		this.latestValues = latestValues;
 		this.baseTarget = { ...latestValues };
 		this.initialValues = props.initial ? { ...latestValues } : {};
@@ -347,9 +365,21 @@ export abstract class VisualElement<
 				value.set(latestValues[key], false);
 			}
 		}
+
+		this.#subscribe = createSubscriber((update) => {
+			this.#update = update;
+			for (const eventKey in this.events) {
+				this.events[eventKey].add(update);
+			}
+
+			return () => {
+				this.unmount();
+			};
+		});
 	}
 
 	mount(instance: Instance) {
+		this.#subscribe();
 		this.current = instance;
 
 		visualElementStore.set(instance, this as VisualElement<unknown>);
@@ -564,6 +594,8 @@ export abstract class VisualElement<
 		if (this.handleChildMotionValue) {
 			this.handleChildMotionValue();
 		}
+
+		this.#update?.();
 	}
 
 	getProps() {

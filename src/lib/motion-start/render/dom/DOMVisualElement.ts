@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { DOMVisualElementOptions } from './types';
-import { VisualElement } from '../VisualElement.svelte';
+import { VisualElement } from '../VisualElement';
 import type { MotionProps, MotionStyle } from '../../motion/types';
 import type { MotionValue } from '../../value';
 import type { HTMLRenderState } from '../html/types';

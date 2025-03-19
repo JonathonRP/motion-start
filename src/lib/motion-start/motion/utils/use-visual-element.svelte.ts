@@ -8,7 +8,7 @@ import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement';
 import type { CreateVisualElement } from '../../render/types';
 import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state';
@@ -22,10 +22,10 @@ import { Debounced, IsMounted, useDebounce, watch } from 'runed';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
-	visualState: () => VisualState<Instance, RenderState>,
-	props: () => MotionProps,
+	visualState: VisualState<Instance, RenderState>,
+	props: MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	ProjectionNodeConstructor?: () => new (...args: any[]) => IProjectionNode<unknown>
+	ProjectionNodeConstructor?: new (...args: any[]) => IProjectionNode<unknown>
 ): VisualElement<Instance> | null {
 	const { visualElement: parent } = useContext(MotionContext);
 
@@ -42,23 +42,17 @@ export function useVisualElement<Instance, RenderState>(
 	 */
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
-	if (!visualElementRef.current && createVisualElement) {
-		const options = $derived({
-			get visualState() {
-				return visualState();
-			},
-			parent,
-			get props() {
-				return props();
-			},
-			presenceContext,
-			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
-			reducedMotionConfig: reducedMotionContext,
-		});
-		visualElementRef.current = createVisualElement(Component, options);
-	}
-
-	const visualElement = $derived(visualElementRef.current);
+	const visualElement = $derived(
+		createVisualElement &&
+			createVisualElement(Component, {
+				visualState,
+				parent,
+				props,
+				presenceContext,
+				blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
+				reducedMotionConfig: reducedMotionContext,
+			})
+	);
 
 	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext);
 
@@ -66,16 +60,16 @@ export function useVisualElement<Instance, RenderState>(
 		if (
 			visualElement &&
 			!visualElement.projection &&
-			ProjectionNodeConstructor?.() &&
+			ProjectionNodeConstructor &&
 			(visualElement.type === 'html' || visualElement.type === 'svg')
 		) {
-			createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor(), initialLayoutGroupConfig);
+			createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
 		}
 	});
 
 	const isMounted = new IsMounted();
 	$effect.pre(() => {
-		props();
+		props;
 		presenceContext;
 		/**
 		 * Check the component has already mounted before calling
@@ -85,7 +79,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			untrack(() => visualElement.update(props(), presenceContext));
+			untrack(() => visualElement.update(props, presenceContext));
 		}
 	});
 
@@ -128,8 +122,6 @@ export function useVisualElement<Instance, RenderState>(
 		}
 	});
 
-	// $inspect(props().animate);
-
 	$effect(() => {
 		if (!visualElement) return;
 
@@ -152,15 +144,15 @@ export function useVisualElement<Instance, RenderState>(
 
 function createProjectionNode(
 	visualElement: VisualElement<any>,
-	props: () => MotionProps,
+	props: MotionProps,
 	ProjectionNodeConstructor: { new (...args: any[]): IProjectionNode<unknown> },
 	initialPromotionConfig?: InitialPromotionConfig
 ) {
-	const { layoutId, layout, drag, dragConstraints, layoutScroll, layoutRoot } = $derived(props());
+	const { layoutId, layout, drag, dragConstraints, layoutScroll, layoutRoot } = props;
 
 	visualElement.projection = new ProjectionNodeConstructor(
 		visualElement.latestValues,
-		props()['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent)
+		props['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent)
 	) as IProjectionNode<unknown>;
 
 	visualElement.projection.setOptions({

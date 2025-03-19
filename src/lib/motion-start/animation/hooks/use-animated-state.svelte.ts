@@ -7,7 +7,7 @@ import type { TargetAndTransition } from '../../types';
 import type { ResolvedValues } from '../../render/types';
 import { makeUseVisualState } from '../../motion/utils/use-visual-state';
 import { createBox } from '../../projection/geometry/models';
-import { VisualElement } from '../../render/VisualElement.svelte';
+import { VisualElement } from '../../render/VisualElement';
 import { animateVisualElement } from '../interfaces/visual-element';
 
 interface AnimatedStateOptions {
