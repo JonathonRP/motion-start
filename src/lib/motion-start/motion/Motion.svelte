@@ -59,22 +59,25 @@ Copyright (c) 2018 Framer B.V. -->
       useStrictMode(configAndProps, preloadedFeatures);
 
       const layoutProjection = getProjectionFunctionality(configAndProps);
-
-      MeasureLayout = layoutProjection?.MeasureLayout;
-
+      untrack(() => {
+        MeasureLayout = layoutProjection?.MeasureLayout;
+      })
       /**
        * Create a VisualElement for this component. A VisualElement provides a common
        * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
        * providing a way of rendering to these APIs outside of the React render loop
        * for more performant animations and interactions
        */
-      context.visualElement = useVisualElement<Instance, RenderState>(
-        Component,
-        visualState,
-        configAndProps,
-        createVisualElement,
-        layoutProjection?.ProjectionNode,
+      untrack(() => {
+        context.visualElement = useVisualElement<Instance, RenderState>(
+          Component,
+          visualState,
+          configAndProps,
+          createVisualElement,
+          layoutProjection?.ProjectionNode,
       );
+      })
+      
     }
 
     MotionContext.Provider = context;

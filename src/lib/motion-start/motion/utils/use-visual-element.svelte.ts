@@ -42,30 +42,42 @@ export function useVisualElement<Instance, RenderState>(
 	 */
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
-	const visualElement = $derived(
-		createVisualElement &&
-			createVisualElement(Component, {
-				visualState,
+	if (!visualElementRef.current && createVisualElement)  {
+		const options = $derived({
+			visualState,
 				parent,
 				props,
 				presenceContext,
 				blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 				reducedMotionConfig: reducedMotionContext,
-			})
-	);
+		})
+		visualElementRef.current = createVisualElement(Component, options);
+	}
+	// const visualElement = $derived(
+	// 	createVisualElement &&
+	// 		createVisualElement(Component, {
+	// 			visualState,
+	// 			parent,
+	// 			props,
+	// 			presenceContext,
+	// 			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
+	// 			reducedMotionConfig: reducedMotionContext,
+	// 		})
+	// );
+	const visualElement = $derived(visualElementRef.current);
 
 	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext);
 
-	$effect(() => {
 		if (
 			visualElement &&
 			!visualElement.projection &&
 			ProjectionNodeConstructor &&
 			(visualElement.type === 'html' || visualElement.type === 'svg')
 		) {
-			createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
+			untrack(() => createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig))
+			
 		}
-	});
+	
 
 	const isMounted = new IsMounted();
 	$effect.pre(() => {
