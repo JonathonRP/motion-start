@@ -12,7 +12,9 @@
 		"ur": "https://github.com/JonathonRP/motion-start.git"
 	},
 	"type": "module",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"main": "./dist/index.js",
 	"bin": "./dist/index.js",
 	"svelte": "./dist/index.js",
@@ -33,48 +35,62 @@
 		"release": "bun --bun run build && bun --bun changeset publish"
 	},
 	"dependencies": {
-		"bits-ui": "^0.22.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-svelte": "^0.474.0",
 		"mode-watcher": "^0.5.1",
 		"nanoid": "^5.1.5",
 		"tailwind-merge": "^3.0.2",
-		"tailwind-variants": "^0.3.1"
+		"tailwind-variants": "^1.0.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"@changesets/cli": "^2.28.1",
 		"@emotion/is-prop-valid": "^1.3.1",
-		"@sveltejs/adapter-auto": "^4.0.0",
+		"@sveltejs/adapter-auto": "^5.0.0",
 		"@sveltejs/kit": "^2.20.2",
 		"@sveltejs/package": "^2.3.10",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
 		"@tailwindcss/typography": "^0.5.16",
-		"@tailwindcss/vite": "^4.0.15",
+		"@tailwindcss/vite": "^4.0.16",
 		"@tsconfig/svelte": "^5.0.4",
-		"@types/node": "^20.17.25",
+		"@types/node": "^20.17.27",
 		"@vitest/ui": "^2.1.9",
+		"bits-ui": "0.22.0",
 		"csstype": "^3.1.3",
+		"lucide-svelte": "^0.483.0",
 		"publint": "^0.3.9",
-		"runed": "^0.23.4",
-		"sv": "^0.6.26",
+		"runed": "^0.25.0",
+		"sv": "^0.6.27",
 		"svelte-check": "^4.1.5",
-		"tailwindcss": "^4.0.15",
+		"tailwindcss": "^4.0.16",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.8.2",
-		"vite": "^6.2.2",
+		"vite": "^6.2.3",
 		"vitest": "^2.1.9"
 	},
 	"peerDependencies": {
-		"svelte": "^5.23.2"
+		"svelte": "^5.25.3"
 	},
 	"engines": {
 		"bun": ">=1.0.0",
 		"node": ">=20"
 	},
 	"sideEffects": false,
-	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
-	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild", "svelte-preprocess"]
+	"keywords": [
+		"svelte animation",
+		"svelte",
+		"animation",
+		"gestures",
+		"drag",
+		"spring",
+		"popmotion",
+		"framer-motion"
+	],
+	"trustedDependencies": [
+		"@biomejs/biome",
+		"@sveltejs/kit",
+		"esbuild",
+		"svelte-preprocess"
+	]
 }
