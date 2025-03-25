@@ -54,14 +54,14 @@ Copyright (c) 2018 Framer B.V. -->
 
   const visualState = $derived(useVisualState(props, isStatic));
 
-  $effect(() => {
-    if (!isStatic && isBrowser) {
+  $effect.pre(() => {
+    if (!isStatic) {
       useStrictMode(configAndProps, preloadedFeatures);
 
       const layoutProjection = getProjectionFunctionality(configAndProps);
       untrack(() => {
         MeasureLayout = layoutProjection?.MeasureLayout;
-      })
+      });
       /**
        * Create a VisualElement for this component. A VisualElement provides a common
        * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
@@ -75,9 +75,8 @@ Copyright (c) 2018 Framer B.V. -->
           configAndProps,
           createVisualElement,
           layoutProjection?.ProjectionNode,
-      );
-      })
-      
+        );
+      });
     }
 
     MotionContext.Provider = context;

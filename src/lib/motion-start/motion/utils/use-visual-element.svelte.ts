@@ -35,49 +35,35 @@ export function useVisualElement<Instance, RenderState>(
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext)?.reducedMotion);
 
-	const visualElementRef: { current: VisualElement<Instance> | null } = $state({ current: null });
-
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
-	if (!visualElementRef.current && createVisualElement)  {
-		const options = $derived({
-			visualState,
+	const visualElement = $derived(
+		createVisualElement &&
+			createVisualElement(Component, {
+				visualState,
 				parent,
 				props,
 				presenceContext,
 				blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 				reducedMotionConfig: reducedMotionContext,
-		})
-		visualElementRef.current = createVisualElement(Component, options);
-	}
-	// const visualElement = $derived(
-	// 	createVisualElement &&
-	// 		createVisualElement(Component, {
-	// 			visualState,
-	// 			parent,
-	// 			props,
-	// 			presenceContext,
-	// 			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
-	// 			reducedMotionConfig: reducedMotionContext,
-	// 		})
-	// );
-	const visualElement = $derived(visualElementRef.current);
+			})
+	);
 
 	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext);
 
+	$effect.pre(() => {
 		if (
 			visualElement &&
 			!visualElement.projection &&
 			ProjectionNodeConstructor &&
 			(visualElement.type === 'html' || visualElement.type === 'svg')
 		) {
-			untrack(() => createProjectionNode(visualElementRef.current!, props, ProjectionNodeConstructor, initialLayoutGroupConfig))
-			
+			createProjectionNode(visualElement!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
 		}
-	
+	});
 
 	const isMounted = new IsMounted();
 	$effect.pre(() => {
