@@ -54,14 +54,29 @@ Copyright (c) 2018 Framer B.V. -->
 
   const visualState = $derived(useVisualState(props, isStatic));
 
-  $effect.pre(() => {
-    if (!isStatic) {
-      useStrictMode(configAndProps, preloadedFeatures);
+  $inspect(configAndProps);
 
-      const layoutProjection = getProjectionFunctionality(configAndProps);
-      untrack(() => {
-        MeasureLayout = layoutProjection?.MeasureLayout;
-      });
+  const layoutProjection = $derived(
+    (!isStatic && isBrowser && getProjectionFunctionality(configAndProps)) ||
+      undefined,
+  );
+
+  const visualElement = $derived(
+    useVisualElement<Instance, RenderState>(
+      Component,
+      visualState,
+      configAndProps,
+      createVisualElement,
+      layoutProjection?.ProjectionNode,
+    ),
+  );
+
+  $effect.pre(() => {
+    // $inspect.trace();
+    if (!isStatic) {
+      // useStrictMode(configAndProps, preloadedFeatures);
+
+      MeasureLayout = layoutProjection?.MeasureLayout;
       /**
        * Create a VisualElement for this component. A VisualElement provides a common
        * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
@@ -69,17 +84,14 @@ Copyright (c) 2018 Framer B.V. -->
        * for more performant animations and interactions
        */
       untrack(() => {
-        context.visualElement = useVisualElement<Instance, RenderState>(
-          Component,
-          visualState,
-          configAndProps,
-          createVisualElement,
-          layoutProjection?.ProjectionNode,
-        );
+        context.visualElement = visualElement;
       });
     }
 
-    MotionContext.Provider = context;
+    // context.visualElement;
+    untrack(() => {
+      MotionContext.Provider = context;
+    });
   });
 
   // const motionRef = $derived(
