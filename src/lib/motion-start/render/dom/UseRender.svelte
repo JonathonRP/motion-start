@@ -48,15 +48,17 @@ Copyright (c) 2018 Framer B.V. -->
 
 <svelte:element
   this={Component}
-  bind:this={() => element,
-  (node) => {
-    element = node;
-    if (typeof ref === "function") {
-      ref(node);
-    } else {
-      (ref as any).current = node;
+  bind:this={
+    () => element,
+    (node) => {
+      if (typeof ref === "function") {
+        ref(node);
+      } else {
+        (ref as any).current = node;
+      }
+      element = node;
     }
-  }}
+  }
   {...elementProps}
   xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
 >

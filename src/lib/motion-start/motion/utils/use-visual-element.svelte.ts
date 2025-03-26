@@ -61,7 +61,7 @@ export function useVisualElement<Instance, RenderState>(
 			ProjectionNodeConstructor &&
 			(visualElement.type === 'html' || visualElement.type === 'svg')
 		) {
-			createProjectionNode(visualElement!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
+			untrack(() => createProjectionNode(visualElement!, props, ProjectionNodeConstructor, initialLayoutGroupConfig));
 		}
 	});
 
@@ -92,6 +92,7 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	$inspect(presenceContext);
+	// $inspect(props);
 
 	$effect(() => {
 		// const logger = console.context('use-visual-element');
