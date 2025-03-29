@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.4
+
+### Patch Changes
+
+- 7f6010b: fix peer deps including melt-ui because of bits-ui dep
+
 ## 0.1.3
 
 ### Patch Changes
