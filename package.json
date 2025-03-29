@@ -1,6 +1,6 @@
 {
 	"name": "motion-start",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "Svelte animation library inspired by the React library framer-motion.",
 	"license": "MIT",
 	"author": {
