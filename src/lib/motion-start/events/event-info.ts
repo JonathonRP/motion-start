@@ -59,9 +59,11 @@ var wrapHandler = function (handler: EventListenerWithPointInfo, shouldFilterPri
     if (shouldFilterPrimaryPointer === void 0) { shouldFilterPrimaryPointer = false; }
     var listener = function (event: PointerEvent) {
         return handler(event, extractEventInfo(event));
-    };// @ts-expect-error
+    };
     return shouldFilterPrimaryPointer
+        // @ts-expect-error
         ? filterPrimaryPointer(listener)
+        // @ts-expect-error
         : listener;
 };
 
