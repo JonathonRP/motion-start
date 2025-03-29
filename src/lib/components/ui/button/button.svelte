@@ -19,9 +19,10 @@
 		buttonVariants({
 			variant,
 			size,
-			className: Array.isArray(className)
+			className: className && (Array.isArray(className)
 				? className.join("")
-				: className,
+				: typeof className == "object" ? Object.entries(className).reduce((acc, [key, value]) => acc += (key && value) || '', "")
+				: className) || void 0,
 		}),
 	)}
 	type="button"
