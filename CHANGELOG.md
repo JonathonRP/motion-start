@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.5
+
+### Patch Changes
+
+- 2996dae: add back style-value-types just incase
+
 ## 0.1.4
 
 ### Patch Changes
