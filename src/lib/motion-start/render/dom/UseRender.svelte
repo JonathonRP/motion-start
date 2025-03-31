@@ -33,9 +33,9 @@ Copyright (c) 2018 Framer B.V. -->
     isSVGComponent(Component) ? useSvgProps : useHTMLProps,
   );
 
-  const visualProps = $derived({
-    ...useVisualProps(props as any, latestValues, isStatic, Component),
-  });
+  const visualProps = $derived(
+    useVisualProps(props as any, latestValues, isStatic, Component),
+  );
 
   const filteredProps = $derived(
     filterProps(props, typeof Component === "string", forwardMotionProps),

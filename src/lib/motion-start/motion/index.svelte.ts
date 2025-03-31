@@ -309,9 +309,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		// });
 
 		return Motion<Props, Instance, RenderState>(anchor, {
-			get preloadedFeatures() {
-				return preloadedFeatures;
-			},
 			get Component() {
 				return Component;
 			},
