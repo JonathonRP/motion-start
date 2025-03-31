@@ -3,32 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts" module>
-	function getValue<V>(item: ItemData<V>) {
-		return item.value;
-	}
-
-	function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
-		return a.layout.min - b.layout.min;
-	}
-</script>
-
-<script lang="ts" generics="V">
-	import { invariant } from "../../utils/errors";
-	import type { SvelteHTMLElements } from "svelte/elements";
-	import { untrack, type Component, type Snippet } from "svelte";
-	import { ReorderContext } from "../../context/ReorderContext";
-	import { motion } from "../../render/components/motion/proxy";
-	import type { HTMLMotionProps } from "../../render/html/types";
-	import type { Ref } from "../../utils/safe-react-types";
-
-	import type {
-		ItemData,
-		ReorderContext as ReorderContextProps,
-	} from "./types";
-	import { checkReorder } from "./utils/check-reorder";
-	import type { PropsWithChildren } from "../../utils/types";
-
-	type Props<V> = {
+	export interface Props<V> {
 		/**
 		 * A HTML element to render this component as. Defaults to `"ul"`.
 		 *
@@ -70,7 +45,36 @@ Copyright (c) 2018 Framer B.V. -->
 		 * @public
 		 */
 		values: V[];
-	};
+	}
+
+	type ReorderGroupProps<V> = Props<V> &
+		Omit<HTMLMotionProps<any>, "values"> &
+		PropsWithChildren<{}, [(typeof values)[number]]>;
+
+	function getValue<V>(item: ItemData<V>) {
+		return item.value;
+	}
+
+	function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
+		return a.layout.min - b.layout.min;
+	}
+</script>
+
+<script lang="ts" generics="V">
+	import { invariant } from "../../utils/errors";
+	import type { SvelteHTMLElements } from "svelte/elements";
+	import { untrack, type Component, type Snippet } from "svelte";
+	import { ReorderContext } from "../../context/ReorderContext";
+	import { motion } from "../../render/components/motion/proxy";
+	import type { HTMLMotionProps } from "../../render/html/types";
+	import type { Ref } from "../../utils/safe-react-types";
+
+	import type {
+		ItemData,
+		ReorderContext as ReorderContextProps,
+	} from "./types";
+	import { checkReorder } from "./utils/check-reorder";
+	import type { PropsWithChildren } from "../../utils/types";
 
 	let {
 		children,
@@ -80,11 +84,9 @@ Copyright (c) 2018 Framer B.V. -->
 		values,
 		ref: externalRef = $bindable(),
 		...props
-	}: Props<V> &
-		Omit<HTMLMotionProps<any>, "children"> &
-		PropsWithChildren<{}, [(typeof values)[number]]> & {
-			ref?: Ref<SvelteHTMLElements[typeof as]>;
-		} = $props();
+	}: ReorderGroupProps<V> & {
+		ref?: Ref<SvelteHTMLElements[typeof as]>;
+	} = $props();
 
 	const ReorderGroup = motion[as as keyof typeof motion] as Component<
 		PropsWithChildren<
@@ -95,11 +97,11 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 	const order: ItemData<V>[] = [];
-	let isReordering = $state(false);
+	let isReordering = $derived(false);
 
 	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
 
-	const context: ReorderContextProps<V> = $derived({
+	const context: ReorderContextProps<V> = {
 		axis,
 		registerItem: (value, layout) => {
 			// If the entry was already added, update it rather than adding it again
@@ -125,11 +127,7 @@ Copyright (c) 2018 Framer B.V. -->
 				);
 			}
 		},
-	});
-
-	$effect.pre(() => {
-		isReordering = false;
-	});
+	};
 
 	ReorderContext.Provider = context;
 </script>

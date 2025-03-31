@@ -27,14 +27,17 @@ Copyright (c) 2018 Framer B.V. -->
   };
 
   let {
-    preloadedFeatures,
     createVisualElement,
     useVisualState,
     useRender: Renderer,
     Component,
     props,
     ref: externalRef = $bindable(),
-  }: Props & MotionComponentConfig<Instance, RenderState> = $props();
+  }: Props &
+    Omit<
+      MotionComponentConfig<Instance, RenderState>,
+      "preloadedFeatures"
+    > = $props();
 
   /**
    * If we need to measure the element we load this functionality in a
@@ -42,57 +45,45 @@ Copyright (c) 2018 Framer B.V. -->
    */
   let MeasureLayout: undefined | ComponentType<MotionProps> = $state();
 
-  const configAndProps = $derived({
-    ...useContext(MotionConfigContext),
-    ...props,
+  const configAndProps = Object.assign(props, useContext(MotionConfigContext), {
     layoutId: useLayoutId(props),
   });
 
-  const { isStatic } = $derived(configAndProps);
+  // $inspect(props, configAndProps);
+
+  const { isStatic } = configAndProps;
 
   const context = useCreateMotionContext<Instance>(props);
 
-  const visualState = $derived(useVisualState(props, isStatic));
+  const visualState = useVisualState(props, isStatic);
 
   $inspect(configAndProps);
 
-  const layoutProjection = $derived(
-    (!isStatic && isBrowser && getProjectionFunctionality(configAndProps)) ||
-      undefined,
-  );
+  // $inspect.trace();
+  if (!isStatic && isBrowser) {
+    // useStrictMode(configAndProps, preloadedFeatures);
 
-  const visualElement = $derived(
-    useVisualElement<Instance, RenderState>(
+    const layoutProjection = getProjectionFunctionality(configAndProps);
+
+    MeasureLayout = layoutProjection?.MeasureLayout;
+
+    /**
+     * Create a VisualElement for this component. A VisualElement provides a common
+     * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
+     * providing a way of rendering to these APIs outside of the React render loop
+     * for more performant animations and interactions
+     */
+    context.visualElement = useVisualElement<Instance, RenderState>(
       Component,
       visualState,
       configAndProps,
       createVisualElement,
       layoutProjection?.ProjectionNode,
-    ),
-  );
+    );
+  }
 
-  $effect.pre(() => {
-    // $inspect.trace();
-    if (!isStatic) {
-      // useStrictMode(configAndProps, preloadedFeatures);
-
-      MeasureLayout = layoutProjection?.MeasureLayout;
-      /**
-       * Create a VisualElement for this component. A VisualElement provides a common
-       * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-       * providing a way of rendering to these APIs outside of the React render loop
-       * for more performant animations and interactions
-       */
-      untrack(() => {
-        context.visualElement = visualElement;
-      });
-    }
-
-    // context.visualElement;
-    untrack(() => {
-      MotionContext.Provider = context;
-    });
-  });
+  // context.visualElement;
+  MotionContext.Provider = context;
 
   // const motionRef = $derived(
   //   useMotionRef(visualState, context.visualElement, externalRef),

@@ -10,17 +10,14 @@ Copyright (c) 2018 Framer B.V. -->
 
   interface Props extends MotionConfigProps {}
 
-  let { isValidProp, children, ...configOG }: Props = $props();
+  let { isValidProp, children, ...config }: Props = $props();
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
   /**
    * Inherit props from any parent MotionConfig components
    */
-  const config = $derived({
-    ...useContext(MotionConfigContext),
-    ...configOG,
-  });
+  config = Object.assign(config, useContext(MotionConfigContext));
 
   /**
    * Don't allow isStatic to change between renders as it affects how many hooks
@@ -28,8 +25,8 @@ Copyright (c) 2018 Framer B.V. -->
    */
   //config.isStatic = useConstant(() => config.isStatic)
 
-  $effect.pre(() => {
-    JSON.stringify(config.transition);
+  $effect(() => {
+    $state.snapshot(config.transition);
     config.transformPagePoint;
     config.reducedMotion;
     /**

@@ -36,7 +36,7 @@ import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
-import { createSubscriber } from 'svelte/reactivity';
+import type { createSubscriber } from 'svelte/reactivity';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -366,20 +366,20 @@ export abstract class VisualElement<
 			}
 		}
 
-		this.#subscribe = createSubscriber((update) => {
-			this.#update = update;
-			for (const eventKey in this.events) {
-				this.events[eventKey].add(update);
-			}
+		// this.#subscribe = createSubscriber((update) => {
+		// 	this.#update = update;
+		// 	for (const eventKey in this.events) {
+		// 		this.events[eventKey].add(update);
+		// 	}
 
-			return () => {
-				this.unmount();
-			};
-		});
+		// 	return () => {
+		// 		this.unmount();
+		// 	};
+		// });
 	}
 
 	mount(instance: Instance) {
-		this.#subscribe();
+		// this.#subscribe();
 		this.current = instance;
 
 		visualElementStore.set(instance, this as VisualElement<unknown>);
@@ -595,7 +595,7 @@ export abstract class VisualElement<
 			this.handleChildMotionValue();
 		}
 
-		this.#update?.();
+		// this.#update?.();
 	}
 
 	getProps() {

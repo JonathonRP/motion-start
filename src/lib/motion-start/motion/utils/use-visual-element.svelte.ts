@@ -31,7 +31,7 @@ export function useVisualElement<Instance, RenderState>(
 
 	const lazyContext = useContext(LazyContext);
 
-	const presenceContext = useContext(PresenceContext);
+	const presenceContext = $derived(useContext(PresenceContext));
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext)?.reducedMotion);
 
@@ -40,32 +40,31 @@ export function useVisualElement<Instance, RenderState>(
 	 */
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
-	const visualElement = $derived(
+	const visualElement =
 		createVisualElement &&
-			createVisualElement(Component, {
-				visualState,
-				parent,
-				props,
-				presenceContext,
-				blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
-				reducedMotionConfig: reducedMotionContext,
-			})
-	);
+		createVisualElement(Component, {
+			visualState,
+			parent,
+			props,
+			presenceContext,
+			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
+			reducedMotionConfig: reducedMotionContext,
+		});
 
 	const initialLayoutGroupConfig = useContext(SwitchLayoutGroupContext);
 
-	$effect.pre(() => {
-		if (
-			visualElement &&
-			!visualElement.projection &&
-			ProjectionNodeConstructor &&
-			(visualElement.type === 'html' || visualElement.type === 'svg')
-		) {
-			untrack(() => createProjectionNode(visualElement!, props, ProjectionNodeConstructor, initialLayoutGroupConfig));
-		}
-	});
+	if (
+		visualElement &&
+		!visualElement.projection &&
+		ProjectionNodeConstructor &&
+		(visualElement.type === 'html' || visualElement.type === 'svg')
+	) {
+		createProjectionNode(visualElement!, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
+	}
 
 	const isMounted = new IsMounted();
+	$inspect('useVisualElement', presenceContext);
+	// $inspect(props);
 	$effect.pre(() => {
 		props;
 		presenceContext;
@@ -90,9 +89,6 @@ export function useVisualElement<Instance, RenderState>(
 		Boolean(optimisedAppearId) &&
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
-
-	$inspect(presenceContext);
-	// $inspect(props);
 
 	$effect(() => {
 		// const logger = console.context('use-visual-element');
@@ -119,6 +115,10 @@ export function useVisualElement<Instance, RenderState>(
 		if (wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
 		}
+
+		return () => {
+			visualElement.updateFeatures();
+		};
 	});
 
 	$effect(() => {
