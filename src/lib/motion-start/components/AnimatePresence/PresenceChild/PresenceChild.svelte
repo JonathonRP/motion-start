@@ -28,26 +28,21 @@ Copyright (c) 2018 Framer B.V. -->
         children,
     }: Props = $props();
 
-    const presenceChildren = $derived(newChildrenMap());
+    const presenceChildren = $state(newChildrenMap());
     const id = $props.id();
 
-    const memoExitComplete = (childId: string | number) => {
+    const memoExitComplete = $derived((childId: string | number) => {
         presenceChildren.set(childId, true);
         for (const isComplete of presenceChildren.values()) {
             if (!isComplete) return;
         }
 
         onExitComplete && onExitComplete();
-    };
+    });
 
-    // const presenceProps =
+    const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
-    // FIX: may need to go back to using .current api
-    // const context = $derived.by(() => {
-    //     let presence = $state({ current: useContext(PresenceContext) });
-    //     return presence;
-    // });
-    let context = $derived({
+    const context = () => ({
         id,
         initial,
         isPresent,
@@ -59,30 +54,80 @@ Copyright (c) 2018 Framer B.V. -->
         },
     });
 
-    // this is getting called too much?..
-    $effect.pre(() => {
+    // FIX: may need to go back to using .current api
+    // const context = $derived.by(() => {
+    //     let presence = $state({ current: useContext(PresenceContext) });
+    //     return presence;
+    // });
+    // let context = useContext(PresenceContext);
+
+    // // this is getting called too much?..
+    $effect(() => {
         if (presenceAffectsLayout) {
-            Math.random();
-            untrack(() => {
-                PresenceContext.Provider = context;
-            });
+            // untrack(() => {
+            //     PresenceContext.Provider = contextMemo();
+            // });
+            // PresenceContext.Provider = contextMemo();
+            // PresenceContext.update(() => context);
+            // untrack(() => {
+            //     PresenceContext.Provider = context;
+            // });
+            // untrack(() => {
+            //     PresenceContext.update(contextMemo);
+            // });
+            // untrack(() => {
+            PresenceContext.update(() => context());
+            // });
         }
     });
 
-    const keyset = $derived((presence: boolean) =>
-        presenceChildren.forEach((_, key) => presenceChildren.set(key, false)),
-    );
-
     $effect(() => {
-        // $inspect.trace();
-        keyset(isPresent);
+        // refresh;
+        // untrack(() => {
+        //     PresenceContext.Provider = contextMemo();
+        // });
+        // untrack(() => {
+        // context = contextMemo(refresh);
+        // });
+        refresh;
         untrack(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
-            PresenceContext.Provider = context;
+            PresenceContext.update(() => context());
         });
     });
 
-    // $inspect(isPresent, id, useContext(PresenceContext));
+    const keyset = (presence: boolean) =>
+        presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+
+    // $inspect(isPresent);
+    $effect(() => {
+        // firing because of presenceChildren - size changing... and shouldnt be dep here...
+        $inspect.trace();
+        keyset(isPresent);
+
+        tick().then(() => {
+            !isPresent && !presenceChildren.size && onExitComplete?.();
+        });
+        // untrack(() => PresenceContext.update(() => context));
+        // untrack(() => {
+        //     PresenceContext.Provider = context;
+        // });
+        // presenceContext = context;
+    });
+
+    // $effect(() => {
+    //     // $inspect.trace();
+    //     isPresent;
+    //     untrack(() => {
+    //         PresenceContext.Provider = context;
+    //     });
+    // });
+
+    PresenceContext.Provider = context();
+    // PresenceContext.update(context);
+    // let test = $derived(useContext(PresenceContext).current);
+    // $inspect(isPresent, id, context(), test);
+
+    // TODO: why does this break other animations??
 </script>
 
 {#if mode === "popLayout"}

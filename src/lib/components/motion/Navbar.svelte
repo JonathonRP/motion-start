@@ -1,3 +1,5 @@
+<svelte:options runes={false} />
+
 <script>
   // Lucide Svelte
   import { Home, PencilLine, TvMinimalPlay } from "lucide-svelte";

@@ -9,12 +9,12 @@ import { getCurrentTreeVariants } from './utils';
 import { useContext } from '../use';
 
 export function useCreateMotionContext<Instance>(props: MotionProps): MotionContext<Instance> {
-	const { initial, animate } = $derived(getCurrentTreeVariants(props, useContext(MotionContext)));
+	const { initial, animate } = $derived(getCurrentTreeVariants(props, useContext(MotionContext).current));
 
-	const memo = $derived((_initial: string | false | undefined, _animate: string | false | undefined) => ({
+	const memo = (_initial: string | false | undefined, _animate: string | false | undefined) => ({
 		initial,
 		animate,
-	}));
+	});
 
 	return memo(variantLabelsAsDependency(initial), variantLabelsAsDependency(animate));
 }

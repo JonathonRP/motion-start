@@ -72,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 
-	const context = useContext(ReorderContext);
+	const context = $derived(useContext(ReorderContext).current);
 	const point = $derived({
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),

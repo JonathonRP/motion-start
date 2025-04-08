@@ -1,3 +1,5 @@
+<svelte:options runes={false} />
+
 <script lang="ts">
     import { motion } from "$lib/motion-start";
     import { cva, type VariantProps } from "class-variance-authority";

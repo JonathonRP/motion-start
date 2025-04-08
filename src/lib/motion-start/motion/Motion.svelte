@@ -45,9 +45,11 @@ Copyright (c) 2018 Framer B.V. -->
    */
   let MeasureLayout: undefined | ComponentType<MotionProps> = $state();
 
-  const configAndProps = Object.assign(props, useContext(MotionConfigContext), {
-    layoutId: useLayoutId(props),
-  });
+  const configAndProps = $derived(
+    Object.assign(props, useContext(MotionConfigContext).current, {
+      layoutId: useLayoutId(props),
+    }),
+  );
 
   // $inspect(props, configAndProps);
 

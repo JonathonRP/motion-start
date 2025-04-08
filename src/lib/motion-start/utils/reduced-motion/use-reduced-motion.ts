@@ -53,5 +53,5 @@ import { prefersReducedMotion } from 'svelte/motion';
  * @public
  */
 export const useReducedMotion = () => {
-	return prefersReducedMotion.current;
+	return () => prefersReducedMotion.current;
 };

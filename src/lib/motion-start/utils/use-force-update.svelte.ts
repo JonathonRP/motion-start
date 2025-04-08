@@ -10,15 +10,15 @@ export function useForceUpdate(): [VoidFunction, number] {
 	const isMounted = new IsMounted();
 	let forcedRenderCount = $state(0);
 
-	const forceRender = $derived(() => {
+	const forceRender = () => {
 		isMounted.current && forcedRenderCount++;
-	});
+	};
 
 	/**
 	 * Defer this to the end of the next animation frame in case there are multiple
 	 * synchronous calls.
 	 */
-	const deferredForceRender = $derived(() => frame.postRender(forceRender));
+	const deferredForceRender = () => frame.postRender(forceRender);
 
 	// tick().then(() => {
 	// 	forceRender = _forceRender(forcedRenderCount);

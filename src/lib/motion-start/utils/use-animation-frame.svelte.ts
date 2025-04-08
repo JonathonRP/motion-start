@@ -12,7 +12,7 @@ export type FrameCallback = (timestamp: number, delta: number) => void;
 
 export function useAnimationFrame(callback: FrameCallback) {
 	let initialTimestamp = 0;
-	const { isStatic } = useContext(MotionConfigContext);
+	const { isStatic } = $derived(useContext(MotionConfigContext).current);
 
 	$effect.pre(() => {
 		if (isStatic) return;

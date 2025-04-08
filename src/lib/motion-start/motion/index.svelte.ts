@@ -23,7 +23,7 @@ import type { RenderComponent, FeatureBundle } from './features/types';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import { MotionContext } from '../context/MotionContext';
 import { useVisualElement } from './utils/use-visual-element.svelte';
-import type { UseVisualState } from './utils/use-visual-state';
+import type { UseVisualState } from './utils/use-visual-state.svelte';
 import { useMotionRef } from './utils/use-motion-ref';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import { loadFeatures } from './features/load-features';
@@ -338,13 +338,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 };
 
 export function useLayoutId({ layoutId }: MotionProps) {
-	const layoutGroupId = useContext(LayoutGroupContext).id;
+	const layoutGroupId = $derived(useContext(LayoutGroupContext).current.id);
 
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
-	const isStrict = useContext(LazyContext).strict;
+	const isStrict = $derived(useContext(LazyContext).current.strict);
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

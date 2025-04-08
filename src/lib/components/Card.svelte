@@ -1,5 +1,12 @@
+<svelte:options runes={false} />
+
 <script lang="ts">
-    import { motion, useMotionValue, useTransform } from "$lib/motion-start";
+    import {
+        motion,
+        useMotionValue,
+        useTransform,
+        type PanInfo,
+    } from "$lib/motion-start";
     let exitX = 0;
     const x = useMotionValue(0);
     const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);

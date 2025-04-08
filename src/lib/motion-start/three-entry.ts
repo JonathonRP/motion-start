@@ -17,7 +17,7 @@ export { filterProps } from './render/dom/utils/filter-props';
 export {
 	makeUseVisualState,
 	type VisualState,
-} from './motion/utils/use-visual-state';
+} from './motion/utils/use-visual-state.svelte';
 export { isDragActive } from './gestures/drag/utils/lock';
 export { addPointerEvent } from './events/add-pointer-event';
 export { addPointerInfo } from './events/event-info';

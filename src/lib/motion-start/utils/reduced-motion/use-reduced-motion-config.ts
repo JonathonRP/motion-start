@@ -9,13 +9,13 @@ import { useReducedMotion } from './use-reduced-motion';
 
 export function useReducedMotionConfig() {
 	const reducedMotionPreference = useReducedMotion();
-	const { reducedMotion } = useContext(MotionConfigContext);
+	const { reducedMotion } = useContext(MotionConfigContext).current;
 
 	if (reducedMotion === 'never') {
 		return false;
 	} else if (reducedMotion === 'always') {
 		return true;
 	} else {
-		return reducedMotionPreference;
+		return reducedMotionPreference();
 	}
 }

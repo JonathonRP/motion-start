@@ -30,11 +30,13 @@ Copyright (c) 2018 Framer B.V. -->
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = useContext(LayoutGroupContext);
+  const layoutGroupContext = useContext(LayoutGroupContext).current;
 
-  const deprecatedLayoutGroupContext = useContext(DeprecatedLayoutGroupContext);
+  const deprecatedLayoutGroupContext = useContext(
+    DeprecatedLayoutGroupContext,
+  ).current;
 
-  const [forceRender, key] = $derived([...useForceUpdate()]);
+  const [forceRender, key] = useForceUpdate();
 
   const context = $state<MutableRefObject<LayoutGroupContext | null>>({
     current: null,
@@ -59,12 +61,12 @@ Copyright (c) 2018 Framer B.V. -->
     }
   });
 
-  const memo = $derived((_key: typeof key) => {
+  const memo = (_key: typeof key) => {
     return {
       ...context.current,
       forceRender,
     };
-  });
+  };
 
   $effect.pre(() => {
     LayoutGroupContext.Provider = memo(key);
