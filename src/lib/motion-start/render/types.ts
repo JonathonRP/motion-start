@@ -17,7 +17,7 @@ import type {
 	ToggleEventHandler,
 } from 'svelte/elements';
 
-import type { VisualState } from '../motion/utils/use-visual-state';
+import type { VisualState } from '../motion/utils/use-visual-state.svelte';
 import type { MotionValue } from '../value';
 import type { Axis, Box } from '../projection/geometry/types';
 import type { VisualElement } from './VisualElement';
@@ -47,7 +47,7 @@ export type UseRenderState<RenderState = any> = () => RenderState;
 
 export type VisualElementOptions<Instance, RenderState = any> = {
 	visualState: VisualState<Instance, RenderState>;
-	parent?: VisualElement<unknown>;
+	parent?: VisualElement<unknown> | null;
 	variantParent?: VisualElement<unknown>;
 	presenceContext: PresenceContext | null;
 	props: MotionProps;

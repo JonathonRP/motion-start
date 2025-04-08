@@ -1,5 +1,4 @@
 <!-- https://codesandbox.io/p/sandbox/t7qxhv?file=/src/styles.css -->
-<svelte:options runes />
 
 <script lang="ts">
     import Box from "../Box.svelte";

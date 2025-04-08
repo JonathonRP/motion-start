@@ -1,3 +1,5 @@
+<svelte:options runes={false} />
+
 <script>
     import Box from "../Box.svelte";
     import Button from "../ui/button/button.svelte";

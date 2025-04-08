@@ -1,4 +1,4 @@
-import type { RefObject } from '../../../utils/safe-react-types';
+import type { MutableRefObject, RefObject } from '../../../utils/safe-react-types';
 import type { Snippet } from 'svelte';
 
 export interface Size {
@@ -14,6 +14,6 @@ export interface Props {
 }
 
 export interface MeasureProps extends Props {
-	childRef: RefObject<HTMLElement>;
-	sizeRef: RefObject<Size>;
+	childRef: MutableRefObject<HTMLElement>;
+	sizeRef: MutableRefObject<Size>;
 }

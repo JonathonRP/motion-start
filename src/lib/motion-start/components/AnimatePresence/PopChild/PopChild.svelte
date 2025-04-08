@@ -7,7 +7,10 @@ Copyright (c) 2018 Framer B.V. -->
     import { MotionConfigContext } from "../../../context/MotionConfigContext";
     import { useContext } from "../../../context/use";
     import type { Props, MeasureProps, Size } from "./types";
-    import type { RefObject } from "../../../utils/safe-react-types";
+    import type {
+        MutableRefObject,
+        RefObject,
+    } from "../../../utils/safe-react-types";
 
     let { isPresent, children }: Props = $props();
 
@@ -25,12 +28,12 @@ Copyright (c) 2018 Framer B.V. -->
 
                     if (!children) return;
 
-                    mount(children!, { target: node });
+                    mount(children, { target: node });
 
                     const elementMeasurements =
-                        childRef.current!.getBoundingClientRect()!;
+                        childRef.current.getBoundingClientRect();
                     if (elementMeasurements && prevIsPresent && !isPresent) {
-                        const size = sizeRef.current!;
+                        const size = sizeRef.current;
                         size.height = elementMeasurements.height || 0;
                         size.width = elementMeasurements.width || 0;
                         size.top = elementMeasurements.top;
@@ -45,9 +48,9 @@ Copyright (c) 2018 Framer B.V. -->
 
     const id = $props.id();
     let ref: RefObject<HTMLElement> = {
-        current: null!,
+        current: null,
     };
-    let size: RefObject<Size> = {
+    let size: MutableRefObject<Size> = {
         current: {
             width: 0,
             height: 0,
@@ -56,7 +59,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     };
 
-    const { nonce } = useContext(MotionConfigContext);
+    const { nonce } = useContext(MotionConfigContext).current;
 
     /**
      * We create and inject a style block so we can apply this explicit
@@ -103,7 +106,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 {@render PopChildMeasure({
     children,
-    childRef: ref!,
+    childRef: ref as MeasureProps["childRef"],
     isPresent,
     sizeRef: size,
 })}

@@ -1,5 +1,6 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes={false} />
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
@@ -27,7 +28,7 @@ Copyright (c) 2018 Framer B.V. -->
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
-    $: layoutContext = useContext(LayoutGroupContext);
+    $: layoutContext = useContext(LayoutGroupContext).current;
     $: forceRender = () => {
         layoutContext?.forceRender?.();
         _list = [..._list];

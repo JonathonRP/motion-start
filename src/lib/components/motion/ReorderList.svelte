@@ -1,5 +1,4 @@
 <!-- https://codesandbox.io/p/sandbox/uonye -->
-<svelte:options runes />
 
 <script lang="ts" module>
     const inactiveShadow = "0px 0px 0px rgba(0,0,0,0.8)";

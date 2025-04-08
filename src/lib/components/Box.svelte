@@ -1,3 +1,5 @@
+<svelte:options runes={false} />
+
 <script lang="ts">
     export let minHeight = 350;
     export let cls = "";

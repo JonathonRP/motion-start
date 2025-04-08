@@ -24,8 +24,14 @@
         WhileHoverEffect,
         WhileTapEffect,
     } from "$lib/components/motion";
+
+    import { RenderScan } from "svelte-render-scan";
+    import { dev } from "$app/environment";
 </script>
 
+{#if dev}
+    <RenderScan />
+{/if}
 <div class="grid gap-1 m-3 max-w-full">
     <h1 class="text-3xl font-bold mb-2">Functional Tests Motion Start</h1>
     <div class="grid lg:grid-cols-3 gap-2">

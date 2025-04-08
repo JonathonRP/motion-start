@@ -1,3 +1,5 @@
+<svelte:options runes={false} />
+
 <script lang="ts">
     import type { HTMLAttributes } from "svelte/elements";
     import { cn } from "$lib/utils";

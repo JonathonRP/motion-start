@@ -38,7 +38,7 @@ export function isPresent(context: PresenceContext | null) {
  * @public
  */
 export const useIsPresent = (): boolean => {
-	const presenceContext = useContext(PresenceContext);
+	const presenceContext = $derived(useContext(PresenceContext).current);
 	return isPresent(presenceContext);
 };
 
@@ -65,7 +65,7 @@ export const useIsPresent = (): boolean => {
  * @public
  */
 export const usePresence = (): AlwaysPresent | Present | NotPresent => {
-	const context = useContext(PresenceContext);
+	const context = $derived(useContext(PresenceContext).current);
 
 	if (context === null) {
 		return [true, null] satisfies AlwaysPresent;

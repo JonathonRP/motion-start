@@ -26,13 +26,17 @@ Copyright (c) 2018 Framer B.V. -->
 	const props: MotionProps & { visualElement: VisualElement<unknown> } =
 		$props();
 
+	const layoutGroup = $derived(useContext(LayoutGroupContext).current);
+	const switchLayoutGroup = $derived(
+		useContext(SwitchLayoutGroupContext).current,
+	);
 	const [isPresent, safeToRemove] = usePresence();
 </script>
 
 <MeasureLayoutWithContext
 	{...props}
-	layoutGroup={useContext(LayoutGroupContext)}
-	switchLayoutGroup={useContext(SwitchLayoutGroupContext)}
+	{layoutGroup}
+	{switchLayoutGroup}
 	{isPresent}
 	{safeToRemove}
 />

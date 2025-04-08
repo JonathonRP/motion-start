@@ -11,6 +11,7 @@ import { frame } from '../frameloop';
 import type { MotionValue } from '.';
 import { useMotionValue } from './use-motion-value.svelte';
 import { isMotionValue } from './utils/is-motion-value';
+import { noop } from '../utils/noop';
 
 function toNumber(v: string | number) {
 	if (typeof v === 'number') return v;
@@ -37,14 +38,16 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
-	const { isStatic } = useContext(MotionConfigContext);
+	const { isStatic } = useContext(MotionConfigContext).current;
 
-	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
+	let activeSpringAnimation: MainThreadAnimation<number> | null = $state(null);
 
-	const value = $derived(useMotionValue(isMotionValue(source) ? toNumber(source.get()) : source));
+	const initialValue = isMotionValue(source) ? toNumber(source.get()) : source;
 
-	let latestValue = value.get();
-	let latestSetter: (v: number) => void = () => {};
+	const value = useMotionValue(initialValue);
+
+	let latestValue = $state(initialValue);
+	let latestSetter = $state<(v: number) => void>(noop);
 
 	const startAnimation = () => {
 		stopAnimation();
@@ -67,7 +70,7 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 	};
 
 	$effect.pre(() => {
-		JSON.stringify(config);
+		$state.snapshot(config);
 		return value.attach((v, set) => {
 			if (isStatic) {
 				return set(v);
@@ -82,11 +85,9 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 		}, stopAnimation);
 	});
 
-	const handleChange = $derived((v: any) => value.set(Number.parseFloat(v)));
-
-	$effect.pre(() => {
+	$effect(() => {
 		if (isMotionValue(source)) {
-			return source.on('change', handleChange);
+			return source.on('change', (v) => value.set(Number.parseFloat(v)));
 		}
 	});
 

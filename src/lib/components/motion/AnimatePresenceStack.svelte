@@ -1,4 +1,6 @@
 <!-- https://codesandbox.io/p/sandbox/gm9n3c?file=/src/index.js -->
+<svelte:options runes={false} />
+
 <script>
     import Box from "../Box.svelte";
     import { AnimatePresence } from "$lib/motion-start";
