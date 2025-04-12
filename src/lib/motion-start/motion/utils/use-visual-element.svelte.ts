@@ -8,7 +8,7 @@ import { LazyContext } from '../../context/LazyContext';
 import { MotionConfigContext } from '../../context/MotionConfigContext';
 import { MotionContext } from '../../context/MotionContext';
 import { PresenceContext } from '../../context/PresenceContext';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
@@ -23,9 +23,9 @@ import { Debounced, IsMounted, useDebounce, watch } from 'runed';
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
 	visualState: VisualState<Instance, RenderState>,
-	props: MotionProps,
+	props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	ProjectionNodeConstructor?: new (...args: any[]) => IProjectionNode<unknown>
+	ProjectionNodeConstructor?: () => new (...args: any[]) => IProjectionNode<unknown>
 ): VisualElement<Instance> | null {
 	const { visualElement: parent } = $derived(useContext(MotionContext).current);
 
@@ -41,11 +41,13 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
 	const visualElement =
-		createVisualElement &&
+		createVisualElement! &&
 		createVisualElement(Component, {
 			visualState,
 			parent,
-			props,
+			get props() {
+				return props();
+			},
 			presenceContext,
 			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
@@ -56,19 +58,18 @@ export function useVisualElement<Instance, RenderState>(
 	if (
 		visualElement &&
 		!visualElement.projection &&
-		ProjectionNodeConstructor &&
+		ProjectionNodeConstructor?.() &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElement, props, ProjectionNodeConstructor, initialLayoutGroupConfig);
+		createProjectionNode(visualElement, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
 	}
 
 	const isMounted = new IsMounted();
 	$inspect('useVisualElement', presenceContext);
-	// $inspect(props);
+
 	$effect.pre(() => {
-		props;
+		props();
 		presenceContext;
-		console.log(presenceContext);
 		/**
 		 * Check the component has already mounted before calling
 		 * `update` unnecessarily. This ensures we skip the initial update.
@@ -77,7 +78,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			untrack(() => visualElement.update(props, presenceContext));
+			untrack(() => visualElement.update(props(), presenceContext));
 		}
 	});
 
@@ -85,18 +86,13 @@ export function useVisualElement<Instance, RenderState>(
 	 * Cache this value as we want to know whether HandoffAppearAnimations
 	 * was present on initial render - it will be deleted after this.
 	 */
-	const optimisedAppearId = props[optimizedAppearDataAttribute as keyof typeof props];
+	const optimisedAppearId = props()[optimizedAppearDataAttribute as keyof typeof props];
 	let wantsHandoff =
 		Boolean(optimisedAppearId) &&
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	$effect(() => {
-		$inspect.trace();
-		// const logger = console.context('use-visual-element');
-		// $inspect(presenceContext).with(logger.info);
-		// $inspect(props());
-
 		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
@@ -172,7 +168,7 @@ function createProjectionNode(
 }
 
 function getClosestProjectingNode(
-	visualElement?: VisualElement<unknown, unknown, { allowProjection?: boolean }>
+	visualElement?: VisualElement<unknown, unknown, { allowProjection?: boolean }> | null
 ): IProjectionNode<unknown> | undefined {
 	if (!visualElement) return undefined;
 

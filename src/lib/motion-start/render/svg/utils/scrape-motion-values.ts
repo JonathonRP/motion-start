@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionProps } from '../../../motion/types';
 import { isMotionValue } from '../../../value/utils/is-motion-value';
-import type { VisualElement } from '../../VisualElement';
+import type { VisualElement } from '../../VisualElement.svelte';
 import { scrapeMotionValuesFromProps as scrapeHTMLMotionValuesFromProps } from '../../html/utils/scrape-motion-values';
 import { transformPropOrder } from '../../html/utils/transform';
 
