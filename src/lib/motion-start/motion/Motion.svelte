@@ -18,8 +18,14 @@ Copyright (c) 2018 Framer B.V. -->
     type MotionComponentConfig,
     type MotionComponentProps,
   } from "./index.svelte";
-  import { untrack, type Component as ComponentType } from "svelte";
+  import {
+    untrack,
+    type ComponentProps,
+    type Component as ComponentType,
+  } from "svelte";
   import type { MotionProps } from "./types";
+  import MeasureLayout from "./features/layout/MeasureLayout.svelte";
+  import type { VisualElement } from "../render/VisualElement.svelte";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -43,13 +49,15 @@ Copyright (c) 2018 Framer B.V. -->
    * If we need to measure the element we load this functionality in a
    * separate class component in order to gain access to getSnapshotBeforeUpdate.
    */
-  let MeasureLayout: undefined | ComponentType<MotionProps> = $state();
+  let MeasureLayoutComp:
+    | undefined
+    | ComponentType<ComponentProps<typeof MeasureLayout>> = $state();
 
-  const configAndProps = $derived(
-    Object.assign(props, useContext(MotionConfigContext).current, {
-      layoutId: useLayoutId(props),
-    }),
-  );
+  const configAndProps = $derived({
+    ...props,
+    ...useContext(MotionConfigContext).current,
+    layoutId: useLayoutId(props),
+  });
 
   // $inspect(props, configAndProps);
 
@@ -65,9 +73,9 @@ Copyright (c) 2018 Framer B.V. -->
   if (!isStatic && isBrowser) {
     // useStrictMode(configAndProps, preloadedFeatures);
 
-    const layoutProjection = getProjectionFunctionality(configAndProps);
+    const layoutProjection = getProjectionFunctionality(() => configAndProps);
 
-    MeasureLayout = layoutProjection?.MeasureLayout;
+    MeasureLayoutComp = layoutProjection.MeasureLayout;
 
     /**
      * Create a VisualElement for this component. A VisualElement provides a common
@@ -78,9 +86,9 @@ Copyright (c) 2018 Framer B.V. -->
     context.visualElement = useVisualElement<Instance, RenderState>(
       Component,
       visualState,
-      configAndProps,
+      () => configAndProps,
       createVisualElement,
-      layoutProjection?.ProjectionNode,
+      () => layoutProjection?.ProjectionNode,
     );
   }
 
@@ -100,8 +108,11 @@ Copyright (c) 2018 Framer B.V. -->
   // });
 </script>
 
-{#if MeasureLayout && context.visualElement}
-  <MeasureLayout visualElement={context.visualElement} {...configAndProps} />
+{#if MeasureLayoutComp && context.visualElement}
+  <MeasureLayoutComp
+    visualElement={context.visualElement}
+    {...configAndProps}
+  />
 {/if}
 <Renderer
   {Component}

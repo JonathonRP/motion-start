@@ -357,7 +357,7 @@ export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: F
 	}
 }
 
-export function getProjectionFunctionality(props: MotionProps) {
+export function getProjectionFunctionality(props: () => MotionProps) {
 	const { drag, layout } = featureDefinitions;
 
 	if (!drag && !layout) return {};
@@ -365,7 +365,7 @@ export function getProjectionFunctionality(props: MotionProps) {
 	const combined = { ...drag, ...layout };
 
 	return {
-		MeasureLayout: drag?.isEnabled(props) || layout?.isEnabled(props) ? combined.MeasureLayout : undefined,
+		MeasureLayout: drag?.isEnabled(props()) || layout?.isEnabled(props()) ? combined.MeasureLayout : undefined,
 		ProjectionNode: combined.ProjectionNode,
 	};
 }

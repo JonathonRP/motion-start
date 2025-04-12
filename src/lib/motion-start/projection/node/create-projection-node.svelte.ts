@@ -49,7 +49,7 @@ import { frameSteps } from '../../frameloop/frame';
 import { noop } from '../../utils/noop';
 import { time } from '../../frameloop/sync-time';
 import { microtask } from '../../frameloop/microtask';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import { getOptimisedAppearId } from '../../animation/optimized-appear/get-appear-id';
 import { createBox, createDelta } from '../geometry/models';
 

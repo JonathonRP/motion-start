@@ -20,7 +20,7 @@ import type {
 import type { VisualState } from '../motion/utils/use-visual-state.svelte';
 import type { MotionValue } from '../value';
 import type { Axis, Box } from '../projection/geometry/types';
-import type { VisualElement } from './VisualElement';
+import type { VisualElement } from './VisualElement.svelte';
 import type { MotionProps } from '../motion/types';
 import type { AnimationDefinition } from '../animation/types';
 import type { PresenceContext } from '../context/PresenceContext';

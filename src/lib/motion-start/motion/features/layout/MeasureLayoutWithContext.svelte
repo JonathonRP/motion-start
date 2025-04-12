@@ -65,23 +65,6 @@
 		}
 
 		globalProjectionState.hasEverUpdated = true;
-
-		return () => {
-			// component will unmount
-			const {
-				visualElement,
-				layoutGroup,
-				switchLayoutGroup: promoteContext,
-			} = props;
-			const { projection } = visualElement;
-			if (projection) {
-				projection.scheduleCheckAfterUnmount();
-				if (layoutGroup && layoutGroup.group)
-					layoutGroup.group.remove(projection);
-				if (promoteContext && promoteContext.deregister)
-					promoteContext.deregister(projection);
-			}
-		};
 	});
 
 	// getSnapshotBeforeUpdate
@@ -132,7 +115,6 @@
 
 	// componentDidUpdate
 	$effect(() => {
-		$inspect(props.visualElement);
 		const { projection } = props.visualElement;
 		if (projection) {
 			projection.root!.didUpdate();
@@ -142,6 +124,23 @@
 					safeToRemove();
 				}
 			});
+		}
+	});
+
+	// component will unmount
+	$effect(() => () => {
+		const {
+			visualElement,
+			layoutGroup,
+			switchLayoutGroup: promoteContext,
+		} = props;
+		const { projection } = visualElement;
+		if (projection) {
+			projection.scheduleCheckAfterUnmount();
+			if (layoutGroup && layoutGroup.group)
+				layoutGroup.group.remove(projection);
+			if (promoteContext && promoteContext.deregister)
+				promoteContext.deregister(projection);
 		}
 	});
 </script>

@@ -36,7 +36,6 @@ import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
-import type { createSubscriber } from 'svelte/reactivity';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -151,7 +150,7 @@ export abstract class VisualElement<
 	/**
 	 * A reference to the parent VisualElement (if exists).
 	 */
-	parent: VisualElement<unknown> | undefined;
+	parent: VisualElement<unknown> | undefined | null;
 
 	/**
 	 * A set containing references to this VisualElement's children.
@@ -215,7 +214,7 @@ export abstract class VisualElement<
 	/**
 	 * A reference to this VisualElement's projection node, used in layout animations.
 	 */
-	projection?: IProjectionNode<unknown>;
+	projection?: IProjectionNode<unknown> = $state();
 
 	/**
 	 * A map of all motion values attached to this visual element. Motion
@@ -240,8 +239,8 @@ export abstract class VisualElement<
 	/**
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
-	props: MotionProps;
-	prevProps?: MotionProps;
+	props: MotionProps = $state()!;
+	prevProps?: MotionProps = $state();
 
 	presenceContext: PresenceContext | null = null;
 	prevPresenceContext?: PresenceContext | null = null;
@@ -304,16 +303,6 @@ export abstract class VisualElement<
 		[key: string]: VoidFunction;
 	} = {};
 
-	/**
-	 * hold subscription to hook into svelte reactivity graph
-	 */
-	#subscribe: ReturnType<typeof createSubscriber>;
-
-	/**
-	 * hold update callback to hook into svelte reactivity graph
-	 */
-	#update: () => void;
-
 	constructor(
 		{
 			parent,
@@ -365,21 +354,9 @@ export abstract class VisualElement<
 				value.set(latestValues[key], false);
 			}
 		}
-
-		// this.#subscribe = createSubscriber((update) => {
-		// 	this.#update = update;
-		// 	for (const eventKey in this.events) {
-		// 		this.events[eventKey].add(update);
-		// 	}
-
-		// 	return () => {
-		// 		this.unmount();
-		// 	};
-		// });
 	}
 
 	mount(instance: Instance) {
-		// this.#subscribe();
 		this.current = instance;
 
 		visualElementStore.set(instance, this as VisualElement<unknown>);

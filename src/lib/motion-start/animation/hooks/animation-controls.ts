@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { invariant } from '../../utils/errors';
 import { setTarget } from '../../render/utils/setters';
-import type { VisualElement } from '../../render/VisualElement';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { AnimationControls, AnimationDefinition } from '../types';
 import { animateVisualElement } from '../interfaces/visual-element';
 
