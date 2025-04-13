@@ -6,7 +6,7 @@
 	import { correctBorderRadius } from "../../../projection/styles/scale-border-radius";
 	import { correctBoxShadow } from "../../../projection/styles/scale-box-shadow";
 	import { frame } from "../../../frameloop";
-	import { onMount, type Component, type ComponentProps } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import { addScaleCorrector } from "../../../projection/styles/scale-correction";
 	import { globalProjectionState } from "../../../projection/node/state";
 	import { microtask } from "../../../frameloop/microtask";
@@ -68,7 +68,7 @@
 	});
 
 	// getSnapshotBeforeUpdate
-	$effect(() => {
+	$effect.pre(() => {
 		const { layoutDependency, visualElement, drag, isPresent } = props;
 		const prevProps = new Previous(() => ({ isPresent, layoutDependency }));
 		const projection = visualElement.projection;
@@ -128,7 +128,7 @@
 	});
 
 	// component will unmount
-	$effect(() => () => {
+	onDestroy(() => {
 		const {
 			visualElement,
 			layoutGroup,

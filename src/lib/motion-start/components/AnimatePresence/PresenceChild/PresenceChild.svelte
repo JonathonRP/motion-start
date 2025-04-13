@@ -14,7 +14,7 @@ Copyright (c) 2018 Framer B.V. -->
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "../../../context/use";
-    import { tick, untrack } from "svelte";
+    import { untrack } from "svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -42,7 +42,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
-    const context = () => ({
+    let context = (refreshness?: number | boolean) => ({
         id,
         initial,
         isPresent,
@@ -54,78 +54,29 @@ Copyright (c) 2018 Framer B.V. -->
         },
     });
 
-    // FIX: may need to go back to using .current api
-    // const context = $derived.by(() => {
-    //     let presence = $state({ current: useContext(PresenceContext) });
-    //     return presence;
-    // });
-    // let context = useContext(PresenceContext);
-
-    // // this is getting called too much?..
     $effect(() => {
         if (presenceAffectsLayout) {
-            // untrack(() => {
-            //     PresenceContext.Provider = contextMemo();
-            // });
-            // PresenceContext.Provider = contextMemo();
-            // PresenceContext.update(() => context);
-            // untrack(() => {
-            //     PresenceContext.Provider = context;
-            // });
-            // untrack(() => {
-            //     PresenceContext.update(contextMemo);
-            // });
-            // untrack(() => {
-            PresenceContext.update(() => context());
-            // });
+            untrack(() => (useContext(PresenceContext).current = context()));
         }
     });
 
     $effect(() => {
-        // refresh;
-        // untrack(() => {
-        //     PresenceContext.Provider = contextMemo();
-        // });
-        // untrack(() => {
-        // context = contextMemo(refresh);
-        // });
         refresh;
-        untrack(() => {
-            PresenceContext.update(() => context());
-        });
+        PresenceContext.update(context);
     });
 
     const keyset = (presence: boolean) =>
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
 
-    // $inspect(isPresent);
     $effect(() => {
-        // firing because of presenceChildren - size changing... and shouldnt be dep here...
-        $inspect.trace();
         keyset(isPresent);
 
-        tick().then(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
-        });
-        // untrack(() => PresenceContext.update(() => context));
-        // untrack(() => {
-        //     PresenceContext.Provider = context;
-        // });
-        // presenceContext = context;
+        !isPresent && !presenceChildren.size && onExitComplete?.();
     });
 
-    // $effect(() => {
-    //     // $inspect.trace();
-    //     isPresent;
-    //     untrack(() => {
-    //         PresenceContext.Provider = context;
-    //     });
-    // });
-
-    PresenceContext.Provider = context();
-    // PresenceContext.update(context);
-    // let test = $derived(useContext(PresenceContext).current);
-    // $inspect(isPresent, id, context(), test);
+    // $inspect(useContext(PresenceContext).current);
+    // doublecheck this should always be null or use current PresenceContext value derived?
+    PresenceContext.Provider = null;
 
     // TODO: why does this break other animations??
 </script>
