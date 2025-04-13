@@ -194,11 +194,7 @@
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-red-500">Failed test</p>
-                    <p>
-                        using svelte effect/.pre to handle useCycle prop change
-                        render causes flickers which is svelte default render.
-                    </p>
+                    <p class="text-green-500">Passed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>
@@ -384,7 +380,7 @@
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
                     <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-red-500">Failed test</p>
+                    <p class="text-green-500">Passed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>

@@ -18,14 +18,8 @@ Copyright (c) 2018 Framer B.V. -->
     type MotionComponentConfig,
     type MotionComponentProps,
   } from "./index.svelte";
-  import {
-    untrack,
-    type ComponentProps,
-    type Component as ComponentType,
-  } from "svelte";
-  import type { MotionProps } from "./types";
-  import MeasureLayout from "./features/layout/MeasureLayout.svelte";
-  import type { VisualElement } from "../render/VisualElement.svelte";
+  import MeasureLayoutComp from "./features/layout/MeasureLayout.svelte";
+  import { untrack } from "svelte";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -49,9 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
    * If we need to measure the element we load this functionality in a
    * separate class component in order to gain access to getSnapshotBeforeUpdate.
    */
-  let MeasureLayoutComp:
-    | undefined
-    | ComponentType<ComponentProps<typeof MeasureLayout>> = $state();
+  let MeasureLayout: undefined | typeof MeasureLayoutComp = $state();
 
   const configAndProps = $derived({
     ...props,
@@ -75,7 +67,9 @@ Copyright (c) 2018 Framer B.V. -->
 
     const layoutProjection = getProjectionFunctionality(() => configAndProps);
 
-    MeasureLayoutComp = layoutProjection.MeasureLayout;
+    $effect(() => {
+      untrack(() => (MeasureLayout = layoutProjection.MeasureLayout));
+    });
 
     /**
      * Create a VisualElement for this component. A VisualElement provides a common
@@ -88,7 +82,7 @@ Copyright (c) 2018 Framer B.V. -->
       visualState,
       () => configAndProps,
       createVisualElement,
-      () => layoutProjection?.ProjectionNode,
+      () => layoutProjection.ProjectionNode,
     );
   }
 
@@ -108,11 +102,8 @@ Copyright (c) 2018 Framer B.V. -->
   // });
 </script>
 
-{#if MeasureLayoutComp && context.visualElement}
-  <MeasureLayoutComp
-    visualElement={context.visualElement}
-    {...configAndProps}
-  />
+{#if MeasureLayout && context.visualElement}
+  <MeasureLayout visualElement={context.visualElement} {...configAndProps} />
 {/if}
 <Renderer
   {Component}

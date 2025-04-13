@@ -214,7 +214,7 @@ export abstract class VisualElement<
 	/**
 	 * A reference to this VisualElement's projection node, used in layout animations.
 	 */
-	projection?: IProjectionNode<unknown> = $state();
+	projection?: IProjectionNode<unknown>;
 
 	/**
 	 * A map of all motion values attached to this visual element. Motion
@@ -240,7 +240,7 @@ export abstract class VisualElement<
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
 	props: MotionProps = $state()!;
-	prevProps?: MotionProps = $state();
+	prevProps?: MotionProps;
 
 	presenceContext: PresenceContext | null = null;
 	prevPresenceContext?: PresenceContext | null = null;
