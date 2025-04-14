@@ -87,12 +87,15 @@ Copyright (c) 2018 Framer B.V. -->
   }
 
   // context.visualElement;
-  MotionContext.Provider = context;
+  $effect(() => {
+    untrack(() => (MotionContext.Provider = context));
+  });
 
   // const motionRef = $derived(
   //   useMotionRef(visualState, context.visualElement, externalRef),
   // );
 
+  // this is not called, meaning motion is not dismounted...
   // $effect(() => {
   //   return () => {
   //     console.log("dismount");

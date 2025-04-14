@@ -1,6 +1,5 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes={true} />
 
 <script lang="ts" module>
 	function useDefaultMotionValue(value: any, defaultValue = 0) {
@@ -15,7 +14,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import { ReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
-	import type { Snippet, Component } from "svelte";
+	import type { Component } from "svelte";
 
 	import { useTransform } from "../../value/use-transform";
 	import { isMotionValue } from "../../value/utils/is-motion-value";
@@ -73,15 +72,13 @@ Copyright (c) 2018 Framer B.V. -->
 	>;
 
 	const context = $derived(useContext(ReorderContext).current);
-	const point = $derived({
-		x: useDefaultMotionValue(style?.x),
-		y: useDefaultMotionValue(style?.y),
-	});
+	const point = {
+		x: useDefaultMotionValue(style.x),
+		y: useDefaultMotionValue(style.y),
+	};
 
-	const zIndex = $derived(
-		useTransform([point.x, point.y], ([latestX, latestY]) =>
-			latestX || latestY ? 1 : "unset",
-		),
+	const zIndex = useTransform([point.x, point.y], ([latestX, latestY]) =>
+		latestX || latestY ? 1 : "unset",
 	);
 
 	invariant(
@@ -89,7 +86,7 @@ Copyright (c) 2018 Framer B.V. -->
 		"Reorder.Item must be a child of Reorder.Group",
 	);
 
-	const { axis, registerItem, updateOrder } = $derived(context);
+	const { axis, registerItem, updateOrder } = $derived(context!);
 </script>
 
 <ReorderItem
@@ -106,14 +103,12 @@ Copyright (c) 2018 Framer B.V. -->
 		event.stopPropagation();
 
 		const { velocity } = gesturePoint;
-		velocity[axis] &&
-			updateOrder?.(value, point[axis].get(), velocity[axis]);
+		velocity[axis] && updateOrder(value, point[axis].get(), velocity[axis]);
 
 		onDrag && onDrag(event, gesturePoint);
 	}}
-	onLayoutMeasure={(measured: Box) => registerItem?.(value, measured)}
+	onLayoutMeasure={(measured: Box) => registerItem(value, measured)}
 	bind:ref={externalRef}
-	ignoreStrict
 >
 	{@render children?.()}
 </ReorderItem>

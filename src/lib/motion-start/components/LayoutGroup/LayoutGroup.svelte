@@ -22,7 +22,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { nodeGroup } from "../../projection/node/group";
   import { useForceUpdate } from "../../utils/use-force-update.svelte";
   import type { MutableRefObject } from "../../utils/safe-react-types";
-  import type { Snippet } from "svelte";
+  import { untrack, type Snippet } from "svelte";
 
   interface Props extends LayoutGroupProps {
     children?: Snippet;
@@ -66,7 +66,10 @@ Copyright (c) 2018 Framer B.V. -->
     }))(key);
   });
 
-  LayoutGroupContext.Provider = memoizedContext;
+  $effect.pre(() => {
+    memoizedContext;
+    untrack(() => (LayoutGroupContext.Provider = memoizedContext));
+  });
 </script>
 
 {@render children?.()}

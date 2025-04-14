@@ -1,6 +1,5 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes={true} />
 
 <script lang="ts" module>
 	export interface Props<V> {
@@ -96,8 +95,17 @@ Copyright (c) 2018 Framer B.V. -->
 			[(typeof values)[number]]
 		>
 	>;
-	const order: ItemData<V>[] = [];
-	let isReordering = $derived(false);
+
+	let order: ItemData<V>[] = [];
+	let isReordering = false;
+
+	$effect(() => {
+		isReordering = false;
+	});
+
+	$effect.pre(() => {
+		order = [];
+	});
 
 	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
 
@@ -123,16 +131,18 @@ Copyright (c) 2018 Framer B.V. -->
 				onReorder(
 					newOrder
 						.map(getValue)
-						.filter((value) => values.indexOf(value) !== -1),
+						.filter((value) => values.includes(value)),
 				);
 			}
 		},
 	};
 
-	ReorderContext.Provider = context;
+	$effect.pre(() => {
+		untrack(() => (ReorderContext.Provider = context));
+	});
 </script>
 
-<ReorderGroup {...props} bind:ref={externalRef} ignoreStrict>
+<ReorderGroup {...props} bind:ref={externalRef}>
 	{#each values as value, indx (indx)}
 		{@render children?.(value)}
 	{/each}
