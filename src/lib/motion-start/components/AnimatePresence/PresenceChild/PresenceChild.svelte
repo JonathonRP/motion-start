@@ -14,7 +14,7 @@ Copyright (c) 2018 Framer B.V. -->
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "../../../context/use";
-    import { untrack } from "svelte";
+    import { tick, untrack } from "svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -57,6 +57,7 @@ Copyright (c) 2018 Framer B.V. -->
     $effect(() => {
         if (presenceAffectsLayout) {
             untrack(() => (useContext(PresenceContext).current = context()));
+            // PresenceContext.update(context);
         }
     });
 
@@ -71,11 +72,28 @@ Copyright (c) 2018 Framer B.V. -->
     $effect(() => {
         keyset(isPresent);
 
-        !isPresent && !presenceChildren.size && onExitComplete?.();
+        tick().then(() => {
+            !isPresent && !presenceChildren.size && onExitComplete?.();
+        });
     });
 
     // $inspect(useContext(PresenceContext).current);
     // doublecheck this should always be null or use current PresenceContext value derived?
+    // const memoizedContext = $derived(useContext(PresenceContext).current);
+
+    // $effect.pre(() => {
+    //     untrack(() => console.log(useContext(PresenceContext).current));
+    //     untrack(
+    //         () =>
+    //             (PresenceContext.Provider =
+    //                 useContext(PresenceContext).current),
+    //     );
+    // });
+
+    // $inspect(useContext(PresenceContext).current);
+
+    // PresenceContext.Provider = useContext(PresenceContext).current;
+
     PresenceContext.Provider = null;
 
     // TODO: why does this break other animations??
