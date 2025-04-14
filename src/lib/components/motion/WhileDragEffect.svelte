@@ -7,6 +7,7 @@
 
 <Box>
     <motion.div
+        id="drageffect"
         drag={true}
         whileHover={{
             opacity: 1,

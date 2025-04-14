@@ -64,6 +64,7 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json",
 		"lint": "biome check",
+		"cypress": "cypress open",
 		"test": "vitest",
 		"test:types": "vitest --typecheck.only",
 		"test:ui": "vitest --ui",

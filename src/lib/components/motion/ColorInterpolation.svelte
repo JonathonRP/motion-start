@@ -14,6 +14,7 @@
 <!-- Color Interpolation -->
 <Box cls="grid cols-1 rows-1 justify-stretch">
     <motion.div
+        id="dragcolor"
         style={{
             background,
         }}

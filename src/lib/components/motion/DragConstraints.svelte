@@ -10,6 +10,7 @@
         class="bg-gray-500/10 h-72 w-72 flex justify-center items-center rounded-xl shadow-md"
     >
         <motion.div
+            id="dragconstraint"
             drag={true}
             dragConstraints={{
                 top: -100,
