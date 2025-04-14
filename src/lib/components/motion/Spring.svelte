@@ -10,6 +10,7 @@
 <Box cls="flex-col gap-10">
     {#key i}
         <motion.div
+            id="springbox"
             animate={{
                 rotate: 180,
             }}

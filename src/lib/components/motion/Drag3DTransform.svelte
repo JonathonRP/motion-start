@@ -12,6 +12,7 @@
 <Box>
     <div class="small_circle">
         <motion.div
+            id="drag3dtransform"
             style={{
                 left: -25,
                 top: -25,

@@ -9,6 +9,7 @@
 <Box>
     {#key i}
         <motion.div
+        id="repeatbox"
             animate={{
                 rotate: 360,
             }}

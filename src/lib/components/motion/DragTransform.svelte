@@ -11,6 +11,7 @@
 
 <Box>
     <motion.div
+        id="dragtransform"
         style={{
             x,
             scale,

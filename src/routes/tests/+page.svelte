@@ -30,7 +30,7 @@
 </script>
 
 {#if dev}
-    <RenderScan />
+    <RenderScan initialEnabled={false} />
 {/if}
 <div class="grid gap-1 m-3 max-w-full">
     <h1 class="text-3xl font-bold mb-2">Functional Tests Motion Start</h1>

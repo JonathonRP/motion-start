@@ -28,6 +28,7 @@
 
 <Box>
     <motion.div
+        id="usecycle"
         animate={$animate}
         transition={{
             duration: 0.3,

@@ -7,6 +7,7 @@
 
 <Box>
     <motion.div
+        id="dragdirlock"
         drag={true}
         dragDirectionLock
         dragConstraints={{

@@ -10,6 +10,7 @@
 <Box cls="flex-col gap-10">
     {#key i}
         <motion.div
+            id="tweenedbox"
             animate={{
                 rotate: 360,
             }}
@@ -21,9 +22,10 @@
     {/key}
     <div>
         <Button
+            id="tweenbtn"
             on:click={() => (i += 1)}
             variant="outline"
-            class="bg-gray-700/30 border-white/30 text-white"
+            class="bg-gray-700/30 border-white/30 text-white "
             size="sm"
         >
             <svg

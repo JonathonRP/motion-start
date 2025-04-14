@@ -109,7 +109,7 @@
 		"verbatimModuleSyntax": true,
 		"declaration": true,
 		"declarationMap": true,
-		"types": ["vitest/globals"]
+		"types": ["vitest/globals", "cypress", "cypress-real-events"]
 	},
 	"include": ["src", "src/**/*.{test,spec}-d.ts"],
 	"exclude": ["node_modules", ".svelte-kit"]

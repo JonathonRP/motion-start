@@ -10,8 +10,8 @@
 
     let navs = {
         navbar: [
-            { label: "Docs", icon: Home, href: "/" },
-            { label: "Test", icon: PencilLine, href: "/tests" },
+            { label: "Docs", icon: Home, href: "/", id: 'home' },
+            { label: "Test", icon: PencilLine, href: "/tests", id:"tests" },
         ],
     };
 </script>
@@ -25,7 +25,7 @@
         let:magnification
     >
         {#each navs.navbar as item}
-            <a href={item.href}>
+            <a href={item.href} id={item.id}>
                 <DockIcon {mouseX} {magnification} {distance}>
                     <Tooltip.Provider>
                         <Tooltip.Root>
