@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.8
+
+### Patch Changes
+
+- 071b96d: move dist files to src for import use
+
 ## 0.1.7
 
 ### Patch Changes
