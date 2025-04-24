@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.6
+
+### Patch Changes
+
+- b6f6602: add all files in dist to files property package.json
+
 ## 0.1.5
 
 ### Patch Changes
