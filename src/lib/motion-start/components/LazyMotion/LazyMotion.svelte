@@ -9,7 +9,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   import { LazyContext } from "../../context/LazyContext";
   import { loadFeatures } from "../../motion/features/definitions";
-  import type { FeatureBundle } from "$lib/motion-start/motion/features/types";
+  import type { FeatureBundle } from "../../motion/features/types";
   import type { LazyFeatureBundle } from "./types";
 
   type $$Props = LazyProps;
