@@ -1,6 +1,6 @@
 {
 	"name": "motion-start",
-	"version": "0.1.7",
+	"version": "0.1.8",
 	"description": "Svelte animation library inspired by the React library framer-motion.",
 	"main": "dist/index.js",
 	"license": "MIT",
@@ -13,7 +13,11 @@
 		"ur": "https://github.com/JonathonRP/motion-start.git"
 	},
 	"type": "module",
-	"files": ["dist/*", "!dist/**/*.test.*", "!dist/**/*.spec.*"],
+	"files": [
+		"dist/*",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
 	"module": "./dist/index.js",
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -82,6 +86,19 @@
 		"node": ">=20"
 	},
 	"sideEffects": false,
-	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
-	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
+	"keywords": [
+		"svelte animation",
+		"svelte",
+		"animation",
+		"gestures",
+		"drag",
+		"spring",
+		"popmotion",
+		"framer-motion"
+	],
+	"trustedDependencies": [
+		"@biomejs/biome",
+		"@sveltejs/kit",
+		"esbuild"
+	]
 }
