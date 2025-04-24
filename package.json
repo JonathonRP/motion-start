@@ -13,7 +13,7 @@
 	},
 	"type": "module",
 	"files": [
-		"dist",
+		"dist/*",
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
