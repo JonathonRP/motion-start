@@ -40,7 +40,10 @@ Copyright (c) 2018 Framer B.V. -->
     props: MotionProps,
     context: MotionContextProps,
     presenceContext: PresenceContextProps,
-    scrapeMotionValues: { (props: MotionProps): { [key: string]: MotionValue | string | number; }; (arg0: any): any; },
+    scrapeMotionValues: {
+      (props: MotionProps): { [key: string]: MotionValue | string | number };
+      (arg0: any): any;
+    },
   ) {
     const values: any = {};
     const blockInitialAnimation = presenceContext?.initial === false;
@@ -83,7 +86,7 @@ Copyright (c) 2018 Framer B.V. -->
 
         const { transitionEnd, transition, ...target } = resolved;
         // @ts-expect-error
-        for (const key in target) values[key] = target[key];// @ts-expect-error
+        for (const key in target) values[key] = target[key]; // @ts-expect-error
         for (const key in transitionEnd) values[key] = transitionEnd[key];
       });
     }
@@ -93,7 +96,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts" generics="Instance, RenderState">
-  import type { MotionValue } from "$lib/motion-start/value/index.js";
+  import type { MotionValue } from "../../value/index.js";
   import type { UseVisualStateConfig } from "./use-visual-state.js";
 
   import type { MotionProps } from "..";
@@ -127,10 +130,20 @@ Copyright (c) 2018 Framer B.V. -->
   const presenceContext =
     getContext<Writable<PresenceContextProps>>(PresenceContext) ||
     PresenceContext(isCustom);
-  let state = makeState(config as UseVisualStateConfig<Instance, RenderState>, props, get(context), get(presenceContext));
+  let state = makeState(
+    config as UseVisualStateConfig<Instance, RenderState>,
+    props,
+    get(context),
+    get(presenceContext),
+  );
   const ms = makeState;
   $: if (isStatic) {
-    state = ms(config as UseVisualStateConfig<Instance, RenderState>, props, $context, $presenceContext);
+    state = ms(
+      config as UseVisualStateConfig<Instance, RenderState>,
+      props,
+      $context,
+      $presenceContext,
+    );
   }
 </script>
 
