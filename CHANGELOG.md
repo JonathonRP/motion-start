@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.9
+
+### Patch Changes
+
+- c21ab29: export correct extensions
+
 ## 0.1.8
 
 ### Patch Changes
