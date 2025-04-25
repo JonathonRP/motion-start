@@ -10,7 +10,7 @@ import type { MotionProps } from '../motion/types';
 import type { VisualState } from '../motion/utils/use-visual-state';
 import type { CustomValueType, MakeCustomValueType, TargetAndTransition, Transition, Variant } from '../types';
 import type { AxisBox2D, Point2D } from '../types/geometry';
-import type { MotionValue } from '../value';
+import type { MotionValue } from '../value/index.js';
 import type { AnimationState } from './utils/animation-state';
 import type { FlatTree } from './utils/flat-tree';
 import type { LifecycleManager } from './utils/lifecycles';
