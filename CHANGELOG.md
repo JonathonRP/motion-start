@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.12
+
+### Patch Changes
+
+- f8ab887: fix svelte repl usage
+
 ## 0.1.11
 
 ### Patch Changes
