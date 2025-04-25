@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.11
+
+### Patch Changes
+
+- 6101a3b: remove main from package.json
+
 ## 0.1.10
 
 ### Patch Changes
