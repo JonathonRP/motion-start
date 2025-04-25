@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.10
+
+### Patch Changes
+
+- b4fe2aa: correct exports to export svelte and js
+
 ## 0.1.9
 
 ### Patch Changes
