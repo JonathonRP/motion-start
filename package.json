@@ -8,10 +8,7 @@
 		"name": "JonathonRP",
 		"url": "https://github.com/JonathonRP"
 	},
-	"repository": {
-		"type": "git",
-		"ur": "https://github.com/JonathonRP/motion-start.git"
-	},
+	"repository": "github:JonathonRP/motion-start",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
