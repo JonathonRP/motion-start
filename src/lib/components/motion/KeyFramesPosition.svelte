@@ -11,6 +11,7 @@
     <div class="h-[180px] w-[180px]">
         {#key i}
             <motion.div
+                id="keyframe"
                 animate={{
                     x: [0, 100, 100, 0, 0],
                     y: [0, 0, 100, 100, 0],

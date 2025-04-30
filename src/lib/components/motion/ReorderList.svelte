@@ -50,6 +50,7 @@
 
 <Box>
     <Reorder.Group
+        id="reorder"
         class="list-none p-0 m-0 font-medium text-2xl relative w-[300px]"
         axis="y"
         values={initialItems}

@@ -30,6 +30,7 @@
         style={{ transform: "translateZ(0)" }}
     >
         <motion.div
+            id="scrollProg"
             style={{
                 width: "150px",
                 height: useMotionValue(getHeight(items)),
