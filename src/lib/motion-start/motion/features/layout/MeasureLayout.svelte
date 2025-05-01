@@ -10,8 +10,9 @@ Copyright (c) 2018 Framer B.V. -->
 		safeToRemove?: VoidFunction | null;
 	}
 
-	export type MeasureProps = MotionProps &
-		MeasureContextProps & { visualElement: VisualElement<unknown> };
+	export interface MeasureProps extends MotionProps, MeasureContextProps {
+		visualElement: VisualElement<unknown>;
+	}
 </script>
 
 <script lang="ts">
@@ -23,10 +24,12 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { VisualElement } from "../../../render/VisualElement.svelte";
 	import MeasureLayoutWithContext from "./MeasureLayoutWithContext.svelte";
 
-	const props: MotionProps & { visualElement: VisualElement<unknown> } =
-		$props();
+	interface MeasureLayoutProps extends MotionProps {
+		visualElement: VisualElement<unknown>;
+	}
+	const props: MeasureLayoutProps = $props();
 
-	const [isPresent, safeToRemove] = usePresence();
+	const [isPresent, safeToRemove] = $derived.by(usePresence());
 	const layoutGroup = $derived(useContext(LayoutGroupContext).current);
 </script>
 

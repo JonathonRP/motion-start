@@ -3,7 +3,6 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-    import { createRawSnippet, mount } from "svelte";
     import { MotionConfigContext } from "../../../context/MotionConfigContext";
     import { useContext } from "../../../context/use";
     import type { Props, MeasureProps, Size } from "./types";
@@ -11,40 +10,10 @@ Copyright (c) 2018 Framer B.V. -->
         MutableRefObject,
         RefObject,
     } from "../../../utils/safe-react-types";
+    import { Previous } from "runed";
+    import { tick, type Snippet } from "svelte";
 
     let { isPresent, children }: Props = $props();
-
-    const PopChildMeasure = createRawSnippet<[MeasureProps]>((measureProps) => {
-        return {
-            render: () => "<slot></slot>",
-            setup(node) {
-                let prevIsPresent = $state(measureProps().isPresent);
-                $effect(() => {
-                    prevIsPresent = measureProps().isPresent;
-                });
-                $effect.pre(() => {
-                    const { children, childRef, sizeRef } = measureProps();
-                    childRef.current = node as HTMLElement;
-
-                    if (!children) return;
-
-                    mount(children, { target: node });
-
-                    const elementMeasurements =
-                        childRef.current.getBoundingClientRect();
-                    if (elementMeasurements && prevIsPresent && !isPresent) {
-                        const size = sizeRef.current;
-                        size.height = elementMeasurements.height || 0;
-                        size.width = elementMeasurements.width || 0;
-                        size.top = elementMeasurements.top;
-                        size.left = elementMeasurements.left;
-                    }
-                });
-            },
-        };
-    });
-
-    // PopChild ---
 
     const id = $props.id();
     let ref: RefObject<HTMLElement> = {
@@ -59,7 +28,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     };
 
-    const { nonce } = useContext(MotionConfigContext).current;
+    const { nonce } = $derived(useContext(MotionConfigContext).current);
 
     /**
      * We create and inject a style block so we can apply this explicit
@@ -70,7 +39,7 @@ Copyright (c) 2018 Framer B.V. -->
      * styles directly on the DOM node, we might be overwriting
      * styles set via the style prop.
      */
-    $effect.pre(() => {
+    $effect(() => {
         const { width, height, top, left } = size.current;
         if (isPresent || !ref.current || !width || !height) return;
 
@@ -88,21 +57,50 @@ Copyright (c) 2018 Framer B.V. -->
         */
         if (style.sheet) {
             style.sheet.insertRule(`
-          [data-motion-pop-id="${id}"] {
-            position: absolute !important;
-            width: ${width}px !important;
-            height: ${height}px !important;
-            top: ${top}px !important;
-            left: ${left}px !important;
-          }
-        `);
+                [data-motion-pop-id="${id}"] {
+                    position: absolute !important;
+                    width: ${width}px !important;
+                    height: ${height}px !important;
+                    top: ${top}px !important;
+                    left: ${left}px !important;
+                }
+            `);
         }
-
         return () => {
+            console.log("cleanup");
             document.head.removeChild(style);
         };
     });
 </script>
+
+{#snippet PopChildMeasure({
+    children,
+    childRef,
+    isPresent,
+    sizeRef,
+}: MeasureProps)}
+    {#if children}
+        {@const prevIsPresent = new Previous(() => isPresent)}
+        {@const pop: Snippet = (node: Text) => {
+            $effect(() => {
+                childRef.current = node.previousElementSibling as HTMLElement;
+                console.log(childRef.current);
+                const elementMeasurements = childRef.current.getBoundingClientRect();
+                if (elementMeasurements && prevIsPresent && !isPresent) {
+                    const size = sizeRef.current;
+                    size.height = elementMeasurements.height || 0;
+                    size.width = elementMeasurements.width || 0;
+                    size.top = elementMeasurements.top;
+                    size.left = elementMeasurements.left;
+                }
+            });
+
+            return children(node);
+        }}
+
+        {@render pop()}
+    {/if}
+{/snippet}
 
 {@render PopChildMeasure({
     children,

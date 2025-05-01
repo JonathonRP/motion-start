@@ -19,7 +19,9 @@
                     class="text-accent-500"
                     type="checkbox"
                     checked={popLayout}
-                    onchange={(e) => (popLayout = e.currentTarget.checked)}
+                    onchange={(e) => {
+                        popLayout = e.currentTarget.checked;
+                    }}
                 />
             </label>
             <motion.button
@@ -48,9 +50,7 @@
                     exit={{ scale: 0.8, opacity: 0 }}
                     transition={{ type: "spring" }}
                     onclick={() => {
-                        const newItems = [...items];
-                        if (item.indx > -1) newItems.splice(item.indx, 1);
-                        items = newItems;
+                        if (item.indx > -1) items.splice(item.indx, 1);
                     }}
                 />
             </AnimatePresence>

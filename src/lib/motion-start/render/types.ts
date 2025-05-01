@@ -36,8 +36,8 @@ export interface MotionPoint {
 }
 
 export type ScrapeMotionValuesFromProps = (
-	props: MotionProps,
-	prevProps: MotionProps,
+	props: () => MotionProps,
+	prevProps: () => MotionProps,
 	visualElement?: VisualElement<unknown>
 ) => {
 	[key: string]: MotionValue | string | number;

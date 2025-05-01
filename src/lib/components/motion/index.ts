@@ -21,4 +21,4 @@ export { default as WhileDragEffect } from './WhileDragEffect.svelte';
 export { default as WhileHoverEffect } from './WhileHoverEffect.svelte';
 export { default as WhileTapEffect } from './WhileTapEffect.svelte';
 export { default as AnimatePresenceMode } from './AnimatePresenceMode.svelte';
-export { default as ReorderList } from './ReorderList.svelte';
+export { default as ReorderList } from './ReorderList/Index.svelte';

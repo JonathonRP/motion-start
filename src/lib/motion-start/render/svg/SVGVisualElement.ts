@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values';
+import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.svelte';
 import type { SVGRenderState } from './types';
 import { DOMVisualElement } from '../dom/DOMVisualElement';
 import type { DOMVisualElementOptions } from '../dom/types';
@@ -41,7 +41,11 @@ export class SVGVisualElement extends DOMVisualElement<SVGElement, SVGRenderStat
 
 	measureInstanceViewportBox = createBox;
 
-	scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement: VisualElement<SVGElement>) {
+	scrapeMotionValuesFromProps(
+		props: () => MotionProps,
+		prevProps: () => MotionProps,
+		visualElement: VisualElement<SVGElement>
+	) {
 		return scrapeMotionValuesFromProps(props, prevProps, visualElement);
 	}
 

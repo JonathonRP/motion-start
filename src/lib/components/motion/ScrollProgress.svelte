@@ -48,7 +48,7 @@
                     style="border-radius:20px; height: {height}px; top:{(height +
                         padding) *
                         item}px; "
-                    class="bg-[#fff] w-[150px] absolute flex justify-center items-center text-black"
+                    class="bg-[#fff] w-[150px] absolute flex justify-center items-center text-black select-none"
                 >
                     {item}
                 </div>

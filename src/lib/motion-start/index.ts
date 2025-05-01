@@ -72,6 +72,7 @@ export {
 	usePresence,
 	useIsPresent,
 } from './components/AnimatePresence/use-presence.svelte';
+export { usePresenceData } from './components/AnimatePresence/use-presence-data.svelte';
 export { useInView, type UseInViewOptions } from './utils/use-in-view.svelte';
 export {
 	useDragControls,
@@ -90,7 +91,7 @@ export {
 export { useInstantLayoutTransition } from './projection/use-instant-layout-transition';
 export { useResetProjection } from './projection/use-reset-projection';
 export { buildTransform } from './render/html/utils/build-transform';
-export { visualElementStore } from './render/store.svelte';
+export { visualElementStore } from './render/store';
 export { animateValue } from './animation/animators/MainThreadAnimation.svelte';
 export { color } from './value/types/color';
 export { complex } from './value/types/complex';

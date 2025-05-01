@@ -10,10 +10,10 @@ export function useAnimate<T extends Element = any>() {
 
 		const animate = createScopedAnimate(scope);
 
-		$effect.pre(() => () => {
-			scope.animations.forEach((animation) => animation.stop);
+		$effect(() => () => {
+			scope.animations.forEach((animation) => animation.stop());
 		});
 
-		return [scope, animate] as [AnimationScope<T>, typeof animate];
+		return () => [scope, animate] as [AnimationScope<T>, typeof animate];
 	};
 }

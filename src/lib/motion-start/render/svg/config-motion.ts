@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { MotionComponentConfig } from '../../motion/index.svelte';
 import type { SVGRenderState } from './types';
 import { renderSVG } from './utils/render';
-import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values';
+import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values.svelte';
 import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
 import { createSvgRenderState } from './utils/create-render-state';
 import { buildSVGAttrs } from './utils/build-attrs';
@@ -37,7 +37,7 @@ export const svgMotionConfig: Partial<MotionComponentConfig<SVGElement, SVGRende
 			});
 
 			frame.render(() => {
-				buildSVGAttrs(renderState, latestValues, isSVGTag(instance.tagName), props.transformTemplate);
+				buildSVGAttrs(renderState, latestValues, isSVGTag(instance.tagName), props().transformTemplate);
 
 				renderSVG(instance, renderState);
 			});

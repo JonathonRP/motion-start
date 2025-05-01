@@ -32,7 +32,7 @@ export class Context<T> {
 		return [...(!hasContext(this.#key) ? [this.#create] : [this.#get]), ...transformers].reduce(
 			(value, fn: Transformer<T> | (() => MutableRefObject<T>)) => {
 				const result = isTransformer(fn) ? fn.call(this, value.current) : fn.bind(this)();
-				return isRefObject(result) ? result : { current: result };
+				return isRefObject(result) ? result : Object.assign(this.#state, { current: result });
 			},
 			this.#state
 		);
@@ -43,12 +43,13 @@ export class Context<T> {
 		setContext(this.#key, this.#state);
 	}
 
-	update(getter: () => T) {
-		const context = this.#get();
+	update(getter: () => T, cleanup?: () => void) {
+		const context = this.pipe();
 
 		$effect(() => {
-			// if (!context?.current) return;
 			context.current = getter();
+
+			return cleanup && cleanup;
 		});
 	}
 }

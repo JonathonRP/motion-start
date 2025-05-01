@@ -30,6 +30,17 @@
 				"action": "debugWithEdge",
 				"killOnServerStop": true
 			}
+		},
+		{
+			"name": "full stack test",
+			"type": "chrome",
+			"request": "attach",
+			"server": {
+				"runtimeArgs": ["--bun", "dev"],
+				"runtimeExecutable": "bun",
+				"console": "integratedTerminal",
+				"skipFiles": ["<node_internals>/**"]
+			}
 		}
 	]
 }

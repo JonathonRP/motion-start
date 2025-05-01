@@ -9,18 +9,19 @@ import { isMotionValue } from '../../../value/utils/is-motion-value';
 import type { VisualElement } from '../../VisualElement.svelte';
 
 export function scrapeMotionValuesFromProps<I>(
-	props: MotionProps,
-	prevProps: MotionProps,
+	props: () => MotionProps,
+	prevProps: () => MotionProps,
 	visualElement?: VisualElement<I>
 ) {
-	const { style } = props;
+	const { style } = props();
+	const { style: prevStyle } = prevProps() ?? {};
 	const newValues: { [key: string]: any } = {};
 
 	for (const key in style) {
 		if (
 			isMotionValue(style[key as keyof MotionStyle]) ||
-			(prevProps.style && isMotionValue(prevProps.style[key as keyof MotionStyle])) ||
-			isForcedMotionValue(key, props) ||
+			(prevStyle && isMotionValue(prevStyle[key as keyof MotionStyle])) ||
+			isForcedMotionValue(key, props()) ||
 			visualElement?.getValue(key)?.liveStyle !== undefined
 		) {
 			newValues[key] = style[key as keyof MotionStyle];

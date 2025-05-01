@@ -8,7 +8,7 @@ import type { DOMVisualElementOptions } from '../dom/types';
 import { buildHTMLStyles } from './utils/build-styles';
 import { isCSSVariableName } from '../dom/utils/is-css-variable';
 import { transformProps } from './utils/transform';
-import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values';
+import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.svelte';
 import { renderHTML } from './utils/render';
 import { getDefaultValueType } from '../dom/value-types/defaults';
 import { measureViewportBox } from '../../projection/utils/measure';
@@ -53,7 +53,11 @@ export class HTMLVisualElement extends DOMVisualElement<HTMLElement, HTMLRenderS
 		buildHTMLStyles(renderState, latestValues, props.transformTemplate);
 	}
 
-	scrapeMotionValuesFromProps(props: MotionProps, prevProps: MotionProps, visualElement: VisualElement<HTMLElement>) {
+	scrapeMotionValuesFromProps(
+		props: () => MotionProps,
+		prevProps: () => MotionProps,
+		visualElement: VisualElement<HTMLElement>
+	) {
 		return scrapeMotionValuesFromProps(props, prevProps, visualElement);
 	}
 

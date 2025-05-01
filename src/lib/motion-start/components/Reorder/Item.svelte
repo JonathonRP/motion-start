@@ -22,7 +22,6 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import type { Ref } from "../../utils/safe-react-types";
 	import type { Box } from "../../projection/geometry/types";
-	import type { PanInfo } from "../../gestures/pan/PanSession";
 	import type { PropsWithChildren } from "../../utils/types";
 
 	type Props<V> = {
@@ -95,13 +94,12 @@ Copyright (c) 2018 Framer B.V. -->
 	dragSnapToOrigin
 	style={{
 		...style,
-		...point,
+		x: point.x,
+		y: point.y,
 		zIndex,
 	}}
 	{layout}
-	onDrag={(event: PointerEvent, gesturePoint: PanInfo) => {
-		event.stopPropagation();
-
+	onDrag={(event, gesturePoint) => {
 		const { velocity } = gesturePoint;
 		velocity[axis] && updateOrder(value, point[axis].get(), velocity[axis]);
 
