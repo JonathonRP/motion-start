@@ -25,7 +25,7 @@ import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
 import { featureDefinitions } from '../motion/features/definitions';
 import type { PresenceContext } from '../context/PresenceContext';
-import { visualElementStore } from './store.svelte';
+import { visualElementStore } from './store';
 import { KeyframeResolver } from './utils/KeyframesResolver';
 import { isNumericalString } from '../utils/is-numerical-string';
 import { isZeroValueString } from '../utils/is-zero-value-string';
@@ -36,6 +36,7 @@ import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
+import { Previous } from 'runed';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -132,8 +133,8 @@ export abstract class VisualElement<
 	 * intended to be one.
 	 */
 	scrapeMotionValuesFromProps(
-		_props: MotionProps,
-		_prevProps: MotionProps,
+		_props: () => MotionProps,
+		_prevProps: () => MotionProps,
 		_visualElement: VisualElement<unknown>
 	): {
 		[key: string]: MotionValue | string | number;
@@ -240,10 +241,10 @@ export abstract class VisualElement<
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
 	props: MotionProps = $state()!;
-	prevProps?: MotionProps;
+	prevProps?: MotionProps = $derived(new Previous(() => this.props).current);
 
 	presenceContext: PresenceContext | null = null;
-	prevPresenceContext?: PresenceContext | null = null;
+	prevPresenceContext?: PresenceContext | null = $derived(new Previous(() => this.presenceContext).current);
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -327,8 +328,8 @@ export abstract class VisualElement<
 		this.options = options;
 		this.blockInitialAnimation = Boolean(blockInitialAnimation);
 
-		this.isControllingVariants = checkIsControllingVariants(props);
-		this.isVariantNode = checkIsVariantNode(props);
+		this.isControllingVariants = checkIsControllingVariants(() => props);
+		this.isVariantNode = checkIsVariantNode(() => props);
 		if (this.isVariantNode) {
 			this.variantChildren = new Set();
 		}
@@ -345,7 +346,11 @@ export abstract class VisualElement<
 		 * Doing so will break some tests but this isn't necessarily a breaking change,
 		 * more a reflection of the test.
 		 */
-		const { willChange, ...initialMotionValues } = this.scrapeMotionValuesFromProps(props, {}, this);
+		const { willChange, ...initialMotionValues } = this.scrapeMotionValuesFromProps(
+			() => props,
+			() => ({}),
+			this
+		);
 
 		for (const key in initialMotionValues) {
 			const value = initialMotionValues[key];
@@ -390,7 +395,10 @@ export abstract class VisualElement<
 		}
 
 		if (this.parent) this.parent.children.add(this as VisualElement<unknown>);
-		this.update(this.props, this.presenceContext);
+		this.update(
+			() => this.props,
+			() => this.presenceContext
+		);
 	}
 
 	unmount() {
@@ -534,16 +542,14 @@ export abstract class VisualElement<
 	 * Update the provided props. Ensure any newly-added motion values are
 	 * added to our map, old ones removed, and listeners updated.
 	 */
-	update(props: MotionProps, presenceContext: PresenceContext | null) {
-		if (props.transformTemplate || this.props.transformTemplate) {
+	update(props: () => MotionProps, presenceContext: () => PresenceContext | null) {
+		if (props().transformTemplate || this.props.transformTemplate) {
 			this.scheduleRender();
 		}
 
-		this.prevProps = this.props;
-		this.props = props;
+		this.props = props();
 
-		this.prevPresenceContext = this.presenceContext;
-		this.presenceContext = presenceContext;
+		this.presenceContext = presenceContext();
 
 		/**
 		 * Update prop event handlers ie onAnimationStart, onAnimationComplete
@@ -564,7 +570,7 @@ export abstract class VisualElement<
 
 		this.prevMotionValues = updateMotionValuesFromProps(
 			this as VisualElement<unknown>,
-			this.scrapeMotionValuesFromProps(props, this.prevProps, this as VisualElement<unknown>),
+			this.scrapeMotionValuesFromProps(props, () => this.prevProps!, this as VisualElement<unknown>),
 			this.prevMotionValues
 		);
 

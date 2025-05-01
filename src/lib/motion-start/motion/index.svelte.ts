@@ -337,7 +337,8 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 	return MotionComponent;
 };
 
-export function useLayoutId({ layoutId }: MotionProps) {
+export function useLayoutId(props: () => MotionProps) {
+	const { layoutId } = props();
 	const layoutGroupId = $derived(useContext(LayoutGroupContext).current.id);
 
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;

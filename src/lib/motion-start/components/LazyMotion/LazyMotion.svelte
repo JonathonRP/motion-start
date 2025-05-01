@@ -21,7 +21,7 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../motion/features/types";
   import type { CreateVisualElement } from "../../render/types";
   import type { LazyProps } from "./types";
-  import type { Ref } from "../../utils/safe-react-types";
+  import type { MutableRefObject, Ref } from "../../utils/safe-react-types";
 
   interface Props extends LazyProps {
     children?: Snippet;
@@ -65,9 +65,10 @@ Copyright (c) 2018 Framer B.V. -->
   let { features, strict, children }: Props = $props();
 
   let _ = !isLazyBundle(features);
-  let loadedRenderer: Ref<undefined | CreateVisualElement<any>> = {
-    current: undefined,
-  };
+  let loadedRenderer: MutableRefObject<undefined | CreateVisualElement<any>> =
+    $state({
+      current: undefined,
+    });
 
   /**
    * If this is a synchronous load, load features immediately

@@ -58,7 +58,7 @@ import { animationControls } from './animation-controls';
 export function useAnimationControls(): AnimationControls {
 	const controls = animationControls();
 
-	$effect.pre(controls.mount);
+	$effect(controls.mount);
 
 	return controls;
 }

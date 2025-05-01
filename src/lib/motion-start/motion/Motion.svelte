@@ -4,7 +4,6 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="TProps, Instance, RenderState">
   import { MotionConfigContext } from "../context/MotionConfigContext";
-  import { MotionContext } from "../context/MotionContext";
   import { useVisualElement } from "./utils/use-visual-element.svelte";
   import { useMotionRef } from "./utils/use-motion-ref";
   import { useCreateMotionContext } from "../context/MotionContext/create.svelte";
@@ -19,7 +18,9 @@ Copyright (c) 2018 Framer B.V. -->
     type MotionComponentProps,
   } from "./index.svelte";
   import MeasureLayoutComp from "./features/layout/MeasureLayout.svelte";
+  import { MotionContext } from "../three-entry";
   import { untrack } from "svelte";
+  import { IsMounted } from "runed";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -48,28 +49,23 @@ Copyright (c) 2018 Framer B.V. -->
   const configAndProps = $derived({
     ...props,
     ...useContext(MotionConfigContext).current,
-    layoutId: useLayoutId(props),
+    layoutId: useLayoutId(() => props),
   });
 
   // $inspect(props, configAndProps);
 
+  // svelte-ignore state_referenced_locally: onpurpose - isStatic shouldn't change
   const { isStatic } = configAndProps;
 
-  const context = useCreateMotionContext<Instance>(props);
+  const context = $derived.by(useCreateMotionContext<Instance>(() => props));
 
-  const visualState = useVisualState(props, isStatic);
+  const visualState = $derived.by(useVisualState(() => props, isStatic));
 
-  $inspect(configAndProps);
-
-  // $inspect.trace();
   if (!isStatic && isBrowser) {
     // useStrictMode(configAndProps, preloadedFeatures);
-
     const layoutProjection = getProjectionFunctionality(() => configAndProps);
 
-    $effect(() => {
-      untrack(() => (MeasureLayout = layoutProjection.MeasureLayout));
-    });
+    MeasureLayout = layoutProjection.MeasureLayout;
 
     /**
      * Create a VisualElement for this component. A VisualElement provides a common
@@ -79,30 +75,20 @@ Copyright (c) 2018 Framer B.V. -->
      */
     context.visualElement = useVisualElement<Instance, RenderState>(
       Component,
-      visualState,
+      () => visualState,
       () => configAndProps,
       createVisualElement,
       () => layoutProjection.ProjectionNode,
     );
   }
 
-  // context.visualElement;
-  $effect(() => {
-    untrack(() => (MotionContext.Provider = context));
-  });
-
-  // const motionRef = $derived(
-  //   useMotionRef(visualState, context.visualElement, externalRef),
-  // );
-
-  // this is not called, meaning motion is not dismounted...
-  // $effect(() => {
-  //   return () => {
-  //     console.log("dismount");
-  //     // Since useMotionRef is not called on destroy, the visual element is unmounted here
-  //     context.visualElement?.unmount();
-  //   };
-  // });
+  MotionContext.update(
+    () => context,
+    () => {
+      console.log("dismounting");
+      context.visualElement?.unmount();
+    },
+  );
 </script>
 
 {#if MeasureLayout && context.visualElement}

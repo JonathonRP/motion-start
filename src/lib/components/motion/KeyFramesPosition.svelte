@@ -24,7 +24,9 @@
     </div>
     <div>
         <Button
-            onclick={() => (i += 1)}
+            onclick={() => {
+                i++;
+            }}
             variant="outline"
             class="bg-gray-700/30 border-white/30 text-white"
             size="sm"

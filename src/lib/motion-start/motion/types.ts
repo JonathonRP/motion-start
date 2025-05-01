@@ -87,10 +87,11 @@ export type MotionCSSVariables = {
 /**
  * @public
  */
-export type MotionStyle = MotionCSS &
-	MotionTransform &
-	MakeMotion<SVGPathProperties> &
-	MakeCustomValueType<CustomStyles>;
+export interface MotionStyle
+	extends MotionCSS,
+		MotionTransform,
+		MakeMotion<SVGPathProperties>,
+		MakeCustomValueType<CustomStyles> {}
 
 export type OnUpdate = (v: Target) => void;
 

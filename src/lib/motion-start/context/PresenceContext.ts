@@ -11,7 +11,7 @@ import { createContext } from './create';
  * @public
  */
 export interface PresenceContext {
-	id: string;
+	id: number | string;
 	isPresent: boolean;
 	register: (id: string | number) => () => void;
 	onExitComplete?: (id: string | number) => void;

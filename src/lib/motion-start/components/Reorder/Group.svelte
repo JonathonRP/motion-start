@@ -24,7 +24,7 @@ Copyright (c) 2018 Framer B.V. -->
 		 *
 		 * @public
 		 */
-		onReorder: (newOrder: V[]) => void;
+		onReorder: (newOrder: () => V[]) => void;
 
 		/**
 		 * The latest values state.
@@ -48,7 +48,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 	type ReorderGroupProps<V> = Props<V> &
 		Omit<HTMLMotionProps<any>, "values"> &
-		PropsWithChildren<{}, [(typeof values)[number]]>;
+		PropsWithChildren<{}>;
 
 	function getValue<V>(item: ItemData<V>) {
 		return item.value;
@@ -72,8 +72,9 @@ Copyright (c) 2018 Framer B.V. -->
 		ItemData,
 		ReorderContext as ReorderContextProps,
 	} from "./types";
-	import { checkReorder } from "./utils/check-reorder";
+	import { checkReorder } from "./utils/check-reorder.svelte";
 	import type { PropsWithChildren } from "../../utils/types";
+	import { useContext } from "../../context/use";
 
 	let {
 		children,
@@ -97,15 +98,7 @@ Copyright (c) 2018 Framer B.V. -->
 	>;
 
 	let order: ItemData<V>[] = [];
-	let isReordering = false;
-
-	$effect(() => {
-		isReordering = false;
-	});
-
-	$effect.pre(() => {
-		order = [];
-	});
+	let isReordering = $state({ current: false });
 
 	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
 
@@ -122,28 +115,49 @@ Copyright (c) 2018 Framer B.V. -->
 			order.sort(compareMin);
 		},
 		updateOrder: (item, offset, velocity) => {
-			if (isReordering) return;
+			console.log(isReordering.current);
+			if (isReordering.current) return;
 
-			const newOrder = checkReorder(order, item, offset, velocity);
+			const newOrder = $derived.by(
+				checkReorder(() => order, item, offset, velocity),
+			);
+
+			console.log(order !== newOrder);
 
 			if (order !== newOrder) {
-				isReordering = true;
-				onReorder(
+				isReordering.current = true;
+				onReorder(() =>
 					newOrder
 						.map(getValue)
-						.filter((value) => values.includes(value)),
+						.filter((value) => values.indexOf(value) !== -1),
 				);
 			}
 		},
 	};
 
-	$effect.pre(() => {
-		untrack(() => (ReorderContext.Provider = context));
+	$effect(() => {
+		isReordering.current;
+		untrack(() => {
+			isReordering.current = false;
+		});
 	});
+
+	// $effect.pre(() => {
+	// 	order = [];
+	// });
+
+	// $effect(() => {
+	// 	untrack(() => {
+	// 		ReorderContext.update(() => context);
+	// 	});
+	// 	// untrack(() => {
+	// 	// 	useContext(ReorderContext).current = context;
+	// 	// });
+	// });
+	ReorderContext.update(() => context);
+	ReorderContext.Provider = context;
 </script>
 
 <ReorderGroup {...props} bind:ref={externalRef}>
-	{#each values as value, indx (indx)}
-		{@render children?.(value)}
-	{/each}
+	{@render children?.()}
 </ReorderGroup>

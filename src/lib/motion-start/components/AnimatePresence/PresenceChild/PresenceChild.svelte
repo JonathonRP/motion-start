@@ -4,6 +4,13 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script module lang="ts">
     import { SvelteMap } from "svelte/reactivity";
+
+    let presenceId = 0;
+    function getPresenceId() {
+        const id = presenceId;
+        presenceId++;
+        return id;
+    }
     function newChildrenMap(): Map<string | number, boolean> {
         return new Map<string | number, boolean>();
     }
@@ -14,7 +21,8 @@ Copyright (c) 2018 Framer B.V. -->
     import type { PresenceChildProps } from "./index.js";
     import PopChild from "../PopChild/PopChild.svelte";
     import { useContext } from "../../../context/use";
-    import { tick, untrack } from "svelte";
+    import { flushSync, onDestroy, tick, untrack } from "svelte";
+    import { IsMounted } from "runed";
 
     interface Props extends PresenceChildProps {}
 
@@ -28,75 +36,72 @@ Copyright (c) 2018 Framer B.V. -->
         children,
     }: Props = $props();
 
-    const presenceChildren = $state(newChildrenMap());
-    const id = $props.id();
-
-    const memoExitComplete = $derived((childId: string | number) => {
-        presenceChildren.set(childId, true);
-        for (const isComplete of presenceChildren.values()) {
-            if (!isComplete) return;
-        }
-
-        onExitComplete && onExitComplete();
-    });
+    const presenceChildren = $derived(newChildrenMap());
+    const id = $derived(getPresenceId());
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
+    let context = (): PresenceContext | null => {
+        return {
+            id,
+            initial,
+            isPresent,
+            custom,
+            onExitComplete: (childId: string | number) => {
+                presenceChildren.set(childId, true);
+                for (const isComplete of presenceChildren.values()) {
+                    if (!isComplete) return;
+                }
 
-    let context = (refreshness?: number | boolean) => ({
-        id,
-        initial,
-        isPresent,
-        custom,
-        onExitComplete: memoExitComplete,
-        register: (childId: string | number) => {
-            presenceChildren.set(childId, false);
-            return () => presenceChildren.delete(childId);
-        },
-    });
-
-    $effect(() => {
-        if (presenceAffectsLayout) {
-            untrack(() => (useContext(PresenceContext).current = context()));
-            // PresenceContext.update(context);
-        }
-    });
+                onExitComplete && onExitComplete();
+            },
+            register: (childId: string | number) => {
+                presenceChildren.set(childId, false);
+                return () => {
+                    presenceChildren.delete(childId);
+                };
+            },
+        };
+    };
 
     $effect(() => {
         refresh;
-        PresenceContext.update(context);
+        untrack(() => {
+            PresenceContext.update(context);
+        });
     });
 
-    const keyset = (presence: boolean) =>
+    $effect(() => {
+        isPresent;
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+    });
 
     $effect(() => {
-        keyset(isPresent);
-
         tick().then(() => {
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
     });
 
-    // $inspect(useContext(PresenceContext).current);
-    // doublecheck this should always be null or use current PresenceContext value derived?
-    // const memoizedContext = $derived(useContext(PresenceContext).current);
+    $effect(() => {
+        if (presenceAffectsLayout) {
+            untrack(() => {
+                PresenceContext.update(context);
+            });
+        }
+    });
 
-    // $effect.pre(() => {
-    //     untrack(() => console.log(useContext(PresenceContext).current));
-    //     untrack(
-    //         () =>
-    //             (PresenceContext.Provider =
-    //                 useContext(PresenceContext).current),
-    //     );
+    // FIX: why are animation backwards??
+    // this is pretty close, exit plays with context(), but measure layout plays if null
+    PresenceContext.Provider = presenceAffectsLayout ? null : context();
+    // $effect(() => {
+    //     untrack(() => {
+    //         PresenceContext.Provider = presenceAffectsLayout ? null : context();
+    //     });
     // });
-
-    // $inspect(useContext(PresenceContext).current);
-
-    // PresenceContext.Provider = useContext(PresenceContext).current;
-
-    PresenceContext.Provider = null;
-
-    // TODO: why does this break other animations??
+    // $effect(() => {
+    //     untrack(() => {
+    //         PresenceContext.Provider = useContext(PresenceContext).current;
+    //     });
+    // });
 </script>
 
 {#if mode === "popLayout"}

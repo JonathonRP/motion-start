@@ -24,9 +24,11 @@
   <div>
     <Button
       id="tweenbtn"
-      onclick={() => (i += 1)}
+      oonclick={() => {
+        i++;
+      }}
       variant="outline"
-      class="bg-gray-700/30 border-white/30 text-white"
+      class="bg-gray-700/30 border-white/30 text-white "
       size="sm"
     >
       <svg

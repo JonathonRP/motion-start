@@ -66,10 +66,7 @@ Copyright (c) 2018 Framer B.V. -->
     }))(key);
   });
 
-  $effect.pre(() => {
-    memoizedContext;
-    untrack(() => (LayoutGroupContext.Provider = memoizedContext));
-  });
+  LayoutGroupContext.update(() => memoizedContext);
 </script>
 
 {@render children?.()}

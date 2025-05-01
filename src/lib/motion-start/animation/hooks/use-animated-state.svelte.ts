@@ -14,7 +14,7 @@ interface AnimatedStateOptions {
 	initialState: ResolvedValues;
 }
 
-const createObject = () => ({});
+const createObject = () => ({}) as any;
 
 class StateVisualElement extends VisualElement<ResolvedValues, {}, AnimatedStateOptions> {
 	type = 'state';
@@ -51,29 +51,36 @@ const useVisualState = makeUseVisualState({
  */
 export function useAnimatedState(initialState: any) {
 	let animationState = $state(initialState);
-	const visualState = useVisualState({}, false);
-
-	const element = new StateVisualElement(
-		{
-			props: {
-				onUpdate: (v) => {
-					animationState = { ...v };
-				},
-			},
-			visualState,
-			presenceContext: null,
-		},
-		{ initialState }
+	const visualState = $derived.by(
+		useVisualState(
+			() => ({}),
+			() => false
+		)
 	);
 
-	$effect.pre(() => {
+	const element = $derived(
+		new StateVisualElement(
+			{
+				props: {
+					onUpdate: (v) => {
+						animationState = { ...v };
+					},
+				},
+				visualState,
+				presenceContext: null,
+			},
+			{ initialState }
+		)
+	);
+
+	$effect(() => {
 		element.mount({});
-		return () => element.unmount();
+		return element.unmount;
 	});
 
 	const startAnimation = () => (animationDefinition: TargetAndTransition) => {
 		return animateVisualElement(element, animationDefinition);
 	};
 
-	return [animationState, startAnimation];
+	return () => [animationState, startAnimation];
 }

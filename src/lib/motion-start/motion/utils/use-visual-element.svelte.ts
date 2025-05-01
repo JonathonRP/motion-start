@@ -19,10 +19,11 @@ import { microtask } from '../../frameloop/microtask';
 import { useContext } from '../../context/use';
 import { tick, untrack } from 'svelte';
 import { Debounced, IsMounted, useDebounce, watch } from 'runed';
+import type { MutableRefObject } from '$lib/motion-start/utils/safe-react-types';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
-	visualState: VisualState<Instance, RenderState>,
+	visualState: () => VisualState<Instance, RenderState>,
 	props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: () => new (...args: any[]) => IProjectionNode<unknown>
@@ -35,15 +36,18 @@ export function useVisualElement<Instance, RenderState>(
 
 	const reducedMotionContext = $derived(useContext(MotionConfigContext).current?.reducedMotion);
 
+	const visualElementRef = $state<MutableRefObject<VisualElement<Instance> | null>>({ current: null });
+
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
 	createVisualElement = createVisualElement || lazyContext?.renderer;
 
-	const visualElement =
-		createVisualElement! &&
-		createVisualElement(Component, {
-			visualState,
+	if (!visualElementRef.current && createVisualElement) {
+		visualElementRef.current = createVisualElement(Component, {
+			get visualState() {
+				return visualState();
+			},
 			parent,
 			get props() {
 				return props();
@@ -52,6 +56,9 @@ export function useVisualElement<Instance, RenderState>(
 			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
+	}
+
+	const visualElement = $derived(visualElementRef.current);
 
 	const initialLayoutGroupConfig = $derived(useContext(SwitchLayoutGroupContext).current);
 
@@ -61,7 +68,7 @@ export function useVisualElement<Instance, RenderState>(
 		ProjectionNodeConstructor?.() &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElement, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
+		createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
 	}
 
 	const isMounted = new IsMounted();
@@ -78,7 +85,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			untrack(() => visualElement.update(props(), presenceContext));
+			untrack(() => visualElement.update(props, () => presenceContext));
 		}
 	});
 
@@ -113,6 +120,12 @@ export function useVisualElement<Instance, RenderState>(
 		if (wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
 		}
+
+		// return () => {
+		// 	visualElement.updateFeatures();
+		// 	console.log('dismounting');
+		// 	visualElement.unmount();
+		// };
 	});
 
 	$effect(() => {

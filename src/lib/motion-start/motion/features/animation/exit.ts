@@ -13,10 +13,8 @@ export class ExitAnimationFeature extends Feature<unknown> {
 	update() {
 		if (!this.node.presenceContext) return;
 
-		const { isPresent, onExitComplete, id } = this.node.presenceContext;
-		const { isPresent: prevIsPresent, id: prevId } = this.node.prevPresenceContext || {};
-
-		console.log(isPresent, prevIsPresent, id, prevId);
+		const { isPresent, onExitComplete } = this.node.presenceContext;
+		const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
 
 		if (!this.node.animationState || isPresent === prevIsPresent) {
 			return;
@@ -30,7 +28,11 @@ export class ExitAnimationFeature extends Feature<unknown> {
 	}
 
 	mount() {
-		const { register } = this.node.presenceContext || {};
+		const { onExitComplete, register } = this.node.presenceContext || {};
+
+		if (onExitComplete) {
+			onExitComplete(this.id);
+		}
 
 		if (register) {
 			this.unmount = register(this.id);
