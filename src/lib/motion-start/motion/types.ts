@@ -8,7 +8,7 @@ import type { DraggableProps } from '../gestures/drag/types';
 import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types';
 import type { VisualElementLifecycles } from '../render/utils/lifecycles.ts';
 import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from '../types';
-import type { MotionValue } from '../value';
+import type { MotionValue } from '../value/index.js';
 import type { LayoutProps } from './features/layout/types';
 
 export type Ref<T> = (instance: T | null) => void | {

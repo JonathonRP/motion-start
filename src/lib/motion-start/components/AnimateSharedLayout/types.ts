@@ -5,8 +5,8 @@ Copyright (c) 2018 Framer B.V.
 // import type { Snippet } from 'svelte';
 import type { VisualElement } from '../../render/types';
 import type { Transition } from '../../types';
-import type { AxisBox2D } from '../../types/geometry';
-import type { MotionValue } from '../../value';
+import type { AxisBox2D } from '../../types/geometry.js';
+import type { MotionValue } from '../../value/index.js';
 /**
  * @public
  */

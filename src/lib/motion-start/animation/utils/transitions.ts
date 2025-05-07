@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { AnimationOptions } from 'popmotion';
 import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } from '../../types';
-import type { MotionValue } from '../../value';
+import type { MotionValue } from '../../value/index.js';
 
 /** 
 based on framer-motion@4.1.15,
