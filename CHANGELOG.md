@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.13
+
+### Patch Changes
+
+- 39d3b8b: improve import consistancy and fix svelte repl
+
 ## 0.1.12
 
 ### Patch Changes
