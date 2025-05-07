@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { isForcedMotionValue } from '../../motion/utils/is-forced-motion-value';
-import type { MotionValue } from '../../value';
-import { isMotionValue } from '../../value/utils/is-motion-value';
+import { isForcedMotionValue } from '../../motion/utils/is-forced-motion-value.js';
+import type { MotionValue } from '../../value/index.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 
