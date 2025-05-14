@@ -30,43 +30,42 @@ Copyright (c) 2018 Framer B.V. -->
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = $derived(useContext(LayoutGroupContext).current);
+  const layoutGroupContext = useContext(LayoutGroupContext);
 
-  const deprecatedLayoutGroupContext = $derived(
-    useContext(DeprecatedLayoutGroupContext).current,
-  );
+  const deprecatedLayoutGroupContext = useContext(DeprecatedLayoutGroupContext);
 
   const [forceRender, key] = useForceUpdate();
 
-  const context = $state<MutableRefObject<LayoutGroupContext | null>>({
+  let context = $state<MutableRefObject<LayoutGroupContext | null>>({
     current: null,
   });
 
-  const upstreamId = $derived(
-    layoutGroupContext?.id || deprecatedLayoutGroupContext,
-  );
+  const upstreamId =
+    layoutGroupContext.current.id || deprecatedLayoutGroupContext.current;
 
-  const memoizedContext = $derived.by(() => {
-    if (context.current === null) {
-      if (shouldInheritId(inherit!) && upstreamId) {
-        id = id ? upstreamId + "-" + id : upstreamId;
-      }
-
-      context.current = {
-        id,
-        group: shouldInheritGroup(inherit!)
-          ? layoutGroupContext?.group || nodeGroup()
-          : nodeGroup(),
-      };
+  if (context.current === null) {
+    if (shouldInheritId(inherit!) && upstreamId) {
+      id = id ? upstreamId + "-" + id : upstreamId;
     }
 
-    return ((_key: typeof key) => ({
+    context.current = {
+      id,
+      group: shouldInheritGroup(inherit!)
+        ? layoutGroupContext.current.group || nodeGroup()
+        : nodeGroup(),
+    };
+  }
+
+  const memoizedContext = (_key: typeof key) => {
+    return {
       ...context.current,
       forceRender,
-    }))(key);
-  });
+    };
+  };
 
-  LayoutGroupContext.update(() => memoizedContext);
+  $effect(() => {
+    layoutGroupContext.current = memoizedContext(key);
+  });
 </script>
 
 {@render children?.()}

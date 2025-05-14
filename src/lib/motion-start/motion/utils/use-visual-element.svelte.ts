@@ -26,7 +26,7 @@ export function useVisualElement<Instance, RenderState>(
 	visualState: () => VisualState<Instance, RenderState>,
 	props: () => MotionProps,
 	createVisualElement?: CreateVisualElement<Instance>,
-	ProjectionNodeConstructor?: () => new (...args: any[]) => IProjectionNode<unknown>
+	ProjectionNodeConstructor?: new (...args: any[]) => IProjectionNode<unknown>
 ): VisualElement<Instance> | null {
 	const { visualElement: parent } = $derived(useContext(MotionContext).current);
 
@@ -53,7 +53,7 @@ export function useVisualElement<Instance, RenderState>(
 				return props();
 			},
 			presenceContext,
-			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
+			blockInitialAnimation: presenceContext ? presenceContext.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
 	}
@@ -65,10 +65,10 @@ export function useVisualElement<Instance, RenderState>(
 	if (
 		visualElement &&
 		!visualElement.projection &&
-		ProjectionNodeConstructor?.() &&
+		ProjectionNodeConstructor &&
 		(visualElement.type === 'html' || visualElement.type === 'svg')
 	) {
-		createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor(), initialLayoutGroupConfig);
+		createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor, initialLayoutGroupConfig);
 	}
 
 	const isMounted = new IsMounted();

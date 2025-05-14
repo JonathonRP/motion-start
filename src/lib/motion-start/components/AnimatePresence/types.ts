@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 /**
  * @public
  */
-export interface AnimatePresenceProps<T extends { key: any }> {
+export interface AnimatePresenceProps<T> {
 	/**
 	 * By passing `initial={false}`, `AnimatePresence` will disable any initial animations on children
 	 * that are present when the component is first rendered.

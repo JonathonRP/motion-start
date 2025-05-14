@@ -42,6 +42,7 @@
                 {mode}
                 list={items.map((id, indx) => ({ key: id, id, indx }))}
                 let:item
+                let:measure
             >
                 <motion.li
                     class="block bg-accent-500 h-[80px] w-full shrink-0 grow-0 basis-[80px] rounded-[20px] m-0 p-0"
@@ -52,6 +53,7 @@
                     onclick={() => {
                         if (item.indx > -1) items.splice(item.indx, 1);
                     }}
+                    ref={measure}
                 />
             </AnimatePresence>
         </ul>

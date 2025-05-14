@@ -8,13 +8,12 @@ import type { MotionProps } from '../../motion/types';
 import { isVariantLabel } from './is-variant-label';
 import { variantProps } from './variant-props';
 
-export function isControllingVariants(props: () => MotionProps) {
+export function isControllingVariants(props: MotionProps) {
 	return (
-		isAnimationControls(props().animate) ||
-		variantProps.some((name) => isVariantLabel(props()[name as keyof typeof props]))
+		isAnimationControls(props.animate) || variantProps.some((name) => isVariantLabel(props[name as keyof typeof props]))
 	);
 }
 
-export function isVariantNode(props: () => MotionProps) {
-	return Boolean(isControllingVariants(props) || props().variants);
+export function isVariantNode(props: MotionProps) {
+	return Boolean(isControllingVariants(props) || props.variants);
 }

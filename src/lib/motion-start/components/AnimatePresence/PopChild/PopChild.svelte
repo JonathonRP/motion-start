@@ -10,8 +10,9 @@ Copyright (c) 2018 Framer B.V. -->
         MutableRefObject,
         RefObject,
     } from "../../../utils/safe-react-types";
-    import { Previous } from "runed";
-    import { tick, type Snippet } from "svelte";
+    import { ElementRect, Previous } from "runed";
+    import type { Action } from "svelte/action";
+    import { tick } from "svelte";
 
     let { isPresent, children }: Props = $props();
 
@@ -43,32 +44,30 @@ Copyright (c) 2018 Framer B.V. -->
         const { width, height, top, left } = size.current;
         if (isPresent || !ref.current || !width || !height) return;
 
-        ref.current.dataset.motionPopId = id.toString();
+        ref.current.dataset.motionPopId = id;
 
         const style = document.createElement("style");
         if (nonce) style.nonce = nonce;
         document.head.appendChild(style);
 
-        /**
-         old pop logic - remove need for size ref
-            isolation: isolate;
-            display: grid;
-            grid-column: 1/-1;
-        */
+        // /**
+        //  old pop logic
+
+        // */
         if (style.sheet) {
             style.sheet.insertRule(`
                 [data-motion-pop-id="${id}"] {
-                    position: absolute !important;
-                    width: ${width}px !important;
-                    height: ${height}px !important;
-                    top: ${top}px !important;
-                    left: ${left}px !important;
+                    --width: ${width}px;
+                    --height: ${height}px;
+                    --top: ${top}px;
+                    --left: ${left}px;
                 }
             `);
         }
         return () => {
-            console.log("cleanup");
-            document.head.removeChild(style);
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
         };
     });
 </script>
@@ -81,24 +80,26 @@ Copyright (c) 2018 Framer B.V. -->
 }: MeasureProps)}
     {#if children}
         {@const prevIsPresent = new Previous(() => isPresent)}
-        {@const pop: Snippet = (node: Text) => {
-            $effect(() => {
-                childRef.current = node.previousElementSibling as HTMLElement;
-                console.log(childRef.current);
-                const elementMeasurements = childRef.current.getBoundingClientRect();
-                if (elementMeasurements && prevIsPresent && !isPresent) {
+        {@const elementMeasurements = new ElementRect(() => childRef.current)}
+        {@const measure: Action = (node) => {
+            childRef.current = node;
+
+            // $effect(() => {
+                if (
+                    elementMeasurements.current &&
+                    prevIsPresent.current &&
+                    !isPresent
+                ) {
                     const size = sizeRef.current;
                     size.height = elementMeasurements.height || 0;
                     size.width = elementMeasurements.width || 0;
                     size.top = elementMeasurements.top;
                     size.left = elementMeasurements.left;
                 }
-            });
-
-            return children(node);
+            // });
         }}
 
-        {@render pop()}
+        {@render children({ measure })}
     {/if}
 {/snippet}
 
@@ -108,3 +109,13 @@ Copyright (c) 2018 Framer B.V. -->
     isPresent,
     sizeRef: size,
 })}
+
+<style>
+    :global([data-motion-pop-id]) {
+        position: absolute !important;
+        width: var(--width) !important;
+        height: var(--height) !important;
+        top: var(--top) !important;
+        left: var(--left) !important;
+    }
+</style>

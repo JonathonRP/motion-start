@@ -51,10 +51,10 @@ function useStyle(props: MotionProps, visualState: ResolvedValues): ResolvedValu
 	return style;
 }
 
-export function useHTMLProps(props: MotionProps & HTMLAttributes<HTMLElement>, visualState: ResolvedValues) {
+export function useHTMLProps(props: MotionProps & HTMLAttributes<HTMLElement>, visualState: () => ResolvedValues) {
 	// The `any` isn't ideal but it is the type of createElement props argument
 	const htmlProps: any = {};
-	const style = useStyle(props, visualState);
+	const style = useStyle(props, visualState());
 
 	if (props.drag && props.dragListener !== false) {
 		// Disable the ghost element when a user drags
@@ -73,5 +73,5 @@ export function useHTMLProps(props: MotionProps & HTMLAttributes<HTMLElement>, v
 
 	htmlProps.style = style;
 
-	return htmlProps;
+	return () => htmlProps;
 }

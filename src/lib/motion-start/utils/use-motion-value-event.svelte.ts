@@ -17,7 +17,7 @@ export function useMotionValueEvent<V, EventName extends keyof MotionValueEventC
 	 * can be that binding a useLayoutEffect higher up the tree can
 	 * miss changes from lower down the tree.
 	 */
-	$effect.pre(() => {
+	$effect(() => {
 		newValue.on(newEvent, newCallback);
 	});
 }

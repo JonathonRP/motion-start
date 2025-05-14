@@ -38,7 +38,7 @@ export function useMotionValue<T>(initial: T): MotionValue<T> {
 		const setLatest: (v: T) => void = (_value) => {
 			initial = _value;
 		};
-		$effect.pre(() => value.on('change', setLatest));
+		$effect(() => value.on('change', setLatest));
 	}
 
 	return value;

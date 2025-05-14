@@ -7,23 +7,18 @@ import { moveItem } from '../../../utils/array';
 import { mixNumber } from '../../../utils/mix/number';
 import type { ItemData } from '../types';
 
-export function checkReorder<T>(
-	order: () => ItemData<T>[],
-	value: T,
-	offset: number,
-	velocity: number
-): () => ItemData<T>[] {
+export function checkReorder<T>(order: () => ItemData<T>[], value: T, offset: number, velocity: number): ItemData<T>[] {
 	const currentOrder = $derived.by(order);
-	if (!velocity) return order;
+	if (!velocity) return currentOrder;
 
 	const index = currentOrder.findIndex((item) => item.value === value);
 
-	if (index === -1) return order;
+	if (index === -1) return currentOrder;
 
 	const nextOffset = velocity > 0 ? 1 : -1;
 	const nextItem = currentOrder[index + nextOffset];
 
-	if (!nextItem) return order;
+	if (!nextItem) return currentOrder;
 
 	const item = currentOrder[index];
 	const nextLayout = nextItem.layout;
@@ -33,8 +28,8 @@ export function checkReorder<T>(
 		(nextOffset === 1 && item.layout.max + offset > nextItemCenter) ||
 		(nextOffset === -1 && item.layout.min + offset < nextItemCenter)
 	) {
-		return () => moveItem(currentOrder, index, index + nextOffset);
+		return moveItem(currentOrder, index, index + nextOffset);
 	}
 
-	return order;
+	return currentOrder;
 }

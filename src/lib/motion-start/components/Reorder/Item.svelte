@@ -80,11 +80,6 @@ Copyright (c) 2018 Framer B.V. -->
 		latestX || latestY ? 1 : "unset",
 	);
 
-	invariant(
-		Boolean(context),
-		"Reorder.Item must be a child of Reorder.Group",
-	);
-
 	const { axis, registerItem, updateOrder } = $derived(context!);
 </script>
 
@@ -108,5 +103,9 @@ Copyright (c) 2018 Framer B.V. -->
 	onLayoutMeasure={(measured: Box) => registerItem(value, measured)}
 	bind:ref={externalRef}
 >
+	{invariant(
+		Boolean(context),
+		"Reorder.Item must be a child of Reorder.Group",
+	)}
 	{@render children?.()}
 </ReorderItem>

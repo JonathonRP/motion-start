@@ -10,14 +10,18 @@ Copyright (c) 2018 Framer B.V. -->
 
   interface Props extends MotionConfigProps {}
 
-  let { isValidProp, children, ...config }: Props = $props();
+  let { isValidProp, children, ...configure }: Props = $props();
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
+  const motionConfigContext = useContext(MotionConfigContext);
   /**
    * Inherit props from any parent MotionConfig components
    */
-  config = Object.assign(config, useContext(MotionConfigContext));
+  const config = $derived({
+    ...configure,
+    ...motionConfigContext.current,
+  });
 
   /**
    * Don't allow isStatic to change between renders as it affects how many hooks
@@ -33,7 +37,7 @@ Copyright (c) 2018 Framer B.V. -->
      * Creating a new config context object will re-render every `motion` component
      * every time it renders. So we only want to create a new one sparingly.
      */
-    MotionConfigContext.Provider = config;
+    motionConfigContext.current = config;
   });
 </script>
 

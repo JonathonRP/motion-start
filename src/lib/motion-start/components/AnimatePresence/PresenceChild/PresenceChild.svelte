@@ -5,12 +5,6 @@ Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
     import { SvelteMap } from "svelte/reactivity";
 
-    let presenceId = 0;
-    function getPresenceId() {
-        const id = presenceId;
-        presenceId++;
-        return id;
-    }
     function newChildrenMap(): Map<string | number, boolean> {
         return new Map<string | number, boolean>();
     }
@@ -33,14 +27,15 @@ Copyright (c) 2018 Framer B.V. -->
         custom = undefined,
         presenceAffectsLayout,
         mode,
-        children,
+        children: desendent,
     }: Props = $props();
 
-    const presenceChildren = $derived(newChildrenMap());
-    const id = $derived(getPresenceId());
+    const presenceChildren = newChildrenMap();
+    const id = $props.id();
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
-    let context = (): PresenceContext | null => {
+    let presenceContext = useContext(PresenceContext);
+    const context = (): PresenceContext | null => {
         return {
             id,
             initial,
@@ -64,50 +59,38 @@ Copyright (c) 2018 Framer B.V. -->
     };
 
     $effect(() => {
-        refresh;
-        untrack(() => {
-            PresenceContext.update(context);
-        });
+        if (presenceAffectsLayout) {
+            presenceContext.current = context();
+        }
     });
 
     $effect(() => {
-        isPresent;
-        presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+        refresh;
+        presenceContext.current = context();
     });
 
+    const setExit = (_isPresent: boolean) => {
+        presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+    };
+    $effect(() => {
+        setExit(isPresent);
+    });
     $effect(() => {
         tick().then(() => {
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
     });
 
-    $effect(() => {
-        if (presenceAffectsLayout) {
-            untrack(() => {
-                PresenceContext.update(context);
-            });
-        }
-    });
-
-    // FIX: why are animation backwards??
     // this is pretty close, exit plays with context(), but measure layout plays if null
-    PresenceContext.Provider = presenceAffectsLayout ? null : context();
-    // $effect(() => {
-    //     untrack(() => {
-    //         PresenceContext.Provider = presenceAffectsLayout ? null : context();
-    //     });
-    // });
-    // $effect(() => {
-    //     untrack(() => {
-    //         PresenceContext.Provider = useContext(PresenceContext).current;
-    //     });
-    // });
+    // PresenceContext.Provider = contextMemo;
 </script>
 
 {#if mode === "popLayout"}
     <PopChild {isPresent}>
-        {@render children?.()}
+        {#snippet children({ measure })}
+            {@render desendent({ measure })}
+        {/snippet}
     </PopChild>
 {:else}
-    {@render children?.()}
+    {@render desendent({})}
 {/if}

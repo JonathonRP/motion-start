@@ -5,7 +5,7 @@
     let { item } = $props();
 
     const y = useMotionValue(0);
-    const boxShadow = useRaisedShadow(y);
+    const boxShadow = $derived.by(useRaisedShadow(() => y));
 </script>
 
 <Reorder.Item

@@ -58,7 +58,7 @@ type ExtractFeature<T extends FeatureDefinitions[keyof FeatureDefinitions]> =
  * HTMLElement, SVGElement, Three.Object3D etc.
  */
 export abstract class VisualElement<
-	Instance,
+	Instance extends HTMLElement | SVGElement | unknown,
 	RenderState = Instance extends HTMLElement ? HTMLRenderState : Instance extends SVGElement ? SVGRenderState : unknown,
 	Options extends {} = {},
 > {
@@ -133,8 +133,8 @@ export abstract class VisualElement<
 	 * intended to be one.
 	 */
 	scrapeMotionValuesFromProps(
-		_props: () => MotionProps,
-		_prevProps: () => MotionProps,
+		_props: MotionProps,
+		_prevProps: MotionProps,
 		_visualElement: VisualElement<unknown>
 	): {
 		[key: string]: MotionValue | string | number;
@@ -243,7 +243,7 @@ export abstract class VisualElement<
 	props: MotionProps = $state()!;
 	prevProps?: MotionProps = $derived(new Previous(() => this.props).current);
 
-	presenceContext: PresenceContext | null = null;
+	presenceContext: PresenceContext | null = $state(null);
 	prevPresenceContext?: PresenceContext | null = $derived(new Previous(() => this.presenceContext).current);
 
 	/**
@@ -328,8 +328,8 @@ export abstract class VisualElement<
 		this.options = options;
 		this.blockInitialAnimation = Boolean(blockInitialAnimation);
 
-		this.isControllingVariants = checkIsControllingVariants(() => props);
-		this.isVariantNode = checkIsVariantNode(() => props);
+		this.isControllingVariants = checkIsControllingVariants(props);
+		this.isVariantNode = checkIsVariantNode(props);
 		if (this.isVariantNode) {
 			this.variantChildren = new Set();
 		}
@@ -346,11 +346,7 @@ export abstract class VisualElement<
 		 * Doing so will break some tests but this isn't necessarily a breaking change,
 		 * more a reflection of the test.
 		 */
-		const { willChange, ...initialMotionValues } = this.scrapeMotionValuesFromProps(
-			() => props,
-			() => ({}),
-			this
-		);
+		const { willChange, ...initialMotionValues } = this.scrapeMotionValuesFromProps(props, {}, this);
 
 		for (const key in initialMotionValues) {
 			const value = initialMotionValues[key];
@@ -404,6 +400,7 @@ export abstract class VisualElement<
 	unmount() {
 		visualElementStore.delete(this.current);
 		this.projection && this.projection.unmount();
+		this.projection = undefined;
 		cancelFrame(this.notifyUpdate);
 		cancelFrame(this.render);
 		this.valueSubscriptions.forEach((remove) => remove());
@@ -570,7 +567,7 @@ export abstract class VisualElement<
 
 		this.prevMotionValues = updateMotionValuesFromProps(
 			this as VisualElement<unknown>,
-			this.scrapeMotionValuesFromProps(props, () => this.prevProps!, this as VisualElement<unknown>),
+			this.scrapeMotionValuesFromProps(props(), this.prevProps!, this as VisualElement<unknown>),
 			this.prevMotionValues
 		);
 

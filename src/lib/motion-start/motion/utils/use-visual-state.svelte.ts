@@ -25,20 +25,20 @@ export interface VisualState<Instance, RenderState> {
 export interface UseVisualStateConfig<Instance, RenderState> {
 	scrapeMotionValuesFromProps: ScrapeMotionValuesFromProps;
 	createRenderState: () => RenderState;
-	onMount?: (props: () => MotionProps, instance: Instance, visualState: VisualState<Instance, RenderState>) => void;
+	onMount?: (props: MotionProps, instance: Instance, visualState: VisualState<Instance, RenderState>) => void;
 }
 export type makeUseVisualState = <I, RS>(config: UseVisualStateConfig<I, RS>) => UseVisualState<I, RS>;
 
 export type UseVisualState<Instance, RenderState> = (
-	props: () => MotionProps,
+	props: MotionProps,
 	isStatic: boolean
-) => () => VisualState<Instance, RenderState>;
+) => VisualState<Instance, RenderState>;
 
 function makeState<I, RS>(
 	{ scrapeMotionValuesFromProps, createRenderState, onMount }: UseVisualStateConfig<I, RS>,
-	props: () => MotionProps,
-	context: () => MotionContext,
-	presenceContext: () => PresenceContext | null
+	props: MotionProps,
+	context: MotionContext,
+	presenceContext: PresenceContext | null
 ) {
 	const state: VisualState<I, RS> = {
 		latestValues: makeLatestValues(props, context, presenceContext, scrapeMotionValuesFromProps),
@@ -54,53 +54,39 @@ function makeState<I, RS>(
 
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
-	(props: () => MotionProps, isStatic: boolean): (() => VisualState<I, RS>) => {
+	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
 		const context = $derived(useContext(MotionContext).current);
 		const presenceContext = $derived(useContext(PresenceContext).current);
-		const make = $derived(() =>
-			makeState(
-				config,
-				props,
-				() => context,
-				() => presenceContext
-			)
-		);
+		const make = () => makeState(config, props, context, presenceContext);
 
-		let state = make();
-		$effect(() => {
-			if (isStatic) {
-				untrack(() => {
-					state = make();
-				});
-			}
-		});
+		const state = $derived.by(make);
 
-		return () => state;
+		return isStatic ? make() : state;
 	};
 
 function makeLatestValues(
-	props: () => MotionProps,
-	context: () => MotionContext,
-	presenceContext: () => PresenceContext | null,
+	props: MotionProps,
+	context: MotionContext,
+	presenceContext: PresenceContext | null,
 	scrapeMotionValues: ScrapeMotionValuesFromProps
 ) {
 	const values: ResolvedValues = {};
 
-	const motionValues = scrapeMotionValues(props, () => ({}));
+	const motionValues = scrapeMotionValues(props, {});
 	for (const key in motionValues) {
 		values[key] = resolveMotionValue(motionValues[key]);
 	}
 
-	let { initial, animate } = $derived.by(props);
+	let { initial, animate } = props;
 	const isControllingVariants = checkIsControllingVariants(props);
 	const isVariantNode = checkIsVariantNode(props);
 
-	if (context() && isVariantNode && !isControllingVariants && props().inherit !== false) {
-		if (initial === undefined) initial = context().initial;
-		if (animate === undefined) animate = context().animate;
+	if (context && isVariantNode && !isControllingVariants && props.inherit !== false) {
+		if (initial === undefined) initial = context.initial;
+		if (animate === undefined) animate = context.animate;
 	}
 
-	let isInitialAnimationBlocked = presenceContext() ? presenceContext()?.initial === false : false;
+	let isInitialAnimationBlocked = presenceContext ? presenceContext.initial === false : false;
 
 	isInitialAnimationBlocked = isInitialAnimationBlocked || initial === false;
 

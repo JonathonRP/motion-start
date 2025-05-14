@@ -398,12 +398,14 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 		onPlay && onPlay();
 
 		const now = this.driver.now();
-		if (this.holdTime !== null) {
+
+		if (this.state === 'finished') {
+			this.updateFinishedPromise();
+			this.startTime = now;
+		} else if (this.holdTime !== null) {
 			this.startTime = now - this.holdTime;
 		} else if (!this.startTime) {
-			this.startTime = startTime ?? this.calcStartTime();
-		} else if (this.state === 'finished') {
-			this.startTime = now;
+			this.startTime = startTime ?? now;
 		}
 
 		if (this.state === 'finished') {
