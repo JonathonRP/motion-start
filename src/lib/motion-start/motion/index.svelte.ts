@@ -24,7 +24,7 @@ import { MotionConfigContext } from '../context/MotionConfigContext';
 import { MotionContext } from '../context/MotionContext';
 import { useVisualElement } from './utils/use-visual-element.svelte';
 import type { UseVisualState } from './utils/use-visual-state.svelte';
-import { useMotionRef } from './utils/use-motion-ref';
+import { useMotionRef } from './utils/use-motion-ref.svelte';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import { loadFeatures } from './features/load-features';
 import { isBrowser } from '../utils/is-browser';
@@ -37,6 +37,7 @@ import { featureDefinitions } from './features/definitions';
 import Motion from './Motion.svelte';
 import type { Ref } from '../utils/safe-react-types';
 import { useContext } from '../context/use';
+import type MeasureLayout from './features/layout/MeasureLayout.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -339,13 +340,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 export function useLayoutId(props: () => MotionProps) {
 	const { layoutId } = props();
-	const layoutGroupId = $derived(useContext(LayoutGroupContext).current.id);
+	const { id: layoutGroupId } = $derived(useContext(LayoutGroupContext).current);
 
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
-	const isStrict = $derived(useContext(LazyContext).current.strict);
+	const { strict: isStrict } = $derived(useContext(LazyContext).current);
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

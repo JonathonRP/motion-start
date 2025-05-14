@@ -102,6 +102,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
 
+	let reorderContext = useContext(ReorderContext);
 	const context: ReorderContextProps<V> = {
 		axis,
 		registerItem: (value, layout) => {
@@ -118,9 +119,7 @@ Copyright (c) 2018 Framer B.V. -->
 			console.log(isReordering.current);
 			if (isReordering.current) return;
 
-			const newOrder = $derived.by(
-				checkReorder(() => order, item, offset, velocity),
-			);
+			const newOrder = checkReorder(() => order, item, offset, velocity);
 
 			console.log(order !== newOrder);
 
@@ -154,8 +153,9 @@ Copyright (c) 2018 Framer B.V. -->
 	// 	// 	useContext(ReorderContext).current = context;
 	// 	// });
 	// });
-	ReorderContext.update(() => context);
-	ReorderContext.Provider = context;
+	// ReorderContext.update(() => context);
+	// ReorderContext.Provider = context;
+	reorderContext.current = context;
 </script>
 
 <ReorderGroup {...props} bind:ref={externalRef}>

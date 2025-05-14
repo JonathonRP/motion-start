@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="TProps, Instance, RenderState">
   import { MotionConfigContext } from "../context/MotionConfigContext";
   import { useVisualElement } from "./utils/use-visual-element.svelte";
-  import { useMotionRef } from "./utils/use-motion-ref";
+  import { useMotionRef } from "./utils/use-motion-ref.svelte";
   import { useCreateMotionContext } from "../context/MotionContext/create.svelte";
   import { isBrowser } from "../utils/is-browser";
   import type { Ref } from "../utils/safe-react-types";
@@ -20,7 +20,6 @@ Copyright (c) 2018 Framer B.V. -->
   import MeasureLayoutComp from "./features/layout/MeasureLayout.svelte";
   import { MotionContext } from "../three-entry";
   import { untrack } from "svelte";
-  import { IsMounted } from "runed";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -57,9 +56,9 @@ Copyright (c) 2018 Framer B.V. -->
   // svelte-ignore state_referenced_locally: onpurpose - isStatic shouldn't change
   const { isStatic } = configAndProps;
 
-  const context = $derived.by(useCreateMotionContext<Instance>(() => props));
+  const context = useCreateMotionContext<Instance>(props);
 
-  const visualState = $derived.by(useVisualState(() => props, isStatic));
+  const visualState = useVisualState(props, isStatic);
 
   if (!isStatic && isBrowser) {
     // useStrictMode(configAndProps, preloadedFeatures);
@@ -73,22 +72,27 @@ Copyright (c) 2018 Framer B.V. -->
      * providing a way of rendering to these APIs outside of the React render loop
      * for more performant animations and interactions
      */
-    context.visualElement = useVisualElement<Instance, RenderState>(
+    const visualElement = useVisualElement<Instance, RenderState>(
       Component,
       () => visualState,
       () => configAndProps,
       createVisualElement,
-      () => layoutProjection.ProjectionNode,
+      layoutProjection.ProjectionNode,
     );
+
+    context.visualElement = visualElement;
+
+    // TODO: is unmounting with context causing other tests motion visual elemnents to unmount??
+    // MotionContext.update(() => {
+    //   context.visualElement = visualElement;
+    //   return context;
+    // });
   }
 
-  MotionContext.update(
-    () => context,
-    () => {
-      console.log("dismounting");
-      context.visualElement?.unmount();
-    },
-  );
+  $effect(() => () => {
+    console.log("dismounting");
+    context.visualElement?.unmount();
+  });
 </script>
 
 {#if MeasureLayout && context.visualElement}

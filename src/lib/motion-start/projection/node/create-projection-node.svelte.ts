@@ -545,6 +545,7 @@ export function createProjectionNode<I = unknown>({
 			stack && stack.remove(this);
 			this.parent && this.parent.children.delete(this);
 			(this.instance as any) = undefined;
+			this.eventHandlers.clear();
 
 			cancelFrame(this.updateProjection);
 		}

@@ -29,7 +29,7 @@ Copyright (c) 2018 Framer B.V. -->
 	}
 	const props: MeasureLayoutProps = $props();
 
-	const [isPresent, safeToRemove] = $derived.by(usePresence());
+	const [isPresent, safeToRemove] = $derived(usePresence());
 	const layoutGroup = $derived(useContext(LayoutGroupContext).current);
 </script>
 

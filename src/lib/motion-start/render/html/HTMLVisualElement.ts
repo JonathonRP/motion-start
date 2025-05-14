@@ -55,7 +55,7 @@ export class HTMLVisualElement extends DOMVisualElement<HTMLElement, HTMLRenderS
 
 	scrapeMotionValuesFromProps(
 		props: () => MotionProps,
-		prevProps: () => MotionProps,
+		prevProps: MotionProps,
 		visualElement: VisualElement<HTMLElement>
 	) {
 		return scrapeMotionValuesFromProps(props, prevProps, visualElement);

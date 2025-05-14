@@ -10,18 +10,22 @@ import { buildSVGAttrs } from './utils/build-attrs';
 import { createSvgRenderState } from './utils/create-render-state';
 import { isSVGTag } from './utils/is-svg-tag';
 
-export function useSvgProps(props: MotionProps, visualState: ResolvedValues, _isStatic: boolean, Component: string) {
-	const memo = (_visualState: typeof visualState) => {
+export function useSvgProps(
+	props: MotionProps,
+	visualState: () => ResolvedValues,
+	_isStatic: boolean,
+	Component: string
+) {
+	const visualProps = $derived.by(() => {
 		const state = createSvgRenderState();
 
-		buildSVGAttrs(state, _visualState, isSVGTag(Component), props.transformTemplate);
+		buildSVGAttrs(state, visualState(), isSVGTag(Component), props.transformTemplate);
 
 		return {
 			...state.attrs,
 			style: { ...state.style },
 		};
-	};
-	const visualProps = memo(visualState);
+	});
 
 	if (props.style) {
 		const rawStyles = {};
@@ -29,5 +33,5 @@ export function useSvgProps(props: MotionProps, visualState: ResolvedValues, _is
 		visualProps.style = { ...rawStyles, ...visualProps.style };
 	}
 
-	return visualProps;
+	return () => visualProps;
 }

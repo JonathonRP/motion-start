@@ -10,14 +10,17 @@ import { scrapeMotionValuesFromProps as scrapeHTMLMotionValuesFromProps } from '
 import { transformPropOrder } from '../../html/utils/transform';
 
 export function scrapeMotionValuesFromProps<I>(
-	props: () => MotionProps,
-	prevProps: () => MotionProps,
+	props: MotionProps,
+	prevProps: MotionProps,
 	visualElement?: VisualElement<I>
 ) {
 	const newValues = scrapeHTMLMotionValuesFromProps(props, prevProps, visualElement);
 
 	for (const key in props) {
-		if (isMotionValue(props[key as keyof typeof props]) || isMotionValue(prevProps[key as keyof typeof prevProps])) {
+		if (
+			isMotionValue(props?.[key as keyof typeof props]) ||
+			isMotionValue(prevProps?.[key as keyof typeof prevProps])
+		) {
 			const targetKey =
 				transformPropOrder.indexOf(key) !== -1 ? 'attr' + key.charAt(0).toUpperCase() + key.substring(1) : key;
 

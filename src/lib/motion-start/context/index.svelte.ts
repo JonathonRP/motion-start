@@ -13,43 +13,57 @@ function isTransformer<T>(arg: Transformer<T> | (() => MutableRefObject<T>)): ar
 
 export class Context<T> {
 	readonly #key: symbol;
-	#state = $state<MutableRefObject<T>>({ current: null! });
+	readonly #initial: T;
 
 	public constructor(initial: T) {
 		this.#key = Symbol(nanoid());
-		this.#state = { current: initial };
+		this.#initial = initial;
 	}
 
-	#create() {
-		return setContext(this.#key, this.#state);
-	}
+	private exists = () => {
+		return hasContext(this.#key);
+	};
 
-	#get() {
+	private create = () => {
+		const _value = $state({ current: this.#initial });
+		return setContext(this.#key, _value);
+	};
+
+	private get = () => {
 		return getContext<MutableRefObject<T>>(this.#key);
-	}
+	};
 
-	private pipe(...transformers: Transformer<T>[]) {
-		return [...(!hasContext(this.#key) ? [this.#create] : [this.#get]), ...transformers].reduce(
-			(value, fn: Transformer<T> | (() => MutableRefObject<T>)) => {
-				const result = isTransformer(fn) ? fn.call(this, value.current) : fn.bind(this)();
-				return isRefObject(result) ? result : Object.assign(this.#state, { current: result });
-			},
-			this.#state
-		);
-	}
+	// private pipe(...transformers: Transformer<T>[]) {
+	// 	return [...transformers].reduce(
+	// 		(value, fn: Transformer<T> | (() => MutableRefObject<T>)) => {
+	// 			let result = isTransformer(fn) ? fn.call(this, value.current) : fn.bind(this)();
+	// 			return {
+	// 				get current() {
+	// 					return isRefObject(result) ? result.current : result;
+	// 				},
+	// 				set current(v) {
+	// 					if (isRefObject(result)) {
+	// 						result.current = v;
+	// 						return;
+	// 					}
+	// 					result = v;
+	// 				},
+	// 			};
+	// 		},
 
-	set Provider(value: T) {
-		this.#state = { current: value };
-		setContext(this.#key, this.#state);
-	}
+	// 	);
+	// }
 
-	update(getter: () => T, cleanup?: () => void) {
-		const context = this.pipe();
+	// set Provider(value: T) {
+	// 	const _value = $state({ current: value });
+	// 	setContext(this.#key, _value);
+	// }
 
-		$effect(() => {
-			context.current = getter();
+	// update(getter: () => T) {
+	// 	const context = this.pipe();
 
-			return cleanup && cleanup;
-		});
-	}
+	// 	$effect(() => {
+	// 		context.current = getter();
+	// 	});
+	// }
 }

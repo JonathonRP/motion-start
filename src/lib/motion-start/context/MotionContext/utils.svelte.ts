@@ -8,14 +8,14 @@ import type { MotionProps } from '../../motion/types';
 import { isVariantLabel } from '../../render/utils/is-variant-label';
 import { isControllingVariants } from '../../render/utils/is-controlling-variants';
 
-export function getCurrentTreeVariants(props: () => MotionProps, context: () => MotionContext): () => MotionContext {
+export function getCurrentTreeVariants(props: MotionProps, context: MotionContext): MotionContext {
 	if (isControllingVariants(props)) {
-		const { initial, animate } = $derived.by(props);
-		return () => ({
+		const { initial, animate } = props;
+		return {
 			initial: initial === false || isVariantLabel(initial) ? (initial as any) : undefined,
 			animate: isVariantLabel(animate) ? animate : undefined,
-		});
+		};
 	}
 
-	return () => (props().inherit !== false ? context : {});
+	return props.inherit !== false ? context : {};
 }

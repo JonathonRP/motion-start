@@ -2,10 +2,10 @@
 Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={false} />
 
-<script lang="ts" generics="T extends {key:any}">
+<script lang="ts" generics="T">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-    import { useContext } from "../../context/use";
+    import { useContext } from "../../context/use.js";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
     import { invariant } from "../../utils/errors.js";
     import { SvelteMap, SvelteSet } from "svelte/reactivity";
@@ -177,13 +177,15 @@ Copyright (c) 2018 Framer B.V. -->
 
 {#each renderedChildren as child (getChildKey(child))}
     <PresenceChild
-        {mode}
+        mode={mode ?? "sync"}
         isPresent={child.present}
         initial={!isInitialRender && initial ? undefined : false}
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
     >
-        <slot item={child.item} />
+        {#snippet children({ measure })}
+            <slot item={child.item} {measure} />
+        {/snippet}
     </PresenceChild>
 {/each}

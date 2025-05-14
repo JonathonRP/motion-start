@@ -37,7 +37,7 @@ export const svgMotionConfig: Partial<MotionComponentConfig<SVGElement, SVGRende
 			});
 
 			frame.render(() => {
-				buildSVGAttrs(renderState, latestValues, isSVGTag(instance.tagName), props().transformTemplate);
+				buildSVGAttrs(renderState, latestValues, isSVGTag(instance.tagName), props.transformTemplate);
 
 				renderSVG(instance, renderState);
 			});

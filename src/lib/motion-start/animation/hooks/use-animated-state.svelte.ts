@@ -50,15 +50,10 @@ const useVisualState = makeUseVisualState({
  * on any version.
  */
 export function useAnimatedState(initialState: any) {
-	let animationState = $state(initialState);
-	const visualState = $derived.by(
-		useVisualState(
-			() => ({}),
-			() => false
-		)
-	);
+	let animationState = $derived(initialState);
+	const visualState = $derived.by(useVisualState({}, false));
 
-	const element = $derived(
+	const element = $state(
 		new StateVisualElement(
 			{
 				props: {

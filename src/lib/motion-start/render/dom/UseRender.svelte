@@ -8,7 +8,7 @@ Copyright (c) 2018 Framer B.V. -->
   import type { SVGRenderState } from "../svg/types";
   import { filterProps } from "./utils/filter-props";
   import { isSVGComponent } from "./utils/is-svg-component";
-  import { useSvgProps } from "../svg/use-props";
+  import { useSvgProps } from "../svg/use-props.svelte";
   import { useHTMLProps } from "../html/use-props";
 
   type Props = Parameters<
@@ -29,12 +29,10 @@ Copyright (c) 2018 Framer B.V. -->
   // $inspect(props);
   const { latestValues } = $derived(visualState);
   const { children } = $derived(props);
-  const useVisualProps = $derived(
-    isSVGComponent(Component) ? useSvgProps : useHTMLProps,
-  );
+  const useVisualProps = isSVGComponent(Component) ? useSvgProps : useHTMLProps;
 
-  const visualProps = $derived(
-    useVisualProps(props as any, latestValues, isStatic, Component),
+  const visualProps = $derived.by(
+    useVisualProps(props as any, () => latestValues, isStatic, Component),
   );
 
   const filteredProps = $derived(
