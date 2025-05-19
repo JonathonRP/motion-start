@@ -18,8 +18,6 @@ Copyright (c) 2018 Framer B.V. -->
     type MotionComponentProps,
   } from "./index.svelte";
   import MeasureLayoutComp from "./features/layout/MeasureLayout.svelte";
-  import { MotionContext } from "../three-entry";
-  import { untrack } from "svelte";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -89,10 +87,10 @@ Copyright (c) 2018 Framer B.V. -->
     // });
   }
 
-  $effect(() => () => {
-    console.log("dismounting");
-    context.visualElement?.unmount();
-  });
+  // $effect(() => () => {
+  //   console.log("dismounting");
+  //   context.visualElement?.unmount();
+  // });
 </script>
 
 {#if MeasureLayout && context.visualElement}

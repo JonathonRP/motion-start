@@ -60,6 +60,8 @@ export function useVisualElement<Instance, RenderState>(
 
 	const visualElement = $derived(visualElementRef.current);
 
+	$inspect(visualElement);
+
 	const initialLayoutGroupConfig = $derived(useContext(SwitchLayoutGroupContext).current);
 
 	if (

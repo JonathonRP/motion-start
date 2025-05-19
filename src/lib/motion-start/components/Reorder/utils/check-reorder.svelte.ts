@@ -7,8 +7,8 @@ import { moveItem } from '../../../utils/array';
 import { mixNumber } from '../../../utils/mix/number';
 import type { ItemData } from '../types';
 
-export function checkReorder<T>(order: () => ItemData<T>[], value: T, offset: number, velocity: number): ItemData<T>[] {
-	const currentOrder = $derived.by(order);
+export function checkReorder<T>(order: ItemData<T>[], value: T, offset: number, velocity: number): ItemData<T>[] {
+	const currentOrder = order;
 	if (!velocity) return currentOrder;
 
 	const index = currentOrder.findIndex((item) => item.value === value);

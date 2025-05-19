@@ -25,14 +25,13 @@ export function copyRawValuesOnly(
 }
 
 function useInitialMotionValues({ transformTemplate }: MotionProps, visualState: ResolvedValues) {
-	const memo = (_visualState: typeof visualState) => {
+	const visualProps = $derived.by(() => {
 		const state = createHtmlRenderState();
 
-		buildHTMLStyles(state, _visualState, transformTemplate);
+		buildHTMLStyles(state, visualState, transformTemplate);
 
 		return Object.assign({}, state.vars, state.style);
-	};
-	const visualProps = memo(visualState);
+	});
 
 	return visualProps;
 }
@@ -51,12 +50,15 @@ function useStyle(props: MotionProps, visualState: ResolvedValues): ResolvedValu
 	return style;
 }
 
-export function useHTMLProps(props: MotionProps & HTMLAttributes<HTMLElement>, visualState: () => ResolvedValues) {
+export function useHTMLProps(
+	props: () => MotionProps & HTMLAttributes<HTMLElement>,
+	visualState: () => ResolvedValues
+) {
 	// The `any` isn't ideal but it is the type of createElement props argument
 	const htmlProps: any = {};
-	const style = useStyle(props, visualState());
+	const style = $derived.by(() => useStyle(props(), visualState()));
 
-	if (props.drag && props.dragListener !== false) {
+	if (props().drag && props().dragListener !== false) {
 		// Disable the ghost element when a user drags
 		htmlProps.draggable = false;
 
@@ -64,14 +66,14 @@ export function useHTMLProps(props: MotionProps & HTMLAttributes<HTMLElement>, v
 		style.userSelect = style.WebkitUserSelect = style.WebkitTouchCallout = 'none';
 
 		// Disable scrolling on the draggable direction
-		style.touchAction = props.drag === true ? 'none' : `pan-${props.drag === 'x' ? 'y' : 'x'}`;
+		style.touchAction = props().drag === true ? 'none' : `pan-${props().drag === 'x' ? 'y' : 'x'}`;
 	}
 
-	if (props.tabindex === undefined && (props.onTap || props.onTapStart || props.whileTap)) {
+	if (props().tabindex === undefined && (props().onTap || props().onTapStart || props().whileTap)) {
 		htmlProps.tabIndex = 0;
 	}
 
 	htmlProps.style = style;
 
-	return () => htmlProps;
+	return htmlProps;
 }

@@ -67,34 +67,34 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 	 * The driver that's controlling the animation loop. Normally this is a requestAnimationFrame loop
 	 * but in tests we can pass in a synchronous loop.
 	 */
-	private driver?: DriverControls = $state();
+	private driver?: DriverControls;
 
 	/**
 	 * The time at which the animation was paused.
 	 */
-	private holdTime: number | null = $state(null);
+	private holdTime: number | null = null;
 
 	/**
 	 * The time at which the animation was cancelled.
 	 */
-	private cancelTime: number | null = $state(null);
+	private cancelTime: number | null = null;
 
 	/**
 	 * The current time of the animation.
 	 */
-	private currentTime = $state(0);
+	private currentTime = 0;
 
 	/**
 	 * Playback speed as a factor. 0 would be stopped, -1 reverse and 2 double speed.
 	 */
-	private playbackSpeed = $state(1);
+	private playbackSpeed = 1;
 
 	/**
 	 * The state of the animation to apply when the animation is resolved. This
 	 * allows calls to the public API to control the animation before it is resolved,
 	 * without us having to resolve it first.
 	 */
-	private pendingPlayState: AnimationPlayState = $state('running');
+	private pendingPlayState: AnimationPlayState = 'running';
 
 	/**
 	 * The time at which the animation was started.
@@ -114,6 +114,15 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 		this.resolver = new KeyframeResolver(keyframes, onResolved, name, motionValue, element);
 
 		this.resolver.scheduleResolve();
+	}
+
+	flatten() {
+		super.flatten();
+
+		// If we've already resolved the animation, re-initialise it
+		if (this._resolved) {
+			Object.assign(this._resolved, this.initPlayback(this._resolved.keyframes));
+		}
 	}
 
 	protected initPlayback(keyframes: ResolvedKeyframes<T>) {
@@ -398,14 +407,12 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 		onPlay && onPlay();
 
 		const now = this.driver.now();
-
-		if (this.state === 'finished') {
-			this.updateFinishedPromise();
-			this.startTime = now;
-		} else if (this.holdTime !== null) {
+		if (this.holdTime !== null) {
 			this.startTime = now - this.holdTime;
 		} else if (!this.startTime) {
-			this.startTime = startTime ?? now;
+			this.startTime = startTime ?? this.calcStartTime();
+		} else if (this.state === 'finished') {
+			this.startTime = now;
 		}
 
 		if (this.state === 'finished') {

@@ -193,6 +193,11 @@ export abstract class BaseAnimation<T extends string | number, Resolved> impleme
 		return this.currentFinishedPromise.then(resolve, reject);
 	}
 
+	flatten() {
+		this.options.type = 'keyframes';
+		this.options.ease = 'linear';
+	}
+
 	protected updateFinishedPromise() {
 		this.currentFinishedPromise = new Promise((resolve) => {
 			this.resolveFinishedPromise = resolve;

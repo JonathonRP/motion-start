@@ -9,7 +9,10 @@ Copyright (c) 2018 Framer B.V. -->
   import { filterProps } from "./utils/filter-props";
   import { isSVGComponent } from "./utils/is-svg-component";
   import { useSvgProps } from "../svg/use-props.svelte";
-  import { useHTMLProps } from "../html/use-props";
+  import { useHTMLProps } from "../html/use-props.svelte";
+  import { createAttachmentKey } from "svelte/attachments";
+  import { untrack } from "svelte";
+  import { noop } from "$lib/motion-start/utils/noop";
 
   type Props = Parameters<
     RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>
@@ -26,39 +29,47 @@ Copyright (c) 2018 Framer B.V. -->
     forwardMotionProps,
   }: Props = $props();
 
-  // $inspect(props);
-  const { latestValues } = $derived(visualState);
-  const { children } = $derived(props);
-  const useVisualProps = isSVGComponent(Component) ? useSvgProps : useHTMLProps;
+  const useVisualProps = $derived(
+    isSVGComponent(Component) ? useSvgProps : useHTMLProps,
+  );
 
-  const visualProps = $derived.by(
-    useVisualProps(props as any, () => latestValues, isStatic, Component),
+  const visualProps = $derived(
+    useVisualProps(
+      () => props as any,
+      () => visualState.latestValues,
+      isStatic,
+      Component,
+    ),
   );
 
   const filteredProps = $derived(
-    filterProps(props, typeof Component === "string", forwardMotionProps),
+    filterProps(() => props, typeof Component === "string", forwardMotionProps),
   );
 
-  const elementProps = $derived({ ...filteredProps, ...visualProps, ref });
+  // TODO: attachments broke visualElement
+  const motionRef = (node) => {
+    // runs in effect.pre causes broken state, why?
+    // $effect.pre(() => {
+    if (typeof ref === "function") {
+      ref(node);
+    } else {
+      (ref as any).current = node;
+    }
+    // });
+  };
 
-  let element = $state<HTMLElement | SVGElement | null>(null);
+  const elementProps = $derived({
+    ...filteredProps,
+    ...visualProps,
+    // [createAttachmentKey()]: motionRef,
+  });
 </script>
 
 <svelte:element
   this={Component}
-  bind:this={
-    () => element,
-    (node) => {
-      if (typeof ref === "function") {
-        ref(node);
-      } else {
-        (ref as any).current = node;
-      }
-      element = node;
-    }
-  }
   {...elementProps}
   xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
+  use:motionRef
 >
-  {@render children?.()}
+  {@render props.children?.()}
 </svelte:element>

@@ -11,23 +11,23 @@ Copyright (c) 2018 Framer B.V. -->
         RefObject,
     } from "../../../utils/safe-react-types";
     import { ElementRect, Previous } from "runed";
-    import type { Action } from "svelte/action";
     import { tick } from "svelte";
+    import type { Attachment } from "svelte/attachments";
 
     let { isPresent, children }: Props = $props();
 
     const id = $props.id();
-    let ref: RefObject<HTMLElement> = {
+    let ref: RefObject<HTMLElement> = $state({
         current: null,
-    };
-    let size: MutableRefObject<Size> = {
+    });
+    let size: MutableRefObject<Size> = $state({
         current: {
             width: 0,
             height: 0,
             top: 0,
             left: 0,
         },
-    };
+    });
 
     const { nonce } = $derived(useContext(MotionConfigContext).current);
 
@@ -50,10 +50,6 @@ Copyright (c) 2018 Framer B.V. -->
         if (nonce) style.nonce = nonce;
         document.head.appendChild(style);
 
-        // /**
-        //  old pop logic
-
-        // */
         if (style.sheet) {
             style.sheet.insertRule(`
                 [data-motion-pop-id="${id}"] {
@@ -81,22 +77,20 @@ Copyright (c) 2018 Framer B.V. -->
     {#if children}
         {@const prevIsPresent = new Previous(() => isPresent)}
         {@const elementMeasurements = new ElementRect(() => childRef.current)}
-        {@const measure: Action = (node) => {
-            childRef.current = node;
+        {@const measure: Attachment = (node) => {
+            childRef.current = node as HTMLElement;
 
-            // $effect(() => {
-                if (
-                    elementMeasurements.current &&
-                    prevIsPresent.current &&
-                    !isPresent
-                ) {
-                    const size = sizeRef.current;
-                    size.height = elementMeasurements.height || 0;
-                    size.width = elementMeasurements.width || 0;
-                    size.top = elementMeasurements.top;
-                    size.left = elementMeasurements.left;
-                }
-            // });
+            if (
+                elementMeasurements.current &&
+                prevIsPresent.current &&
+                !isPresent
+            ) {
+                const size = sizeRef.current;
+                size.height = elementMeasurements.height || 0;
+                size.width = elementMeasurements.width || 0;
+                size.top = elementMeasurements.top;
+                size.left = elementMeasurements.left;
+            }
         }}
 
         {@render children({ measure })}

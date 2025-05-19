@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { createAttachmentKey } from 'svelte/attachments';
 import type { MotionProps } from '../../../motion/types';
 import { isValidMotionProp } from '../../../motion/utils/valid-prop';
 
@@ -41,29 +42,33 @@ try {
 	// We don't need to actually do anything here - the fallback is the existing `isPropValid`.
 }
 
-export function filterProps(props: MotionProps, isDom: boolean, forwardMotionProps: boolean) {
+export function filterProps(props: () => MotionProps, isDom: boolean, forwardMotionProps: boolean) {
 	const filteredProps: MotionProps = {};
 
-	for (const key in props) {
-		/**
-		 * values is considered a valid prop by Emotion, so if it's present
-		 * this will be rendered out to the DOM unless explicitly filtered.
-		 *
-		 * We check the type as it could be used with the `feColorMatrix`
-		 * element, which we support.
-		 */
-		if (key === 'values' && typeof props.values === 'object') continue;
+	return [...Reflect.ownKeys(props())]
+		.filter((key) => {
+			/**
+			 * values is considered a valid prop by Emotion, so if it's present
+			 * this will be rendered out to the DOM unless explicitly filtered.
+			 *
+			 * We check the type as it could be used with the `feColorMatrix`
+			 * element, which we support.
+			 */
+			if (key === 'values' && typeof props().values === 'object') return false;
 
-		if (
-			shouldForward(key) ||
-			(forwardMotionProps === true && isValidMotionProp(key)) ||
-			(!isDom && !isValidMotionProp(key)) ||
-			// If trying to use native HTML drag events, forward drag listeners
-			(props['draggable' as keyof MotionProps] && key.startsWith('onDrag'))
-		) {
-			filteredProps[key as keyof MotionProps] = props[key as keyof MotionProps];
-		}
-	}
-
-	return filteredProps;
+			if (typeof key === 'symbol' && key.toString() === createAttachmentKey().toString()) return true;
+			return (
+				shouldForward(key) ||
+				(forwardMotionProps === true && isValidMotionProp(key)) ||
+				(!isDom && !isValidMotionProp(key)) ||
+				// If trying to use native HTML drag events, forward drag listeners
+				(props()['draggable' as keyof MotionProps] && key.startsWith('onDrag'))
+			);
+		})
+		.map((key) => {
+			return {
+				[key]: (props() as any)[key],
+			};
+		})
+		.reduce((acc, val) => Object.assign(acc, val), filteredProps);
 }

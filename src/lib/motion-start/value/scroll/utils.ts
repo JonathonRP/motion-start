@@ -21,32 +21,12 @@ export interface ScrollOffsets {
 }
 export type GetScrollOffsets = () => ScrollOffsets;
 
-export function createScrollMotionValues(startStopNotifier?: () => Promise<() => void>): ScrollMotionValues {
-	const hasListener = { x: false, y: false, xp: false, yp: false };
-	let stop: Promise<() => void>;
-
-	const jointNotifier = startStopNotifier
-		? (type: string | number) => () => {
-				if (!hasListener.x && !hasListener.y && !hasListener.xp && !hasListener.yp) {
-					stop = startStopNotifier();
-				}
-				(hasListener as any)[type] = true;
-				return () => {
-					(hasListener as any)[type] = false;
-					if (!hasListener.x && !hasListener.y && !hasListener.xp && !hasListener.yp) {
-						if (stop) {
-							stop.then((v) => v());
-						}
-					}
-				};
-			}
-		: () => void {};
-
+export function createScrollMotionValues(): ScrollMotionValues {
 	return {
-		scrollX: motionValue(0, { startStopNotifier: jointNotifier('x') }),
-		scrollY: motionValue(0, { startStopNotifier: jointNotifier('y') }),
-		scrollXProgress: motionValue(0, { startStopNotifier: jointNotifier('xp') }),
-		scrollYProgress: motionValue(0, { startStopNotifier: jointNotifier('yp') }),
+		scrollX: motionValue(0),
+		scrollY: motionValue(0),
+		scrollXProgress: motionValue(0),
+		scrollYProgress: motionValue(0),
 	};
 }
 

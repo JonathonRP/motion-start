@@ -48,7 +48,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 	type ReorderGroupProps<V> = Props<V> &
 		Omit<HTMLMotionProps<any>, "values"> &
-		PropsWithChildren<{}>;
+		PropsWithChildren<{}, [V]>;
 
 	function getValue<V>(item: ItemData<V>) {
 		return item.value;
@@ -119,7 +119,7 @@ Copyright (c) 2018 Framer B.V. -->
 			console.log(isReordering.current);
 			if (isReordering.current) return;
 
-			const newOrder = checkReorder(() => order, item, offset, velocity);
+			const newOrder = checkReorder(order, item, offset, velocity);
 
 			console.log(order !== newOrder);
 
@@ -141,9 +141,9 @@ Copyright (c) 2018 Framer B.V. -->
 		});
 	});
 
-	// $effect.pre(() => {
-	// 	order = [];
-	// });
+	$effect.pre(() => {
+		order = [];
+	});
 
 	// $effect(() => {
 	// 	untrack(() => {
@@ -159,5 +159,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <ReorderGroup {...props} bind:ref={externalRef}>
-	{@render children?.()}
+	{#each values as value (value)}
+		{@render children?.(value)}
+	{/each}
 </ReorderGroup>

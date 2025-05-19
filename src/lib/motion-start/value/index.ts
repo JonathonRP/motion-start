@@ -10,6 +10,7 @@ import { SubscriptionManager } from '../utils/subscription-manager';
 import { velocityPerSecond } from '../utils/velocity-per-second';
 import { warnOnce } from '../utils/warn-once';
 import { time } from '../frameloop/sync-time';
+import { createSubscriber } from 'svelte/reactivity';
 
 export type Transformer<T> = (v: T) => T;
 /**
@@ -51,7 +52,6 @@ export interface Owner {
 
 export interface MotionValueOptions {
 	owner?: Owner;
-	startStopNotifier?: () => () => void;
 }
 
 export const collectMotionValues: { current: MotionValue[] | undefined } = {
@@ -63,25 +63,7 @@ export const collectMotionValues: { current: MotionValue[] | undefined } = {
  *
  * @public
  */
-export class MotionValue<V = any> implements Writable<V> {
-	/**
-	 * Subscribe method to make MotionValue compatible with Svelte store. Returns a unsubscribe function.
-	 * Same as onChange.
-	 *
-	 * @public
-	 */
-	subscribe(this: void & MotionValue<V>, subscription: Subscriber<V>): Unsubscriber {
-		return this.onChange(subscription);
-	}
-	/**
-	 * Update method to make MotionValue compatible with Svelte writable store
-	 *
-	 * @public
-	 */
-	update = (cb: (value: V) => V): void => {
-		this.set(cb(this.get()));
-	};
-
+export class MotionValue<V = any> {
 	/**
 	 * This will be replaced by the build step with the latest version number.
 	 * When MotionValues are provided to motion components, warn if versions are mixed.
@@ -156,8 +138,7 @@ export class MotionValue<V = any> implements Writable<V> {
 	 */
 	liveStyle?: boolean;
 
-	private onSubscription = () => {};
-	private onUnsubscription = () => {};
+	#subscribe;
 
 	/**
 	 * @param init - The initiating value
@@ -171,23 +152,11 @@ export class MotionValue<V = any> implements Writable<V> {
 		this.setCurrent(init);
 		this.owner = options.owner;
 
-		const { startStopNotifier } = options;
-
-		if (startStopNotifier) {
-			this.onSubscription = () => {
-				if (Object.entries(this.events).reduce((acc, [_key, currEvent]) => acc + currEvent.getSize(), 0) === 0) {
-					const unsub = startStopNotifier();
-					this.onUnsubscription = () => {};
-					if (unsub) {
-						this.onUnsubscription = () => {
-							if (Object.entries(this.events).reduce((acc, [_key, currEvent]) => acc + currEvent.getSize(), 0) === 0) {
-								unsub();
-							}
-						};
-					}
-				}
-			};
-		}
+		this.#subscribe = createSubscriber((update) => {
+			for (const event in this.events) {
+				return this.events[event].add(update);
+			}
+		});
 	}
 
 	setCurrent(current: V) {
@@ -270,14 +239,13 @@ export class MotionValue<V = any> implements Writable<V> {
 			this.events[eventName] = new SubscriptionManager();
 		}
 
-		this.onSubscription();
+		this.#subscribe();
 
 		const unsubscribe = this.events[eventName].add(callback);
 
 		if (eventName === 'change') {
 			return () => {
 				unsubscribe();
-				this.onUnsubscription();
 
 				/**
 				 * If we have no more change listeners by the start
@@ -291,17 +259,13 @@ export class MotionValue<V = any> implements Writable<V> {
 			};
 		}
 
-		return () => {
-			unsubscribe();
-			this.onUnsubscription();
-		};
+		return unsubscribe;
 	}
 
 	clearListeners() {
 		for (const eventManagers in this.events) {
 			this.events[eventManagers].clear();
 		}
-		this.onUnsubscription();
 	}
 
 	/**
@@ -391,14 +355,13 @@ export class MotionValue<V = any> implements Writable<V> {
 	 * @public
 	 */
 	get() {
-		this.onSubscription();
+		this.#subscribe();
 
 		if (collectMotionValues.current) {
 			collectMotionValues.current.push(this);
 		}
 		const curr = this.current!;
 
-		this.onUnsubscription();
 		return curr;
 	}
 
@@ -427,7 +390,7 @@ export class MotionValue<V = any> implements Writable<V> {
 			return 0;
 		}
 
-		this.onSubscription();
+		this.#subscribe();
 
 		const delta = Math.min(this.updatedAt - this.prevUpdatedAt!, MAX_VELOCITY_DELTA);
 
@@ -437,7 +400,6 @@ export class MotionValue<V = any> implements Writable<V> {
 			delta
 		);
 
-		this.onUnsubscription();
 		return vel;
 	}
 
@@ -498,7 +460,7 @@ export class MotionValue<V = any> implements Writable<V> {
 	}
 
 	private clearAnimation() {
-		delete this.animation;
+		this.animation = undefined;
 	}
 	/**
 	 * Destroy and clean up subscribers to this `MotionValue`.
@@ -516,7 +478,6 @@ export class MotionValue<V = any> implements Writable<V> {
 		if (this.passiveEffect) {
 			this.stopPassiveEffect?.();
 		}
-		this.onUnsubscription();
 	}
 }
 

@@ -15,7 +15,7 @@ import type { MotionValue } from '../../value';
 import { isGenerator } from '../generators/utils/is-generator';
 import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
 import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation';
-import { MainThreadAnimation } from './MainThreadAnimation.svelte';
+import { MainThreadAnimation } from './MainThreadAnimation';
 import { acceleratedValues } from './utils/accelerated-values';
 import { startWaapiAnimation } from './waapi';
 import { isWaapiSupportedEasing } from './waapi/easing';

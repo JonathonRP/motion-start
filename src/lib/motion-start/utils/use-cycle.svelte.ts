@@ -3,11 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { wrap } from './wrap';
+// import { wrap } from './wrap';
+import { untrack } from 'svelte';
 import { writable, type Writable } from 'svelte/store';
 
 export type Cycle = (i?: number) => void;
-export type CycleState<T> = [Writable<T>, Cycle];
+export type CycleState<T> = [() => T, Cycle];
+
+function* wrap<T>(params: T[]) {
+	while (true) {
+		yield* params;
+	}
+}
 
 /**
  * Cycles through a series of visual properties. Can be used to toggle between or cycle through animations. It works similar to `useState` in React. It is provided an initial array of possible states, and returns an array of two arguments.
@@ -37,15 +44,16 @@ export type CycleState<T> = [Writable<T>, Cycle];
  */
 export function useCycle<T>(...items: T[]): CycleState<T> {
 	let index = 0;
-	const item = writable(items[index]);
+	const cyclicalItems = wrap(items);
+	let item = $state(cyclicalItems.next().value as T);
 
 	const cycle = (next?: number) => {
-		index = typeof next !== 'number' ? wrap(0, items.length, index + 1) : next;
-		item.set(items[index]);
+		index = typeof next !== 'number' ? items.indexOf(cyclicalItems.next().value ?? item) : next;
+		item = items[index];
 	};
 
 	// The array will change on each call, but by putting items.length at
 	// the front of this array, we guarantee the dependency comparison will match up
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return [item, cycle];
+	return [() => item, cycle];
 }

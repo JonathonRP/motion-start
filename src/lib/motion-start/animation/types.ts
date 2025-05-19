@@ -10,7 +10,7 @@ import type { Driver } from './animators/drivers/types';
 import type { SVGPathProperties, VariantLabels } from '../motion/types';
 import type { SVGAttributes } from '../render/svg/types-attributes';
 import type { ProgressTimeline } from '../render/dom/scroll/observe';
-import type { MotionValue } from '../value';
+import type { MotionValue } from 'framer-motion/dom';
 import type { KeyframeResolver, OnKeyframesResolved } from '../render/utils/KeyframesResolver';
 import type { KeyframeGenerator } from './generators/types';
 
@@ -122,6 +122,7 @@ export interface AnimationPlaybackControls {
 		timeline: ProgressTimeline,
 		fallback: ((animation: AnimationPlaybackControls) => VoidFunction) | undefined
 	) => VoidFunction;
+	flatten: () => void;
 }
 
 export type DynamicOption<T> = (i: number, total: number) => T;
