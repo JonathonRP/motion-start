@@ -1,7 +1,7 @@
 import type { SvelteHTMLElements } from 'svelte/elements';
 import type { VariantLabels } from '../../../motion/types';
 import type { Snippet } from 'svelte';
-import type { Action } from 'svelte/action';
+import type { Attachment } from 'svelte/attachments';
 
 export interface PresenceChildProps {
 	isPresent: boolean;
@@ -10,5 +10,5 @@ export interface PresenceChildProps {
 	custom?: any;
 	presenceAffectsLayout: boolean;
 	mode: 'wait' | 'sync' | 'popLayout';
-	children: Snippet<[{ measure?: Action }]>;
+	children: Snippet<[{ measure?: Attachment }]>;
 }

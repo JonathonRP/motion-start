@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { SpringOptions } from '../animation/types';
 import { useContext } from '../context/use';
-import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation.svelte';
+import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
 import { MotionConfigContext } from '../context/MotionConfigContext';
 import { frame } from '../frameloop';
 import type { MotionValue } from '.';

@@ -3,6 +3,7 @@
 <script lang="ts">
     import Box from "../Box.svelte";
     import { motion, AnimatePresence } from "$lib/motion-start";
+    import { noop } from "$lib/motion-start/utils/noop";
 
     let count = $state(0);
     let items = $state([0]);
@@ -51,9 +52,11 @@
                     exit={{ scale: 0.8, opacity: 0 }}
                     transition={{ type: "spring" }}
                     onclick={() => {
-                        if (item.indx > -1) items.splice(item.indx, 1);
+                        const newItems = [...items];
+                        if (item.indx > -1) newItems.splice(item.indx, 1);
+                        items = newItems;
                     }}
-                    ref={measure}
+                    {@attach (mode === "popLayout" && measure) || noop}
                 />
             </AnimatePresence>
         </ul>

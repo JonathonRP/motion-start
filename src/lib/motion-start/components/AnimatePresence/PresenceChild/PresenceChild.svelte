@@ -30,7 +30,7 @@ Copyright (c) 2018 Framer B.V. -->
         children: desendent,
     }: Props = $props();
 
-    const presenceChildren = newChildrenMap();
+    const presenceChildren = $state(newChildrenMap());
     const id = $props.id();
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
@@ -43,7 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
             custom,
             onExitComplete: (childId: string | number) => {
                 presenceChildren.set(childId, true);
-                for (const isComplete of presenceChildren.values()) {
+                for (const [, isComplete] of presenceChildren) {
                     if (!isComplete) return;
                 }
 
@@ -74,8 +74,6 @@ Copyright (c) 2018 Framer B.V. -->
     };
     $effect(() => {
         setExit(isPresent);
-    });
-    $effect(() => {
         tick().then(() => {
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
@@ -92,5 +90,5 @@ Copyright (c) 2018 Framer B.V. -->
         {/snippet}
     </PopChild>
 {:else}
-    {@render desendent({})}
+    {@render desendent({ measure: undefined })}
 {/if}

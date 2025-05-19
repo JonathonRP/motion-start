@@ -37,6 +37,7 @@ import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
 import { Previous } from 'runed';
+import { SvelteMap } from 'svelte/reactivity';
 
 const propEventHandlers = [
 	'AnimationStart',

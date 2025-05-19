@@ -24,6 +24,7 @@ export function useMotionRef<Instance, RenderState>(
 			if (instance) {
 				visualElement.mount(instance);
 			} else {
+				console.log('dismounting...');
 				visualElement.unmount();
 			}
 		}
