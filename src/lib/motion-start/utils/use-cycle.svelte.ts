@@ -4,16 +4,24 @@ Copyright (c) 2018 Framer B.V.
 */
 
 // import { wrap } from './wrap';
-import { untrack } from 'svelte';
-import { writable, type Writable } from 'svelte/store';
-
 export type Cycle = (i?: number) => void;
 export type CycleState<T> = [() => T, Cycle];
 
-function* wrap<T>(params: T[]) {
-	while (true) {
-		yield* params;
-	}
+function wrap<T>(params: T[]) {
+	let i = 0;
+	return {
+		set(n: number) {
+			i = n;
+		},
+		next() {
+			return this[Symbol.iterator]().next();
+		},
+		*[Symbol.iterator]() {
+			while (true) {
+				yield params[i++ % params.length];
+			}
+		},
+	};
 }
 
 /**
@@ -43,17 +51,16 @@ function* wrap<T>(params: T[]) {
  * @public
  */
 export function useCycle<T>(...items: T[]): CycleState<T> {
-	let index = 0;
-	const cyclicalItems = wrap(items);
-	let item = $state(cyclicalItems.next().value as T);
+	const carousel = wrap(items);
+	const nextItem = () => carousel.next().value;
+	let item = $derived.by(nextItem);
 
 	const cycle = (next?: number) => {
-		index = typeof next !== 'number' ? items.indexOf(cyclicalItems.next().value ?? item) : next;
-		item = items[index];
+		next && carousel.set(next);
+		item = nextItem();
 	};
 
 	// The array will change on each call, but by putting items.length at
 	// the front of this array, we guarantee the dependency comparison will match up
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	return [() => item, cycle];
 }
