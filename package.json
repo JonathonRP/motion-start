@@ -72,6 +72,9 @@
 		"release": "bun --bun run build && bun --bun changeset publish"
 	},
 	"dependencies": {
+		"runed": "^0.28.0",
+		"framer-motion": "12.23.22",
+		"motion-dom":"12.23.21",
 		"nanoid": "^5.0.9"
 	},
 	"devDependencies": {
@@ -101,7 +104,8 @@
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.7.2",
 		"vite": "^7.0.0",
-		"vitest": "latest"
+		"vitest": "latest",
+    "sv": "^0.8.7",
 	},
 	"peerDependencies": {
 		"svelte": "^5.33.16"
