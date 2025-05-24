@@ -38,8 +38,8 @@ Copyright (c) 2018 Framer B.V. -->
   import { eachAxis } from "../../../utils/each-axis.js";
   import { axisBox } from "../../../utils/geometry/index.js";
   import { tweenAxis } from "./utils";
-  import type { Axis, AxisBox2D } from "$lib/motion-start/types/geometry.js";
-  import type { VisualElement } from "$lib/motion-start/render/types.js";
+  import type { Axis, AxisBox2D } from "../../../types/geometry.js";
+  import type { VisualElement } from "../../../render/types.js";
 
   export let visualElement: VisualElement,
     //initial = undefined,

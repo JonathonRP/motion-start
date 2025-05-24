@@ -15,7 +15,16 @@
 
 <ButtonPrimitive.Root
 	{builders}
-	class={cn(buttonVariants({ variant, size, className }))}
+	class={cn(
+		buttonVariants({
+			variant,
+			size,
+			className: className && (Array.isArray(className)
+				? className.join("")
+				: typeof className == "object" ? Object.entries(className).reduce((acc, [key, value]) => acc += (key && value) || '', "")
+				: className) || void 0,
+		}),
+	)}
 	type="button"
 	{...$$restProps}
 	on:click

@@ -2,32 +2,32 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ResolvedValueTarget, Spring, Tween } from "../types";
-import { MotionValue } from "../value";
+import type { ResolvedValueTarget, Spring, Tween } from '../types';
+import type { MotionValue } from '../value/index.js';
 /**
  * @public
  */
 export interface AnimationPlaybackControls {
-    stop: () => void;
+	stop: () => void;
 }
 /**
  * @public
  */
 export interface AnimationPlaybackLifecycles<V> {
-    onUpdate?: (latest: V) => void;
-    onPlay?: () => void;
-    onComplete?: () => void;
-    onRepeat?: () => void;
-    onStop?: () => void;
+	onUpdate?: (latest: V) => void;
+	onPlay?: () => void;
+	onComplete?: () => void;
+	onRepeat?: () => void;
+	onStop?: () => void;
 }
 /**
  * @public
  */
-export type AnimationOptions<V> = (Tween | Spring) & AnimationPlaybackLifecycles<V> & {
-    delay?: number;
-    type?: "tween" | "spring";
-};
-
+export type AnimationOptions<V> = (Tween | Spring) &
+	AnimationPlaybackLifecycles<V> & {
+		delay?: number;
+		type?: 'tween' | 'spring';
+	};
 
 /** 
 based on framer-motion@4.0.3,
@@ -66,13 +66,14 @@ import { startAnimation } from './utils/transitions.js';
  * @public
  */
 function animate<V>(from: MotionValue<V> | V, to: ResolvedValueTarget, transition?: AnimationOptions<V>) {
-    if (transition === void 0) { transition = {}; }
-    var value = isMotionValue(from) ? from : motionValue(from);
-    startAnimation("", value, to, transition);
-    return {
-        stop: function () { return value.stop(); },
-    } as AnimationPlaybackControls;
+	if (transition === void 0) {
+		transition = {};
+	}
+	var value = isMotionValue(from) ? from : motionValue(from);
+	startAnimation('', value, to, transition);
+	return {
+		stop: () => value.stop(),
+	} as AnimationPlaybackControls;
 }
 
 export { animate };
-

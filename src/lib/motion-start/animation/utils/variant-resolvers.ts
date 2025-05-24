@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionValue } from '../../value';
+import type { MotionValue } from '../../value/index.js';
 type VariantNameList = string[];
 type VariantName = string | VariantNameList;
 type UnresolvedVariant = VariantName | MotionValue;

@@ -1,5 +1,65 @@
 # motion-start
 
+## 0.1.13
+
+### Patch Changes
+
+- 39d3b8b: improve import consistancy and fix svelte repl
+
+## 0.1.12
+
+### Patch Changes
+
+- f8ab887: fix svelte repl usage
+
+## 0.1.11
+
+### Patch Changes
+
+- 6101a3b: remove main from package.json
+
+## 0.1.10
+
+### Patch Changes
+
+- b4fe2aa: correct exports to export svelte and js
+
+## 0.1.9
+
+### Patch Changes
+
+- c21ab29: export correct extensions
+
+## 0.1.8
+
+### Patch Changes
+
+- 071b96d: move dist files to src for import use
+
+## 0.1.7
+
+### Patch Changes
+
+- d8212b9: fix usage in svelte repl
+
+## 0.1.6
+
+### Patch Changes
+
+- b6f6602: add all files in dist to files property package.json
+
+## 0.1.5
+
+### Patch Changes
+
+- 2996dae: add back style-value-types just incase
+
+## 0.1.4
+
+### Patch Changes
+
+- 7f6010b: fix peer deps including melt-ui because of bits-ui dep
+
 ## 0.1.3
 
 ### Patch Changes

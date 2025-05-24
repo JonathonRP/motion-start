@@ -38,13 +38,15 @@ var setAndResetVelocity = (value: MotionValue, to: any) => {
 };
 var isNumOrPxType = (v: ValueType | undefined) => v === number || v === px;
 var getPosFromMatrix = (matrix: string, pos: number) => Number.parseFloat(matrix.split(', ')[pos]);
-var getTranslateFromMatrix = (pos2: number, pos3: number) => (_bbox: BoundingBox2D, _a: { transform: string }) => {// @ts-expect-error
-	varm = _a.transform;// @ts-expect-error
-	if (transform === 'none' || !transform) return 0;// @ts-expect-error
+var getTranslateFromMatrix = (pos2: number, pos3: number) => (_bbox: BoundingBox2D, _a: { transform: string }) => {
+	// @ts-expect-error
+	varm = _a.transform; // @ts-expect-error
+	if (transform === 'none' || !transform) return 0; // @ts-expect-error
 	var matrix3d = transform.match(/^matrix3d\((.+)\)$/);
 	if (matrix3d) {
 		return getPosFromMatrix(matrix3d[1], pos3);
-	} else {// @ts-expect-error
+	} else {
+		// @ts-expect-error
 		var matrix = transform.match(/^matrix\((.+)\)$/);
 		if (matrix) {
 			return getPosFromMatrix(matrix[1], pos2);

@@ -17,7 +17,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { resetRotate } from "./utils/rotate.js";
   import { layoutStack } from "./utils/stack.js";
   import PresenceChild from "../AnimatePresence/PresenceChild/PresenceChild.svelte";
-  import type { VisualElement } from "$lib/motion-start/render/types.js";
+  import type { VisualElement } from "../../render/types.js";
 
   type $$Props = SharedLayoutProps;
 

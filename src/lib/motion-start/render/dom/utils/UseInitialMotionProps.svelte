@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { isMotionValue } from "../../../value/utils/is-motion-value.js";
-  import type { VisualElement } from "../../types.js";
+  import type { VisualElement } from "../../types";
 
   type $$Props = {
     visualElement: VisualElement;
