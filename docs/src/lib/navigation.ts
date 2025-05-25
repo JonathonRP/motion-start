@@ -20,6 +20,13 @@ const configuration = allDocs
 		href: `/docs/${doc.slug}`,
 	}));
 
+const animation = allDocs
+	.filter((doc) => doc.section === "Animation")
+	.map((doc) => ({
+		title: doc.title,
+		href: `/docs/${doc.slug}`,
+	}));
+	
 export const navigation = defineNavigation({
 	anchors: [
 		{
@@ -42,6 +49,10 @@ export const navigation = defineNavigation({
 		{
 			title: "Configuration",
 			items: configuration,
+		},
+		{
+			title: "Animation",
+			items: animation,
 		},
 		{
 			title: "Components",

@@ -8,14 +8,15 @@ const baseSchema = s.object({
 	navLabel: s.string().optional(),
 	raw: s.raw(),
 	toc: s.toc(),
-	section: s.enum(["Overview", "Components", "Configuration", "Utilities"]),
+	section: s.enum(["Animation", "Overview", "Components", "Configuration", "Utilities"]),
 });
 
 const docSchema = baseSchema.transform((data) => {
+	const cleanPath = data.path.split('/').map(part => part.replace(/^[0-9][0-9]_/, '')).join('/');
 	return {
 		...data,
-		slug: data.path,
-		slugFull: `/${data.path}`,
+		slug: cleanPath,
+		slugFull: `/${cleanPath}`,
 	};
 });
 

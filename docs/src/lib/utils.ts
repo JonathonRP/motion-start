@@ -11,7 +11,12 @@ export function getAllDocs() {
 }
 
 function slugFromPath(path: string) {
-	return path.replace("/src/content/", "").replace(".md", "");
+	return path
+		.replace("/src/content/", "")
+		.replace(".md", "")
+		.split('/')
+		.map(part => part.replace(/^[0-9][0-9]_/, ''))
+		.join('/');
 }
 
 export type DocResolver = () => Promise<{ default: Component; metadata: Doc }>;

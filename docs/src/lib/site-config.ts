@@ -1,22 +1,17 @@
 import { defineSiteConfig } from "@svecodocs/kit";
 
 export const siteConfig = defineSiteConfig({
-	name: "Svecodocs",
-	url: "https://docs.sveco.dev",
+	name: "Motion Start",
+	url: "https://motion-start.com",
 	ogImage: {
-		url: "https://docs.sveco.dev/og.png",
+		url: "https://motion-start.com/og.png",
 		height: "630",
 		width: "1200",
 	},
-	description: "Documentation toolkit for Svecosystem Projects.",
-	author: "Huntabyte",
-	keywords: ["svecosystem", "sveltekit", "documentation", "docs"],
-	license: {
-		name: "MIT",
-		url: "https://github.com/svecosystem/svecodocs/blob/main/LICENSE",
-	},
+	description: "Svelte animation library inspired by the React library framer-motion.",
+	author: "Jonathon Reese Perry",
+	keywords: ["svelte", "sveltekit", "animation", "motion", "framer-motion"],
 	links: {
-		x: "https://x.com/huntabyte",
-		github: "https://github.com/svecosystem/svecodocs",
+		github: "https://github.com/JonathonRP/motion-start",
 	},
 });

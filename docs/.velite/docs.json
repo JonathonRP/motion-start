@@ -60,6 +60,56 @@
     "slugFull": "/index"
   },
   {
+    "title": "Overview",
+    "description": "What exactly is Motion Start?",
+    "path": "animation/01_overview",
+    "content": "<p>Motion Start offers a number of ways to animate your UI. Scaling from extremely simple prop-based animations, to more complex orchestration.</p>",
+    "raw": "Motion Start offers a number of ways to animate your UI. Scaling from extremely simple prop-based animations, to more complex orchestration.",
+    "toc": [],
+    "section": "Animation",
+    "slug": "animation/overview",
+    "slugFull": "/animation/overview"
+  },
+  {
+    "title": "Gestures",
+    "description": "Motion Start extends Svelte'w basic set of event listeners with a simple yet powerful set of UI gestures.",
+    "path": "animation/02_gestures",
+    "content": "<p>The motion component currently has support for hover, tap, pan, drag and inView.<br>\nEach gesture has both a set of event listeners and a while- animation prop.</p>",
+    "raw": "The motion component currently has support for hover, tap, pan, drag and inView.  \nEach gesture has both a set of event listeners and a while- animation prop.",
+    "toc": [],
+    "section": "Animation",
+    "slug": "animation/gestures",
+    "slugFull": "/animation/gestures"
+  },
+  {
+    "title": "Layout animations",
+    "description": "Motion's industry-leading layout animations makes it easy to animate between any two layouts, even between different elements.",
+    "path": "animation/03_layout",
+    "content": "<p>It's as simple as a layout prop.</p>\n<p><code>&#x3C;motion.div layout /></code></p>",
+    "raw": "It's as simple as a layout prop.\n\n```<motion.div layout />```",
+    "toc": [],
+    "section": "Animation",
+    "slug": "animation/layout",
+    "slugFull": "/animation/layout"
+  },
+  {
+    "title": "motion",
+    "description": "The motion component drives most animations in Motion Start.",
+    "path": "components/01_motion",
+    "content": "<p>There's a motion component for every HTML and SVG element, for instance motion.div, motion.circle etc. Think of it as a normal React component, supercharged for 120fps animation and gestures.</p>\n<h1>Usage</h1>\n<p>Import motion from Motion:</p>\n<pre><code class=\"language-ts\">// React\nimport { motion } from \"motion/react\"\n</code></pre>",
+    "raw": "There's a motion component for every HTML and SVG element, for instance motion.div, motion.circle etc. Think of it as a normal React component, supercharged for 120fps animation and gestures.  \n\n# Usage\nImport motion from Motion:\n\n```ts\n// React\nimport { motion } from \"motion/react\"\n```",
+    "toc": [
+      {
+        "title": "Usage",
+        "url": "#usage",
+        "items": []
+      }
+    ],
+    "section": "Components",
+    "slug": "components/motion",
+    "slugFull": "/components/motion"
+  },
+  {
     "title": "Button",
     "description": "A button component to use in examples and documentation.",
     "path": "components/button",

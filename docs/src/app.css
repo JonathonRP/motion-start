@@ -1,2 +1,4 @@
 @import "@svecodocs/kit/theme-blue.css";
 @import "@svecodocs/kit/globals.css";
+
+@source "../node_modules/@svecodocs/kit";
