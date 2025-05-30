@@ -56,7 +56,7 @@
                         if (item.indx > -1) newItems.splice(item.indx, 1);
                         items = newItems;
                     }}
-                    {@attach (mode === "popLayout" && measure) || noop}
+                    {@attach mode === "popLayout" && measure}
                 />
             </AnimatePresence>
         </ul>
