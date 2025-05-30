@@ -105,16 +105,18 @@
 		"typescript": "^5.7.2",
 		"vite": "^7.0.0",
 		"vitest": "latest",
-    "sv": "^0.8.7",
+    	"sv": "^0.8.7",
+		"svelte-render-scan": "^1.1.0",
+
 	},
-	"peerDependencies": {
-		"svelte": "^5.33.16"
-	},
-	"engines": {
-		"bun": ">=1.0.0",
-		"node": ">=20"
-	},
-	"sideEffects": false,
-	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
-	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
+  	"peerDependencies": {
+    	"svelte": "^5.33.10"
+  	},
+  	"engines": {
+    	"bun": ">=1.0.0",
+    	"node": ">=20"
+  	},
+  	"sideEffects": false,
+  	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
+  	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "@tailwindcss/oxide", "cypress", "esbuild", "svelte-preprocess"]
 }
