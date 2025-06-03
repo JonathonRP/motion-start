@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.14
+
+### Patch Changes
+
+- a1f2c47: fix svg not appearing with motion use
+
 ## 0.1.13
 
 ### Patch Changes
