@@ -13,10 +13,12 @@
 <Motion {...$$restProps} let:props let:motion isSVG>
     <svelte:element
         this={___tag}
-        {...props}
+        {...Object.fromEntries(Object.entries(props).filter(
+            ([key, _]) => key !== "latestvalues" && key !== "renderstate",
+        ))}
         bind:this={el}
         class={props.class}
-        xmnls={isSVG ? "http://www.w3.org/2000/svg" : undefined}
+        xmlns={isSVG ? "http://www.w3.org/2000/svg" : undefined}
         use:motion
     >
         <slot />
