@@ -78,19 +78,21 @@ Copyright (c) 2018 Framer B.V. -->
         {@const prevIsPresent = new Previous(() => isPresent)}
         {@const elementMeasurements = new ElementRect(() => childRef.current)}
         {@const measure: Attachment = (node) => {
-            childRef.current = node as HTMLElement;
+            $effect(() => {
+                childRef.current = node as HTMLElement;
 
-            if (
-                elementMeasurements.current &&
-                prevIsPresent.current &&
-                !isPresent
-            ) {
-                const size = sizeRef.current;
-                size.height = elementMeasurements.height || 0;
-                size.width = elementMeasurements.width || 0;
-                size.top = elementMeasurements.top;
-                size.left = elementMeasurements.left;
-            }
+                if (
+                    elementMeasurements.current &&
+                    prevIsPresent.current &&
+                    !isPresent
+                ) {
+                    const size = sizeRef.current;
+                    size.height = elementMeasurements.current.height || 0;
+                    size.width = elementMeasurements.current.width || 0;
+                    size.top = elementMeasurements.current.top;
+                    size.left = elementMeasurements.current.left;
+                }
+            });
         }}
 
         {@render children({ measure })}

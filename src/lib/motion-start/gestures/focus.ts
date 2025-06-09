@@ -6,8 +6,9 @@ Copyright (c) 2018 Framer B.V.
 import { addDomEvent } from '../events/add-dom-event';
 import { Feature } from '../motion/features/Feature';
 import { pipe } from '../utils/pipe';
+import { Gesture } from './Gesture';
 
-export class FocusGesture extends Feature<Element> {
+export class FocusGesture extends Gesture {
 	private isActive = false;
 
 	onFocus() {
