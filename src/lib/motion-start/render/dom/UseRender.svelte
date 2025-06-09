@@ -58,10 +58,11 @@ Copyright (c) 2018 Framer B.V. -->
     // });
   };
 
+  const attach = createAttachmentKey();
   const elementProps = $derived({
     ...filteredProps,
     ...visualProps,
-    // [createAttachmentKey()]: motionRef,
+    [attach]: motionRef,
   });
 </script>
 
@@ -69,7 +70,6 @@ Copyright (c) 2018 Framer B.V. -->
   this={Component}
   {...elementProps}
   xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
-  use:motionRef
 >
   {@render props.children?.()}
 </svelte:element>

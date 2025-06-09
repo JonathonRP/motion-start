@@ -10,6 +10,7 @@ import type { EventInfo } from '../events/types';
 import type { VisualElement } from '../render/VisualElement.svelte';
 import { Feature } from '../motion/features/Feature';
 import { frame } from '../frameloop';
+import { Gesture } from './Gesture';
 
 function addHoverEvent(node: VisualElement<Element>, isActive: boolean) {
 	const eventName = isActive ? 'pointerenter' : 'pointerleave';
@@ -35,7 +36,7 @@ function addHoverEvent(node: VisualElement<Element>, isActive: boolean) {
 	});
 }
 
-export class HoverGesture extends Feature<Element> {
+export class HoverGesture extends Gesture {
 	mount() {
 		this.unmount = pipe(addHoverEvent(this.node, true), addHoverEvent(this.node, false)) as VoidFunction;
 	}

@@ -13,6 +13,7 @@ import { isDragActive } from './drag/utils/lock';
 import { isNodeOrChild } from './utils/is-node-or-child';
 import { noop } from '../utils/noop';
 import { frame } from '../frameloop';
+import { Gesture } from './Gesture';
 
 function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPointInfo) {
 	if (!handler) return;
@@ -20,7 +21,7 @@ function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPoin
 	handler(syntheticPointerEvent, extractEventInfo(syntheticPointerEvent));
 }
 
-export class PressGesture extends Feature<Element> {
+export class PressGesture extends Gesture {
 	// @ts-expect-error
 	private isPressing: boolean;
 
