@@ -7,10 +7,9 @@
     // let {as, class: className, children, ...restProps}: {as: keyof SvelteHTMLElements, children: Snippet, class: string } & MotionProps = $props();
     export let ___tag: keyof SvelteHTMLElements;
     export let el: SvelteHTMLElements[typeof ___tag]["this"];
-    export let isSVG: boolean;
 </script>
 
-<Motion {...$$restProps} let:props let:motion isSVG>
+<Motion {...$$restProps} let:props let:motion>
     <svelte:element
         this={___tag}
         {...Object.fromEntries(Object.entries(props).filter(
