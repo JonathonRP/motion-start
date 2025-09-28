@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.1.16
+
+### Patch Changes
+
+- f8dd358: allow spreading props
+
 ## 0.1.15
 
 ### Patch Changes
