@@ -51,11 +51,7 @@
 			"default": "./dist/*.svelte"
 		}
 	},
-	"files": [
-		"dist",
-		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
-	],
+	"files": ["dist", "!dist/**/*.test.*", "!dist/**/*.spec.*"],
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
@@ -107,26 +103,13 @@
 		"tailwind-variants": "^0.2.1"
 	},
 	"peerDependencies": {
-		"svelte": "^5.5.3"
+		"svelte": "^5.33.16"
 	},
 	"engines": {
 		"bun": ">=1.0.0",
 		"node": ">=20"
 	},
 	"sideEffects": false,
-	"keywords": [
-		"svelte animation",
-		"svelte",
-		"animation",
-		"gestures",
-		"drag",
-		"spring",
-		"popmotion",
-		"framer-motion"
-	],
-	"trustedDependencies": [
-		"@biomejs/biome",
-		"@sveltejs/kit",
-		"esbuild"
-	]
+	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
+	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
 }
