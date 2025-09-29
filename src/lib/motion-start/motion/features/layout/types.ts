@@ -29,7 +29,7 @@ export interface LayoutProps {
    *
    * @public
    */
-  layout?: ReturnType<(typeof animateLayout)["with"]> | boolean | "position";
+  layout?: ReturnType<(typeof animateLayout)["track"]> | boolean | "position";
   /**
    * Enable shared layout transitions between components for children of `AnimateSharedLayout`.
    *
