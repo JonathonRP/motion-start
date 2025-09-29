@@ -1,5 +1,12 @@
 # motion-start
 
+## 0.1.17
+
+### Patch Changes
+
+- 9e4b5cf: fix motion svg
+- 456528a: fix motion svg namespace
+
 ## 0.1.16
 
 ### Patch Changes
