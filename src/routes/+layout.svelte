@@ -1,11 +1,10 @@
 <script>
-    import { Navbar } from "$lib/components/motion";
-    import "../app.css";
-    import { ModeWatcher, setMode } from "mode-watcher";
-    setMode("dark");
-    // let { children } = $props()
+  import { Navbar } from "$lib/components/motion";
+  import "../app.css";
+  import { ModeWatcher, setMode } from "mode-watcher";
+  // let { children } = $props()
 </script>
 
-<ModeWatcher />
+<ModeWatcher track={false} defaultMode={"dark"} />
 <slot />
 <Navbar />
