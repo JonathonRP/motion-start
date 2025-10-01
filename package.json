@@ -51,11 +51,7 @@
 			"default": "./dist/*.svelte"
 		}
 	},
-	"files": [
-		"dist",
-		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
-	],
+	"files": ["dist", "!dist/**/*.test.*", "!dist/**/*.spec.*"],
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
@@ -79,32 +75,33 @@
 		"style-value-types": "5.1.2"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^2.0.0",
 		"@changesets/cli": "^2.27.10",
-		"@biomejs/biome": "^1.9.4",
 		"@emotion/is-prop-valid": "^1.3.1",
+		"@lucide/svelte": "^0.544.0",
+		"@sveltejs/adapter-auto": "^6.0.0",
+		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/package": "^2.3.11",
-		"@sveltejs/vite-plugin-svelte": "^4.0.2",
-		"svelte-check": "^4.1.1",
+		"@sveltejs/vite-plugin-svelte": "^6.0.0",
+		"@tailwindcss/typography": "^0.5.15",
+		"@tailwindcss/vite": "^4.0.0",
 		"@tsconfig/svelte": "^5.0.4",
 		"@types/node": "^20.17.9",
 		"@vitest/ui": "latest",
-		"csstype": "^3.1.3",
-		"publint": "^0.2.12",
-		"typescript": "^5.7.2",
-		"vite": "5.4.11",
-		"vitest": "latest",
-		"@sveltejs/adapter-auto": "^6.0.0",
-		"@sveltejs/kit": "2.7.1",
-		"@tailwindcss/typography": "^0.5.15",
-		"@tailwindcss/vite": "^4.0.0-alpha.28",
-		"tailwindcss": "^4.0.0-alpha.28",
-		"bits-ui": "^0.21.16",
+		"bits-ui": "^2.11.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-svelte": "^0.453.0",
-		"mode-watcher": "^0.5.0",
-		"tailwind-merge": "^2.5.5",
-		"tailwind-variants": "^0.2.1"
+		"csstype": "^3.1.3",
+		"lucide-svelte": "^0.542.0",
+		"mode-watcher": "^1.1.0",
+		"publint": "^0.3.0",
+		"svelte-check": "^4.1.1",
+		"tailwind-merge": "^3.0.0",
+		"tailwind-variants": "^3.1.1",
+		"tailwindcss": "^4.0.0",
+		"typescript": "^5.7.2",
+		"vite": "^7.0.0",
+		"vitest": "latest"
 	},
 	"peerDependencies": {
 		"svelte": "^5.33.16"
@@ -114,19 +111,6 @@
 		"node": ">=20"
 	},
 	"sideEffects": false,
-	"keywords": [
-		"svelte animation",
-		"svelte",
-		"animation",
-		"gestures",
-		"drag",
-		"spring",
-		"popmotion",
-		"framer-motion"
-	],
-	"trustedDependencies": [
-		"@biomejs/biome",
-		"@sveltejs/kit",
-		"esbuild"
-	]
+	"keywords": ["svelte animation", "svelte", "animation", "gestures", "drag", "spring", "popmotion", "framer-motion"],
+	"trustedDependencies": ["@biomejs/biome", "@sveltejs/kit", "esbuild"]
 }

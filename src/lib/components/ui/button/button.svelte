@@ -1,34 +1,42 @@
 <script lang="ts">
-	import { Button as ButtonPrimitive } from "bits-ui";
-	import { type Events, type Props, buttonVariants } from "./index.js";
-	import { cn } from "$lib/utils.js";
+  import { cn } from "$lib/utils.js";
+  import { buttonVariants, type ButtonProps } from ".";
 
-	type $$Props = Props;
-	type $$Events = Events;
-
-	let className: $$Props["class"] = undefined;
-	export let variant: $$Props["variant"] = "default";
-	export let size: $$Props["size"] = "default";
-	export let builders: $$Props["builders"] = [];
-	export { className as class };
+  let {
+    class: className,
+    variant = "default",
+    size = "default",
+    ref = $bindable(null),
+    href = undefined,
+    type = "button",
+    disabled,
+    children,
+    ...restProps
+  }: ButtonProps = $props();
 </script>
 
-<ButtonPrimitive.Root
-	{builders}
-	class={cn(
-		buttonVariants({
-			variant,
-			size,
-			className: className && (Array.isArray(className)
-				? className.join("")
-				: typeof className == "object" ? Object.entries(className).reduce((acc, [key, value]) => acc += (key && value) || '', "")
-				: className) || void 0,
-		}),
-	)}
-	type="button"
-	{...$$restProps}
-	on:click
-	on:keydown
->
-	<slot />
-</ButtonPrimitive.Root>
+{#if href}
+  <a
+    bind:this={ref}
+    data-slot="button"
+    class={cn(buttonVariants({ variant, size }), className)}
+    href={disabled ? undefined : href}
+    aria-disabled={disabled}
+    role={disabled ? "link" : undefined}
+    tabindex={disabled ? -1 : undefined}
+    {...restProps}
+  >
+    {@render children?.()}
+  </a>
+{:else}
+  <button
+    bind:this={ref}
+    data-slot="button"
+    class={cn(buttonVariants({ variant, size }), className)}
+    {type}
+    {disabled}
+    {...restProps}
+  >
+    {@render children?.()}
+  </button>
+{/if}
