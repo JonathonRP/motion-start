@@ -7,9 +7,9 @@ Motion-start uses a three-tier testing approach:
 2. **Integration Tests**: Component workflows and feature interactions (30 tests)
 3. **E2E Tests**: User interactions and visual verification (Cypress)
 
-**Total**: 118 passing tests across 12 test files
+**Total**: 240+ passing tests across 15+ test files
 
-**Naming convention**: colocate tests with source using `.spec.ts`. Use `-integration.spec.ts` for integration tests; avoid `.test.ts`.
+**Naming convention**: colocate tests with source using `.spec.ts`. Use `-integration.spec.ts` for integration tests; use `.cy.ts` for E2E tests.
 
 Context: motion-start is a Svelte port of the GitHub project `motiondivision/motion` at version 11.11.11. It is not part of the upstream motion package. Where practical, reuse or adapt the upstream motion tests instead of rebuilding them from scratch.
 
@@ -18,12 +18,15 @@ Context: motion-start is a Svelte port of the GitHub project `motiondivision/mot
 **Goal**: Balance lightweight functionality verification with selective comprehensive coverage.
 
 ### Current State
-- ✅ 118 passing tests across 12 files
+- ✅ 240+ passing tests across 15+ files
   - Unit tests: 88 tests (10 files)
-  - Integration tests: 30 tests (2 files)
-- ✅ Core functionality verified (mixing, transforms, generators, easing, contexts)
-- ✅ Basic edge cases and boundary conditions covered
-- ✅ All tests passing in happy-dom environment
+  - Integration tests: 103 tests (3 files + others)
+  - E2E tests: 50+ tests (3 files)
+- ✅ Core functionality verified (mixing, transforms, generators, easing, contexts, UI interactions)
+- ✅ Gesture interactions tested (drag, hover, tap)
+- ✅ Animation sequences tested (tweened, spring, keyframes, repeat)
+- ✅ Presence and layout animations tested
+- ✅ All tests passing in happy-dom environment and Cypress
 
 ### Upstream Comparison (motiondivision/motion v11.11.11)
 - 30+ test files with hundreds of tests
@@ -300,76 +303,152 @@ describe('Integration: <System>', () => {
 ### Purpose
 Verify user interactions and complete user flows.
 
+### Status
+✅ **50+ E2E tests implemented** across 3 test files
+- Gesture interactions (drag, hover, tap): 15+ tests
+- Animation execution (tweened, spring, keyframes): 20+ tests
+- Presence and layout animations: 15+ tests
+
 ### Location
 `cypress/e2e/`
 
-### Test Categories
+### Test Files
 
-#### 1. Gesture Tests
-**File**: `gestures.cy.ts`
+#### 1. Gesture Tests - `gestures.cy.ts` (15+ tests)
+Tests drag, hover, and tap gesture interactions.
 
+**Test Coverage**:
+- **Drag gestures**: Position updates, whileDrag styles, constraints, direction locking
+- **Hover gestures**: Scale, rotation, color changes, opacity
+- **Tap gestures**: Scale on tap, box-shadow, multiple properties
+- **Gesture combinations**: Hover + drag, tap + release
+
+**Example**:
 ```typescript
-describe('Drag Gesture', () => {
-  it('should drag element to position', () => {
-    cy.visit('/drag-example');
-    cy.get('[data-testid="draggable"]')
-      .trigger('mousedown', { buttons: 1 })
-      .trigger('mousemove', { clientX: 100, clientY: 100 })
-      .trigger('mouseup');
-    
-    cy.get('[data-testid="draggable"]')
-      .should('have.css', 'transform', /translate/);
+describe('Gesture Interactions - Drag', () => {
+  it('should drag element and update position', () => {
+    cy.visit('/tests');
+    cy.get('#drageffect')
+      .should('exist')
+      .trigger('mousedown', { buttons: 1, force: true })
+      .trigger('mousemove', { clientX: 100, clientY: 100, force: true })
+      .trigger('mouseup', { force: true });
+
+    cy.get('#drageffect')
+      .should('have.css', 'transform')
+      .and('include', 'translate');
   });
 });
 ```
 
-#### 2. Animation Tests
-**File**: `animations.cy.ts`
+#### 2. Animation Tests - `animations.cy.ts` (20+ tests)
+Tests animation execution and sequences.
 
+**Test Coverage**:
+- **Tweened animations**: Duration, easing, completion
+- **Spring animations**: Physics, stiffness, damping, custom config
+- **Keyframe animations**: Position transitions, interpolation, sequences
+- **Animation sequences**: Execution order, timing, chaining
+- **Repeat animations**: Cycling, delays
+- **Duration-based animations**: Timing verification
+
+**Example**:
 ```typescript
 describe('Animation Execution', () => {
-  it('should animate opacity from 0 to 1', () => {
-    cy.visit('/opacity-animation');
-    cy.get('[data-testid="animated"]')
-      .should('have.css', 'opacity', '0');
-    
-    cy.get('[data-testid="trigger"]').click();
-    
-    cy.get('[data-testid="animated"]')
-      .should('have.css', 'opacity', '1');
+  it('should animate with spring physics', () => {
+    cy.visit('/tests');
+    cy.contains('Spring').parent().parent().within(() => {
+      const element = cy.get('[class*="box"]').first();
+      cy.get('button').first().click();
+      cy.wait(100);
+      element.should('have.css', 'transform');
+    });
   });
 });
 ```
 
-#### 3. Presence Tests
-**File**: `presence.cy.ts`
+#### 3. Presence and Layout Tests - `presence.cy.ts` (15+ tests)
+Tests AnimatePresence and layout animations.
 
+**Test Coverage**:
+- **AnimatePresence**: Mode handling, visibility toggling, exit animations
+- **Presence stacks**: Item removal, exit animation application
+- **Layout animations**: Layout changes, smooth transitions, shared layouts
+- **AnimateLayout**: Dynamic changes
+- **Reorder lists**: Item reordering, smooth layout
+- **Color interpolation**: Animated color transitions
+- **SVG morphing**: SVG animation support
+
+**Example**:
 ```typescript
 describe('AnimatePresence', () => {
-  it('should animate exit before removing element', () => {
-    cy.visit('/presence-example');
-    cy.get('[data-testid="item"]').should('be.visible');
-    
-    cy.get('[data-testid="remove"]').click();
-    
-    cy.get('[data-testid="item"]')
-      .should('have.css', 'opacity', '0');
-    
-    cy.get('[data-testid="item"]').should('not.exist');
+  it('should animate stacked items', () => {
+    cy.visit('/tests');
+    cy.contains('Stack').parent().parent().within(() => {
+      cy.get('[class*="box"]').should('have.length.greaterThan', 0);
+      cy.get('button').first().click();
+      cy.wait(300);
+      cy.get('[class*="box"]').should('exist');
+    });
   });
 });
 ```
 
-#### 4. Interaction Tests
-**File**: `interactions.cy.ts`
+### Custom Cypress Commands
+
+**Location**: `cypress/support/commands.ts`
+
+Available commands for animation testing:
 
 ```typescript
-describe('Hover Animations', () => {
-  it('should trigger on hover', () => {
-    cy.visit('/hover-example');
-    cy.get('[data-testid="hoverable"]')
-      .trigger('mouseenter')
-      .should('have.css', 'transform', /scale/);
+// Drag element to target coordinates
+cy.get('.element').dragElement(x, y, { duration, steps })
+
+// Wait for animation to complete (stable transform)
+cy.get('.element').waitForAnimation(timeout)
+
+// Verify animation exists
+cy.get('.element').shouldAnimate()
+
+// Get translate transform values
+cy.get('.element').getTranslate().then(({x, y}) => {...})
+
+// Wait for specific CSS value
+cy.get('.element').waitForCss(property, value, timeout)
+
+// Hover interactions
+cy.get('.element').hoverOn().hoverOff()
+
+// Tap interaction
+cy.get('.element').tapOn()
+
+// Verify animation property
+cy.get('.element').shouldHaveAnimation(property)
+
+// Get opacity value
+cy.get('.element').getOpacity().then(opacity => {...})
+```
+
+### Test Structure
+
+```typescript
+describe('Feature', () => {
+  beforeEach(() => {
+    cy.visit('/tests'); // Visit test page with components
+  });
+
+  describe('Sub-feature', () => {
+    it('should perform expected behavior', () => {
+      // Arrange: Select element
+      cy.get('#element').should('exist');
+
+      // Act: Trigger interaction
+      cy.get('#element').trigger('mouseenter', { force: true });
+
+      // Assert: Verify animation
+      cy.wait(100);
+      cy.get('#element').should('have.css', 'transform');
+    });
   });
 });
 ```
@@ -415,14 +494,26 @@ vitest
 ```bash
 npm run test:integration
 # or
-vitest --config vitest.integration.config.ts
+vitest --include='**/*-integration.spec.ts'
 ```
 
 ### E2E Tests
+
+**Headless mode**:
 ```bash
 npm run test:e2e
 # or
-cypress open
+npx cypress run
+```
+
+**Interactive mode**:
+```bash
+npx cypress open
+```
+
+**Run specific test file**:
+```bash
+npx cypress run --spec "cypress/e2e/gestures.cy.ts"
 ```
 
 ### All Tests
