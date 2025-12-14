@@ -3,9 +3,11 @@
 ## Overview
 
 Motion-start uses a three-tier testing approach:
-1. **Unit Tests**: Individual functions and utilities
-2. **Integration Tests**: Component workflows and feature interactions
-3. **E2E Tests**: User interactions and visual verification
+1. **Unit Tests**: Individual functions and utilities (88 tests)
+2. **Integration Tests**: Component workflows and feature interactions (30 tests)
+3. **E2E Tests**: User interactions and visual verification (Cypress)
+
+**Total**: 118 passing tests across 12 test files
 
 **Naming convention**: colocate tests with source using `.spec.ts`. Use `-integration.spec.ts` for integration tests; avoid `.test.ts`.
 
@@ -16,8 +18,10 @@ Context: motion-start is a Svelte port of the GitHub project `motiondivision/mot
 **Goal**: Balance lightweight functionality verification with selective comprehensive coverage.
 
 ### Current State
-- ✅ 88 passing tests across 10 files
-- ✅ Core functionality verified (mixing, transforms, generators, easing)
+- ✅ 118 passing tests across 12 files
+  - Unit tests: 88 tests (10 files)
+  - Integration tests: 30 tests (2 files)
+- ✅ Core functionality verified (mixing, transforms, generators, easing, contexts)
 - ✅ Basic edge cases and boundary conditions covered
 - ✅ All tests passing in happy-dom environment
 
@@ -190,15 +194,50 @@ describe('Unit: <Module>', () => {
 ### Purpose
 Verify component workflows and interactions between systems.
 
+### Test Infrastructure
+
+**Test Utilities** (`src/lib/motion-start/test-utils/component-test-utils.ts`):
+- `nextTick()`, `waitTicks()`: Svelte reactive updates
+- `nextFrame()`, `waitFrames()`: Animation frame handling
+- `waitForAnimation()`: Poll MotionValue until complete
+- `waitFor()`: Generic condition waiting
+- `createMockDOMRect()`: Mock DOMRect objects
+- `createTestContainer()`: DOM test environment
+
 ### Coverage Areas
 
-#### 1. Animation Workflows
+#### 1. Context Integration (`context/context-integration.spec.ts`)
+**Status**: ✅ 11 tests passing
+
+Tests context propagation and interaction:
+- **PresenceContext**: Child tracking, exit animation coordination
+- **MotionConfigContext**: Config inheritance, reactive updates, partial merges
+- **LayoutGroupContext**: Dimension tracking, animation coordination, cleanup
+- **Cross-context**: MotionConfig + LayoutGroup, Presence + MotionConfig
+
+Example:
+```typescript
+describe('Integration: Context Propagation', () => {
+  it('should coordinate exit animations across children', async () => {
+    const context = createPresenceContext();
+    
+    context.registerExitAnimation('child-1', promise1);
+    context.registerExitAnimation('child-2', promise2);
+    
+    expect(context.isExiting).toBe(true);
+    await context.waitForExitAnimations();
+    expect(context.isExiting).toBe(false);
+  });
+});
+```
+
+#### 2. Animation Workflows
 **Location**: Tests for animation flows
 
 Test files:
-- `animation-start-integration.spec.ts`: Starting animations
-- `animation-complete-integration.spec.ts`: Animation completion
-- `animation-interrupt-integration.spec.ts`: Interrupting animations
+- `animation-start-integration.spec.ts`: Starting animations (Backlog)
+- `animation-complete-integration.spec.ts`: Animation completion (Backlog)
+- `animation-interrupt-integration.spec.ts`: Interrupting animations (Backlog)
 
 Example:
 ```typescript
@@ -219,29 +258,42 @@ describe('Integration: Animation Workflow', () => {
 });
 ```
 
-#### 2. Feature Interactions
-**Location**: Tests for feature system
-
-Test files:
-- `feature-loading-integration.spec.ts`: Feature initialization
-- `feature-composition-integration.spec.ts`: Multiple features
-- `feature-cleanup-integration.spec.ts`: Feature cleanup
-
-#### 3. Context Management
-**Location**: Tests for Svelte contexts
-
-Test files:
-- `motion-context-integration.spec.ts`: Motion context
-- `layout-group-context-integration.spec.ts`: Layout grouping
-- `presence-context-integration.spec.ts`: Presence tracking
-
-#### 4. VisualElement
+#### 2. VisualElement
 **Location**: Tests for element handling
 
 Test files:
-- `visual-element-mount.spec.ts`: Element mounting
-- `visual-element-style.spec.ts`: Style application
-- `visual-element-feature.spec.ts`: Feature integration
+- `visual-element-mount-integration.spec.ts`: Element mounting (Backlog)
+- `visual-element-style-integration.spec.ts`: Style application (Backlog)
+- `visual-element-feature-integration.spec.ts`: Feature integration (Backlog)
+
+#### 3. MotionValue and Animation System
+**Status**: Backlog (API investigation needed)
+
+Planned tests:
+- MotionValue change detection and subscribers
+- Spring/keyframes/inertia generator integration with MotionValue
+- Animation interruption and state management
+- Velocity tracking during animations
+
+**Note**: Initial implementation revealed API differences that need investigation before implementing these tests.
+
+### Test Structure
+```typescript
+describe('Integration: <System>', () => {
+  it('should <expected behavior across components>', async () => {
+    // Arrange: Set up multiple components/systems
+    const context1 = createContext1();
+    const context2 = createContext2();
+    
+    // Act: Trigger interaction
+    context1.action();
+    await waitFor(() => context2.hasUpdated());
+    
+    // Assert: Verify cross-system behavior
+    expect(context2.state).toBe(expectedState);
+  });
+});
+```
 
 ## E2E Testing
 
