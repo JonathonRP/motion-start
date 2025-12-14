@@ -104,7 +104,7 @@ export { startOptimizedAppearAnimation } from './animation/optimized-appear/star
 /**
  * Contexts
  */
-export { LayoutGroupContext } from './context/LayoutGroupContext';
+export { LayoutGroupContext } from './context/LayoutGroupContext.svelte';
 // export { MotionConfigContext } from './context/MotionConfigContext';
 export { MotionContext } from './context/MotionContext';
 // export { PresenceContext } from './context/PresenceContext';

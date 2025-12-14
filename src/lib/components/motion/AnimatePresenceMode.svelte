@@ -7,7 +7,7 @@
     let count = $state(0);
     let items = $state<number[]>([0]);
     let popLayout = $state(false);
-    let mode: 'popLayout' | 'sync' = $derived(popLayout ? "popLayout" : "sync");
+    let mode: "popLayout" | "sync" = $derived(popLayout ? "popLayout" : "sync");
 </script>
 
 <Box>
@@ -40,7 +40,7 @@
         >
             <AnimatePresence
                 {mode}
-                list={items.map((id) => ({ key: id }))}
+                values={items.map((id) => ({ key: id }))}
                 let:item
                 let:measure
             >

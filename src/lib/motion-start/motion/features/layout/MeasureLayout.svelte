@@ -23,7 +23,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
 	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte";
-	import { LayoutGroupContext } from "../../../context/LayoutGroupContext";
+	import { LayoutGroupContext } from "../../../context/LayoutGroupContext.svelte";
 	import { SwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
 	import type { MotionProps } from "../../types";
 	import type { VisualElement } from "../../../render/VisualElement.svelte";

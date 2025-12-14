@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-    import { useMotionConfig } from "../../../context/MotionConfigContext";
+    import { useMotionConfig } from "../../../context/MotionConfigContext.svelte";
     import type { Props, MeasureProps, Size } from "./types";
     import type {
         MutableRefObject,

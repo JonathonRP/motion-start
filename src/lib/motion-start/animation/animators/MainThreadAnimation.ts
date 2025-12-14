@@ -128,7 +128,7 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 	protected initPlayback(keyframes: ResolvedKeyframes<T>) {
 		const { type = 'keyframes', repeat = 0, repeatDelay = 0, repeatType, velocity = 0 } = this.options;
 
-		const generatorFactory = isGenerator(type) ? type : generators[type] || keyframesGeneratorFactory;
+		const generatorFactory = isGenerator(type) ? type : (type !== false ? generators[type] : undefined) || keyframesGeneratorFactory;
 
 		/**
 		 * If our generator doesn't support mixing numbers, we need to replace keyframes with

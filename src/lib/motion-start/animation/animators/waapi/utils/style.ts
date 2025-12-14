@@ -10,5 +10,6 @@ export function setCSSVar(element: HTMLElement, name: string, value: string | nu
 }
 
 export function setStyle(element: HTMLElement, name: string, value: string | number) {
-	element.style[name as MotionStyleKey] = value as any;
+	// Use setProperty for safety since name is dynamic and may not be a known CSS property
+	element.style.setProperty(name, String(value));
 }

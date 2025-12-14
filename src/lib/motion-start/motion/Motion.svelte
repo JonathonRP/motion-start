@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" generics="TProps, Instance, RenderState">
-  import { useMotionConfig } from "../context/MotionConfigContext";
+  import { useMotionConfig } from "../context/MotionConfigContext.svelte";
   import { useCreateMotionContext } from "../context/MotionContext/create.svelte";
   import { isBrowser } from "../utils/is-browser";
   import type { Ref } from "../utils/safe-react-types";

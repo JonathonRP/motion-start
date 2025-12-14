@@ -23,8 +23,8 @@ import type { Axis, Box } from '../projection/geometry/types';
 import type { VisualElement } from './VisualElement.svelte';
 import type { MotionProps } from '../motion/types';
 import type { AnimationDefinition } from '../animation/types';
-import type { PresenceContext } from '../context/PresenceContext';
-import type { ReducedMotionConfig } from '../context/MotionConfigContext';
+import type { PresenceContext } from '../context/PresenceContext.svelte';
+import type { ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
 
 export type GenericValues = {
 	[key: string]: string | number;

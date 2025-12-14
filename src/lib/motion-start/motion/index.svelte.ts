@@ -11,7 +11,7 @@ import type { RenderComponent, FeatureBundle } from './features/types';
 // import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { UseVisualState } from './utils/use-visual-state.svelte';
 import { loadFeatures } from './features/load-features';
-import { LayoutGroupContext } from '../context/LayoutGroupContext';
+import { LayoutGroupContext } from '../context/LayoutGroupContext.svelte';
 import { LazyContext } from '../context/LazyContext';
 import { motionComponentSymbol } from './utils/symbol';
 import type { CreateVisualElement } from '../render/types';

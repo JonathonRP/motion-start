@@ -15,5 +15,5 @@ export function mix<T>(from: T, to: T, p?: T): Mixer<T> | number {
 	}
 
 	const mixer = getMixer(from);
-	return mixer(from as any, to as any) as Mixer<T>;
+	return mixer(from, to) as Mixer<T>;
 }

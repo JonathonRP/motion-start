@@ -20,17 +20,13 @@ export class GroupPlaybackControls implements AnimationPlaybackControls {
 		return Promise.all(this.animations).then(onResolve).catch(onReject);
 	}
 
-	/**
-	 * TODO: Filter out cancelled or stopped animations before returning
-	 */
-	private getAll(propName: PropNames) {
-		return this.animations[0][propName] as any;
+	private getTimeValue() {
+		return this.animations[0]?.time;
 	}
 
-	private setAll(propName: PropNames, newValue: any) {
-		for (let i = 0; i < this.animations.length; i++) {
-			this.animations[i][propName] = newValue;
-		}
+	private getNumberValue(propName: 'speed' | 'startTime') {
+		const value = this.animations[0]?.[propName];
+		return value as number | null | undefined;
 	}
 
 	attachTimeline(
@@ -54,23 +50,27 @@ export class GroupPlaybackControls implements AnimationPlaybackControls {
 	}
 
 	get time() {
-		return this.getAll('time');
+		return this.getTimeValue() ?? 0;
 	}
 
 	set time(time: number) {
-		this.setAll('time', time);
+		for (let i = 0; i < this.animations.length; i++) {
+			this.animations[i].time = time;
+		}
 	}
 
 	get speed() {
-		return this.getAll('speed');
+		return this.getNumberValue('speed') ?? 1;
 	}
 
 	set speed(speed: number) {
-		this.setAll('speed', speed);
+		for (let i = 0; i < this.animations.length; i++) {
+			this.animations[i].speed = speed;
+		}
 	}
 
 	get startTime() {
-		return this.getAll('startTime');
+		return this.getNumberValue('startTime') ?? null;
 	}
 
 	get duration() {

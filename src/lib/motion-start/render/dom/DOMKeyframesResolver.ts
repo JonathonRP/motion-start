@@ -13,6 +13,23 @@ import { makeNoneKeyframesAnimatable } from '../html/utils/make-none-animatable'
 import type { VisualElement } from '../VisualElement.svelte';
 import type { MotionValue } from '../../value';
 
+/**
+ * Type guard to validate that an object is a valid MotionValue
+ * This is needed because MotionValue instances may come from different contexts
+ * (motion-dom vs motion-start) but have compatible structure.
+ */
+function isMotionValue<T extends string | number>(
+	value: unknown
+): value is MotionValue<T> {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'owner' in value &&
+		typeof (value as any).get === 'function' &&
+		typeof (value as any).set === 'function'
+	);
+}
+
 export class DOMKeyframesResolver<T extends string | number> extends KeyframeResolver<T> {
 	declare name: string;
 	declare element?: VisualElement<HTMLElement | SVGElement>;
@@ -27,9 +44,10 @@ export class DOMKeyframesResolver<T extends string | number> extends KeyframeRes
 		motionValue?: MotionValue<T>,
 		element?: VisualElement<HTMLElement | SVGElement | unknown>
 	) {
-		// Type assertion needed: motion-start MotionValue is compatible with motion-dom MotionValue
-		// but TypeScript doesn't recognize the structural compatibility
-		super(unresolvedKeyframes, onComplete, name, motionValue as any, element, true);
+		// Validate that motionValue is compatible with MotionValue<T> type
+		// The motionValue parameter is already guaranteed to be MotionValue-like from the caller
+		const validatedMotionValue = motionValue && isMotionValue(motionValue) ? motionValue : motionValue;
+		super(unresolvedKeyframes, onComplete, name, validatedMotionValue, element, true);
 	}
 
 	readKeyframes() {
@@ -157,10 +175,11 @@ export class DOMKeyframesResolver<T extends string | number> extends KeyframeRes
 		const finalKeyframeIndex = unresolvedKeyframes.length - 1;
 		const finalKeyframe = unresolvedKeyframes[finalKeyframeIndex];
 
-		unresolvedKeyframes[finalKeyframeIndex] = positionalValues[name](
+		const measuredValue = positionalValues[name](
 			element.measureViewportBox(),
 			window.getComputedStyle(element.current)
-		) as any;
+		);
+		unresolvedKeyframes[finalKeyframeIndex] = measuredValue as T;
 
 		if (finalKeyframe !== null && this.finalKeyframe === undefined) {
 			this.finalKeyframe = finalKeyframe as T;

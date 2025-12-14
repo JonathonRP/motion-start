@@ -15,7 +15,7 @@ import { measureViewportBox } from '../../projection/utils/measure';
 import type { MotionProps } from '../../motion/types';
 import type { Box } from '../../projection/geometry/types';
 import { DOMVisualElement } from '../dom/DOMVisualElement';
-import type { MotionConfigContext } from '../../context/MotionConfigContext';
+import type { MotionConfigContext } from '../../context/MotionConfigContext.svelte';
 import { isMotionValue } from '../../value/utils/is-motion-value';
 import type { ResolvedValues } from '../types';
 import type { VisualElement } from '../VisualElement.svelte';

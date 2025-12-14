@@ -49,11 +49,47 @@ export interface MotionConfigContext {
 	nonce?: string;
 }
 
+/**
+ * Reactive motion config context using Svelte 5 runes
+ */
+export interface MotionConfigContextType {
+	config: MotionConfigContext;
+	setConfig: (config: Partial<MotionConfigContext>) => void;
+	updateConfig: (fn: (config: MotionConfigContext) => MotionConfigContext) => void;
+}
+
 export const defaultMotionConfig: MotionConfigContext = {
 	reducedMotion: 'never',
 	transformPagePoint: (p) => p,
 	isStatic: false,
 };
+
+/**
+ * Create a reactive motion config context with $state runes.
+ * Must be called within a component or .svelte.ts file.
+ */
+export function createMotionConfigContext(
+	initialConfig: MotionConfigContext = defaultMotionConfig
+): MotionConfigContextType {
+	let config = $state<MotionConfigContext>(initialConfig);
+
+	return {
+		get config() {
+			return config;
+		},
+
+		setConfig: (newConfig: Partial<MotionConfigContext>) => {
+			config = { ...config, ...newConfig };
+		},
+
+		updateConfig: (fn: (config: MotionConfigContext) => MotionConfigContext) => {
+			config = fn(config);
+		},
+	};
+}
+
+// Context key
+export const MOTION_CONFIG_CONTEXT_KEY = Symbol('MotionConfigContext');
 
 /**
  * @public
@@ -62,13 +98,10 @@ const [getMotionConfigContext, setMotionConfigContext] = createContext<MotionCon
 
 function useMotionConfig() {
 	try {
-		return getMotionConfigContext()
+		return getMotionConfigContext();
 	} catch {
 		return setMotionConfigContext(defaultMotionConfig);
 	}
 }
 
-export {
-	useMotionConfig,
-	setMotionConfigContext
-}
+export { useMotionConfig, setMotionConfigContext };

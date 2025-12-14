@@ -23,29 +23,33 @@ function mixNumber(a: number, b: number) {
 	return (p: number) => mixNumberImmediate(a, b, p);
 }
 
-export function getMixer<T>(a: T) {
+// Polymorphic mixer function that accepts different value types
+export function getMixer<T>(a: T): (a: T, b: T) => (p: number) => T {
 	if (typeof a === 'number') {
-		return mixNumber;
+		return mixNumber as any;
 	} else if (typeof a === 'string') {
-		return isCSSVariableToken(a) ? mixImmediate : color.test(a) ? mixColor : mixComplex;
+		return (isCSSVariableToken(a) ? mixImmediate : color.test(a) ? mixColor : mixComplex) as any;
 	} else if (Array.isArray(a)) {
-		return mixArray;
+		return mixArray as any;
 	} else if (typeof a === 'object') {
-		return color.test(a) ? mixColor : mixObject;
+		return (color.test(a) ? mixColor : mixObject) as any;
 	}
 
-	return mixImmediate;
+	return mixImmediate as any;
 }
 
 export function mixArray(a: MixableArray, b: MixableArray) {
 	const output = [...a];
 	const numValues = output.length;
 
-	const blendValue = a.map((v, i) => getMixer(v)(v as any, b[i] as any));
+	const blendValue = a.map((v, i) => {
+		const mixer = getMixer(v);
+		return mixer(v, b[i]);
+	});
 
 	return (p: number) => {
 		for (let i = 0; i < numValues; i++) {
-			output[i] = blendValue[i](p) as any;
+			output[i] = blendValue[i](p);
 		}
 		return output;
 	};
@@ -57,7 +61,8 @@ export function mixObject(a: MixableObject, b: MixableObject) {
 
 	for (const key in output) {
 		if (a[key] !== undefined && b[key] !== undefined) {
-			blendValue[key] = getMixer(a[key])(a[key] as any, b[key] as any) as any;
+			const mixer = getMixer(a[key]);
+			blendValue[key] = mixer(a[key], b[key]);
 		}
 	}
 

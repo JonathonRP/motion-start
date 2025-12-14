@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame, cancelFrame } from '../frameloop';
-import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext';
+import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
 import type { FeatureDefinitions } from '../motion/features/types';
 import type { MotionProps, MotionStyle } from '../motion/types';
 import type { Box } from '../projection/geometry/types';
@@ -24,7 +24,7 @@ import { updateMotionValuesFromProps } from './utils/motion-values';
 import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
 import { featureDefinitions } from '../motion/features/definitions';
-import type { PresenceContext } from '../context/PresenceContext';
+import type { PresenceContext } from '../context/PresenceContext.svelte';
 import { visualElementStore } from './store';
 import { KeyframeResolver } from './utils/KeyframesResolver';
 import { isNumericalString } from '../utils/is-numerical-string';

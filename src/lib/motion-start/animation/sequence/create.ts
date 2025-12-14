@@ -105,7 +105,7 @@ export function createAnimationsFromSequence(
 			 * If this animation should and can use a spring, generate a spring easing function.
 			 */
 			const numKeyframes = valueKeyframesAsList.length;
-			const createGenerator = isGenerator(type) ? type : generators?.[type];
+			const createGenerator = isGenerator(type) ? type : (type !== false ? generators?.[type] : undefined);
 
 			if (numKeyframes <= 2 && createGenerator) {
 				/**

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionConfigContext } from '../../context/MotionConfigContext';
+import type { MotionConfigContext } from '../../context/MotionConfigContext.svelte';
 import type { IsValidProp } from '../../render/dom/utils/filter-props';
 
 export interface MotionConfigProps extends MotionConfigContext {

@@ -1,4 +1,4 @@
-import { usePresenceContext } from '../../context/PresenceContext';
+import { usePresenceContext } from '../../context/PresenceContext.svelte';
 
 export function usePresenceData() {
 	const context = $derived(usePresenceContext().current);

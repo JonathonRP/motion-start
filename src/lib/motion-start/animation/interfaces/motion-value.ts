@@ -94,7 +94,7 @@ export const animateMotionValue =
 
 		let shouldSkip = false;
 
-		if ((options as any).type === false || (options.duration === 0 && !options.repeatDelay)) {
+		if (options.type === false || (options.duration === 0 && !options.repeatDelay)) {
 			options.duration = 0;
 
 			if (options.delay === 0) {
@@ -133,8 +133,9 @@ export const animateMotionValue =
 		 * optimised animation.
 		 */
 		if (!isHandoff && AcceleratedAnimation.supports(options)) {
-			// Type assertion needed: our MotionValue is compatible with motion-dom MotionValue
-			return new AcceleratedAnimation(options as any);
+			// Type narrowing: AcceleratedAnimation.supports() is a type predicate that ensures
+			// options now matches AcceleratedValueAnimationOptions<number>
+			return new AcceleratedAnimation(options);
 		} else {
 			return new MainThreadAnimation(options);
 		}

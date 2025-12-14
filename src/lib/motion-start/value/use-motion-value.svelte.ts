@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { motionValue, type MotionValue } from '.';
-import { useMotionConfig } from '../context/MotionConfigContext';
+import { useMotionConfig } from '../context/MotionConfigContext.svelte';
 
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.

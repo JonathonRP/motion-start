@@ -67,7 +67,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { LayoutGroupContext } from "../../context/LayoutGroupContext";
+  import { LayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
   import { DeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
   import { nodeGroup } from "../../projection/node/group";
   import { useForceUpdate } from "../../utils/use-force-update.svelte";

@@ -25,6 +25,23 @@ import { supportsLinearEasing } from './waapi/utils/supports-linear-easing';
 import { supportsWaapi } from './waapi/utils/supports-waapi';
 
 /**
+ * Type guard to validate that an object is a valid MotionValue
+ * This is needed because MotionValue instances may come from different contexts
+ * (motion-dom vs motion-start) but have compatible structure.
+ */
+function isMotionValue<T extends string | number>(
+	value: unknown
+): value is MotionValue<T> {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'owner' in value &&
+		typeof (value as any).get === 'function' &&
+		typeof (value as any).set === 'function'
+	);
+}
+
+/**
  * 10ms is chosen here as it strikes a balance between smooth
  * results (more than one keyframe per frame at 60fps) and
  * keyframe quantity.
@@ -141,8 +158,11 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 	protected initPlayback(keyframes: ResolvedKeyframes<T>, finalKeyframe: T) {
 		let { duration = 300, times, ease, type, motionValue, name, startTime } = this.options;
 
-		// Type assertion: our MotionValue is structurally compatible with motion-dom's
-		const mv = motionValue as any as import('../../value').MotionValue<T>;
+		// Validate that motionValue has the required MotionValue interface
+		if (!isMotionValue(motionValue)) {
+			return false;
+		}
+		const mv = motionValue;
 
 		/**
 		 * If element has since been unmounted, return false to indicate
@@ -349,8 +369,11 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		 */
 		if (this.time) {
 			const { motionValue, onUpdate, onComplete, element, ...options } = this.options;
-			// Type assertion for MotionValue compatibility
-			const mv = motionValue as any as import('../../value').MotionValue<T>;
+			// Validate that motionValue has the required MotionValue interface
+			if (!isMotionValue(motionValue)) {
+				return undefined;
+			}
+			const mv = motionValue;
 
 			const sampleAnimation = new MainThreadAnimation({
 				...options,
@@ -390,12 +413,18 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 	}
 
 	static supports(options: ValueAnimationOptions<number>): options is AcceleratedValueAnimationOptions<number> {
-		const { motionValue, name, repeatDelay, repeatType, damping, type } = options as any;
+		// Extract properties with type inference without assertions
+		const name = 'name' in options ? options.name : undefined;
+		const motionValue = 'motionValue' in options ? options.motionValue : undefined;
+		const repeatDelay = 'repeatDelay' in options ? options.repeatDelay : undefined;
+		const repeatType = 'repeatType' in options ? options.repeatType : undefined;
+		const damping = 'damping' in options ? options.damping : undefined;
+		const type = 'type' in options ? options.type : undefined;
 
 		return (supportsWaapi() &&
-			name &&
+			typeof name === 'string' &&
 			acceleratedValues.has(name) &&
-			motionValue &&
+			isMotionValue(motionValue) &&
 			motionValue.owner &&
 			motionValue.owner.current instanceof HTMLElement &&
 			/**

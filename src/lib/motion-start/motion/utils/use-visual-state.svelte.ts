@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
 import { MotionContext } from '../../context/MotionContext';
-import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.js';
+import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.svelte';
 import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import {
 	isControllingVariants as checkIsControllingVariants,

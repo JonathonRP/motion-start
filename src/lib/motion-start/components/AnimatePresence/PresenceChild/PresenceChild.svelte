@@ -11,7 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
     import {
         usePresenceContext,
         setPresenceContext,
-    } from "../../../context/PresenceContext.js";
+    } from "../../../context/PresenceContext.svelte";
     import PopChild from "../PopChild/PopChild.svelte";
     import type { PresenceChildProps } from "./index.js";
 

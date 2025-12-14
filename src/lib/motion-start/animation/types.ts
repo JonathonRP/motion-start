@@ -24,7 +24,7 @@ export interface AnimationPlaybackLifecycles<V> {
 
 export type GeneratorFactory = (options: ValueAnimationOptions<any>) => KeyframeGenerator<any>;
 
-export type AnimationGeneratorType = GeneratorFactory | 'decay' | 'spring' | 'keyframes' | 'tween' | 'inertia';
+export type AnimationGeneratorType = GeneratorFactory | 'decay' | 'spring' | 'keyframes' | 'tween' | 'inertia' | false;
 
 export interface Transition
 	extends AnimationPlaybackOptions,

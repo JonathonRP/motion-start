@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
   import {
     setMotionConfigContext,
     useMotionConfig,
-  } from "../../context/MotionConfigContext.js";
+  } from "../../context/MotionConfigContext.svelte";
   import type { MotionConfigProps } from "./index.js";
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
   import type { Snippet } from "svelte";
