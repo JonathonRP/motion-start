@@ -1,10 +1,12 @@
 # Implementation Plan: Gesture Event Handlers in UseRenderer
 
+Project context: motion-start is a Svelte port of GitHub project `motiondivision/motion` v11.11.11 (separate from upstream motion) and aims to preserve event behavior parity.
+
 ## Overview
 
-Enable gesture event handlers to work as standard element event handlers in the rendering layer.
+Enable all feature event handlers (gesture and non-gesture) to work as standard element event handlers in the rendering layer without intermediary stores.
 
-**Goal**: Allow `onDragStart`, `onHoverStart`, etc. to work seamlessly with standard DOM event handling.
+**Goal**: Allow `onDragStart`, `onHoverStart`, `onPointerDown`, `onKeyDown`, etc. to flow directly to feature instances using DOM event listeners.
 
 ## Current State
 
@@ -25,166 +27,52 @@ Enable gesture event handlers to work as standard element event handlers in the 
 
 ## Proposed Solution
 
-### Architecture: Event Handler Bridge
+### Architecture: Feature-Centric Event Dispatch
 
 ```
-User Code (onDragStart prop)
-    ↓
+User Code (onXXX props)
+  ↓
 Motion Component Props
-    ↓
-UseRenderer (rendering layer)
-    ↓
-Gesture Detectors (from Phase 1)
-    ↓
-Feature System
-    ↓
-Animation Triggers
+  ↓
+UseRenderer attaches DOM listeners (no stores)
+  ↓
+Feature instances derived from Feature/Gesture base
+  ↓
+Per-feature onFeatureEvent/on<Type> handlers
+  ↓
+Animation & gesture pipelines
 ```
 
 ## Implementation Plan
 
-### Phase 1: Create Event Handler Store
+### Phase 1: Extend Feature/Gesture base for general DOM events
 
-**New File**: `src/lib/motion-start/render/event-handlers.ts`
+- Keep `Gesture` (or a renamed `EventFeature`) as the base for attaching DOM listeners via `addEventListener` with the instance as the listener (object form).
+- Allow a feature to declare the events it wants (pointer, mouse, touch, key, focus, wheel, custom) and register them in its constructor.
+- Dispatch through a single `onFeatureEvent(event: Event)` method on each feature; optionally support per-type helpers like `onpointerdown`, `onpointermove`, etc. when defined.
 
-```typescript
-export interface EventHandlerStore {
-  onDragStart?: (e: DragEvent, info: DragInfo) => void;
-  onDrag?: (e: DragEvent, info: DragInfo) => void;
-  onDragEnd?: (e: DragEvent, info: DragInfo) => void;
-  onHoverStart?: (e: MouseEvent) => void;
-  onHoverEnd?: (e: MouseEvent) => void;
-  onTapStart?: (e: PointerEvent) => void;
-  onTapEnd?: (e: PointerEvent) => void;
-  [key: string]: any;
-}
+### Phase 2: Wire UseRenderer without stores
 
-export function createEventHandlerStore(): Writable<EventHandlerStore> {
-  return writable({});
-}
-```
+- In `render/dom/use-renderer.svelte.ts`, when creating features, pass the element and props to the feature constructors; let the feature attach listeners directly via the base class.
+- No writable stores or handler bridges—DOM listener objects are sufficient.
+- Ensure cleanup removes all listeners on destroy.
 
-### Phase 2: Update UseRenderer
+### Phase 3: Update features to consume props directly
 
-**Modified**: `src/lib/motion-start/render/dom/use-renderer.svelte.ts`
+- Drag, hover, tap, focus, and key features read the relevant handler props directly from `MotionProps` at construction.
+- Each feature implements `onFeatureEvent(event)` (or per-event methods) to call user-supplied handlers and internal gesture logic.
+- Support multiple handlers per event by composing user callbacks with internal behavior.
 
-```typescript
-export function useRenderer(element: HTMLElement, props: MotionProps) {
-  const handlers = createEventHandlerStore();
-  
-  // Extract gesture handlers from props
-  const gestureHandlers = {
-    onDragStart: props.onDragStart,
-    onDrag: props.onDrag,
-    onDragEnd: props.onDragEnd,
-    onHoverStart: props.onHoverStart,
-    onHoverEnd: props.onHoverEnd,
-    onTapStart: props.onTapStart,
-    onTapEnd: props.onTapEnd,
-  };
-  
-  // Store handlers
-  handlers.set(gestureHandlers);
-  
-  // Setup gesture detectors with handler bridge
-  setupGestureDetectors(element, handlers);
-  
-  return {
-    update(newProps) { /* ... */ },
-    destroy() { /* ... */ }
-  };
-}
-```
+### Phase 4: Broaden MotionProps event coverage
 
-### Phase 3: Create Handler Bridge
+- Ensure `MotionProps` includes the DOM events we expose (pointer, mouse, touch, keyboard, focus/blur, wheel, form events as needed).
+- Keep handler signatures aligned with upstream `motiondivision/motion` v11.11.11 for parity where applicable.
 
-**New File**: `src/lib/motion-start/render/handler-bridge.ts`
+### Phase 5: Tests
 
-```typescript
-export function createHandlerBridge(
-  store: Readable<EventHandlerStore>
-) {
-  return {
-    onGestureStart(type: string, event: Event, info: any) {
-      const handler = get(store)[`on${capitalize(type)}Start`];
-      handler?.(event, info);
-    },
-    
-    onGestureMove(type: string, event: Event, info: any) {
-      const handler = get(store)[`on${capitalize(type)}`];
-      handler?.(event, info);
-    },
-    
-    onGestureEnd(type: string, event: Event, info: any) {
-      const handler = get(store)[`on${capitalize(type)}End`];
-      handler?.(event, info);
-    }
-  };
-}
-```
-
-### Phase 4: Integrate with Features
-
-**Modified**: Feature system setup
-
-```typescript
-export function setupFeatureWithHandlers(
-  element: Element,
-  feature: Feature,
-  bridge: HandlerBridge
-) {
-  // Feature setup
-  const cleanup = feature.setup?.(element);
-  
-  // Wire handlers
-  if (feature.gestures) {
-    Object.entries(feature.gestures).forEach(([type, handle]) => {
-      const originalOnStart = handle.onStart;
-      handle.onStart = (info) => {
-        originalOnStart?.(info);
-        bridge.onGestureStart(type, info.event, info);
-      };
-      // ... similar for onMove, onEnd
-    });
-  }
-  
-  return cleanup;
-}
-```
-
-### Phase 5: Add Type Definitions
-
-**Modified**: `src/lib/motion-start/types.ts`
-
-```typescript
-// Event info types
-export interface DragEventInfo {
-  point: { x: number; y: number };
-  delta: { x: number; y: number };
-  offset: { x: number; y: number };
-  velocity: { x: number; y: number };
-}
-
-export interface TapEventInfo {
-  point: { x: number; y: number };
-}
-
-// Update MotionProps
-export interface MotionProps {
-  // Drag
-  onDragStart?: (event: DragEvent, info: DragEventInfo) => void;
-  onDrag?: (event: DragEvent, info: DragEventInfo) => void;
-  onDragEnd?: (event: DragEvent, info: DragEventInfo) => void;
-  
-  // Hover
-  onHoverStart?: (event: MouseEvent) => void;
-  onHoverEnd?: (event: MouseEvent) => void;
-  
-  // Tap
-  onTapStart?: (event: PointerEvent, info: TapEventInfo) => void;
-  onTapEnd?: (event: PointerEvent, info: TapEventInfo) => void;
-}
-```
+- Unit: base class dispatch to `onFeatureEvent` and per-event overrides; listener registration/unregistration.
+- Integration: UseRenderer creates features, features attach/detach listeners, user handlers fire once per event, internal logic still runs.
+- E2E: Pointer/hover/tap/keyboard flows exercising user callbacks and internal animations.
 
 ## Integration with Phase 1
 
@@ -255,44 +143,21 @@ src/lib/motion-start/
 
 ## Testing Strategy
 
-### Unit Tests (15 tests)
-```
-event-handlers.ts (5)
-  - Store creation
-  - Handler setting
-  - Handler retrieval
-  - Store updates
-  
-handler-bridge.ts (10)
-  - Bridge creation
-  - Gesture start routing
-  - Gesture move routing
-  - Gesture end routing
-  - Multiple handlers
-```
+### Unit Tests (target ~12)
+- Base dispatch to `onFeatureEvent`
+- Per-event override dispatch (`onpointerdown`, `onclick`, etc.)
+- Multiple events registered by a feature
+- Listener cleanup on destroy
 
-### Integration Tests (12 tests)
-```
-use-renderer.ts (6)
-  - Handler extraction
-  - Handler storage
-  - Detector setup
-  - Handler lifecycle
-  
-Feature + Handlers (6)
-  - Drag + handler
-  - Hover + handler
-  - Tap + handler
-  - Multiple features
-```
+### Integration Tests (target ~10)
+- UseRenderer creates features and attaches listeners (no stores)
+- User handlers invoked once alongside internal gesture logic
+- Drag/hover/tap feature callbacks exercised with real events
 
-### E2E Tests (8 tests)
-```
-Drag with handler
-Hover with handler
-Tap with handler
-Multiple gestures + handlers
-```
+### E2E Tests (target ~6)
+- Pointer/hover/tap flows trigger user callbacks
+- Keyboard/focus flows trigger user callbacks
+- Mixed gesture + keyboard scenarios
 
 ## Risk Mitigation
 

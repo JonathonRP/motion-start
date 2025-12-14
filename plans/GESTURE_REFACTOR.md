@@ -1,5 +1,7 @@
 # Implementation Plan: Gesture and Event Handling Refactor
 
+Project context: motion-start ports `motiondivision/motion` v11.11.11 to Svelte and aims to preserve gesture behavior parity.
+
 ## Overview
 
 Refactor the gesture and event handling system to improve:

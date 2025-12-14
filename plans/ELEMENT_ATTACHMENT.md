@@ -1,5 +1,7 @@
 # Implementation Plan: Element Attachment Refactor
 
+Project context: This work is part of porting `motiondivision/motion` v11.11.11 to Svelte (motion-start).
+
 ## Overview
 
 Refactor useVisualElement and useRenderer to support non-action element handling for better composability and lifecycle control.

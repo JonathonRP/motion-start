@@ -7,6 +7,38 @@ Motion-start uses a three-tier testing approach:
 2. **Integration Tests**: Component workflows and feature interactions
 3. **E2E Tests**: User interactions and visual verification
 
+**Naming convention**: colocate tests with source using `.spec.ts`. Use `-integration.spec.ts` for integration tests; avoid `.test.ts`.
+
+Context: motion-start is a Svelte port of the GitHub project `motiondivision/motion` at version 11.11.11. It is not part of the upstream motion package. Where practical, reuse or adapt the upstream motion tests instead of rebuilding them from scratch.
+
+## Philosophy: Hybrid Testing Strategy
+
+**Goal**: Balance lightweight functionality verification with selective comprehensive coverage.
+
+### Current State
+- ✅ 88 passing tests across 10 files
+- ✅ Core functionality verified (mixing, transforms, generators, easing)
+- ✅ Basic edge cases and boundary conditions covered
+- ✅ All tests passing in happy-dom environment
+
+### Upstream Comparison (motiondivision/motion v11.11.11)
+- 30+ test files with hundreds of tests
+- Comprehensive physics tests (underdamped/overdamped/critically damped springs)
+- Extensive color space conversion tests
+- Integration tests for type routing and complex workflows
+- Test categories: array mixing, object mixing, visibility mixing
+
+### Strategy
+1. **Keep Current Tests**: Lightweight tests verify Svelte port functionality
+2. **Add Depth Incrementally**: Port upstream tests when issues arise or features need validation
+3. **Prioritize Pragmatically**: Focus on high-impact areas and actual bug sources
+
+### Tracked Gaps (P2-P3 Backlog)
+- **Missing Categories**: Array mixing, object mixing, visibility mixing
+- **Missing Depth**: Comprehensive spring damping modes, extensive color conversions
+- **Missing Integration**: mix() type router tests
+- See issues: motion-start-8w9, motion-start-4pt, motion-start-hwd, motion-start-cit, motion-start-zfz, motion-start-67j
+
 ## Unit Testing
 
 ### Purpose
@@ -15,39 +47,125 @@ Verify isolated functionality without side effects.
 ### Coverage Areas
 
 #### 1. Value Type Handling
-**Location**: `src/lib/motion-start/value/types/`
+### Coverage Areas
 
-Test files:
-- `color.test.ts`: Color parsing and interpolation
-- `complex.test.ts`: Complex value handling (arrays, objects)
-- `number.test.ts`: Number interpolation
-- `transform.test.ts`: Transform value parsing
+#### 1. Value Type Mixing (88 tests total)
+**Location**: `src/lib/motion-start/utils/mix/`
+
+**Implemented Tests**:
+- `color.spec.ts` (11 tests): Linear color interpolation, hex/rgba/hsla formats, alpha channels
+- `number.spec.ts` (8 tests): Numeric interpolation, extrapolation, precision handling
+- `complex.spec.ts` (7 tests): Complex values with units, transforms, mixed formats
+
+**Backlog** (incremental additions):
+- `array.spec.ts`: Array mixing `[0, '100px', '#fff']` (motion-start-8w9, P2)
+- `object.spec.ts`: Object property mixing `{x, y, color}` (motion-start-4pt, P2)
+- `visibility.spec.ts`: Visibility transitions `'visible'/'hidden'` (motion-start-hwd, P2)
+- Expanded color tests: Out-of-bounds RGB, color space conversions (motion-start-67j, P3)
+- Integration: mix() type router tests (motion-start-zfz, P3)
 
 Example:
 ```typescript
-describe('color interpolation', () => {
-  it('interpolates between hex colors', () => {
-    const result = interpolateColor('#FF0000', '#0000FF', 0.5);
-    expect(result).toBe('#800080'); // Purple
+describe('mixColor', () => {
+  it('should interpolate between hex colors', () => {
+    const result = mixColor('#FF0000', '#0000FF', 0.5);
+    expect(result).toMatch(/^#[0-9A-F]{6}$/i);
+  });
+  
+  it('should handle alpha channel interpolation', () => {
+    const result = mixColor('rgba(255,0,0,0)', 'rgba(0,0,255,1)', 0.5);
+    expect(result).toContain('0.5'); // Alpha at midpoint
   });
 });
 ```
 
 #### 2. Utilities
-**Location**: Tests for `src/lib/motion-start/utils/`
+**Location**: `src/lib/motion-start/utils/`
 
-Test files:
-- `mix.test.ts`: Value mixing functions
-- `transform.test.ts`: Transform utilities
-- `easing.test.ts`: Easing function calculations
+**Implemented Tests**:
+- `clamp.spec.ts` (7 tests): Range clamping, boundary conditions, negative ranges
+- `interpolate.spec.ts` (9 tests): Range mapping, multi-segment, easing, custom mixers
+- `transform.spec.ts` (8 tests): Value transformation, clamping, easing, reverse ranges
 
-#### 3. Animation Generators
-**Location**: Tests for `src/lib/motion-start/animation/generators/`
+Example:
+```typescript
+describe('interpolate', () => {
+  it('should interpolate between numeric ranges', () => {
+    const fn = interpolate([0, 100], [0, 1]);
+    expect(fn(50)).toBe(0.5);
+  });
+  
+  it('should handle multi-segment ranges', () => {
+    const fn = interpolate([0, 50, 100], [0, 1, 0]);
+    expect(fn(25)).toBeCloseTo(0.5);
+    expect(fn(75)).toBeCloseTo(0.5);
+  });
+});
+```
 
-Test files:
-- `spring.test.ts`: Spring physics
-- `tween.test.ts`: Linear interpolation
-- `keyframes.test.ts`: Keyframe generation
+#### 3. Easing Functions
+**Location**: `src/lib/motion-start/easing/`
+
+**Implemented Tests**:
+- `ease.spec.ts` (10 tests): easeIn, easeOut, easeInOut, cubicBezier, monotonicity
+
+Example:
+```typescript
+describe('easeInOut', () => {
+  it('should be symmetric', () => {
+    expect(easeInOut(0.25)).toBeCloseTo(1 - easeInOut(0.75));
+  });
+  
+  it('should be monotonically increasing', () => {
+    for (let i = 0; i <= 10; i++) {
+      const t1 = i / 10;
+      const t2 = (i + 1) / 10;
+      expect(easeInOut(t2)).toBeGreaterThanOrEqual(easeInOut(t1));
+    }
+  });
+});
+```
+
+#### 4. Animation Generators
+**Location**: `src/lib/motion-start/animation/generators/`
+
+**Implemented Tests**:
+- `spring.spec.ts` (8 tests): Physics-based animations, stiffness, damping, velocity, duration-based config
+- `keyframes.spec.ts` (11 tests): Multi-value sequences, custom timing, easing per segment
+- `inertia.spec.ts` (9 tests): Velocity decay, boundaries, power curves, modifyTarget
+
+**Backlog**:
+- Comprehensive spring physics: Underdamped/overdamped/critically damped modes (motion-start-cit, P3)
+
+Example:
+```typescript
+describe('spring generator', () => {
+  it('should animate from origin to target', () => {
+    const generator = spring({ from: 0, to: 100 });
+    
+    // Should start at origin
+    const start = generator.next(0);
+    expect(start.value).toBe(0);
+    
+    // Should be moving toward target
+    const mid = generator.next(500);
+    expect(mid.value).toBeGreaterThan(0);
+    expect(mid.value).toBeLessThan(100);
+    
+    // Should eventually settle
+    const end = generator.next(5000);
+    expect(end.value).toBeCloseTo(100, 1);
+    expect(end.done).toBe(true);
+  });
+  
+  it('should respect stiffness parameter', () => {
+    const soft = spring({ from: 0, to: 100, stiffness: 50 });
+    const stiff = spring({ from: 0, to: 100, stiffness: 500 });
+    
+    // Stiffer spring should move faster initially
+    expect(stiff.next(100).value).toBeGreaterThan(soft.next(100).value);
+  });
+});
 
 ### Test Structure
 ```typescript
@@ -78,9 +196,9 @@ Verify component workflows and interactions between systems.
 **Location**: Tests for animation flows
 
 Test files:
-- `animation-start.test.ts`: Starting animations
-- `animation-complete.test.ts`: Animation completion
-- `animation-interrupt.test.ts`: Interrupting animations
+- `animation-start-integration.spec.ts`: Starting animations
+- `animation-complete-integration.spec.ts`: Animation completion
+- `animation-interrupt-integration.spec.ts`: Interrupting animations
 
 Example:
 ```typescript
@@ -105,25 +223,25 @@ describe('Integration: Animation Workflow', () => {
 **Location**: Tests for feature system
 
 Test files:
-- `feature-loading.test.ts`: Feature initialization
-- `feature-composition.test.ts`: Multiple features
-- `feature-cleanup.test.ts`: Feature cleanup
+- `feature-loading-integration.spec.ts`: Feature initialization
+- `feature-composition-integration.spec.ts`: Multiple features
+- `feature-cleanup-integration.spec.ts`: Feature cleanup
 
 #### 3. Context Management
 **Location**: Tests for Svelte contexts
 
 Test files:
-- `motion-context.test.ts`: Motion context
-- `layout-group-context.test.ts`: Layout grouping
-- `presence-context.test.ts`: Presence tracking
+- `motion-context-integration.spec.ts`: Motion context
+- `layout-group-context-integration.spec.ts`: Layout grouping
+- `presence-context-integration.spec.ts`: Presence tracking
 
 #### 4. VisualElement
 **Location**: Tests for element handling
 
 Test files:
-- `visual-element-mount.test.ts`: Element mounting
-- `visual-element-style.test.ts`: Style application
-- `visual-element-feature.test.ts`: Feature integration
+- `visual-element-mount.spec.ts`: Element mounting
+- `visual-element-style.spec.ts`: Style application
+- `visual-element-feature.spec.ts`: Feature integration
 
 ## E2E Testing
 

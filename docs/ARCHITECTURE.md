@@ -1,5 +1,7 @@
 # Architecture and Design Patterns
 
+Context: motion-start is a Svelte 5 port of the `motiondivision/motion` project (version 11.11.11) targeting parity with that release while adopting Svelte runes and kit conventions.
+
 ## Core Architecture Principles
 
 ### 1. Separation of Concerns

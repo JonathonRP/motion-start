@@ -8,8 +8,8 @@ import {
 	createPresenceContext,
 	createMotionConfigContext,
 	createLayoutGroupContext,
-	defaultMotionConfig,
-} from '../context/index.svelte';
+	defaultMotionConfig
+} from './index.svelte';
 
 describe('createPresenceContext', () => {
 	it('should initialize with empty children', () => {

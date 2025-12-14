@@ -12,8 +12,6 @@ import path from 'node:path';
 export default defineConfig({
 	resolve: {
 		alias: {
-			'framer-motion/dist/es/render/html/HTMLVisualElement.mjs': path.resolve(__dirname, 'node_modules/framer-motion/dist/es/render/html/HTMLVisualElement.mjs'),
-			'framer-motion/dist/es/render/svg/SVGVisualElement.mjs': path.resolve(__dirname, 'node_modules/framer-motion/dist/es/render/svg/SVGVisualElement.mjs')
 		}
 	},
 
@@ -26,5 +24,13 @@ export default defineConfig({
 		typecheck: { enabled: true }
 	},
 
-	server: { port: 5000, strictPort: true, host: '127.0.0.1' }
+	server: { port: 5000, strictPort: true, host: '127.0.0.1', watch: {
+		ignored: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**', '**/.beads/**'],
+	} },
+
+	build: {
+		watch: {
+			exclude: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**', '**/.beads/**']
+		}
+	}
 });
