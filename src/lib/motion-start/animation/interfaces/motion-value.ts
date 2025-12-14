@@ -133,7 +133,8 @@ export const animateMotionValue =
 		 * optimised animation.
 		 */
 		if (!isHandoff && AcceleratedAnimation.supports(options)) {
-			return new AcceleratedAnimation(options);
+			// Type assertion needed: our MotionValue is compatible with motion-dom MotionValue
+			return new AcceleratedAnimation(options as any);
 		} else {
 			return new MainThreadAnimation(options);
 		}

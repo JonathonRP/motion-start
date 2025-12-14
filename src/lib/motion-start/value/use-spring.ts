@@ -4,14 +4,14 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { SpringOptions } from '../animation/types';
-import { useContext } from '../context/use';
 import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
-import { MotionConfigContext } from '../context/MotionConfigContext';
+import { useMotionConfig } from '../context/MotionConfigContext';
 import { frame } from '../frameloop';
 import type { MotionValue } from '.';
 import { useMotionValue } from './use-motion-value.svelte';
 import { isMotionValue } from './utils/is-motion-value';
 import { noop } from '../utils/noop';
+import { extract, watch, type MaybeGetter } from 'runed';
 
 function toNumber(v: string | number) {
 	if (typeof v === 'number') return v;
@@ -37,17 +37,17 @@ function toNumber(v: string | number) {
  *
  * @public
  */
-export const useSpring = (source: MotionValue | number, config: SpringOptions = {}) => {
-	const { isStatic } = $derived(useContext(MotionConfigContext).current);
+export const useSpring = (source: MotionValue | number, config: MaybeGetter<SpringOptions> = {}) => {
+	const { isStatic } = useMotionConfig();
 
-	let activeSpringAnimation: MainThreadAnimation<number> | null = $state(null);
+	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 
 	const initialValue = isMotionValue(source) ? toNumber(source.get()) : source;
 
 	const value = useMotionValue(initialValue);
 
-	let latestValue = $state(initialValue);
-	let latestSetter = $state<(v: number) => void>(noop);
+	let latestValue = initialValue;
+	let latestSetter = noop<number>;
 
 	const startAnimation = () => {
 		stopAnimation();
@@ -69,27 +69,27 @@ export const useSpring = (source: MotionValue | number, config: SpringOptions = 
 		}
 	};
 
-	$effect(() => {
-		$state.snapshot(config);
-		return value.attach((v, set) => {
+	watch(() => extract(config), () => {
+		 value.attach((v, set) => {
 			if (isStatic) {
 				return set(v);
 			}
 
 			latestValue = v;
-			latestSetter = set;
+			latestSetter = (newValue: number) => {
+				set(newValue);
+				return newValue;
+			};
 
-			frame.postRender(startAnimation);
+			frame.update(startAnimation);
 
 			return value.get();
 		}, stopAnimation);
 	});
 
-	$effect(() => {
-		if (isMotionValue(source)) {
-			return source.on('change', (v) => value.set(Number.parseFloat(v)));
-		}
-	});
+	if (isMotionValue(source)) {
+		source.on('change', (v) => value.set(Number.parseFloat(v)));
+	}
 
 	return value;
 };

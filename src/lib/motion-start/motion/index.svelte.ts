@@ -4,30 +4,13 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import {
-	createRawSnippet,
-	flushSync,
-	getContext,
-	hydrate,
-	mount,
-	onDestroy,
-	setContext,
-	tick,
-	unmount,
-	untrack,
 	type Component,
-	type Snippet,
 } from 'svelte';
-import { render } from 'svelte/server';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
-import { MotionConfigContext } from '../context/MotionConfigContext';
-import { MotionContext } from '../context/MotionContext';
-import { useVisualElement } from './utils/use-visual-element.svelte';
+// import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { UseVisualState } from './utils/use-visual-state.svelte';
-import { useMotionRef } from './utils/use-motion-ref.svelte';
-import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import { loadFeatures } from './features/load-features';
-import { isBrowser } from '../utils/is-browser';
 import { LayoutGroupContext } from '../context/LayoutGroupContext';
 import { LazyContext } from '../context/LazyContext';
 import { motionComponentSymbol } from './utils/symbol';
@@ -36,8 +19,6 @@ import { invariant, warning } from '../utils/errors';
 import { featureDefinitions } from './features/definitions';
 import Motion from './Motion.svelte';
 import type { Ref } from '../utils/safe-react-types';
-import { useContext } from '../context/use';
-import type MeasureLayout from './features/layout/MeasureLayout.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -340,13 +321,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 export function useLayoutId(props: () => MotionProps) {
 	const { layoutId } = props();
-	const { id: layoutGroupId } = $derived(useContext(LayoutGroupContext).current);
+	const { id: layoutGroupId } = LayoutGroupContext.getOr(null) || {};
 
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
-	const { strict: isStrict } = $derived(useContext(LazyContext).current);
+	const { strict: isStrict } = LazyContext.getOr({ strict: false });
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component
@@ -359,7 +340,10 @@ export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: F
 	}
 }
 
-export function getProjectionFunctionality(props: () => MotionProps) {
+export function getProjectionFunctionality(props: () => MotionProps): {
+	MeasureLayout?: any;
+	ProjectionNode?: any;
+} {
 	const { drag, layout } = featureDefinitions;
 
 	if (!drag && !layout) return {};

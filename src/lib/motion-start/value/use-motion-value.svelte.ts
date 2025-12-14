@@ -4,9 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { motionValue, type MotionValue } from '.';
-import { MotionConfigContext } from '../context/MotionConfigContext';
-import { useContext } from '../context/use';
-import { untrack } from 'svelte';
+import { useMotionConfig } from '../context/MotionConfigContext';
 
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.
@@ -33,7 +31,7 @@ export function useMotionValue<T>(initial: T): MotionValue<T> {
 	 * the Framer canvas, force components to rerender when the motion
 	 * value is updated.
 	 */
-	const { isStatic } = useContext(MotionConfigContext).current;
+	const { isStatic } = useMotionConfig();
 	if (isStatic) {
 		const setLatest: (v: T) => void = (_value) => {
 			initial = _value;

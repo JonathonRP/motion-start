@@ -8,28 +8,27 @@ import { mixNumber } from '../../../utils/mix/number';
 import type { ItemData } from '../types';
 
 export function checkReorder<T>(order: ItemData<T>[], value: T, offset: number, velocity: number): ItemData<T>[] {
-	const currentOrder = order;
-	if (!velocity) return currentOrder;
+	if (!velocity) return order;
 
-	const index = currentOrder.findIndex((item) => item.value === value);
+	const index = order.findIndex((item) => item.value === value);
 
-	if (index === -1) return currentOrder;
+	if (index === -1) return order;
 
 	const nextOffset = velocity > 0 ? 1 : -1;
-	const nextItem = currentOrder[index + nextOffset];
+	const nextItem = order[index + nextOffset];
 
-	if (!nextItem) return currentOrder;
+	if (!nextItem) return order;
 
-	const item = currentOrder[index];
+	const item = order[index];
 	const nextLayout = nextItem.layout;
 	const nextItemCenter = mixNumber(nextLayout.min, nextLayout.max, 0.5);
-
+	
 	if (
 		(nextOffset === 1 && item.layout.max + offset > nextItemCenter) ||
 		(nextOffset === -1 && item.layout.min + offset < nextItemCenter)
 	) {
-		return moveItem(currentOrder, index, index + nextOffset);
+		return moveItem(order, index, index + nextOffset);
 	}
 
-	return currentOrder;
+	return order;
 }

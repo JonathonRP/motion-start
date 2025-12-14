@@ -3,69 +3,93 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-  type InheritOption = boolean | "id";
+  type InheritOption = boolean | "id" | "group";
 
   export interface LayoutGroupProps {
     id?: string;
     inherit?: InheritOption;
+    children?: any;
   }
 
-  const shouldInheritGroup = (inherit: InheritOption) => inherit === true;
-  const shouldInheritId = (inherit: InheritOption) =>
-    shouldInheritGroup(inherit === true) || inherit === "id";
+  /**
+   * Hook to create and manage a layout group
+   * Handles group inheritance, force updates, and context management
+   */
+  export function useLayoutGroupProvider(props: LayoutGroupProps) {
+    // Get parent group context if it exists
+    const oldId = DeprecatedLayoutGroupContext.getOr(null) ?? undefined;
+    const parentGroup = LayoutGroupContext.getOr({}) || { id: oldId };
+    const [forceRender, key] = useForceUpdate();
+
+    const context = {
+      id: getGroupId(props, parentGroup),
+      group: getGroup(props, parentGroup),
+      forceRender,
+      key,
+    };
+
+    // Make group context available to children
+    LayoutGroupContext.set(context);
+    return context;
+  }
+
+  export function useLayoutGroup() {
+    const { forceRender } = LayoutGroupContext.getOr({ forceRender: () => {} });
+    return { forceRender };
+  }
+
+  /**
+   * Determines the group ID based on inheritance rules
+   */
+  function getGroupId(
+    props: LayoutGroupProps,
+    parentGroup: LayoutGroupContext | null,
+  ) {
+    const shouldInherit = props.inherit === true || props.inherit === "id";
+    const parentId = parentGroup?.id;
+
+    if (shouldInherit && parentId) {
+      return props.id ? `${parentId}-${props.id}` : parentId;
+    }
+    return props.id;
+  }
+
+  /**
+   * Creates or inherits a node group based on inheritance rules
+   */
+  function getGroup(
+    props: LayoutGroupProps,
+    parentGroup: LayoutGroupContext | null,
+  ) {
+    const shouldInherit = props.inherit === true || props.inherit === "group";
+    return shouldInherit ? parentGroup?.group || nodeGroup() : nodeGroup();
+  }
 </script>
 
 <script lang="ts">
-  import { useContext } from "../../context/use";
   import { LayoutGroupContext } from "../../context/LayoutGroupContext";
   import { DeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
   import { nodeGroup } from "../../projection/node/group";
   import { useForceUpdate } from "../../utils/use-force-update.svelte";
+  import { type Snippet } from "svelte";
   import type { MutableRefObject } from "../../utils/safe-react-types";
-  import { untrack, type Snippet } from "svelte";
 
   interface Props extends LayoutGroupProps {
-    children?: Snippet;
+    children: Snippet<
+      [props: { forceRender: VoidFunction; key: MutableRefObject<number> }]
+    >;
   }
 
   let { id, inherit = true, children }: Props = $props();
 
-  const layoutGroupContext = useContext(LayoutGroupContext);
-
-  const deprecatedLayoutGroupContext = useContext(DeprecatedLayoutGroupContext);
-
-  const [forceRender, key] = useForceUpdate();
-
-  let context = $state<MutableRefObject<LayoutGroupContext | null>>({
-    current: null,
-  });
-
-  const upstreamId =
-    layoutGroupContext.current.id || deprecatedLayoutGroupContext.current;
-
-  if (context.current === null) {
-    if (shouldInheritId(inherit!) && upstreamId) {
-      id = id ? upstreamId + "-" + id : upstreamId;
-    }
-
-    context.current = {
-      id,
-      group: shouldInheritGroup(inherit!)
-        ? layoutGroupContext.current.group || nodeGroup()
-        : nodeGroup(),
-    };
-  }
-
-  const memoizedContext = (_key: typeof key) => {
-    return {
-      ...context.current,
-      forceRender,
-    };
-  };
-
-  $effect(() => {
-    layoutGroupContext.current = memoizedContext(key);
+  const { forceRender, key } = useLayoutGroupProvider({
+    get inherit() {
+      return inherit;
+    },
+    get id() {
+      return id;
+    },
   });
 </script>
 
-{@render children?.()}
+{@render children({ forceRender, key })}

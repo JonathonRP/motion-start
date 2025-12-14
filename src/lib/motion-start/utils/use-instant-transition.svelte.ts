@@ -21,7 +21,7 @@ export function useInstantTransition() {
 				 * instant transition too soon. This becomes more likely when
 				 * used in conjunction with React.startTransition().
 				 */
-				if (forcedRenderCount !== unlockOnFrameRef) return;
+				if (unlockOnFrameRef !== forcedRenderCount.current) return;
 				instantAnimationState.current = false;
 			})
 		);
@@ -32,7 +32,7 @@ export function useInstantTransition() {
 			instantAnimationState.current = true;
 			forceUpdate();
 			callback();
-			unlockOnFrameRef = forcedRenderCount + 1;
+			unlockOnFrameRef = forcedRenderCount.current + 1;
 		});
 	};
 }

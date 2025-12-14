@@ -3,17 +3,17 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { type EventListenerWithPointInfo, extractEventInfo } from '../events/event-info';
-import type { EventInfo } from '../events/types';
 import { addDomEvent } from '../events/add-dom-event';
 import { addPointerEvent } from '../events/add-pointer-event';
+import { type EventListenerWithPointInfo, extractEventInfo } from '../events/event-info';
+import type { EventInfo } from '../events/types';
+import { frame } from '../frameloop';
 import { Feature } from '../motion/features/Feature';
+import { noop } from '../utils/noop';
 import { pipe } from '../utils/pipe';
 import { isDragActive } from './drag/utils/lock';
 import { isNodeOrChild } from './utils/is-node-or-child';
-import { noop } from '../utils/noop';
-import { frame } from '../frameloop';
-import { Gesture } from './Gesture';
+// import { Gesture } from './Gesture';
 
 function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPointInfo) {
 	if (!handler) return;
@@ -21,7 +21,7 @@ function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPoin
 	handler(syntheticPointerEvent, extractEventInfo(syntheticPointerEvent));
 }
 
-export class PressGesture extends Gesture {
+export class PressGesture extends Feature<Element> {
 	// @ts-expect-error
 	private isPressing: boolean;
 

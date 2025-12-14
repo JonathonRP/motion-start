@@ -46,5 +46,9 @@ export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: Ar
 
 		return output;
 	};
-	return useCombineMotionValues(values.filter(isMotionValue), buildValue);
+	const { value, subscribe } = useCombineMotionValues(buildValue);
+
+	subscribe(values.filter(isMotionValue) as MotionValue[]);
+
+	return { value };
 };

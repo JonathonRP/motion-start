@@ -3,8 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-    import { MotionConfigContext } from "../../../context/MotionConfigContext";
-    import { useContext } from "../../../context/use";
+    import { useMotionConfig } from "../../../context/MotionConfigContext";
     import type { Props, MeasureProps, Size } from "./types";
     import type {
         MutableRefObject,
@@ -29,7 +28,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     });
 
-    const { nonce } = $derived(useContext(MotionConfigContext).current);
+    const { nonce } = $derived(useMotionConfig());
 
     /**
      * We create and inject a style block so we can apply this explicit

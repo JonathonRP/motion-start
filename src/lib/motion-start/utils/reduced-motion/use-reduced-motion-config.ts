@@ -3,13 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { useContext } from '../../context/use';
-import { MotionConfigContext } from '../../context/MotionConfigContext';
+import { useMotionConfig } from '../../context/MotionConfigContext';
 import { useReducedMotion } from './use-reduced-motion';
 
 export function useReducedMotionConfig() {
 	const reducedMotionPreference = useReducedMotion();
-	const { reducedMotion } = useContext(MotionConfigContext).current;
+	const { reducedMotion } = useMotionConfig();
 
 	if (reducedMotion === 'never') {
 		return false;

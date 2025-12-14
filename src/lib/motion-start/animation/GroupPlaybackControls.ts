@@ -85,10 +85,6 @@ export class GroupPlaybackControls implements AnimationPlaybackControls {
 		this.animations.forEach((controls) => controls[methodName]());
 	}
 
-	flatten() {
-		this.runAll('flatten');
-	}
-
 	play() {
 		this.runAll('play');
 	}

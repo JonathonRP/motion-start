@@ -2,6 +2,8 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+
 /**
  * @public
  */
@@ -87,7 +89,7 @@ export interface AnimatePresenceProps<T> {
 	 *
 	 * Alternatively, you can leave this undefined and supply `show` prop.
 	 */
-	list?: T[];
+	values?: T[];
 
 	/**
 	 * Render the child when this is set to `true`, exit it when changed to `false`.

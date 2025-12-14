@@ -1,5 +1,3 @@
-<svelte:options runes={false} />
-
 <script lang="ts">
     import {
         motion,
@@ -7,15 +5,14 @@
         useTransform,
         type PanInfo,
     } from "$lib/motion-start";
-    let exitX = 0;
+    let exitX = $state(0);
     const x = useMotionValue(0);
     const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
     const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
         clamp: false,
     });
-    export let drag: any = false;
-    export let frontCard = false;
-    export let index: any = 0;
+    let { drag = false, frontCard = false, index = 0 } = $props();
+
     const variantsFrontCard = {
         animate: { scale: 1, y: 0, opacity: 1 },
         exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
@@ -24,7 +21,8 @@
         initial: { scale: 0.3, y: 105, opacity: 0 },
         animate: { scale: 0.75, y: 30, opacity: 0.5 },
     };
-    $: isFront = frontCard ? variantsFrontCard : variantsBackCard;
+
+    const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
 
     function handleDragEnd(_: PointerEvent, info: PanInfo) {
         // console.log("info", info);
@@ -41,12 +39,12 @@
             //   console.log("trigger");
         }
     }
-    let i = 0;
 </script>
 
 <!-- Animate Presence Stack -->
 
 <motion.div
+    key={index}
     id="presswipe"
     style={{
         x,

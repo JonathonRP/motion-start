@@ -6,4 +6,9 @@ export const {
 	cancel: cancelFrame,
 	state: frameData,
 	steps: frameSteps,
-} = createRenderBatcher(typeof requestAnimationFrame !== 'undefined' ? requestAnimationFrame : noop, true);
+} = createRenderBatcher(
+	typeof requestAnimationFrame !== 'undefined' 
+		? (callback: Function) => { requestAnimationFrame(callback as FrameRequestCallback); } 
+		: noop, 
+	true
+);

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { createContext } from 'svelte';
 import type { VariantLabels } from '../motion/types';
-import type { Writable } from 'svelte/store';
-import { createContext } from './create';
+import type { MutableRefObject } from '../utils/safe-react-types';
 
 /**
  * @public
@@ -17,10 +17,22 @@ export interface PresenceContext {
 	onExitComplete?: (id: string | number) => void;
 	initial?: false | VariantLabels;
 	custom?: any;
-	presenceChildren?: Writable<{ key: any }>;
 }
 
 /**
  * @public
  */
-export const PresenceContext = createContext<PresenceContext | null>(null);
+const [getPresenceContext, setPresenceContext] = createContext<MutableRefObject<PresenceContext | null>>();
+
+function usePresenceContext() {
+	try {
+		return getPresenceContext();
+	} catch {
+		return setPresenceContext({ get current() { return null; } });
+	}
+}
+
+export {
+	usePresenceContext,
+	setPresenceContext,
+}

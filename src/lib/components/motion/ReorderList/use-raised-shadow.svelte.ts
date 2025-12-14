@@ -1,13 +1,14 @@
-import { animate, type MotionValue, useMotionValue } from '$lib/motion-start';
+import { useMotionValue } from '$lib/motion-start';
+import { animate } from '$lib/motion-start/animation/animate';
 
 const inactiveShadow = '0px 0px 0px rgba(0,0,0,0.8)';
 
-export function useRaisedShadow(value: MotionValue<number>) {
+export function useRaisedShadow(value: { on: (evt: 'change', cb: (latest: number) => void) => void }) {
 	const boxShadow = useMotionValue(inactiveShadow);
 
 	$effect(() => {
 		let isActive = false;
-		value.on('change', (latest) => {
+		value.on('change', (latest: number) => {
 			const wasActive = isActive;
 			if (latest !== 0) {
 				isActive = true;

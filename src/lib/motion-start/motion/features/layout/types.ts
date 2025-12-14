@@ -1,8 +1,9 @@
-import type { animateLayout } from "./utils";
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+import type { animateLayout } from './MeasureLayout.svelte';
 
 /**
  * @public

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { createContext } from 'svelte';
 import type { TransformPoint } from '../projection/geometry/types';
 import type { Transition } from '../types';
-import { createContext } from './create';
 
 export type ReducedMotionConfig = 'always' | 'never' | 'user';
 
@@ -49,11 +49,26 @@ export interface MotionConfigContext {
 	nonce?: string;
 }
 
+export const defaultMotionConfig: MotionConfigContext = {
+	reducedMotion: 'never',
+	transformPagePoint: (p) => p,
+	isStatic: false,
+};
+
 /**
  * @public
  */
-export const MotionConfigContext = createContext<MotionConfigContext>({
-	transformPagePoint: (p) => p,
-	isStatic: false,
-	reducedMotion: 'never',
-});
+const [getMotionConfigContext, setMotionConfigContext] = createContext<MotionConfigContext>();
+
+function useMotionConfig() {
+	try {
+		return getMotionConfigContext()
+	} catch {
+		return setMotionConfigContext(defaultMotionConfig);
+	}
+}
+
+export {
+	useMotionConfig,
+	setMotionConfigContext
+}

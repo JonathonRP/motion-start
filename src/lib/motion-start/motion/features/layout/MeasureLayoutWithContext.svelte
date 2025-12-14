@@ -3,15 +3,15 @@
 <svelte:options runes />
 
 <script lang="ts">
+	import { Previous, watch } from "runed";
+	import { onDestroy, onMount } from "svelte";
+	import { frame } from "../../../frameloop";
+	import { microtask } from "../../../frameloop/microtask";
+	import { globalProjectionState } from "../../../projection/node/state";
 	import { correctBorderRadius } from "../../../projection/styles/scale-border-radius";
 	import { correctBoxShadow } from "../../../projection/styles/scale-box-shadow";
-	import { frame } from "../../../frameloop";
-	import { onDestroy, onMount } from "svelte";
 	import { addScaleCorrector } from "../../../projection/styles/scale-correction";
-	import { globalProjectionState } from "../../../projection/node/state";
-	import { microtask } from "../../../frameloop/microtask";
 	import type { MeasureProps } from "./MeasureLayout.svelte";
-	import { Previous } from "runed";
 
 	const defaultScaleCorrectors = {
 		borderRadius: {
@@ -68,50 +68,53 @@
 	});
 
 	// getSnapshotBeforeUpdate
-	$effect.pre(() => {
-		const { layoutDependency, visualElement, drag, isPresent } = props;
-		const prevProps = new Previous(() => ({ isPresent, layoutDependency }));
-		const projection = visualElement.projection;
+	watch.pre(
+		[() => props, () => props.visualElement.projection],
+		([prevProps], [props]) => {
+			const { layoutDependency, visualElement, drag, isPresent } =
+				props ?? {};
+			const projection = visualElement?.projection;
 
-		if (!projection) return;
+			if (!projection) return;
 
-		/**
-		 * TODO: We use this data in relegate to determine whether to
-		 * promote a previous element. There's no guarantee its presence data
-		 * will have updated by this point - if a bug like this arises it will
-		 * have to be that we markForRelegation and then find a new lead some other way,
-		 * perhaps in didUpdate
-		 */
-		projection.isPresent = isPresent;
+			/**
+			 * TODO: We use this data in relegate to determine whether to
+			 * promote a previous element. There's no guarantee its presence data
+			 * will have updated by this point - if a bug like this arises it will
+			 * have to be that we markForRelegation and then find a new lead some other way,
+			 * perhaps in didUpdate
+			 */
+			projection.isPresent = isPresent;
 
-		if (
-			drag ||
-			prevProps.current?.layoutDependency !== layoutDependency ||
-			layoutDependency === undefined
-		) {
-			projection.willUpdate();
-		} else {
-			safeToRemove();
-		}
-
-		if (prevProps.current?.isPresent !== isPresent) {
-			if (isPresent) {
-				projection.promote();
-			} else if (!projection.relegate()) {
-				/**
-				 * If there's another stack member taking over from this one,
-				 * it's in charge of the exit animation and therefore should
-				 * be in charge of the safe to remove. Otherwise we call it here.
-				 */
-				frame.postRender(() => {
-					const stack = projection.getStack();
-					if (!stack || !stack.members.length) {
-						safeToRemove();
-					}
-				});
+			if (
+				drag ||
+				prevProps?.layoutDependency !== layoutDependency ||
+				layoutDependency === undefined
+			) {
+				projection.willUpdate();
+			} else {
+				safeToRemove();
 			}
-		}
-	});
+
+			if (prevProps?.isPresent !== isPresent) {
+				if (isPresent) {
+					projection.promote();
+				} else if (!projection.relegate()) {
+					/**
+					 * If there's another stack member taking over from this one,
+					 * it's in charge of the exit animation and therefore should
+					 * be in charge of the safe to remove. Otherwise we call it here.
+					 */
+					frame.postRender(() => {
+						const stack = projection.getStack();
+						if (!stack || !stack.members.length) {
+							safeToRemove();
+						}
+					});
+				}
+			}
+		},
+	);
 
 	// componentDidUpdate
 	$effect(() => {

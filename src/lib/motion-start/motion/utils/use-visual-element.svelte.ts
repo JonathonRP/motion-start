@@ -3,23 +3,22 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
+import { IsMounted } from 'runed';
+import { untrack } from 'svelte';
+import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { LazyContext } from '../../context/LazyContext';
-import { MotionConfigContext } from '../../context/MotionConfigContext';
+import { useMotionConfig } from '../../context/MotionConfigContext';
 import { MotionContext } from '../../context/MotionContext';
-import { PresenceContext } from '../../context/PresenceContext';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import { usePresenceContext } from '../../context/PresenceContext';
+import { SwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
+import { microtask } from '../../frameloop/microtask';
+import type { IProjectionNode } from '../../projection/node/types';
+import { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
+import { isRefObject } from '../../utils/is-ref-object.js';
+import { ref } from '../../utils/ref.svelte';
 import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
-import type { IProjectionNode } from '../../projection/node/types';
-import { isRefObject } from '../../utils/is-ref-object.js';
-import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
-import { microtask } from '../../frameloop/microtask';
-import { useContext } from '../../context/use';
-import { tick, untrack } from 'svelte';
-import { Debounced, IsMounted, useDebounce, watch } from 'runed';
-import type { MutableRefObject } from '$lib/motion-start/utils/safe-react-types';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string,
@@ -28,20 +27,20 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement?: CreateVisualElement<Instance>,
 	ProjectionNodeConstructor?: new (...args: any[]) => IProjectionNode<unknown>
 ): VisualElement<Instance> | null {
-	const { visualElement: parent } = $derived(useContext(MotionContext).current);
+	const { visualElement: parent } = MotionContext.getOr(null) || {};
 
-	const lazyContext = $derived(useContext(LazyContext).current);
+	const lazyContext = LazyContext.getOr({ strict: false } as any);
 
-	const presenceContext = $derived(useContext(PresenceContext).current);
+	const presenceContext = $derived(usePresenceContext().current);
 
-	const reducedMotionContext = $derived(useContext(MotionConfigContext).current?.reducedMotion);
+	const reducedMotionContext = $derived(useMotionConfig().reducedMotion);
 
-	const visualElementRef = $state<MutableRefObject<VisualElement<Instance> | null>>({ current: null });
+	const visualElementRef = ref<VisualElement<Instance> | null>(null);
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
 	 */
-	createVisualElement = createVisualElement || lazyContext?.renderer;
+	createVisualElement = createVisualElement || lazyContext.renderer;
 
 	if (!visualElementRef.current && createVisualElement) {
 		visualElementRef.current = createVisualElement(Component, {
@@ -53,7 +52,7 @@ export function useVisualElement<Instance, RenderState>(
 				return props();
 			},
 			presenceContext,
-			blockInitialAnimation: presenceContext ? presenceContext.initial === false : false,
+			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
 	}
@@ -62,7 +61,7 @@ export function useVisualElement<Instance, RenderState>(
 
 	$inspect(visualElement);
 
-	const initialLayoutGroupConfig = $derived(useContext(SwitchLayoutGroupContext).current);
+	const initialLayoutGroupConfig = SwitchLayoutGroupContext.getOr({});
 
 	if (
 		visualElement &&
@@ -74,7 +73,7 @@ export function useVisualElement<Instance, RenderState>(
 	}
 
 	const isMounted = new IsMounted();
-	$inspect('useVisualElement', presenceContext);
+	$inspect(presenceContext);
 
 	$effect.pre(() => {
 		props();
@@ -165,7 +164,7 @@ function createProjectionNode(
 
 	visualElement.projection.setOptions({
 		layoutId,
-		layout,
+		layout: typeof layout === 'boolean' || typeof layout === 'string' ? layout : undefined,
 		alwaysMeasureLayout: Boolean(drag) || (dragConstraints && isRefObject(dragConstraints)),
 		visualElement,
 		/**

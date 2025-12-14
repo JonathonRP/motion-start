@@ -3,10 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { useContext } from '../../context/use';
-import { PresenceContext } from '../../context/PresenceContext';
 import { untrack } from 'svelte';
-import { useId } from '$lib/motion-start/utils/useId';
+import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext';
+
+let counter = 0;
+const incrementId = () => counter++;
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -14,7 +15,7 @@ export type Present = [true];
 export type NotPresent = [false, SafeToRemove];
 
 export function isPresent(context: () => PresenceContext | null) {
-	const contextMemo = context();
+	const contextMemo = $derived.by(context);
 	return contextMemo === null ? true : contextMemo.isPresent;
 }
 
@@ -38,9 +39,9 @@ export function isPresent(context: () => PresenceContext | null) {
  *
  * @public
  */
-export const useIsPresent = (): boolean => {
-	const presenceContext = $derived(useContext(PresenceContext).current);
-	return isPresent(() => presenceContext);
+export const useIsPresent = (): () => boolean => {
+	const context = $derived(usePresenceContext().current);
+	return () => isPresent(() => context);
 };
 
 /**
@@ -65,21 +66,21 @@ export const useIsPresent = (): boolean => {
  *
  * @public
  */
-export const usePresence = (): AlwaysPresent | Present | NotPresent => {
-	const context = $derived(useContext(PresenceContext).current);
+export const usePresence = (): () => AlwaysPresent | Present | NotPresent => {
+	const context = $derived(usePresenceContext().current);
 
 	if (context === null) {
-		return [true, null] satisfies AlwaysPresent;
+		return () => [true, null] satisfies AlwaysPresent;
 	}
 
 	const { isPresent, onExitComplete, register } = $derived(context);
-
-	const id = $derived(useId());
+	
+	const id = incrementId();
 	$effect(() => {
-		return untrack(() => register(id));
+		untrack(() => register(id));
 	});
 
 	const safeToRemove = $derived(() => onExitComplete && onExitComplete(id));
 
-	return !isPresent && onExitComplete ? [false, safeToRemove] : [true];
+	return () => !isPresent && onExitComplete ? [false, safeToRemove] : [true];
 };

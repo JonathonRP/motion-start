@@ -3,42 +3,43 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-  import { useContext } from "../../context/use";
-  import { MotionConfigContext } from "../../context/MotionConfigContext.js";
+  import {
+    setMotionConfigContext,
+    useMotionConfig,
+  } from "../../context/MotionConfigContext.js";
   import type { MotionConfigProps } from "./index.js";
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
+  import type { Snippet } from "svelte";
 
-  interface Props extends MotionConfigProps {}
+  interface Props extends MotionConfigProps {
+    children: Snippet;
+  }
 
-  let { isValidProp, children, ...configure }: Props = $props();
+  let {
+    isValidProp,
+    children,
+    transition,
+    reducedMotion,
+    nonce,
+    isStatic,
+    transformPagePoint,
+  }: Props = $props();
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
-  const motionConfigContext = useContext(MotionConfigContext);
+  const parentConfig = useMotionConfig();
   /**
    * Inherit props from any parent MotionConfig components
    */
-  const config = $derived({
-    ...configure,
-    ...motionConfigContext.current,
+  const config = $state({
+    transition: transition ?? parentConfig.transition,
+    reducedMotion: reducedMotion ?? parentConfig.reducedMotion,
+    nonce: nonce ?? parentConfig.nonce,
+    isStatic: isStatic ?? parentConfig.isStatic,
+    transformPagePoint: transformPagePoint ?? parentConfig.transformPagePoint,
   });
 
-  /**
-   * Don't allow isStatic to change between renders as it affects how many hooks
-   * motion components fire.
-   */
-  //config.isStatic = useConstant(() => config.isStatic)
-
-  $effect(() => {
-    $state.snapshot(config.transition);
-    config.transformPagePoint;
-    config.reducedMotion;
-    /**
-     * Creating a new config context object will re-render every `motion` component
-     * every time it renders. So we only want to create a new one sparingly.
-     */
-    motionConfigContext.current = config;
-  });
+  setMotionConfigContext(config);
 </script>
 
 {@render children?.()}

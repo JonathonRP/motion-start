@@ -11,8 +11,6 @@ Copyright (c) 2018 Framer B.V. -->
   import { useSvgProps } from "../svg/use-props.svelte";
   import { useHTMLProps } from "../html/use-props.svelte";
   import { createAttachmentKey } from "svelte/attachments";
-  import { untrack } from "svelte";
-  import { noop } from "$lib/motion-start/utils/noop";
 
   type Props = Parameters<
     RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>
@@ -47,7 +45,7 @@ Copyright (c) 2018 Framer B.V. -->
   );
 
   // TODO: attachments broke visualElement
-  const motionRef = (node) => {
+  const motionRef = (node: HTMLElement | SVGElement) => {
     // runs in effect.pre causes broken state, why?
     // $effect.pre(() => {
     if (typeof ref === "function") {
@@ -62,7 +60,7 @@ Copyright (c) 2018 Framer B.V. -->
   const elementProps = $derived({
     ...filteredProps,
     ...visualProps,
-    [attach]: motionRef,
+    // [attach]: motionRef,
   });
 </script>
 
@@ -70,6 +68,7 @@ Copyright (c) 2018 Framer B.V. -->
   this={Component}
   {...elementProps}
   xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
+  use:motionRef
 >
   {@render props.children?.()}
 </svelte:element>

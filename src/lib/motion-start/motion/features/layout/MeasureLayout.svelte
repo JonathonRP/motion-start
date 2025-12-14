@@ -13,11 +13,16 @@ Copyright (c) 2018 Framer B.V. -->
 	export interface MeasureProps extends MotionProps, MeasureContextProps {
 		visualElement: VisualElement<unknown>;
 	}
+
+	export const animateLayout = {
+		track: <A extends unknown[], R>(fn: (...args: A) => R) => {
+			return fn;
+		},
+	};
 </script>
 
 <script lang="ts">
 	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte";
-	import { useContext } from "../../../context/use";
 	import { LayoutGroupContext } from "../../../context/LayoutGroupContext";
 	import { SwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
 	import type { MotionProps } from "../../types";
@@ -29,14 +34,14 @@ Copyright (c) 2018 Framer B.V. -->
 	}
 	const props: MeasureLayoutProps = $props();
 
-	const [isPresent, safeToRemove] = $derived(usePresence());
-	const layoutGroup = $derived(useContext(LayoutGroupContext).current);
+	const [isPresent, safeToRemove] = $derived.by(usePresence());
+	const layoutGroup = LayoutGroupContext.getOr({ forceRender: () => {} });
 </script>
 
 <MeasureLayoutWithContext
 	{...props}
 	{layoutGroup}
-	switchLayoutGroup={useContext(SwitchLayoutGroupContext).current}
+	switchLayoutGroup={SwitchLayoutGroupContext.getOr({})}
 	{isPresent}
 	{safeToRemove}
 />

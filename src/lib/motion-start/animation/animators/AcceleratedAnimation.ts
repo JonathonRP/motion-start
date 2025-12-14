@@ -110,15 +110,14 @@ function isUnsupportedEase(key: string): key is keyof typeof unsupportedEasingFu
 }
 
 export class AcceleratedAnimation<T extends string | number> extends BaseAnimation<T, ResolvedAcceleratedAnimation> {
-	// protected options: ValueAnimationOptionsWithDefaults<T> & {
-	// 	name: string;
-	// 	motionValue: MotionValue<T>;
-	// };
+	// Override options with proper autoplay type
+	protected declare options: ValueAnimationOptionsWithDefaults<T> & { name: string; motionValue: MotionValue<T> };
 
 	constructor(
-		protected options: ValueAnimationOptionsWithRenderContext<T> & { name: string; motionValue: MotionValue<T> }
+		options: ValueAnimationOptionsWithRenderContext<T> & { name: string; motionValue: MotionValue<T> }
 	) {
-		super(options);
+		// Ensure autoplay has a value to satisfy base class type requirements
+		super({ autoplay: true, ...options });
 
 		const { name, motionValue, element, keyframes } = this.options;
 
@@ -142,11 +141,14 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 	protected initPlayback(keyframes: ResolvedKeyframes<T>, finalKeyframe: T) {
 		let { duration = 300, times, ease, type, motionValue, name, startTime } = this.options;
 
+		// Type assertion: our MotionValue is structurally compatible with motion-dom's
+		const mv = motionValue as any as import('../../value').MotionValue<T>;
+
 		/**
 		 * If element has since been unmounted, return false to indicate
 		 * the animation failed to initialised.
 		 */
-		if (!motionValue.owner?.current) {
+		if (!mv.owner?.current) {
 			return false;
 		}
 
@@ -182,7 +184,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		}
 
 		const animation = startWaapiAnimation(
-			motionValue.owner!.current as unknown as HTMLElement,
+			mv.owner!.current as unknown as HTMLElement,
 			name,
 			keyframes as string[],
 			{ ...this.options, duration, times, ease }
@@ -206,7 +208,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			 */
 			animation.onfinish = () => {
 				const { onComplete } = this.options;
-				motionValue.set(getFinalKeyframe(keyframes, this.options, finalKeyframe));
+				mv.set(getFinalKeyframe(keyframes, this.options, finalKeyframe));
 				onComplete && onComplete();
 				this.cancel();
 				this.resolveFinishedPromise();
@@ -347,6 +349,8 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		 */
 		if (this.time) {
 			const { motionValue, onUpdate, onComplete, element, ...options } = this.options;
+			// Type assertion for MotionValue compatibility
+			const mv = motionValue as any as import('../../value').MotionValue<T>;
 
 			const sampleAnimation = new MainThreadAnimation({
 				...options,
@@ -360,7 +364,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 
 			const sampleTime = secondsToMilliseconds(this.time);
 
-			motionValue.setWithVelocity(
+			mv.setWithVelocity(
 				sampleAnimation.sample(sampleTime - sampleDelta).value,
 				sampleAnimation.sample(sampleTime).value,
 				sampleDelta
@@ -385,8 +389,8 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		resolved.animation.cancel();
 	}
 
-	static supports(options: ValueAnimationOptionsWithRenderContext): options is AcceleratedValueAnimationOptions {
-		const { motionValue, name, repeatDelay, repeatType, damping, type } = options;
+	static supports(options: ValueAnimationOptions<number>): options is AcceleratedValueAnimationOptions<number> {
+		const { motionValue, name, repeatDelay, repeatType, damping, type } = options as any;
 
 		return (supportsWaapi() &&
 			name &&

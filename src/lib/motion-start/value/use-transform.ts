@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { MotionValue } from '.';
 import { transform, type TransformOptions } from '../utils/transform';
 import { useCombineMotionValues } from './use-combine-values.svelte';
-import { useComputed } from './use-computed';
+import { useComputed } from './use-computed.svelte';
 
 export type InputRange = number[];
 type SingleTransformer<I, O> = (input: I) => O;
@@ -148,7 +148,7 @@ function useListTransform<I extends MotionValue[], O, V = MotionValueInstance<I>
 ) {
 	const latest: V[] = [];
 
-	return useCombineMotionValues(values, () => {
+	const { value, subscribe } = useCombineMotionValues(() => {
 		latest.length = 0;
 		const numValues = values.length;
 		for (let i = 0; i < numValues; i++) {
@@ -157,4 +157,8 @@ function useListTransform<I extends MotionValue[], O, V = MotionValueInstance<I>
 
 		return transformer(latest);
 	});
+
+	subscribe(values);
+
+	return value;
 }

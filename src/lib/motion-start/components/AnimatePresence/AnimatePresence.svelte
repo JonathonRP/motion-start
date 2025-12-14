@@ -5,16 +5,13 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="T">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-    import { useContext } from "../../context/use.js";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
     import { invariant } from "../../utils/errors.js";
-    import { SvelteMap, SvelteSet } from "svelte/reactivity";
-    import { getChildKey } from "./utils.js";
-    import { untrack } from "svelte";
+    import { getChildKey, type ComponentKey } from "./utils.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
-    export let list: $$Props["list"] = undefined,
+    export let list: $$Props["values"] = undefined,
         mode: $$Props["mode"] = "sync" as const,
         custom: $$Props["custom"] = undefined,
         initial: $$Props["initial"] = true,
@@ -28,7 +25,7 @@ Copyright (c) 2018 Framer B.V. -->
     let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
     $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
 
-    $: layoutContext = useContext(LayoutGroupContext).current;
+    $: layoutContext = LayoutGroupContext.getOr({} as any);
     $: forceRender = () => {
         layoutContext?.forceRender?.();
         _list = [..._list];
@@ -42,7 +39,7 @@ Copyright (c) 2018 Framer B.V. -->
     // $: presentChildren = pendingPresentChildren;
 
     let diffedChildren = new Map<string | number, { key: number }>();
-    let exiting = new Set<"" | number>();
+    let exiting = new Set<ComponentKey>();
     const updateChildLookup = (
         children: { key: number }[],
         allChild: Map<string | number, { key: number }>,
@@ -86,10 +83,8 @@ Copyright (c) 2018 Framer B.V. -->
         // Diff the present children with our target children and mark those that are exiting
         const numPresent = presentKeys.length;
         for (let i = 0; i < numPresent; i++) {
-            const key = presentKeys[i];
-            if (targetKeys.indexOf(key) === -1) {
-                exiting.add(key);
-            } else {
+            const key = presentKeys[i] as string | number;
+            if (targetKeys.indexOf(key as any) === -1) {
                 // In case this key has re-entered, remove from the exiting list
                 exiting.delete(key);
             }

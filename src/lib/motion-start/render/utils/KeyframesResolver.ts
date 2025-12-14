@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame } from '../../frameloop';
-import type { MotionValue } from 'framer-motion/dom';
+import type { MotionValue } from '../../value';
 import type { VisualElement } from '../VisualElement.svelte';
 import { removeNonTranslationalTransform } from '../dom/utils/unit-conversion';
 
@@ -19,14 +19,14 @@ let anyNeedsMeasurement = false;
 function measureAllKeyframes() {
 	if (anyNeedsMeasurement) {
 		const resolversToMeasure = Array.from(toResolve).filter((resolver: KeyframeResolver) => resolver.needsMeasurement);
-		const elementsToMeasure = new Set(resolversToMeasure.map((resolver) => resolver.element));
+		const elementsToMeasure = new Set(resolversToMeasure.map((resolver) => resolver.element).filter((el): el is VisualElement<HTMLElement> => el !== undefined));
 		const transformsToRestore = new Map<VisualElement<unknown, unknown>, [string, string | number][]>();
 
 		/**
 		 * Write pass
 		 * If we're measuring elements we want to remove bounding box-changing transforms.
 		 */
-		elementsToMeasure.forEach((element: VisualElement<HTMLElement>) => {
+		elementsToMeasure.forEach((element) => {
 			const removedTransforms = removeNonTranslationalTransform(element);
 
 			if (!removedTransforms.length) return;
@@ -40,7 +40,7 @@ function measureAllKeyframes() {
 		resolversToMeasure.forEach((resolver) => resolver.measureInitialState());
 
 		// Write
-		elementsToMeasure.forEach((element: VisualElement<HTMLElement>) => {
+		elementsToMeasure.forEach((element) => {
 			element.render();
 
 			const restore = transformsToRestore.get(element);

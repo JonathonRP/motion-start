@@ -60,6 +60,7 @@ export type HTMLMotionProps<Tag extends keyof HTMLElements> = AttributesWithoutM
  *
  * @public
  */
+// prettier-ignore
 export type HTMLMotionComponents = {
 	[K in keyof HTMLElements]: ForwardRefComponent<HTMLElements[K], HTMLMotionProps<K>>;
 };

@@ -4,13 +4,13 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { addPointerEvent } from '../events/add-pointer-event';
+import type { EventInfo } from '../events/types';
+import { frame } from '../frameloop';
+import { Feature } from '../motion/features/Feature';
+import type { VisualElement } from '../render/VisualElement.svelte';
 import { pipe } from '../utils/pipe';
 import { isDragActive } from './drag/utils/lock';
-import type { EventInfo } from '../events/types';
-import type { VisualElement } from '../render/VisualElement.svelte';
-import { Feature } from '../motion/features/Feature';
-import { frame } from '../frameloop';
-import { Gesture } from './Gesture';
+// import { Gesture } from './Gesture';
 
 function addHoverEvent(node: VisualElement<Element>, isActive: boolean) {
 	const eventName = isActive ? 'pointerenter' : 'pointerleave';
@@ -36,7 +36,7 @@ function addHoverEvent(node: VisualElement<Element>, isActive: boolean) {
 	});
 }
 
-export class HoverGesture extends Gesture {
+export class HoverGesture extends Feature<Element> {
 	mount() {
 		this.unmount = pipe(addHoverEvent(this.node, true), addHoverEvent(this.node, false)) as VoidFunction;
 	}

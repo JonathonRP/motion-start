@@ -6,10 +6,10 @@ Copyright (c) 2018 Framer B.V.
 import { Feature } from '../../motion/features/Feature';
 import type { VisualElement } from '../../render/VisualElement.svelte';
 import { noop } from '../../utils/noop';
-import { Gesture } from '../Gesture';
+// import { Gesture } from '../Gesture';
 import { VisualElementDragControls } from './VisualElementDragControls';
 
-export class DragGesture extends Gesture<HTMLElement> {
+export class DragGesture extends Feature<HTMLElement> {
 	controls: VisualElementDragControls;
 
 	removeGroupControls: Function = noop;

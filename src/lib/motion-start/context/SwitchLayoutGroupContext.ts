@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { Context } from 'runed';
 import type { IProjectionNode } from '../projection/node/types';
 import type { Transition } from '../types';
-import { createContext } from './create';
 
 export interface SwitchLayoutGroup {
 	register?: <I>(member: IProjectionNode<I>) => void;
@@ -29,4 +29,4 @@ export type InitialPromotionConfig = {
 /**
  * Internal, exported only for usage in Framer
  */
-export const SwitchLayoutGroupContext = createContext<SwitchLayoutGroupContext>({});
+export const SwitchLayoutGroupContext = new Context<SwitchLayoutGroupContext>("SwitchLayoutGroup");

@@ -24,7 +24,7 @@ Copyright (c) 2018 Framer B.V. -->
 		 *
 		 * @public
 		 */
-		onReorder: (newOrder: () => V[]) => void;
+		onReorder?: (newOrder: V[]) => void;
 
 		/**
 		 * The latest values state.
@@ -47,8 +47,7 @@ Copyright (c) 2018 Framer B.V. -->
 	}
 
 	type ReorderGroupProps<V> = Props<V> &
-		Omit<HTMLMotionProps<any>, "values"> &
-		PropsWithChildren<{}, [V]>;
+		Omit<HTMLMotionProps<any>, "values" | "children">;
 
 	function getValue<V>(item: ItemData<V>) {
 		return item.value;
@@ -60,33 +59,33 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts" generics="V">
-	import { invariant } from "../../utils/errors";
+	import { tick, type Component, type Snippet } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
-	import { untrack, type Component, type Snippet } from "svelte";
-	import { ReorderContext } from "../../context/ReorderContext";
+	import { setReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
+	import { invariant } from "../../utils/errors";
 	import type { Ref } from "../../utils/safe-react-types";
 
-	import type {
-		ItemData,
-		ReorderContext as ReorderContextProps,
-	} from "./types";
-	import { checkReorder } from "./utils/check-reorder.svelte";
 	import type { PropsWithChildren } from "../../utils/types";
-	import { useContext } from "../../context/use";
+	import { type ItemData } from "./types";
+	import { checkReorder } from "./utils/check-reorder.svelte";
+	import { watch } from "runed";
 
 	let {
-		children,
 		as = "ul",
-		axis = "y",
-		onReorder,
+		axis: axisProp = $bindable("y"),
 		values,
+		onReorder,
 		ref: externalRef = $bindable(),
+		children,
 		...props
 	}: ReorderGroupProps<V> & {
 		ref?: Ref<SvelteHTMLElements[typeof as]>;
+		children: Snippet<[{ item: V; id: number }]>;
 	} = $props();
+
+	const axis = $derived(axisProp);
 
 	const ReorderGroup = motion[as as keyof typeof motion] as Component<
 		PropsWithChildren<
@@ -98,13 +97,30 @@ Copyright (c) 2018 Framer B.V. -->
 	>;
 
 	let order: ItemData<V>[] = [];
-	let isReordering = $state({ current: false });
+	let isReordering = $state(false);
 
-	invariant(Boolean(values), "Reorder.Group must be provided a values prop");
+	watch(
+		() => values,
+		() => {
+			tick().then(() => {
+				isReordering = false;
+			});
+		},
+		{ lazy: true },
+	);
+	watch.pre(
+		() => values,
+		() => {
+			order = [];
+		},
+	);
 
-	let reorderContext = useContext(ReorderContext);
-	const context: ReorderContextProps<V> = {
-		axis,
+	// $inspect(values);
+
+	setReorderContext({
+		get axis() {
+			return axis;
+		},
 		registerItem: (value, layout) => {
 			// If the entry was already added, update it rather than adding it again
 			const idx = order.findIndex((entry) => value === entry.value);
@@ -116,50 +132,25 @@ Copyright (c) 2018 Framer B.V. -->
 			order.sort(compareMin);
 		},
 		updateOrder: (item, offset, velocity) => {
-			console.log(isReordering.current);
-			if (isReordering.current) return;
+			console.log("isReordering", isReordering);
+			if (isReordering) return;
 
 			const newOrder = checkReorder(order, item, offset, velocity);
-
-			console.log(order !== newOrder);
-
 			if (order !== newOrder) {
-				isReordering.current = true;
-				onReorder(() =>
+				isReordering = true;
+				onReorder?.(
 					newOrder
 						.map(getValue)
-						.filter((value) => values.indexOf(value) !== -1),
+						.filter((value) => values.includes(value)),
 				);
 			}
 		},
-	};
-
-	$effect(() => {
-		isReordering.current;
-		untrack(() => {
-			isReordering.current = false;
-		});
 	});
-
-	$effect.pre(() => {
-		order = [];
-	});
-
-	// $effect(() => {
-	// 	untrack(() => {
-	// 		ReorderContext.update(() => context);
-	// 	});
-	// 	// untrack(() => {
-	// 	// 	useContext(ReorderContext).current = context;
-	// 	// });
-	// });
-	// ReorderContext.update(() => context);
-	// ReorderContext.Provider = context;
-	reorderContext.current = context;
 </script>
 
-<ReorderGroup {...props} bind:ref={externalRef}>
-	{#each values as value (value)}
-		{@render children?.(value)}
+<ReorderGroup {...props} bind:ref={externalRef} ignoreStrict>
+	{invariant(Boolean(values), "Reorder.Group must be provided a values prop")}
+	{#each values as item, indx (item)}
+		{@render children({ item, id: indx })}
 	{/each}
 </ReorderGroup>

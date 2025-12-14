@@ -29,10 +29,10 @@ function setVariants(visualElement: VisualElement<unknown>, variantLabels: strin
 }
 
 export function setValues(visualElement: VisualElement<unknown>, definition: AnimationDefinition) {
-	if (Array.isArray(definition)) {
-		return setVariants(visualElement, definition);
-	} else if (typeof definition === 'string') {
+	if (typeof definition === 'string') {
 		return setVariants(visualElement, [definition]);
+	} else if (Array.isArray(definition)) {
+		return setVariants(visualElement, definition);
 	} else {
 		setTarget(visualElement, definition as any);
 	}

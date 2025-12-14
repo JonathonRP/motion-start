@@ -27,7 +27,9 @@ export class DOMKeyframesResolver<T extends string | number> extends KeyframeRes
 		motionValue?: MotionValue<T>,
 		element?: VisualElement<HTMLElement | SVGElement | unknown>
 	) {
-		super(unresolvedKeyframes, onComplete, name, motionValue, element, true);
+		// Type assertion needed: motion-start MotionValue is compatible with motion-dom MotionValue
+		// but TypeScript doesn't recognize the structural compatibility
+		super(unresolvedKeyframes, onComplete, name, motionValue as any, element, true);
 	}
 
 	readKeyframes() {

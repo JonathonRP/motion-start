@@ -87,7 +87,7 @@ export function createAnimationState<I>(visualElement: VisualElement<I>): Animat
 	 */
 	function animateChanges(changedActiveType?: AnimationType) {
 		const { props } = visualElement;
-		const context = getVariantContext(visualElement.parent) || {};
+		const context = getVariantContext(visualElement.parent ?? undefined) || {};
 
 		/**
 		 * A list of animations that we'll build into as we iterate through the animation

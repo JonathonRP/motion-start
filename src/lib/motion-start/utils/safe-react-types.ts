@@ -1,3 +1,5 @@
+export const RefSymbol = Symbol("ref");
+
 /**
  * This file contains some types that mirror those in React.
  * This allows mostly-generic code to use these types without
@@ -5,8 +7,9 @@
  * offer entry points that don't depend on React.
  */
 
-export type MutableRefObject<T> = {
-	current: T;
+export type MutableRefObject<T = any, S = T> = {
+	get current(): T;
+	set current(value: S);
 };
 
 export type RefObject<T> = {

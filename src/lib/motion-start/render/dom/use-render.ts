@@ -3,16 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { getContext, setContext, tick } from 'svelte';
 import type { RenderComponent } from '../../motion/features/types';
 import type { HTMLRenderState } from '../html/types';
-import { useHTMLProps } from '../html/use-props.svelte';
 import type { SVGRenderState } from '../svg/types';
-import { useSvgProps } from '../svg/use-props.svelte';
-import { filterProps } from './utils/filter-props';
-import { isSVGComponent } from './utils/is-svg-component';
-import { Children$ } from '../../components/AnimatePresence/utils';
-import { PresenceContext } from '../../context/PresenceContext';
 import UseRender from './UseRender.svelte';
 
 export function createUseRender(forwardMotionProps = false) {

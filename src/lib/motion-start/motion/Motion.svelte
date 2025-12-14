@@ -3,21 +3,19 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" generics="TProps, Instance, RenderState">
-  import { MotionConfigContext } from "../context/MotionConfigContext";
-  import { useVisualElement } from "./utils/use-visual-element.svelte";
-  import { useMotionRef } from "./utils/use-motion-ref.svelte";
+  import { useMotionConfig } from "../context/MotionConfigContext";
   import { useCreateMotionContext } from "../context/MotionContext/create.svelte";
   import { isBrowser } from "../utils/is-browser";
   import type { Ref } from "../utils/safe-react-types";
-  import { useContext } from "../context/use";
+  import MeasureLayoutComp from "./features/layout/MeasureLayout.svelte";
   import {
     getProjectionFunctionality,
     useLayoutId,
-    useStrictMode,
     type MotionComponentConfig,
     type MotionComponentProps,
   } from "./index.svelte";
-  import MeasureLayoutComp from "./features/layout/MeasureLayout.svelte";
+  import { useMotionRef } from "./utils/use-motion-ref.svelte";
+  import { useVisualElement } from "./utils/use-visual-element.svelte";
 
   type Props = {
     props: MotionComponentProps<TProps>;
@@ -45,7 +43,7 @@ Copyright (c) 2018 Framer B.V. -->
 
   const configAndProps = $derived({
     ...props,
-    ...useContext(MotionConfigContext).current,
+    ...useMotionConfig(),
     layoutId: useLayoutId(() => props),
   });
 
@@ -90,6 +88,21 @@ Copyright (c) 2018 Framer B.V. -->
   // $effect(() => () => {
   //   console.log("dismounting");
   //   context.visualElement?.unmount();
+  // });
+
+  // $effect.pre(() => {
+  //   void context.visualElement;
+  //   void props;
+  //   void context.visualElement?.projection;
+
+  //   console.log(
+  //     "Motion useEffect",
+  //     context.visualElement,
+  //     context.visualElement?.projection?.layout,
+  //   );
+  //   if (props.layout || props.layoutId) {
+  //     context.visualElement?.projection?.willUpdate();
+  //   }
   // });
 </script>
 

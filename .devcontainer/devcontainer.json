@@ -73,5 +73,8 @@
 	},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "root"
+	"remoteUser": "root",
+	"mounts": [
+		"source=${localEnv:HOME}/.local/share/pnpm,target=/home/node/.local/share/pnpm,type=bind,consistency=cached"
+	]
 }

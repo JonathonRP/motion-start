@@ -6,10 +6,9 @@ Copyright (c) 2018 Framer B.V.
 import { MotionContext } from '.';
 import type { MotionProps } from '../../motion/types';
 import { getCurrentTreeVariants } from './utils.svelte';
-import { useContext } from '../use';
 
 export function useCreateMotionContext<Instance>(props: MotionProps): MotionContext<Instance> {
-	const { initial, animate } = $derived(getCurrentTreeVariants(props, useContext(MotionContext).current));
+	const { initial, animate } = getCurrentTreeVariants(props, MotionContext.getOr({}));
 
 	const context = (_initial: string | false | undefined, _animate: string | false | undefined) => ({
 		initial,

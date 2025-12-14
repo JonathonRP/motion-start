@@ -3,19 +3,17 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
-import type { MotionProps } from '../types';
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
-import { resolveVariantFromProps } from '../../render/utils/resolve-variants.js';
+import { MotionContext } from '../../context/MotionContext';
+import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.js';
+import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import {
 	isControllingVariants as checkIsControllingVariants,
 	isVariantNode as checkIsVariantNode,
 } from '../../render/utils/is-controlling-variants.js';
+import { resolveVariantFromProps } from '../../render/utils/resolve-variants.js';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
-import { useContext } from '../../context/use';
-import { MotionContext } from '../../context/MotionContext';
-import { PresenceContext } from '../../context/PresenceContext';
-import { untrack } from 'svelte';
+import type { MotionProps } from '../types';
 
 export interface VisualState<Instance, RenderState> {
 	renderState: RenderState;
@@ -55,8 +53,8 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
-		const context = $derived(useContext(MotionContext).current);
-		const presenceContext = $derived(useContext(PresenceContext).current);
+		const context = MotionContext.getOr({});
+		const presenceContext = $derived(usePresenceContext().current);
 		const make = () => makeState(config, props, context, presenceContext);
 
 		const state = $derived.by(make);

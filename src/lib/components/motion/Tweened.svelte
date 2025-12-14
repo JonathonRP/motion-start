@@ -24,7 +24,7 @@
   <div>
     <Button
       id="tweenbtn"
-      oonclick={() => {
+      onclick={() => {
         i++;
       }}
       variant="outline"

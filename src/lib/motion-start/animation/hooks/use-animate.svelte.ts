@@ -1,10 +1,9 @@
 import type { AnimationScope } from '../types';
 import { createScopedAnimate } from '../animate';
 
-export function useAnimate<T extends Element = any>() {
-	(node: T) => {
+export function useAnimate<T extends Element = Element>() {
 		const scope: AnimationScope<T> = {
-			current: node, // hydrated by Svelte action
+			current: null! as T, // hydrated by Svelte action
 			animations: [],
 		};
 
@@ -14,6 +13,5 @@ export function useAnimate<T extends Element = any>() {
 			scope.animations.forEach((animation) => animation.stop());
 		});
 
-		return () => [scope, animate] as [AnimationScope<T>, typeof animate];
-	};
+		return [scope, animate] as [AnimationScope<T>, typeof animate];
 }

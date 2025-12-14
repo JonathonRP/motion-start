@@ -37,7 +37,6 @@ import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
 import { Previous } from 'runed';
-import { SvelteMap } from 'svelte/reactivity';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -560,11 +559,12 @@ export abstract class VisualElement<
 			}
 
 			const listenerName = ('on' + key) as keyof typeof props;
-			const listener = props[listenerName];
+			const listener = props()[listenerName];
 			if (listener) {
 				this.propEventSubscriptions[key] = this.on(key as any, listener);
 			}
 		}
+
 
 		this.prevMotionValues = updateMotionValuesFromProps(
 			this as VisualElement<unknown>,

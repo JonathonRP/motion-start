@@ -7,7 +7,6 @@ import { useTransform } from './use-transform';
 import type { MotionValue } from '.';
 import { invariant, warning } from '../utils/errors';
 import { useMotionValue } from './use-motion-value.svelte';
-import { useContext } from '../context/use';
 import { MotionContext } from '../context/MotionContext';
 
 interface ScaleMotionValues {
@@ -45,7 +44,7 @@ let hasWarned = false;
 export function useInvertedScale(scale?: Partial<ScaleMotionValues>): ScaleMotionValues {
 	let parentScaleX = useMotionValue(1);
 	let parentScaleY = useMotionValue(1);
-	const { visualElement } = useContext(MotionContext).current;
+	const { visualElement } = MotionContext.getOr({} as any);
 
 	invariant(
 		!!(scale || visualElement),

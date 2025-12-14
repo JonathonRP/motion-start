@@ -1,14 +1,13 @@
 <!-- https://codesandbox.io/p/sandbox/t7qxhv?file=/src/styles.css -->
 
 <script lang="ts">
+    import { AnimatePresence, motion } from "$lib/motion-start";
     import Box from "../Box.svelte";
-    import { motion, AnimatePresence } from "$lib/motion-start";
-    import { noop } from "$lib/motion-start/utils/noop";
 
     let count = $state(0);
-    let items = $state([0]);
+    let items = $state<number[]>([0]);
     let popLayout = $state(false);
-    let mode = $derived<"popLayout" | "sync">(popLayout ? "popLayout" : "sync");
+    let mode: 'popLayout' | 'sync' = $derived(popLayout ? "popLayout" : "sync");
 </script>
 
 <Box>
@@ -41,20 +40,20 @@
         >
             <AnimatePresence
                 {mode}
-                list={items.map((id, indx) => ({ key: id, id, indx }))}
+                list={items.map((id) => ({ key: id }))}
                 let:item
                 let:measure
             >
                 <motion.li
+                    key={item.key}
+                    id={item.key}
                     class="block bg-accent-500 h-[80px] w-full shrink-0 grow-0 basis-[80px] rounded-[20px] m-0 p-0"
                     layout
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.8, opacity: 0 }}
                     transition={{ type: "spring" }}
                     onclick={() => {
-                        const newItems = [...items];
-                        if (item.indx > -1) newItems.splice(item.indx, 1);
-                        items = newItems;
+                        items = items.filter((value) => value !== item.key);
                     }}
                     {@attach mode === "popLayout" && measure}
                 />

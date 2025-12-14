@@ -10,19 +10,18 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="V">
 	import type { SvelteHTMLElements } from "svelte/elements";
 
-	import { useContext } from "../../context/use";
-	import { ReorderContext } from "../../context/ReorderContext";
+	import { type Component } from "svelte";
+	import { useReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
-	import type { Component } from "svelte";
 
+	import type { animateLayout } from "../../motion/features/layout/MeasureLayout.svelte";
+	import type { HTMLMotionProps } from "../../render/html/types";
+	import { invariant } from "../../utils/errors";
+	import type { Ref } from "../../utils/safe-react-types";
+	import type { PropsWithChildren } from "../../utils/types";
 	import { useTransform } from "../../value/use-transform";
 	import { isMotionValue } from "../../value/utils/is-motion-value";
-	import { invariant } from "../../utils/errors";
-	import type { HTMLMotionProps } from "../../render/html/types";
-	import type { Ref } from "../../utils/safe-react-types";
-	import type { Box } from "../../projection/geometry/types";
-	import type { PropsWithChildren } from "../../utils/types";
 
 	type Props<V> = {
 		/**
@@ -45,14 +44,17 @@ Copyright (c) 2018 Framer B.V. -->
 		 * @public
 		 * @default true
 		 */
-		layout?: true | "position";
+		layout?:
+			| ReturnType<(typeof animateLayout)["track"]>
+			| true
+			| "position";
 	};
 
 	let {
+		as = "li",
 		children,
 		style = {},
 		value,
-		as = "li",
 		onDrag,
 		layout = true,
 		ref: externalRef = $bindable(),
@@ -70,21 +72,21 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 
-	const context = $derived(useContext(ReorderContext).current);
-	const point = {
-		x: useDefaultMotionValue(style.x),
-		y: useDefaultMotionValue(style.y),
+	const context = useReorderContext();
+	const point: Record<"x" | "y", ReturnType<typeof useDefaultMotionValue>> = {
+		x: useDefaultMotionValue(style?.x),
+		y: useDefaultMotionValue(style?.y),
 	};
 
 	const zIndex = useTransform([point.x, point.y], ([latestX, latestY]) =>
 		latestX || latestY ? 1 : "unset",
 	);
 
-	const { axis, registerItem, updateOrder } = $derived(context!);
+	const { axis, registerItem, updateOrder } = context ?? ({} as any);
 </script>
 
 <ReorderItem
-	drag={axis}
+	drag={axis?.current}
 	{...props}
 	dragSnapToOrigin
 	style={{
@@ -93,19 +95,31 @@ Copyright (c) 2018 Framer B.V. -->
 		y: point.y,
 		zIndex,
 	}}
-	{layout}
-	onDrag={(event, gesturePoint) => {
-		const { velocity } = gesturePoint;
-		velocity[axis] && updateOrder(value, point[axis].get(), velocity[axis]);
+	onDrag={async (event, gesturePoint) => {
+		event.preventDefault();
 
+		const { velocity } = gesturePoint as {
+			velocity: Record<"x" | "y", number>;
+		};
+		if (axis && (axis === "x" || axis === "y")) {
+			// Type narrowed to 'x' | 'y'
+			const axisKey = axis as "x" | "y";
+			if (velocity[axisKey]) {
+				const mv = point[axisKey];
+				updateOrder?.(value, mv.get(), velocity[axisKey]);
+			}
+		}
 		onDrag && onDrag(event, gesturePoint);
 	}}
-	onLayoutMeasure={(measured: Box) => registerItem(value, measured)}
+	onLayoutMeasure={(measured) => registerItem?.(value, measured)}
 	bind:ref={externalRef}
+	{layout}
+	custom={value}
+	ignoreStrict
 >
 	{invariant(
 		Boolean(context),
 		"Reorder.Item must be a child of Reorder.Group",
 	)}
-	{@render children?.()}
+	{@render children()}
 </ReorderItem>

@@ -22,9 +22,10 @@ Copyright (c) 2018 Framer B.V. -->
   import type { CreateVisualElement } from "../../render/types";
   import type { LazyProps } from "./types";
   import type { MutableRefObject, Ref } from "../../utils/safe-react-types";
+  import { ref } from "../../utils/ref.svelte";
 
   interface Props extends LazyProps {
-    children?: Snippet;
+    children: Snippet;
   }
 
   /**
@@ -62,40 +63,21 @@ Copyright (c) 2018 Framer B.V. -->
    *
    * @public
    */
-  let { features, strict, children }: Props = $props();
+  let { features: featuresProp, strict = false, children }: Props = $props();
 
-  let _ = !isLazyBundle(features);
-  let loadedRenderer: MutableRefObject<undefined | CreateVisualElement<any>> =
-    $state({
-      current: undefined,
-    });
+  const features = ref<FeatureBundle | LazyFeatureBundle>(featuresProp);
+  let loadedRenderer: CreateVisualElement<any> | undefined = undefined;
 
-  /**
-   * If this is a synchronous load, load features immediately
-   */
-  if (!isLazyBundle(features) && _) {
-    const { renderer, ...loadedFeatures } = features;
-    loadedRenderer.current = renderer;
+  if (!isLazyBundle(features.current!)) {
+    const { renderer, ...loadedFeatures } = features.current!;
+    loadedRenderer = renderer;
     loadFeatures(loadedFeatures);
   }
 
-  $effect.pre(() => {
-    if (isLazyBundle(features)) {
-      features().then(({ renderer, ...loadedFeatures }) => {
-        loadFeatures(loadedFeatures);
-        loadedRenderer.current = renderer;
-
-        _ = true;
-      });
-    }
-  });
-
-  $effect(() => {
-    LazyContext.Provider = {
-      renderer: loadedRenderer.current!,
-      strict: strict!,
-    };
+  LazyContext.set({
+    renderer: loadedRenderer,
+    strict: strict!,
   });
 </script>
 
-{@render children?.()}
+{@render children()}
