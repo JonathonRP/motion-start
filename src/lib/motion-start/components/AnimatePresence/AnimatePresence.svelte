@@ -70,33 +70,9 @@ Copyright (c) 2018 Framer B.V. -->
                 : currentShow
                   ? [{ key: 1 }]
                   : [];
-        console.log(
-            "[AnimatePresence] effect triggered, targetList:",
-            targetList.length,
-            "show:",
-            currentShow,
-            "list:",
-            currentList,
-        );
-
-        if (typeof window !== "undefined") {
-            const log = (window as any).__apRenderLog ?? [];
-            log.push({
-                target: targetList.length,
-                show: currentShow,
-                listDefined: currentList !== undefined,
-                ts: Date.now(),
-            });
-            (window as any).__apRenderLog = log;
-        }
 
         if (isInitialRender) {
             // On initial render, just show all children
-            console.log(
-                "[AnimatePresence] initial render, rendering",
-                targetList.length,
-                "children",
-            );
             untrack(() => {
                 renderedChildren = targetList.map((v) => ({
                     present: true,
@@ -145,12 +121,6 @@ Copyright (c) 2018 Framer B.V. -->
 
                 // Handle exiting children
                 if (exiting.size) {
-                    console.log(
-                        "[AnimatePresence] exiting.size:",
-                        exiting.size,
-                        "mode:",
-                        mode,
-                    );
                     // If mode is wait and we have exiting children, don't render entering ones yet
                     if (mode === "wait") {
                         newRenderedChildren.length = 0;
@@ -201,28 +171,10 @@ Copyright (c) 2018 Framer B.V. -->
                         });
                     });
                 }
-
-                console.log(
-                    "[AnimatePresence] prepared newRenderedChildren, count:",
-                    newRenderedChildren.length,
-                    "items:",
-                    newRenderedChildren.map((c) => ({
-                        key: getChildKey(c),
-                        present: c.present,
-                    })),
-                );
             });
 
             // CRITICAL: Assign OUTSIDE untrack so Svelte sees it as reactive update
             renderedChildren = newRenderedChildren;
-            console.log(
-                "[AnimatePresence] assigned renderedChildren (reactive)",
-            );
-            if (typeof window !== "undefined") {
-                (window as any).__apRenderedCount = untrack(
-                    () => renderedChildren.length,
-                );
-            }
         }
     });
 
