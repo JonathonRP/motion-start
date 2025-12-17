@@ -68,30 +68,28 @@
             Toggle Wait Mode
         </button>
 
-        <AnimatePresence mode="wait" values={waitItems}>
-            {#each waitItems as item (item.key)}
-                {#if item.key === "wait1"}
-                    <motion.div
-                        id="wait-item-1"
-                        class="animated-box"
-                        initial={{ x: -100, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: 100, opacity: 0 }}
-                    >
-                        Wait Item 1
-                    </motion.div>
-                {:else}
-                    <motion.div
-                        id="wait-item-2"
-                        class="animated-box"
-                        initial={{ x: -100, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: 100, opacity: 0 }}
-                    >
-                        Wait Item 2
-                    </motion.div>
-                {/if}
-            {/each}
+        <AnimatePresence mode="wait" values={waitItems} let:item>
+            {#if item.key === "wait1"}
+                <motion.div
+                    id="wait-item-1"
+                    class="animated-box"
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 100, opacity: 0 }}
+                >
+                    Wait Item 1
+                </motion.div>
+            {:else}
+                <motion.div
+                    id="wait-item-2"
+                    class="animated-box"
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 100, opacity: 0 }}
+                >
+                    Wait Item 2
+                </motion.div>
+            {/if}
         </AnimatePresence>
     </section>
 
@@ -106,18 +104,16 @@
             Toggle Conditional
         </button>
 
-        <AnimatePresence values={conditionalItems}>
-            {#each conditionalItems as item (item.key)}
-                <motion.div
-                    id="conditional-item"
-                    class="animated-box"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                >
-                    Conditional Item
-                </motion.div>
-            {/each}
+        <AnimatePresence values={conditionalItems} let:item>
+            <motion.div
+                id="conditional-item"
+                class="animated-box"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+            >
+                Conditional Item
+            </motion.div>
         </AnimatePresence>
     </section>
 </div>
