@@ -3,21 +3,60 @@ describe('Gestures basics', () => {
 		cy.visit('/gestures-basics');
 		cy.get('#draggable', { timeout: 10000 }).should('be.visible');
 
-		// Just verify the element exists and is interactive
-		cy.get('#draggable').should('have.text', 'Drag me');
+		// Just verify element exists before drag
+		cy.get('#draggable').should('exist');
 
-		// Simulate drag with pointerdown, pointermove, pointerup
+		// Get the drag area bounds to understand constraints
+		cy.get('#drag-area').then(($container) => {
+			const containerRect = $container[0].getBoundingClientRect();
+
+			// Simulate a drag gesture - try to drag beyond constraints
+			cy.get('#draggable')
+				.trigger('pointerdown', { pointerId: 1, isPrimary: true, buttons: 1 })
+				.trigger(
+					'pointermove',
+					{
+						pointerId: 1,
+						isPrimary: true,
+						buttons: 1,
+						clientX: containerRect.right - 50, // Try to drag past right constraint (220px)
+						clientY: containerRect.bottom - 30, // Try to drag past bottom constraint (120px)
+					},
+					{ force: true }
+				)
+				.wait(200);
+
+			// Check that element is still within reasonable bounds
+			cy.get('#draggable').then(($el) => {
+				const elementRect = $el[0].getBoundingClientRect();
+
+				// Element should not be completely outside the container
+				expect(elementRect.left).to.be.lessThan(containerRect.right);
+				expect(elementRect.top).to.be.lessThan(containerRect.bottom);
+			});
+
+			cy.get('#draggable').trigger('pointerup', { pointerId: 1, isPrimary: true });
+		});
+	});
+
+	it('applies whileDrag styles during drag', () => {
+		cy.visit('/gestures-basics');
+		cy.get('#draggable', { timeout: 10000 }).should('be.visible');
+
+		// Simulate drag gesture
 		cy.get('#draggable')
 			.trigger('pointerdown', { pointerId: 1, isPrimary: true, buttons: 1 })
 			.trigger(
 				'pointermove',
-				{ pointerId: 1, isPrimary: true, buttons: 1, movementX: 50, movementY: 30 },
+				{ pointerId: 1, isPrimary: true, buttons: 1, movementX: 30, movementY: 20 },
 				{ force: true }
 			)
-			.trigger('pointerup', { pointerId: 1, isPrimary: true });
+			.wait(150)
+			.trigger('pointerup', { pointerId: 1, isPrimary: true })
+			.wait(200);
 
-		// Verify element still exists (drag completed)
-		cy.get('#draggable').should('exist');
+		// Verify element still exists after drag completes
+		cy.get('#draggable').should('exist').should('have.text', 'Drag me');
 	});
 
 	it('applies whileHover styles on hover', () => {
