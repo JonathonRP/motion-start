@@ -32,14 +32,13 @@ Copyright (c) 2018 Framer B.V. -->
 
     const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
-    const memoContext = {
+    // Create a reactive context that rebuilds when isPresent changes
+    const memoContext = $derived({
         mode,
         id,
         initial,
-        isPresent,
-        get custom() {
-            return custom;
-        },
+        isPresent,  // Now this will be the current prop value
+        custom,
         onExitComplete: (childId: string | number) => {
             presenceChildren.set(childId, true);
             for (const [, isComplete] of presenceChildren) {
@@ -54,18 +53,12 @@ Copyright (c) 2018 Framer B.V. -->
                 presenceChildren.delete(childId);
             };
         },
-    };
-
-    let context = usePresenceContext().current;
-
-    $effect(() => {
-        if (presenceAffectsLayout) {
-            context = memoContext;
-        }
     });
 
+    let context = $state(memoContext);
+
     $effect(() => {
-        refresh;
+        // Update context when memoContext changes (which happens when isPresent changes)
         context = memoContext;
     });
 
