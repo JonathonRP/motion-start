@@ -126,7 +126,7 @@ Copyright (c) 2018 Framer B.V. -->
                 if (exiting.size) {
                     console.log('[AnimatePresence] exiting.size:', exiting.size, 'mode:', mode);
                     // If mode is wait and we have exiting children, don't render entering ones yet
-                    if (exitBeforeEnter) {
+                    if (mode === "wait") {
                         newRenderedChildren.length = 0;
                     }
 
