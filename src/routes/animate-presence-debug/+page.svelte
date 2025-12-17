@@ -6,27 +6,37 @@
     let clickCount = $state(0);
 
     onMount(() => {
-        console.log('[DEBUG] Page mounted');
+        console.log("[DEBUG] Page mounted");
         (window as any).__debugReady = true;
     });
 
     $effect(() => {
-        console.log('[DEBUG] Parent $effect - show:', show, 'clickCount:', clickCount);
+        console.log(
+            "[DEBUG] Parent $effect - show:",
+            show,
+            "clickCount:",
+            clickCount,
+        );
     });
 
     function toggleShow() {
         clickCount++;
         show = !show;
-        console.log('[DEBUG] Button clicked - show is now:', show, 'clickCount:', clickCount);
+        console.log(
+            "[DEBUG] Button clicked - show is now:",
+            show,
+            "clickCount:",
+            clickCount,
+        );
     }
 </script>
 
 <div class="p-8">
     <h1 class="text-2xl font-bold mb-4">AnimatePresence Reactivity Debug</h1>
-    
+
     <div class="mb-4">
         <p>Click count: {clickCount}</p>
-        <p>Show state: {show ? 'true' : 'false'}</p>
+        <p>Show state: {show ? "true" : "false"}</p>
     </div>
 
     <button
@@ -40,7 +50,7 @@
 
     <div class="border-2 border-gray-300 p-4 min-h-[100px]">
         <p class="text-sm text-gray-600 mb-2">AnimatePresence container:</p>
-        <AnimatePresence show={show}>
+        <AnimatePresence {show}>
             <motion.div
                 id="debug-item"
                 class="bg-green-500 text-white p-4 rounded"
@@ -60,6 +70,9 @@
 
 <style>
     :global(body) {
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family:
+            system-ui,
+            -apple-system,
+            sans-serif;
     }
 </style>

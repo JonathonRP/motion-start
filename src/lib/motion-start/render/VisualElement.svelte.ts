@@ -226,8 +226,9 @@ export abstract class VisualElement<
 
 	/**
 	 * The AnimationState, this is hydrated by the animation Feature.
+	 * Using $state() to make it reactive so features automatically update.
 	 */
-	animationState?: AnimationState;
+	animationState = $state<AnimationState | undefined>(undefined);
 
 	KeyframeResolver = KeyframeResolver;
 
@@ -249,7 +250,7 @@ export abstract class VisualElement<
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
 	 */
-	private features: {
+	features: {
 		[K in keyof FeatureDefinitions]?: InstanceType<ExtractFeature<FeatureDefinitions[K]>>;
 	} = {};
 

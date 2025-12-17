@@ -37,7 +37,7 @@ Copyright (c) 2018 Framer B.V. -->
         mode,
         id,
         initial,
-        isPresent,  // Now this will be the current prop value
+        isPresent, // Now this will be the current prop value
         custom,
         onExitComplete: (childId: string | number) => {
             presenceChildren.set(childId, true);

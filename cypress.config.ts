@@ -8,6 +8,5 @@ export default defineConfig({
     },
     // Try to ensure JavaScript executes in headless mode
     chromeWebSecurity: false,
-    experimentalModifyObstructiveCode: false,
   },
 });
