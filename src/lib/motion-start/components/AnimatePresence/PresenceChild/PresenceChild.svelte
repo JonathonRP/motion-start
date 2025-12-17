@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-    import { tick } from "svelte";
+    import { tick, untrack } from "svelte";
     import {
         usePresenceContext,
         setPresenceContext,
@@ -67,6 +67,12 @@ Copyright (c) 2018 Framer B.V. -->
     };
     $effect(() => {
         setExit(isPresent);
+    });
+    $effect(() => {
+        tick().then(() => {
+            !isPresent &&
+                untrack(() => !presenceChildren.size && onExitComplete?.());
+        });
     });
 
     setPresenceContext({

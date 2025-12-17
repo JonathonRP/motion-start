@@ -127,3 +127,14 @@ For example: `bd create --help` shows `--parent`, `--deps`, `--assignee`, etc.
 ---
 
 **For detailed workflows and advanced features, see [AGENTS.md](../AGENTS.md)**
+
+## Landing the Plane
+
+When finishing a session or when asked to "land the plane":
+- Run all checks and tests:
+    - `npx sv check` (Svelte type checks)
+    - `npx cypress run` (E2E tests; or target a spec with `--spec` for scoped changes)
+- Ensure formatting is clean: `npx @biomejs/biome format --write .`
+- Update bd issues to reflect completed work (`bd update`, `bd close --json`).
+- Commit code changes together with `.beads/issues.jsonl` so tracking stays in sync.
+- Provide a concise summary: changes made, test results, bd status, and any follow-ups.

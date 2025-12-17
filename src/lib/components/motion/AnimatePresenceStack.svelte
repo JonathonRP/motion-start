@@ -1,6 +1,6 @@
 <!-- https://codesandbox.io/p/sandbox/gm9n3c?file=/src/index.js -->
 
-<script>
+<script lang="ts">
     import Card from "$lib/components/Card.svelte";
     import { AnimatePresence } from "$lib/motion-start";
     import Box from "../Box.svelte";
@@ -12,7 +12,7 @@
     <div
         class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
     >
-        <AnimatePresence initial={false} list={[{ key: index }]}>
+        <AnimatePresence initial={false} values={[{ key: index }]}>
             <Card index={mint} frontCard={false} />
             <Card bind:index drag="x" frontCard={true} />
         </AnimatePresence>

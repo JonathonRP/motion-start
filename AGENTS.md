@@ -1,5 +1,72 @@
 # Agent Instructions
 
+These instructions adapt the beads AGENT_INSTRUCTIONS template to Motion Start, merging existing guidance from this repo’s `AGENTS.md`, `.github/copilot-instructions.md`, and project docs.
+
+## Project Overview
+- Motion Start: Svelte 5 port of framer-motion. Animations, gestures, layout projection, TypeScript-first.
+- Tech: SvelteKit + Svelte 5 runes, TypeScript, TailwindCSS, Biome, Cypress E2E.
+- Key paths: `src/lib/motion-start` (core), `src/routes` (examples), `cypress/` (tests), `docs/` (project docs), `history/` (investigations/plans).
+- See `.github/copilot-instructions.md` for quick-start commands and conventions.
+
+## Non-Negotiable Rules
+- Use bd (beads) for ALL tracking; never create markdown TODO lists.
+- Always include `--json` when using bd programmatically.
+- Always commit `.beads/issues.jsonl` with code changes (bd auto-syncs).
+- Prefer Svelte 5 runes for new code; legacy components may temporarily use `runes={false}` during migration.
+- Fix TypeScript and `svelte-check` issues incrementally; avoid `any` unless absolutely necessary.
+
+## TDD Workflow (for new tasks/features/bugs)
+- Red: Write failing tests first (Cypress E2E under `cypress/e2e/`, or targeted tests), no implementation yet.
+- Green: Implement the smallest change necessary to pass.
+- Refactor: Improve code with tests staying green.
+- Prefer incremental, test-backed commits; avoid large untested edits.
+
+Common test commands
+```bash
+# Svelte type checks
+npx sv check
+
+# Run a specific Cypress spec
+npx cypress run --spec cypress/e2e/animate-presence.cy.ts
+
+# Run all Cypress specs
+npx cypress run
+```
+
+## Landing the Plane (Complete Sessions)
+When asked to “land the plane”, you MUST run all tests and finalize tracking:
+1. Update/close bd issues to reflect work completed.
+2. Run all quality gates:
+  - `npx sv check`
+  - `npx cypress run` (or targeted specs if scoped changes)
+3. Ensure formatting/linting are clean; working tree tidy (no untracked files).
+4. Commit changes with `.beads/issues.jsonl` included.
+5. Provide a concise summary: what changed, test results, bd status, and any follow-ups.
+
+## TDD Agents (Red → Green → Refactor)
+
+To standardize TDD, the repo includes three agents under `.github/agents/`:
+
+- `tdd-red.agent.md` – Writes failing tests first (no implementation edits)
+- `tdd-green.agent.md` – Implements the minimum code to pass those tests
+- `tdd-refactor.agent.md` – Refactors with all tests green, no behavior changes
+
+**Recommended flow for new tasks/features/bugs:**
+1. Start with Red agent to author failing tests aligning with the requirement.
+2. Handoff to Green agent to implement the minimal solution and get tests passing.
+3. Handoff to Refactor agent for cleanup while keeping tests green.
+4. Land the plane: run `npx sv check`, `npx cypress run`, update/close bd issues, format, commit with `.beads/issues.jsonl`, and provide a concise session summary.
+
+These agents are optimized for small, iterative steps and help enforce TDD discipline across the project.
+
+## Documentation & References
+- `.github/copilot-instructions.md` – runtime, bd commands, project structure.
+- `docs/ARCHITECTURE.md` – architectural overview.
+- `docs/PROJECT_STRUCTURE.md` – directory layout.
+- `docs/RUNES_MIGRATION.md` – Svelte 5 migration notes.
+- `docs/TESTING.md` – testing strategy.
+- `history/` – investigation and planning documents.
+
 ## Issue Tracking with bd (beads)
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.

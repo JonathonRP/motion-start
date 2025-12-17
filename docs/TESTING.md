@@ -398,6 +398,57 @@ describe('AnimatePresence', () => {
 
 **Location**: `cypress/support/commands.ts`
 
+## TDD Checklist
+
+Use Test-Driven Development for new tasks, features, and bug fixes to keep scope tight and ensure regressions are caught.
+
+- Red: write a failing test first. Prefer the most specific level (unit/integration/E2E) that expresses the behavior.
+- Green: implement the smallest change needed to pass. Avoid broad refactors while red.
+- Refactor: improve code structure and readability while tests stay green. Keep changes incremental.
+
+Quick commands
+
+```bash
+# Type checks
+npx sv check
+
+# Run a single E2E spec (scoped changes)
+npx cypress run --spec cypress/e2e/animate-presence.cy.ts
+
+# Run all E2E specs
+npx cypress run
+
+# Format the codebase
+npx @biomejs/biome format --write .
+
+# Track work with bd (always use --json)
+bd ready --json
+bd update <id> --status in_progress --json
+bd close <id> --reason "Done" --json
+```
+
+Notes
+- Keep tests colocated where practical (`.spec.ts` for unit/integration, `.cy.ts` for E2E).
+- Update docs when behavior changes (architecture or testing sections as appropriate).
+- Commit code changes together with `.beads/issues.jsonl` so issue state stays in sync.
+ - For structured agent usage, see `.github/agents/README.md` for the Red→Green→Refactor flow.
+
+### TDD Agents
+
+For structured, repeatable TDD, use the project’s agents under `.github/agents/`:
+
+- `tdd-red.agent.md`: RED phase — write failing tests first (no implementation edits).
+- `tdd-green.agent.md`: GREEN phase — implement the minimum code to pass the new tests.
+- `tdd-refactor.agent.md`: REFACTOR phase — improve code quality while keeping tests green.
+
+Recommended flow:
+1. Start with Red agent to create failing tests that represent the requirement (happy path + edges).
+2. Handoff to Green agent to implement only what’s needed to pass.
+3. Handoff to Refactor agent to clean up while maintaining passing tests.
+4. Land the plane: run `npx sv check`, `npx cypress run`, update/close bd issues, format, and commit with `.beads/issues.jsonl`.
+
+Agents help enforce small, incremental changes and disciplined test-backed development.
+
 Available commands for animation testing:
 
 ```typescript
