@@ -55,7 +55,7 @@ Copyright (c) 2018 Framer B.V. -->
         },
     });
 
-    let context = $state(memoContext);
+    let context = usePresenceContext().current;
 
     $effect(() => {
         // Update context when memoContext changes (which happens when isPresent changes)

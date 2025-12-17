@@ -173,11 +173,8 @@ Copyright (c) 2018 Framer B.V. -->
                 }
             });
 
-            // CRITICAL: Only update if children actually changed to prevent infinite loops
-            if (JSON.stringify(renderedChildren.map(c => ({present: c.present, key: c.key}))) !== 
-                JSON.stringify(newRenderedChildren.map(c => ({present: c.present, key: c.key})))) {
-                renderedChildren = newRenderedChildren;
-            }
+            // CRITICAL: Assign OUTSIDE untrack so Svelte sees it as reactive update
+            renderedChildren = newRenderedChildren;
         }
     });
 
