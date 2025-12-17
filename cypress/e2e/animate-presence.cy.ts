@@ -28,8 +28,27 @@ describe('AnimatePresence', () => {
 			// Verify element doesn't exist initially
 			cy.get('#animated-item').should('not.exist');
 			
+			// Capture initial window state
+			cy.window().then((win) => {
+				cy.log('Before click - showItem should be false');
+			});
+			
 			// Click to show element - should enter with opacity animation (0 -> 1)
 			cy.get('#toggle-btn').click();
+			
+			// Wait a moment for state propagation
+			cy.wait(200);
+			
+			// Check if element appeared
+			cy.get('body').then(($body) => {
+				cy.log('After first click - has animated-item:', $body.find('#animated-item').length);
+			});
+			
+			cy.window().then((win) => {
+				cy.log('After click - render log length:', ((win as any).__apRenderLog || []).length);
+				cy.writeFile('/tmp/ap-after-first-click.json', (win as any).__apRenderLog || []);
+			});
+			
 			cy.get('#animated-item').should('exist').and('be.visible');
 			
 			// Verify element is fully opaque after enter animation

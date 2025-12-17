@@ -88,12 +88,14 @@ Copyright (c) 2018 Framer B.V. -->
             isInitialRender = false;
         } else {
             // After initial render, handle enter/exit animations
+            let newRenderedChildren: typeof renderedChildren;
+            
             untrack(() => {
                 // Update child lookup with new list
                 updateChildLookup(targetList, diffedChildren);
 
                 // Create list of entering children (present = true)
-                const newRenderedChildren = [
+                newRenderedChildren = [
                     ...targetList.map((v) => ({
                         present: true,
                         item: v,
@@ -174,12 +176,15 @@ Copyright (c) 2018 Framer B.V. -->
                     });
                 }
 
-                renderedChildren = newRenderedChildren;
-                console.log('[AnimatePresence] updated renderedChildren, count:', renderedChildren.length, 'items:', renderedChildren.map(c => ({ key: getChildKey(c), present: c.present })));
-                if (typeof window !== "undefined") {
-                    (window as any).__apRenderedCount = renderedChildren.length;
-                }
+                console.log('[AnimatePresence] prepared newRenderedChildren, count:', newRenderedChildren.length, 'items:', newRenderedChildren.map(c => ({ key: getChildKey(c), present: c.present })));
             });
+            
+            // CRITICAL: Assign OUTSIDE untrack so Svelte sees it as reactive update
+            renderedChildren = newRenderedChildren;
+            console.log('[AnimatePresence] assigned renderedChildren (reactive)');
+            if (typeof window !== "undefined") {
+                (window as any).__apRenderedCount = untrack(() => renderedChildren.length);
+            }
         }
     });
 
