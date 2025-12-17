@@ -69,7 +69,22 @@ export type MakeMotion<T> = MakeCustomValueType<{
 	[K in keyof T]: T[K] | MotionValue<number> | MotionValue<string> | MotionValue<any>; // A permissive type for Custom value types
 }>;
 
-export type MotionCSS = MakeMotion<Omit<Properties, 'rotate' | 'scale' | 'perspective'>>;
+export type MotionCSS = MakeMotion<
+	Omit<
+		Properties,
+		// Exclude properties that overlap with TransformProperties to avoid conflicts
+		| 'x'
+		| 'y'
+		| 'z'
+		| 'rotate'
+		| 'scale'
+		| 'perspective'
+		| 'translate'
+		| 'translateX'
+		| 'translateY'
+		| 'translateZ'
+	>
+>;
 
 /**
  * @public

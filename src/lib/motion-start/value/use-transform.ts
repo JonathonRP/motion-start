@@ -148,7 +148,7 @@ function useListTransform<I extends MotionValue[], O, V = MotionValueInstance<I>
 ) {
 	const latest: V[] = [];
 
-	const { value, subscribe } = useCombineMotionValues(() => {
+	return useCombineMotionValues(values, () => {
 		latest.length = 0;
 		const numValues = values.length;
 		for (let i = 0; i < numValues; i++) {
@@ -157,8 +157,4 @@ function useListTransform<I extends MotionValue[], O, V = MotionValueInstance<I>
 
 		return transformer(latest);
 	});
-
-	subscribe(values);
-
-	return value;
 }

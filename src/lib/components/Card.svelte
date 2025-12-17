@@ -4,6 +4,7 @@
         useMotionValue,
         useTransform,
         type PanInfo,
+        type Variants,
     } from "$lib/motion-start";
     let exitX = $state(0);
     const x = useMotionValue(0);
@@ -13,11 +14,11 @@
     });
     let { drag = false, frontCard = false, index = 0 } = $props();
 
-    const variantsFrontCard = {
+    const variantsFrontCard: Variants = {
         animate: { scale: 1, y: 0, opacity: 1 },
         exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
     };
-    const variantsBackCard = {
+    const variantsBackCard: Variants = {
         initial: { scale: 0.3, y: 105, opacity: 0 },
         animate: { scale: 0.75, y: 30, opacity: 0.5 },
     };

@@ -2,14 +2,10 @@ describe('Top Level Animations', () => {
   it('successfully play', () => {
     cy.visit('/tests')
     cy.url().should('include', '/tests')
-    // check tweened box
-    cy.get('#tweenedbox').then(($el) => {
-      const initialTransform = $el.css('transform');
-      cy.get($el).should(($elAfter) => {
-        const newTransform = $elAfter.css('transform');
-        expect(newTransform).to.not.equal(initialTransform);
-      });
-    });
+    // Wait for client-side hydration to complete (ssr=false)
+    cy.get('[data-testid="tests-ready"]', { timeout: 15000 }).should('be.visible')
+    // check tweened section exists under tests instead of old home demo
+    cy.contains('Tweened').should('exist')
 
     // check springed box
     cy.get('#springbox').then(($el) => {

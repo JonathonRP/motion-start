@@ -3,6 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts" generics="T">
+    import { untrack } from "svelte";
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import { LayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
@@ -11,34 +12,40 @@ Copyright (c) 2018 Framer B.V. -->
 
     type Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
-    let {
-        values: list = undefined,
-        mode = "sync" as const,
-        custom = undefined,
-        initial = true,
-        onExitComplete = undefined,
-        exitBeforeEnter = undefined,
-        presenceAffectsLayout = true,
-        show = undefined,
-    }: Props = $props();
+    const props = $props();
+
+    // Track these reactively so $effect dependencies work
+    let list = $derived(props.values ?? undefined);
+    let mode = $derived(props.mode ?? "sync" as const);
+    let custom = $derived(props.custom ?? undefined);
+    let initial = $derived(props.initial ?? true);
+    let onExitComplete = $derived(props.onExitComplete ?? undefined);
+    let exitBeforeEnter = $derived(props.exitBeforeEnter ?? undefined);
+    let presenceAffectsLayout = $derived(props.presenceAffectsLayout ?? true);
+    let show = $derived(props.show ?? undefined);
 
     invariant(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
 
-    let _list = $state(list !== undefined ? list : show ? [{ key: 1 }] : []);
-
     const layoutContext = $derived(LayoutGroupContext.getOr({} as any));
     const forceRender = () => {
-        layoutContext?.forceRender?.();
-        _list = [..._list];
+        untrack(() => {
+            layoutContext?.forceRender?.();
+            renderedChildren = [...renderedChildren];
+        });
     };
 
     let isInitialRender = $state(true);
-    let pendingPresentChildren = $state<any[]>([]);
-
-    let presentChildren = $state<any[]>([]);
-
     let diffedChildren = $state(new Map<string | number, { key: number }>());
     let exiting = $state(new Set<ComponentKey>());
+
+    let renderedChildren = $state<
+        {
+            present: boolean;
+            item: any;
+            key: any;
+            onExit: undefined | (() => void);
+        }[]
+    >([]);
 
     const updateChildLookup = (
         children: { key: number }[],
@@ -50,105 +57,129 @@ Copyright (c) 2018 Framer B.V. -->
         });
     };
 
-    let renderedChildren = $state<
-        {
-            present: boolean;
-            item: any;
-            key: any;
-            onExit: undefined | (() => void);
-        }[]
-    >([]);
-
     $effect(() => {
-        // Update list when prop changes
-        _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
-    });
+        // Access props directly to ensure reactivity
+        const currentShow = props.show;
+        const currentList = props.values;
+        const currentMode = props.mode;
+        
+        // Compute target list
+        const targetList = currentList !== undefined ? currentList : currentShow ? [{ key: 1 }] : [];
+        console.log('[AnimatePresence] effect triggered, targetList:', targetList.length, 'show:', currentShow, 'list:', currentList);
 
-    $effect(() => {
-        // Update pending children when list changes
-        pendingPresentChildren = _list;
-    });
+        if (typeof window !== "undefined") {
+            const log = (window as any).__apRenderLog ?? [];
+            log.push({ target: targetList.length, show: currentShow, listDefined: currentList !== undefined, ts: Date.now() });
+            (window as any).__apRenderLog = log;
+        }
 
-    $effect(() => {
-        // Update child lookup
-        updateChildLookup(pendingPresentChildren, diffedChildren);
-    });
-
-    $effect(() => {
-        if (!isInitialRender) {
-            // If this is a subsequent render, deal with entering and exiting children
-            renderedChildren = [
-                ...pendingPresentChildren.map((v) => ({
+        if (isInitialRender) {
+            // On initial render, just show all children
+            console.log('[AnimatePresence] initial render, rendering', targetList.length, 'children');
+            untrack(() => {
+                renderedChildren = targetList.map((v) => ({
                     present: true,
                     item: v,
                     key: v.key,
                     onExit: undefined,
-                })),
-            ];
-
-            // Diff the keys of the currently-present and target children to update our
-            // exiting list.
-            const presentKeys = presentChildren.map(getChildKey);
-            const targetKeys = pendingPresentChildren.map(getChildKey);
-            // Diff the present children with our target children and mark those that are exiting
-            const numPresent = presentKeys.length;
-            for (let i = 0; i < numPresent; i++) {
-                const key = presentKeys[i] as string | number;
-                if (targetKeys.indexOf(key as any) === -1) {
-                    // In case this key has re-entered, remove from the exiting list
-                    exiting.delete(key);
-                }
-            }
-
-            // If we currently have exiting children, and we're deferring rendering incoming children
-            // until after all current children have exiting, empty the childrenToRender array
-            if (exitBeforeEnter && exiting.size) {
-                renderedChildren = [];
-            }
-            // Loop through all currently exiting components and clone them to overwrite `animate`
-            // with any `exit` prop they might have defined.
-            exiting.forEach((key) => {
-                // If this component is actually entering again, early return
-                if (targetKeys.indexOf(key) !== -1) return;
-
-                const child = diffedChildren.get(key);
-                if (!child) return;
-
-                const insertionIndex = presentKeys.indexOf(key);
-
-                const onExit = () => {
-                    diffedChildren.delete(key);
-                    exiting.delete(key);
-
-                    // Remove this child from the present children
-                    const removeIndex = presentChildren.findIndex(
-                        (presentChild) => presentChild.key === key,
-                    );
-
-                    if (removeIndex < 0) {
-                        return;
-                    }
-                    presentChildren.splice(removeIndex, 1);
-
-                    // Defer re-rendering until all exiting children have indeed left
-                    if (!exiting.size) {
-                        presentChildren = [...pendingPresentChildren];
-                        forceRender();
-                        onExitComplete && onExitComplete();
-                    }
-                };
-
-                renderedChildren.splice(insertionIndex, 0, {
-                    present: false,
-                    item: child,
-                    key: getChildKey(child),
-                    onExit,
-                });
+                }));
+                updateChildLookup(targetList, diffedChildren);
             });
-
-            presentChildren = renderedChildren;
-        } else {
             isInitialRender = false;
+        } else {
+            // After initial render, handle enter/exit animations
+            untrack(() => {
+                // Update child lookup with new list
+                updateChildLookup(targetList, diffedChildren);
+
+                // Create list of entering children (present = true)
+                const newRenderedChildren = [
+                    ...targetList.map((v) => ({
+                        present: true,
+                        item: v,
+                        key: v.key,
+                        onExit: undefined,
+                    })),
+                ];
+
+                // Get keys for diffing
+                const targetKeys = targetList.map(getChildKey);
+                const presentKeys = untrack(() =>
+                    renderedChildren.filter((c) => c.present).map(getChildKey),
+                );
+
+                // Mark children that are exiting (were present but not in target)
+                const numPresent = presentKeys.length;
+                for (let i = 0; i < numPresent; i++) {
+                    const key = presentKeys[i] as string | number;
+                    if (
+                        targetKeys.indexOf(key as any) === -1 &&
+                        !exiting.has(key)
+                    ) {
+                        exiting.add(key);
+                    }
+                }
+
+                // Handle exiting children
+                if (exiting.size) {
+                    console.log('[AnimatePresence] exiting.size:', exiting.size, 'mode:', mode);
+                    // If mode is wait and we have exiting children, don't render entering ones yet
+                    if (exitBeforeEnter) {
+                        newRenderedChildren.length = 0;
+                    }
+
+                    // Add exiting children to render with exit animations
+                    exiting.forEach((key) => {
+                        // If this key has re-entered, skip
+                        if (targetKeys.indexOf(key) !== -1) return;
+
+                        const child = diffedChildren.get(key);
+                        if (!child) return;
+
+                        const insertionIndex = presentKeys.indexOf(key);
+
+                        const onExit = () => {
+                            untrack(() => {
+                                diffedChildren.delete(key);
+                                exiting.delete(key);
+
+                                // Remove from rendered children
+                                const removeIndex = renderedChildren.findIndex(
+                                    (c) => getChildKey(c) === key,
+                                );
+                                if (removeIndex >= 0) {
+                                    renderedChildren.splice(removeIndex, 1);
+                                }
+
+                                // If all exiting animations complete
+                                if (!exiting.size) {
+                                    renderedChildren = targetList.map((v) => ({
+                                        present: true,
+                                        item: v,
+                                        key: v.key,
+                                        onExit: undefined,
+                                    }));
+                                    forceRender();
+                                    onExitComplete?.();
+                                }
+                            });
+                        };
+
+                        newRenderedChildren.splice(insertionIndex, 0, {
+                            present: false,
+                            item: child,
+                            key: getChildKey(child),
+                            onExit,
+                        });
+                    });
+                }
+
+                renderedChildren = newRenderedChildren;
+                console.log('[AnimatePresence] updated renderedChildren, count:', renderedChildren.length, 'items:', renderedChildren.map(c => ({ key: getChildKey(c), present: c.present })));
+                if (typeof window !== "undefined") {
+                    (window as any).__apRenderedCount = renderedChildren.length;
+                }
+            });
         }
     });
 
@@ -156,7 +187,7 @@ Copyright (c) 2018 Framer B.V. -->
         if (
             process.env.NODE_ENV !== "production" &&
             mode === "wait" &&
-            renderedChildren.length > 1
+            untrack(() => renderedChildren.filter((c) => c.present).length > 1)
         ) {
             console.warn(
                 `You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,

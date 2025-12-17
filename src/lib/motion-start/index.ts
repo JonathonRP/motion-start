@@ -123,7 +123,9 @@ export type {
 	DragElastic, DraggableProps,
 	DragHandlers
 } from './gestures/drag/types';
-export { animateLayout as layoutAnimation } from './motion/features/layout/MeasureLayout.svelte';
+// NOTE: animateLayout cannot be exported from .svelte files in TypeScript
+// It's a simple passthrough function: { track: (fn) => fn }
+// export { animateLayout as layoutAnimation } from './motion/features/layout/MeasureLayout.svelte';
 export type { LayoutProps } from './motion/features/layout/types';
 export * from './motion/features/types';
 export type {

@@ -140,4 +140,52 @@ For example: `bd create --help` shows `--parent`, `--deps`, `--assignee`, etc.
 - ❌ Do NOT duplicate tracking systems
 - ❌ Do NOT clutter repo root with planning documents
 
-For more details, see README.md and QUICKSTART.md.
+## Project Snapshot
+- Motion Start: Svelte 5 port of framer-motion. Animations, gestures, layout projection, TypeScript-first.
+- Tech: SvelteKit + Svelte 5 runes, TypeScript, TailwindCSS, Biome formatter, Cypress E2E.
+- Key paths: src/lib/motion-start for core library; src/routes for examples/demos; history/ for AI planning docs.
+
+## Non-Negotiable Rules
+- Track ALL work in bd (beads). Never create markdown TODO lists or other trackers.
+- Default to ASCII for edits. Only add non-ASCII if already present and necessary.
+- Keep planning docs in history/ (avoid cluttering repo root).
+- Follow Svelte 5 runes for new components; legacy components may still use runes={false} during migration.
+
+## Issue Tracking with bd (beads)
+- Ready work: `bd ready --json`
+- Create: `bd create "Title" -t bug|feature|task -p 0-4 --json`
+- Link discovered work: `bd create "Found bug" -p 1 --deps discovered-from:<parent-id> --json`
+- Claim: `bd update <id> --status in_progress --json`
+- Close: `bd close <id> --reason "Done" --json`
+- Always commit `.beads/issues.jsonl` with code changes; bd auto-syncs (exports after changes, imports if newer after pull).
+
+## Working Style (TDD-first)
+- For new tasks/features/bugs, run a full TDD loop:
+  - **Red:** Add failing tests only (no implementation). Cover happy path, edges, and error cases. Match existing test style.
+  - **Green:** Implement the minimum code to pass the new tests. Keep scope tight.
+  - **Refactor:** Clean up with tests staying green; prefer small safe steps.
+- When tests already exist, still aim for incremental red→green→refactor changes rather than large untested edits.
+
+## Day-to-Day Development
+- Before coding: check `bd ready`, claim the issue, and skim relevant files in src/lib/motion-start and docs/.
+- Code style: run Biome formatter when changing TS/JS/Svelte (`npx @biomejs/biome format --write .` if needed).
+- Types: prefer precise types; avoid `any`; fix svelte-check issues incrementally.
+- Components: prefer runes patterns (`<svelte:options runes={true} />`, $state/$derived/$effect) for new work.
+
+## Landing the Plane
+When the user says "land the plane", complete these steps before handing off:
+1) File/close/update bd issues so state matches the work done.
+2) Run all quality gates when code changed: `npx sv check`, relevant unit/E2E suites (`pnpm test` or targeted Cypress specs), and ensure they pass or file bd issues for failures.
+3) Ensure formatting/linting is clean (Biome, etc.) and working tree is tidy.
+4) Summarize what changed, test results, and bd status; highlight any follow-ups.
+
+## Useful Reminders
+- Use `bd <cmd> --help` to see flags (e.g., parent/deps/assignee).
+- Keep AI-generated plans in history/; only access when asked.
+- If unsure about a change, ask questions early and prefer smaller, test-backed commits.
+
+#Important Files
+- docs/ARCHITECTURE.md - Project architecture
+- docs/PROJECT_STRUCTURE.md - Project structure
+- docs/TESTING.md - Project testing
+- README.md - Main documentation

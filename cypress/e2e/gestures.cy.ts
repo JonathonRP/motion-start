@@ -6,6 +6,8 @@
 describe('Gesture Interactions - Drag', () => {
   beforeEach(() => {
     cy.visit('/tests');
+    // Wait for client-side hydration to complete (ssr=false)
+    cy.get('[data-testid="tests-ready"]', { timeout: 15000 }).should('be.visible');
   });
 
   describe('Drag gestures', () => {

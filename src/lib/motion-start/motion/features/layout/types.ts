@@ -3,7 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { animateLayout } from './MeasureLayout.svelte';
+// Type definitions for animateLayout from MeasureLayout.svelte
+// We can't import directly from .svelte files in TypeScript, so we define the interface here
+interface AnimateLayout {
+	track: <A extends unknown[], R>(fn: (...args: A) => R) => R;
+}
 
 /**
  * @public
@@ -37,7 +41,7 @@ export interface LayoutProps {
 	 *
 	 * @public
 	 */
-	layout?: ReturnType<(typeof animateLayout)["track"]> | boolean | 'position' | 'size' | 'preserve-aspect';
+	layout?: ReturnType<AnimateLayout["track"]> | boolean | 'position' | 'size' | 'preserve-aspect';
 
 	/**
 	 * Enable shared layout transitions between different components with the same `layoutId`.
