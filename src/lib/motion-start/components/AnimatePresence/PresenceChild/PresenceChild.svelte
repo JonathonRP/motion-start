@@ -68,11 +68,6 @@ Copyright (c) 2018 Framer B.V. -->
     $effect(() => {
         setExit(isPresent);
     });
-    $effect(() => {
-        tick().then(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
-        });
-    });
 
     setPresenceContext({
         get current() {

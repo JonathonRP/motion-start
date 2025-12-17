@@ -28,11 +28,7 @@ export class ExitAnimationFeature extends Feature<unknown> {
 	}
 
 	mount() {
-		const { onExitComplete, register } = this.node.presenceContext || {};
-
-		if (onExitComplete) {
-			onExitComplete(this.id);
-		}
+		const { register } = this.node.presenceContext || {};
 
 		if (register) {
 			this.unmount = register(this.id);
