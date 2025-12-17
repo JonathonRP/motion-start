@@ -94,11 +94,7 @@ function usePresenceContext() {
 	try {
 		return getPresenceContext();
 	} catch {
-		return {
-			get current() {
-				return null;
-			},
-		};
+		return setPresenceContext({ current: null });
 	}
 }
 

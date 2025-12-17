@@ -14,7 +14,7 @@ function useReorderContext() {
     try {
         return getReorderContext();
     } catch {
-        return null;
+        return setReorderContext(null);
     }
 }
 

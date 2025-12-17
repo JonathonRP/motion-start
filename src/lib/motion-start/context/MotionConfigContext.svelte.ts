@@ -100,7 +100,7 @@ function useMotionConfig() {
 	try {
 		return getMotionConfigContext();
 	} catch {
-		return defaultMotionConfig;
+		return setMotionConfigContext(defaultMotionConfig);
 	}
 }
 
