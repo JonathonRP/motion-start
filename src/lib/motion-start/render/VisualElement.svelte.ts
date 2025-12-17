@@ -226,9 +226,8 @@ export abstract class VisualElement<
 
 	/**
 	 * The AnimationState, this is hydrated by the animation Feature.
-	 * Using $state() to make it reactive so features automatically update.
 	 */
-	animationState = $state<AnimationState | undefined>(undefined);
+	animationState?: AnimationState;
 
 	KeyframeResolver = KeyframeResolver;
 
