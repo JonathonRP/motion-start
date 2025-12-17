@@ -9,7 +9,7 @@
     style="min-height: {minHeight}px; height:fit-content; touch-action: none;"
     class="{cls} dark:bg-white/5 dark:text-black flex justify-center items-center border border-primary/40 rounded-xl my-2 p-4 md:p-6 w-full"
 >
-    <svelte:boundary onerror={console.log}>
+    <svelte:boundary>
         <slot></slot>
         {#snippet failed()}
             <p>whoops!</p>

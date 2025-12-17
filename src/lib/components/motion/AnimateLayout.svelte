@@ -27,9 +27,6 @@
         class="handle"
         transition={spring}
         custom={active}
-        onLayoutMeasure={(...args) => {
-          console.log("change", args);
-        }}
       />
     </button>
   </div>

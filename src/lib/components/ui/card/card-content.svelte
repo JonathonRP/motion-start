@@ -16,7 +16,7 @@
 	class={cn("px-6", className)}
 	{...restProps}
 >
-	<svelte:boundary onerror={console.log}>
+	<svelte:boundary>
 		{@render children?.()}
 		{#snippet failed()}
 			<p>whoops!</p>
