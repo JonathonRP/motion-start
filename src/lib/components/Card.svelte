@@ -26,18 +26,13 @@
     const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
 
     function handleDragEnd(_: PointerEvent, info: PanInfo) {
-        // console.log("info", info);
         if (info.offset.x < -100) {
-            // setExitX(-250);
             exitX = -250;
-            //   props.setIndex(index + 1);
             index = index + 1;
         }
         if (info.offset.x > 100) {
             exitX = 250;
-            //   props.setIndex(index + 1);
             index = index + 1;
-            //   console.log("trigger");
         }
     }
 </script>

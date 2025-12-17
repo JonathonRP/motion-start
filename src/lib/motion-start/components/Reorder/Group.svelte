@@ -132,7 +132,6 @@ Copyright (c) 2018 Framer B.V. -->
 			order.sort(compareMin);
 		},
 		updateOrder: (item, offset, velocity) => {
-			console.log("isReordering", isReordering);
 			if (isReordering) return;
 
 			const newOrder = checkReorder(order, item, offset, velocity);
