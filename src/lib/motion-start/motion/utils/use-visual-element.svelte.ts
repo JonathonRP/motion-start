@@ -86,7 +86,13 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			untrack(() => visualElement.update(props, () => presenceContext));
+			untrack(() => {
+				visualElement.update(props, () => presenceContext);
+				// Trigger exit animation feature update when presence context changes
+				if (visualElement.features.animation) {
+					visualElement.features.animation.update();
+				}
+			});
 		}
 	});
 
@@ -94,11 +100,11 @@ export function useVisualElement<Instance, RenderState>(
 	 * Cache this value as we want to know whether HandoffAppearAnimations
 	 * was present on initial render - it will be deleted after this.
 	 */
-	const optimisedAppearId = props()[optimizedAppearDataAttribute as keyof typeof props];
-	let wantsHandoff =
+	const optimisedAppearId = $derived.by(() => props()[optimizedAppearDataAttribute as keyof typeof props]);
+	let wantsHandoff = $derived(
 		Boolean(optimisedAppearId) &&
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
-		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
+		window.MotionHasOptimisedAnimation?.(optimisedAppearId));
 
 	$effect(() => {
 		if (!visualElement) return;
