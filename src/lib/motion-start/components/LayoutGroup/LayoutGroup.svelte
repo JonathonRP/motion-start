@@ -3,67 +3,61 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-  type InheritOption = boolean | "id" | "group";
+type InheritOption = boolean | 'id' | 'group';
 
-  export interface LayoutGroupProps {
-    id?: string;
-    inherit?: InheritOption;
-    children?: any;
-  }
+export interface LayoutGroupProps {
+	id?: string;
+	inherit?: InheritOption;
+	children?: any;
+}
 
-  /**
-   * Hook to create and manage a layout group
-   * Handles group inheritance, force updates, and context management
-   */
-  export function useLayoutGroupProvider(props: LayoutGroupProps) {
-    // Get parent group context if it exists
-    const oldId = DeprecatedLayoutGroupContext.getOr(null) ?? undefined;
-    const parentGroup = LayoutGroupContext.getOr({}) || { id: oldId };
-    const [forceRender, key] = useForceUpdate();
+/**
+ * Hook to create and manage a layout group
+ * Handles group inheritance, force updates, and context management
+ */
+export function useLayoutGroupProvider(props: LayoutGroupProps) {
+	// Get parent group context if it exists
+	const oldId = DeprecatedLayoutGroupContext.getOr(null) ?? undefined;
+	const parentGroup = LayoutGroupContext.getOr({}) || { id: oldId };
+	const [forceRender, key] = useForceUpdate();
 
-    const context = {
-      id: getGroupId(props, parentGroup),
-      group: getGroup(props, parentGroup),
-      forceRender,
-      key,
-    };
+	const context = {
+		id: getGroupId(props, parentGroup),
+		group: getGroup(props, parentGroup),
+		forceRender,
+		key,
+	};
 
-    // Make group context available to children
-    LayoutGroupContext.set(context);
-    return context;
-  }
+	// Make group context available to children
+	LayoutGroupContext.set(context);
+	return context;
+}
 
-  export function useLayoutGroup() {
-    const { forceRender } = LayoutGroupContext.getOr({ forceRender: () => {} });
-    return { forceRender };
-  }
+export function useLayoutGroup() {
+	const { forceRender } = LayoutGroupContext.getOr({ forceRender: () => {} });
+	return { forceRender };
+}
 
-  /**
-   * Determines the group ID based on inheritance rules
-   */
-  function getGroupId(
-    props: LayoutGroupProps,
-    parentGroup: LayoutGroupContext | null,
-  ) {
-    const shouldInherit = props.inherit === true || props.inherit === "id";
-    const parentId = parentGroup?.id;
+/**
+ * Determines the group ID based on inheritance rules
+ */
+function getGroupId(props: LayoutGroupProps, parentGroup: LayoutGroupContext | null) {
+	const shouldInherit = props.inherit === true || props.inherit === 'id';
+	const parentId = parentGroup?.id;
 
-    if (shouldInherit && parentId) {
-      return props.id ? `${parentId}-${props.id}` : parentId;
-    }
-    return props.id;
-  }
+	if (shouldInherit && parentId) {
+		return props.id ? `${parentId}-${props.id}` : parentId;
+	}
+	return props.id;
+}
 
-  /**
-   * Creates or inherits a node group based on inheritance rules
-   */
-  function getGroup(
-    props: LayoutGroupProps,
-    parentGroup: LayoutGroupContext | null,
-  ) {
-    const shouldInherit = props.inherit === true || props.inherit === "group";
-    return shouldInherit ? parentGroup?.group || nodeGroup() : nodeGroup();
-  }
+/**
+ * Creates or inherits a node group based on inheritance rules
+ */
+function getGroup(props: LayoutGroupProps, parentGroup: LayoutGroupContext | null) {
+	const shouldInherit = props.inherit === true || props.inherit === 'group';
+	return shouldInherit ? parentGroup?.group || nodeGroup() : nodeGroup();
+}
 </script>
 
 <script lang="ts">

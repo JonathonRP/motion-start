@@ -3,11 +3,9 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-  function isLazyBundle(
-    features: FeatureBundle | LazyFeatureBundle,
-  ): features is LazyFeatureBundle {
-    return typeof features === "function";
-  }
+function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is LazyFeatureBundle {
+	return typeof features === 'function';
+}
 </script>
 
 <script lang="ts">

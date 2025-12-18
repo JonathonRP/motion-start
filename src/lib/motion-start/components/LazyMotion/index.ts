@@ -2,7 +2,7 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export type { LazyProps } from "./types";
+export type { LazyProps } from './types';
 /**
  * Used in conjunction with the `m` component to reduce bundle size.
  *
@@ -38,5 +38,4 @@ export type { LazyProps } from "./types";
  *
  * @public
  */
-export {default as LazyMotion} from './LazyMotion.svelte';
-
+export { default as LazyMotion } from './LazyMotion.svelte';

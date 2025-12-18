@@ -1,18 +1,18 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { onMount } from "svelte";
+import { onMount } from 'svelte';
 
-    let size = $state(120);
-    let status = $state("Pending");
+let size = $state(120);
+let status = $state('Pending');
 
-    onMount(() => {
-        const timer = setTimeout(() => {
-            size = 150;
-            status = "Success";
-        }, 120);
-        return () => clearTimeout(timer);
-    });
+onMount(() => {
+	const timer = setTimeout(() => {
+		size = 150;
+		status = 'Success';
+	}, 120);
+	return () => clearTimeout(timer);
+});
 </script>
 
 <main class="page" style={`--box-size: ${size}px`}>

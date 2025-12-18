@@ -12,4 +12,4 @@ export interface MotionContext<Instance = unknown> {
 	animate?: string | string[];
 }
 
-export const MotionContext = new Context<MotionContext>("MotionContext");
+export const MotionContext = new Context<MotionContext>('MotionContext');

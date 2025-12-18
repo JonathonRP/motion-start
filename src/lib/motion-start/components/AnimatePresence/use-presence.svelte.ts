@@ -39,7 +39,7 @@ export function isPresent(context: () => PresenceContext | null) {
  *
  * @public
  */
-export const useIsPresent = (): () => boolean => {
+export const useIsPresent = (): (() => boolean) => {
 	const context = $derived(usePresenceContext().current);
 	return () => isPresent(() => context);
 };
@@ -66,7 +66,7 @@ export const useIsPresent = (): () => boolean => {
  *
  * @public
  */
-export const usePresence = (): () => AlwaysPresent | Present | NotPresent => {
+export const usePresence = (): (() => AlwaysPresent | Present | NotPresent) => {
 	const context = $derived(usePresenceContext().current);
 
 	if (context === null) {
@@ -74,7 +74,7 @@ export const usePresence = (): () => AlwaysPresent | Present | NotPresent => {
 	}
 
 	const { isPresent, onExitComplete, register } = $derived(context);
-	
+
 	const id = incrementId();
 	$effect(() => {
 		untrack(() => register(id));
@@ -82,5 +82,5 @@ export const usePresence = (): () => AlwaysPresent | Present | NotPresent => {
 
 	const safeToRemove = $derived(() => onExitComplete && onExitComplete(id));
 
-	return () => !isPresent && onExitComplete ? [false, safeToRemove] : [true];
+	return () => (!isPresent && onExitComplete ? [false, safeToRemove] : [true]);
 };

@@ -1,18 +1,18 @@
 <svelte:options runes={false} />
 
 <script lang="ts">
-  import type { HTMLAttributes } from "svelte/elements";
-  import { cn } from "$lib/utils";
-  import { Button } from "$lib/components/ui/button";
+import type { HTMLAttributes } from 'svelte/elements';
+import { cn } from '$lib/utils';
+import { Button } from '$lib/components/ui/button';
 
-  type $$Props = HTMLAttributes<HTMLDivElement>;
-  let className: $$Props["class"] = undefined;
-  export { className as class };
-  export let reRender = true;
-  let rendering = false;
-  let updateRendering = () => {
-    rendering = !rendering;
-  };
+type $$Props = HTMLAttributes<HTMLDivElement>;
+let className: $$Props['class'] = undefined;
+export { className as class };
+export let reRender = true;
+let rendering = false;
+let updateRendering = () => {
+	rendering = !rendering;
+};
 </script>
 
 <div

@@ -44,8 +44,8 @@ describe('interpolate', () => {
 	it('should apply different easing per segment', () => {
 		const linear = (t: number) => t;
 		const square = (t: number) => t * t;
-		const transform = interpolate([0, 50, 100], [0, 50, 100], { 
-			ease: [linear, square] 
+		const transform = interpolate([0, 50, 100], [0, 50, 100], {
+			ease: [linear, square],
 		});
 		expect(transform(25)).toBe(25); // First segment linear
 		// Second segment squared - value should be between 50 and 100
@@ -70,10 +70,10 @@ describe('interpolate', () => {
 
 	it('should work with custom mixer', () => {
 		const customMixer = (from: string, to: string) => {
-			return (v: number) => v < 0.5 ? from : to;
+			return (v: number) => (v < 0.5 ? from : to);
 		};
-		const transform = interpolate([0, 1], ['a', 'b'], { 
-			mixer: customMixer 
+		const transform = interpolate([0, 1], ['a', 'b'], {
+			mixer: customMixer,
 		});
 		expect(transform(0.3)).toBe('a');
 		expect(transform(0.7)).toBe('b');

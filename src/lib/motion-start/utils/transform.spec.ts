@@ -39,7 +39,7 @@ describe('transform', () => {
 
 	it('should use custom mixer', () => {
 		const stringMixer = (from: string, to: string) => {
-			return (v: number) => v < 0.5 ? from : to;
+			return (v: number) => (v < 0.5 ? from : to);
 		};
 		const t = transform([0, 1], ['start', 'end'], { mixer: stringMixer });
 		expect(t(0.3)).toBe('start');

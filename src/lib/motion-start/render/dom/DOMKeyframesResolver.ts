@@ -18,9 +18,7 @@ import type { MotionValue } from '../../value';
  * This is needed because MotionValue instances may come from different contexts
  * (motion-dom vs motion-start) but have compatible structure.
  */
-function isMotionValue<T extends string | number>(
-	value: unknown
-): value is MotionValue<T> {
+function isMotionValue<T extends string | number>(value: unknown): value is MotionValue<T> {
 	return (
 		typeof value === 'object' &&
 		value !== null &&

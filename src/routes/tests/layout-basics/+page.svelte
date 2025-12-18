@@ -1,11 +1,10 @@
 <script lang="ts">
-    let showPresence = false;
-    let items: number[] = [1, 2, 3];
-    let wide = false;
-    const add = () => (items = [...items, items.length + 1]);
-    const remove = () =>
-        (items = items.slice(0, Math.max(0, items.length - 1)));
-    const resize = () => (wide = !wide);
+let showPresence = false;
+let items: number[] = [1, 2, 3];
+let wide = false;
+const add = () => (items = [...items, items.length + 1]);
+const remove = () => (items = items.slice(0, Math.max(0, items.length - 1)));
+const resize = () => (wide = !wide);
 </script>
 
 <div class="space-y-6 p-6">

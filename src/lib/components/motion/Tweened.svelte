@@ -1,11 +1,11 @@
 <svelte:options runes={false} />
 
 <script>
-  import Box from "../Box.svelte";
-  import { Button } from "../ui/button";
-  // import { Motion } from "svelte-motion"
-  import { motion } from "$lib/motion-start";
-  let i = 0;
+import Box from '../Box.svelte';
+import { Button } from '../ui/button';
+// import { Motion } from "svelte-motion"
+import { motion } from '$lib/motion-start';
+let i = 0;
 </script>
 
 <Box cls="flex-col gap-10">

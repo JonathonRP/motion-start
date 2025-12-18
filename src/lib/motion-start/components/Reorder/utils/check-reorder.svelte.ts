@@ -22,7 +22,7 @@ export function checkReorder<T>(order: ItemData<T>[], value: T, offset: number, 
 	const item = order[index];
 	const nextLayout = nextItem.layout;
 	const nextItemCenter = mixNumber(nextLayout.min, nextLayout.max, 0.5);
-	
+
 	if (
 		(nextOffset === 1 && item.layout.max + offset > nextItemCenter) ||
 		(nextOffset === -1 && item.layout.min + offset < nextItemCenter)

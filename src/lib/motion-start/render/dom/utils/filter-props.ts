@@ -57,10 +57,10 @@ export function filterProps(props: () => MotionProps, isDom: boolean, forwardMot
 			if (key === 'values' && typeof props().values === 'object') return false;
 
 			if (typeof key === 'symbol' && key.toString() === createAttachmentKey().toString()) return true;
-			
+
 			// Skip symbols that aren't the attachment key
 			if (typeof key === 'symbol') return false;
-			
+
 			return (
 				shouldForward(key) ||
 				(forwardMotionProps === true && isValidMotionProp(key)) ||

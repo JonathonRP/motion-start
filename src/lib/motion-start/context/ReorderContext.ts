@@ -11,14 +11,11 @@ interface ReorderContext<T> extends ReorderContextProps<T> {}
 const [getReorderContext, setReorderContext] = createContext<ReorderContext<any> | null>();
 
 function useReorderContext() {
-    try {
-        return getReorderContext();
-    } catch {
-        return setReorderContext(null);
-    }
+	try {
+		return getReorderContext();
+	} catch {
+		return setReorderContext(null);
+	}
 }
 
-export {
-    useReorderContext,
-    setReorderContext,
-}
+export { useReorderContext, setReorderContext };

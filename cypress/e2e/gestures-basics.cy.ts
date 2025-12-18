@@ -1,4 +1,7 @@
-describe('Gestures basics', () => {
+// Gesture Interactions - Drag, Hover, and Tap
+// Tests drag constraints, whileDrag, whileHover, and whileTap gesture handlers
+// Coverage: Drag within bounds, hover animations, tap feedback
+describe('Gesture Interactions', () => {
 	it('drags the box within constraints', () => {
 		cy.visit('/gestures-basics');
 		cy.get('#draggable', { timeout: 10000 }).should('be.visible');

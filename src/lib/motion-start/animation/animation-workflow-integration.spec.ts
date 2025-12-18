@@ -116,7 +116,7 @@ describe('Animation Workflow Integration Tests', () => {
 			});
 
 			// All animations should complete (value = 100)
-			results.forEach(value => {
+			results.forEach((value) => {
 				expect(value).toBe(100);
 			});
 		});
@@ -258,7 +258,7 @@ describe('Animation Workflow Integration Tests', () => {
 			}
 
 			// Check that values respect bounds
-			clampedValues.forEach(v => {
+			clampedValues.forEach((v) => {
 				expect(v).toBeGreaterThanOrEqual(min);
 				expect(v).toBeLessThanOrEqual(max);
 			});
@@ -354,7 +354,7 @@ describe('Animation Workflow Integration Tests', () => {
 				inertia({ keyframes: [0], velocity: 500, power: 0.8 }),
 			];
 
-			animations.forEach(anim => {
+			animations.forEach((anim) => {
 				// Collect all states
 				const states: boolean[] = [];
 				for (let t = 0; t < 5000; t += 50) {

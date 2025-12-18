@@ -1,35 +1,31 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { animateMini } from "$lib/motion-start/animation/animators/waapi/animate-style";
+import { onMount } from 'svelte';
+import { animateMini } from '$lib/motion-start/animation/animators/waapi/animate-style';
 
-    let box: HTMLDivElement | null = null;
-    let result = $state("");
+let box: HTMLDivElement | null = null;
+let result = $state('');
 
-    onMount(() => {
-        if (!box) return;
+onMount(() => {
+	if (!box) return;
 
-        // Animate with em units and let browser resolve to px
-        animateMini(
-            box,
-            { width: ["5em", "10em"] },
-            { duration: 0.2, easing: "ease-out" },
-        );
+	// Animate with em units and let browser resolve to px
+	animateMini(box, { width: ['5em', '10em'] }, { duration: 0.2, easing: 'ease-out' });
 
-        // Check final computed style after settle
-        const check = setTimeout(() => {
-            if (box) {
-                const computed = window.getComputedStyle(box);
-                const width = computed.width;
-                // With default 16px base, 10em = 160px
-                const isSuccess = width === "160px" || parseFloat(width) > 150;
-                result = isSuccess ? "Success" : "Mismatch";
-            }
-        }, 300);
+	// Check final computed style after settle
+	const check = setTimeout(() => {
+		if (box) {
+			const computed = window.getComputedStyle(box);
+			const width = computed.width;
+			// With default 16px base, 10em = 160px
+			const isSuccess = width === '160px' || parseFloat(width) > 150;
+			result = isSuccess ? 'Success' : 'Mismatch';
+		}
+	}, 300);
 
-        return () => clearTimeout(check);
-    });
+	return () => clearTimeout(check);
+});
 </script>
 
 <main class="page">

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { Reorder, useMotionValue } from "$lib/motion-start";
-    import { useRaisedShadow } from "./use-raised-shadow.svelte";
+import { Reorder, useMotionValue } from '$lib/motion-start';
+import { useRaisedShadow } from './use-raised-shadow.svelte';
 
-    let { item } = $props();
+let { item } = $props();
 
-    const y = useMotionValue(0);
-    const boxShadow = useRaisedShadow(y);
+const y = useMotionValue(0);
+const boxShadow = useRaisedShadow(y);
 </script>
 
 <Reorder.Item

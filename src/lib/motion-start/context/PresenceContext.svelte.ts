@@ -87,8 +87,7 @@ export const PRESENCE_CONTEXT_KEY = Symbol('PresenceContext');
 /**
  * @public
  */
-const [getPresenceContext, setPresenceContext] =
-	createContext<MutableRefObject<PresenceContext | null>>();
+const [getPresenceContext, setPresenceContext] = createContext<MutableRefObject<PresenceContext | null>>();
 
 function usePresenceContext() {
 	try {

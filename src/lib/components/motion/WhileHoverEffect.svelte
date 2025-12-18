@@ -1,8 +1,8 @@
 <svelte:options runes={false} />
 
 <script>
-    import Box from "../Box.svelte";
-    import { motion } from "$lib/motion-start";
+import Box from '../Box.svelte';
+import { motion } from '$lib/motion-start';
 </script>
 
 <Box cls="gap-3 md:gap-10 flex-col md:flex-row">

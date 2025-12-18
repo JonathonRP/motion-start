@@ -362,10 +362,7 @@ describe('Integration: Utility Functions', () => {
 			expect(mixedColor).toBeDefined();
 
 			// 2. Use in complex value
-			const complexMixed = mixComplex(
-				`rgba(255, 0, 0, 1)`,
-				`rgba(0, 0, 255, 1)`
-			)(progress);
+			const complexMixed = mixComplex(`rgba(255, 0, 0, 1)`, `rgba(0, 0, 255, 1)`)(progress);
 			expect(complexMixed).toBeDefined();
 		});
 
@@ -381,7 +378,7 @@ describe('Integration: Utility Functions', () => {
 			const normalized = clamped / 100;
 
 			// 3. Apply easing
-				const eased = (x: number): number => x * x;
+			const eased = (x: number): number => x * x;
 			const easedNorm = eased(normalized);
 			expect(easedNorm).toBeCloseTo(0.5625, 4); // 0.75^2
 

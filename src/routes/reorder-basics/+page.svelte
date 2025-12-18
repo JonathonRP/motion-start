@@ -19,7 +19,7 @@
         class="list"
         data-testid="reorder-group"
     >
-        {#each items as item (item)}
+        {#snippet children({ item })}
             <Reorder.Item
                 value={item}
                 class="item"
@@ -28,7 +28,7 @@
                 <span class="handle" data-testid={`handle-${item}`}>⇅</span>
                 <span class="label">{item}</span>
             </Reorder.Item>
-        {/each}
+        {/snippet}
     </Reorder.Group>
 
     <div class="order" data-testid="order">

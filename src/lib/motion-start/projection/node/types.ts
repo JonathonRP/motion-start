@@ -125,11 +125,7 @@ export interface IProjectionNode<I> {
 
 	// Shared element
 	isLead(): boolean;
-	promote(options?: {
-		needsReset?: boolean;
-		transition?: Transition;
-		preserveFollowOpacity?: boolean;
-	}): void;
+	promote(options?: { needsReset?: boolean; transition?: Transition; preserveFollowOpacity?: boolean }): void;
 	relegate(): boolean;
 	resumeFrom?: IProjectionNode<I>;
 	resumingFrom?: IProjectionNode<I>;

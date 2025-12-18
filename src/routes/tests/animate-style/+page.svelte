@@ -1,20 +1,16 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { animateMini } from "$lib/motion-start/animation/animators/waapi/animate-style";
+import { onMount } from 'svelte';
+import { animateMini } from '$lib/motion-start/animation/animators/waapi/animate-style';
 
-    let box: HTMLDivElement | null = null;
+let box: HTMLDivElement | null = null;
 
-    onMount(() => {
-        if (!box) return;
-        // Animate width on mount to mirror animate-style coverage
-        animateMini(
-            box,
-            { width: ["100px", "200px"] },
-            { duration: 0.25, easing: "ease-out" },
-        );
-    });
+onMount(() => {
+	if (!box) return;
+	// Animate width on mount to mirror animate-style coverage
+	animateMini(box, { width: ['100px', '200px'] }, { duration: 0.25, easing: 'ease-out' });
+});
 </script>
 
 <main class="page">

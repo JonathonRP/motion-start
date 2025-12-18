@@ -1,4 +1,4 @@
-export const RefSymbol = Symbol("ref");
+export const RefSymbol = Symbol('ref');
 
 /**
  * This file contains some types that mirror those in React.

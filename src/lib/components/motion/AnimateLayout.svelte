@@ -1,20 +1,20 @@
 <svelte:options runes={false} />
 
 <script>
-  import { motion } from "$lib/motion-start";
-  import Box from "../Box.svelte";
+import { motion } from '$lib/motion-start';
+import Box from '../Box.svelte';
 
-  const spring = {
-    type: "spring",
-    stiffness: 700,
-    damping: 30,
-  };
+const spring = {
+	type: 'spring',
+	stiffness: 700,
+	damping: 30,
+};
 
-  let active = false;
+let active = false;
 
-  function toggleSwitch() {
-    active = !active;
-  }
+function toggleSwitch() {
+	active = !active;
+}
 </script>
 
 <Box>

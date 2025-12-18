@@ -82,11 +82,14 @@ Copyright (c) 2018 Framer B.V. -->
 		latestX || latestY ? 1 : "unset",
 	);
 
-	const { axis, registerItem, updateOrder } = context ?? ({} as any);
+	// Access context properties directly to preserve getter reactivity
+	const axis = $derived(context?.axis);
+	const registerItem = context?.registerItem;
+	const updateOrder = context?.updateOrder;
 </script>
 
 <ReorderItem
-	drag={axis?.current}
+	drag={axis}
 	{...props}
 	dragSnapToOrigin
 	style={{

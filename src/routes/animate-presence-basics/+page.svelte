@@ -1,33 +1,29 @@
 <script lang="ts">
-    import { motion, AnimatePresence } from "$lib/motion-start";
+import { motion, AnimatePresence } from '$lib/motion-start';
 
-    let showItem = $state(false);
-    let waitMode = $state(true);
-    let conditionalShow = $state(false);
-    const waitItems = $derived(
-        waitMode ? [{ key: "wait1" }] : [{ key: "wait2" }],
-    );
-    const conditionalItems = $derived(
-        conditionalShow ? [{ key: "conditional" }] : [],
-    );
-    import { onMount } from "svelte";
-    onMount(() => {
-        // ultra-early readiness flag for Cypress gating
-        (window as any).__apReady = true;
-        console.log("[ap] mounted, __apReady=true");
-    });
+let showItem = $state(false);
+let waitMode = $state(true);
+let conditionalShow = $state(false);
+const waitItems = $derived(waitMode ? [{ key: 'wait1' }] : [{ key: 'wait2' }]);
+const conditionalItems = $derived(conditionalShow ? [{ key: 'conditional' }] : []);
+import { onMount } from 'svelte';
+onMount(() => {
+	// ultra-early readiness flag for Cypress gating
+	(window as any).__apReady = true;
+	console.log('[ap] mounted, __apReady=true');
+});
 
-    $effect(() => {
-        console.log("[ap] showItem changed to:", showItem);
-    });
+$effect(() => {
+	console.log('[ap] showItem changed to:', showItem);
+});
 
-    $effect(() => {
-        console.log("[ap] waitMode changed to:", waitMode);
-    });
+$effect(() => {
+	console.log('[ap] waitMode changed to:', waitMode);
+});
 
-    $effect(() => {
-        console.log("[ap] conditionalShow changed to:", conditionalShow);
-    });
+$effect(() => {
+	console.log('[ap] conditionalShow changed to:', conditionalShow);
+});
 </script>
 
 <div class="container">

@@ -1,36 +1,32 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { animateMini } from "$lib/motion-start/animation/animators/waapi/animate-style";
+import { onMount } from 'svelte';
+import { animateMini } from '$lib/motion-start/animation/animators/waapi/animate-style';
 
-    let box: HTMLDivElement | null = null;
-    let log = $state<string[]>([]);
+let box: HTMLDivElement | null = null;
+let log = $state<string[]>([]);
 
-    onMount(() => {
-        if (!box) return;
-        log = [...log, "start"];
-        const first = animateMini(
-            box,
-            { width: ["100px", "180px"], opacity: [1, 0.35] },
-            { duration: 0.45, easing: "ease-out" },
-        );
+onMount(() => {
+	if (!box) return;
+	log = [...log, 'start'];
+	const first = animateMini(
+		box,
+		{ width: ['100px', '180px'], opacity: [1, 0.35] },
+		{ duration: 0.45, easing: 'ease-out' }
+	);
 
-        const interrupt = setTimeout(() => {
-            log = [...log, "interrupt"];
-            first.stop();
-            animateMini(
-                box,
-                { width: ["180px", "120px"], opacity: [0.35, 1] },
-                { duration: 0.15, easing: "linear" },
-            );
-        }, 180);
+	const interrupt = setTimeout(() => {
+		log = [...log, 'interrupt'];
+		first.stop();
+		animateMini(box, { width: ['180px', '120px'], opacity: [0.35, 1] }, { duration: 0.15, easing: 'linear' });
+	}, 180);
 
-        return () => {
-            clearTimeout(interrupt);
-            first.stop();
-        };
-    });
+	return () => {
+		clearTimeout(interrupt);
+		first.stop();
+	};
+});
 </script>
 
 <main class="page">

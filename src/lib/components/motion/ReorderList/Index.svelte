@@ -1,10 +1,10 @@
 <!-- https://codesandbox.io/p/sandbox/uonye -->
 <script lang="ts">
-    import { Reorder } from "$lib/motion-start";
-    import Box from "../../Box.svelte";
-    import Item from "./Item.svelte";
+import { Reorder } from '$lib/motion-start';
+import Box from '../../Box.svelte';
+import Item from './Item.svelte';
 
-    let items = $state(["🍅 Tomato", "🥒 Cucumber", "🧀 Cheese", "🥬 Lettuce"]);
+let items = $state(['🍅 Tomato', '🥒 Cucumber', '🧀 Cheese', '🥬 Lettuce']);
 </script>
 
 <Box cls="dark:bg-ember-300 bg-amber-400">

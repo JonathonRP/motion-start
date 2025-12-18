@@ -1,32 +1,32 @@
 <script lang="ts">
-    import * as Card from "$lib/components/ui/card";
-    import {
-        AnimateLayout,
-        AnimatePresenceMode,
-        AnimatePresenceStack,
-        AnimationSequence,
-        ColorInterpolation,
-        CyclingThroughStates,
-        Drag3DTransform,
-        DragConstraints,
-        DragDirectionLocking,
-        DragTransform,
-        DurBasedSpring,
-        KeyFramesPosition,
-        MorphSvg,
-        ReorderList,
-        Repeat,
-        ReverseEffect,
-        ScrollProgress,
-        Spring,
-        Tweened,
-        WhileDragEffect,
-        WhileHoverEffect,
-        WhileTapEffect,
-    } from "$lib/components/motion";
+import * as Card from '$lib/components/ui/card';
+import {
+	AnimateLayout,
+	AnimatePresenceMode,
+	AnimatePresenceStack,
+	AnimationSequence,
+	ColorInterpolation,
+	CyclingThroughStates,
+	Drag3DTransform,
+	DragConstraints,
+	DragDirectionLocking,
+	DragTransform,
+	DurBasedSpring,
+	KeyFramesPosition,
+	MorphSvg,
+	ReorderList,
+	Repeat,
+	ReverseEffect,
+	ScrollProgress,
+	Spring,
+	Tweened,
+	WhileDragEffect,
+	WhileHoverEffect,
+	WhileTapEffect,
+} from '$lib/components/motion';
 
-    import { RenderScan } from "svelte-render-scan";
-    import { dev } from "$app/environment";
+import { RenderScan } from 'svelte-render-scan';
+import { dev } from '$app/environment';
 </script>
 
 {#if dev}

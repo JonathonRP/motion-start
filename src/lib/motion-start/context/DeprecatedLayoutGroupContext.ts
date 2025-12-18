@@ -5,4 +5,4 @@ Copyright (c) 2018 Framer B.V.
 
 import { Context } from 'runed';
 
-export const DeprecatedLayoutGroupContext = new Context<string | null>("DeprecatedLayoutGroup");
+export const DeprecatedLayoutGroupContext = new Context<string | null>('DeprecatedLayoutGroup');

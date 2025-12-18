@@ -11,4 +11,4 @@ export interface LazyContext {
 	strict: boolean;
 }
 
-export const LazyContext = new Context<LazyContext>("LazyContext");
+export const LazyContext = new Context<LazyContext>('LazyContext');

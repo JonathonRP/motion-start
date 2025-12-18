@@ -1,12 +1,12 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  e2e: {
-    baseUrl: 'http://localhost:5000',
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
-    },
-    // Try to ensure JavaScript executes in headless mode
-    chromeWebSecurity: false,
-  },
+	e2e: {
+		baseUrl: 'http://localhost:5000',
+		setupNodeEvents(on, config) {
+			// implement node event listeners here
+		},
+		// Try to ensure JavaScript executes in headless mode
+		chromeWebSecurity: false,
+	},
 });

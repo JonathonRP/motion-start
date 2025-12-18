@@ -69,23 +69,26 @@ export const useSpring = (source: MotionValue | number, config: MaybeGetter<Spri
 		}
 	};
 
-	watch(() => extract(config), () => {
-		 value.attach((v, set) => {
-			if (isStatic) {
-				return set(v);
-			}
+	watch(
+		() => extract(config),
+		() => {
+			value.attach((v, set) => {
+				if (isStatic) {
+					return set(v);
+				}
 
-			latestValue = v;
-			latestSetter = (newValue: number) => {
-				set(newValue);
-				return newValue;
-			};
+				latestValue = v;
+				latestSetter = (newValue: number) => {
+					set(newValue);
+					return newValue;
+				};
 
-			frame.update(startAnimation);
+				frame.update(startAnimation);
 
-			return value.get();
-		}, stopAnimation);
-	});
+				return value.get();
+			}, stopAnimation);
+		}
+	);
 
 	if (isMotionValue(source)) {
 		source.on('change', (v) => value.set(Number.parseFloat(v)));

@@ -52,7 +52,7 @@ describe('keyframes generator', () => {
 
 	it('should apply easing function', () => {
 		const easeSquare = (t: number) => t * t;
-		
+
 		const withEasing = keyframes({
 			keyframes: [0, 100],
 			duration: 1000,

@@ -1,19 +1,19 @@
 <svelte:options runes={false} />
 
 <script>
-  // Lucide Svelte
-  import { Home, PencilLine, TvMinimalPlay } from "lucide-svelte";
-  //    Shadcn Components
-  import * as Tooltip from "$lib/components/ui/tooltip";
-  //   Major Components
-  import { Dock, DockIcon } from "./Dock";
+// Lucide Svelte
+import { Home, PencilLine, TvMinimalPlay } from 'lucide-svelte';
+//    Shadcn Components
+import * as Tooltip from '$lib/components/ui/tooltip';
+//   Major Components
+import { Dock, DockIcon } from './Dock';
 
-  let navs = {
-    navbar: [
-      { label: "Docs", icon: Home, href: "/", id: "home" },
-      { label: "Test", icon: PencilLine, href: "/tests", id: "tests" },
-    ],
-  };
+let navs = {
+	navbar: [
+		{ label: 'Docs', icon: Home, href: '/', id: 'home' },
+		{ label: 'Test', icon: PencilLine, href: '/tests', id: 'tests' },
+	],
+};
 </script>
 
 <div>

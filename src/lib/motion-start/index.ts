@@ -56,20 +56,26 @@ export { useAnimateMini } from './animation/hooks/use-animate-style';
 export { useAnimate } from './animation/hooks/use-animate.svelte';
 export {
 	useAnimation,
-	useAnimationControls
+	useAnimationControls,
 } from './animation/hooks/use-animation.svelte';
 export { animateVisualElement } from './animation/interfaces/visual-element';
 export { usePresenceData } from './components/AnimatePresence/use-presence-data.svelte';
 export {
-	useIsPresent, usePresence
+	useIsPresent,
+	usePresence,
 } from './components/AnimatePresence/use-presence.svelte';
 export { useDomEvent } from './events/use-dom-event';
 export {
-	DragControls, useDragControls
+	DragControls,
+	useDragControls,
 } from './gestures/drag/use-drag-controls';
 export type { PanInfo } from './gestures/pan/PanSession';
 export type {
-	FocusHandlers, HoverHandlers, PanHandlers, TapHandlers, TapInfo
+	FocusHandlers,
+	HoverHandlers,
+	PanHandlers,
+	TapHandlers,
+	TapInfo,
 } from './gestures/types';
 export { createRendererMotionComponent } from './motion/index.svelte';
 export { isMotionComponent } from './motion/utils/is-motion-component';
@@ -86,7 +92,8 @@ export { useAnimationFrame } from './utils/use-animation-frame.svelte';
 export { useCycle, type Cycle, type CycleState } from './utils/use-cycle.svelte';
 export { useInView, type UseInViewOptions } from './utils/use-in-view.svelte';
 export {
-	disableInstantTransitions, useInstantTransition
+	disableInstantTransitions,
+	useInstantTransition,
 } from './utils/use-instant-transition.svelte';
 export { color } from './value/types/color';
 export { complex } from './value/types/complex';
@@ -120,8 +127,9 @@ export type { LazyProps } from './components/LazyMotion/types';
 export type { MotionConfigProps } from './components/MotionConfig';
 export type { EventInfo } from './events/types';
 export type {
-	DragElastic, DraggableProps,
-	DragHandlers
+	DragElastic,
+	DraggableProps,
+	DragHandlers,
 } from './gestures/drag/types';
 // NOTE: animateLayout cannot be exported from .svelte files in TypeScript
 // It's a simple passthrough function: { track: (fn) => fn }
@@ -129,9 +137,12 @@ export type {
 export type { LayoutProps } from './motion/features/layout/types';
 export * from './motion/features/types';
 export type {
-	AnimationProps, MotionAdvancedProps, MotionProps, MotionStyle,
+	AnimationProps,
+	MotionAdvancedProps,
+	MotionProps,
+	MotionStyle,
 	MotionTransform,
-	VariantLabels
+	VariantLabels,
 } from './motion/types';
 export * from './projection/geometry/types';
 export type { IProjectionNode } from './projection/node/types';
@@ -141,12 +152,25 @@ export type { SVGAttributesAsMotionValues, SVGMotionProps } from './render/svg/t
 export type { AnimationLifecycles, CreateVisualElement } from './render/types';
 export { FlatTree } from './render/utils/flat-tree';
 export type {
-	CustomValueType, Inertia, Keyframes, KeyframesTarget, None, Orchestration,
-	Repeat, ResolvedKeyframesTarget, ResolvedSingleTarget, ResolvedValueTarget, SingleTarget, Spring, Target,
+	CustomValueType,
+	Inertia,
+	Keyframes,
+	KeyframesTarget,
+	None,
+	Orchestration,
+	Repeat,
+	ResolvedKeyframesTarget,
+	ResolvedSingleTarget,
+	ResolvedValueTarget,
+	SingleTarget,
+	Spring,
+	Target,
 	TargetAndTransition,
-	Transition, Tween, ValueTarget,
+	Transition,
+	Tween,
+	ValueTarget,
 	Variant,
-	Variants
+	Variants,
 } from './types';
 export type { ScrollMotionValues } from './value/scroll/utils';
 
@@ -159,4 +183,3 @@ export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inve
 
 // Keep explict delay in milliseconds export for BC with Framer
 export { delay, type DelayedFunction } from './utils/delay';
-

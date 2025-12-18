@@ -7,8 +7,10 @@ export const {
 	state: frameData,
 	steps: frameSteps,
 } = createRenderBatcher(
-	typeof requestAnimationFrame !== 'undefined' 
-		? (callback: Function) => { requestAnimationFrame(callback as FrameRequestCallback); } 
-		: noop, 
+	typeof requestAnimationFrame !== 'undefined'
+		? (callback: Function) => {
+				requestAnimationFrame(callback as FrameRequestCallback);
+			}
+		: noop,
 	true
 );

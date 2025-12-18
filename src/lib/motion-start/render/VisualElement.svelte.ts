@@ -565,7 +565,6 @@ export abstract class VisualElement<
 			}
 		}
 
-
 		this.prevMotionValues = updateMotionValuesFromProps(
 			this as VisualElement<unknown>,
 			this.scrapeMotionValuesFromProps(props(), this.prevProps!, this as VisualElement<unknown>),

@@ -48,7 +48,7 @@ describe('spring generator', () => {
 		// Stiffer spring should move faster initially
 		const stiffMid = stiff.next(100);
 		const softMid = soft.next(100);
-		
+
 		expect(Math.abs(stiffMid.value)).toBeGreaterThan(Math.abs(softMid.value));
 	});
 
@@ -68,7 +68,7 @@ describe('spring generator', () => {
 		// Check oscillation behavior
 		let overdampedState = overdamped.next(0);
 		let underdampedState = underdamped.next(0);
-		
+
 		for (let t = 0; t < 1000; t += 50) {
 			overdampedState = overdamped.next(t);
 			underdampedState = underdamped.next(t);
@@ -110,7 +110,7 @@ describe('spring generator', () => {
 		// With positive velocity should progress faster initially
 		const withVel = withVelocity.next(50);
 		const withoutVel = withoutVelocity.next(50);
-		
+
 		expect(withVel.value).toBeGreaterThan(withoutVel.value);
 	});
 

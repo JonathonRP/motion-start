@@ -1,9 +1,9 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
-    function newChildrenMap(): Map<string | number, boolean> {
-        return new Map<string | number, boolean>();
-    }
+function newChildrenMap(): Map<string | number, boolean> {
+	return new Map<string | number, boolean>();
+}
 </script>
 
 <script lang="ts">

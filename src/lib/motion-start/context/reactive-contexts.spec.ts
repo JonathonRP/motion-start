@@ -8,7 +8,7 @@ import {
 	createPresenceContext,
 	createMotionConfigContext,
 	createLayoutGroupContext,
-	defaultMotionConfig
+	defaultMotionConfig,
 } from './index.svelte';
 
 describe('createPresenceContext', () => {

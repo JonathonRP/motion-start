@@ -82,10 +82,7 @@ describe('Integration: Easing Functions in Animations', () => {
 			expect(eased).toBeCloseTo(0.5, 1);
 
 			// Use in animation with numeric interpolation
-			const numInterpolator = interpolate(
-				[0, 1],
-				[0, 100]
-			);
+			const numInterpolator = interpolate([0, 1], [0, 100]);
 			expect(numInterpolator).toBeDefined();
 			// Verify easing affects the interpolated value
 			const easedValue = easeInOut(0.5);
@@ -192,10 +189,7 @@ describe('Integration: Easing Functions in Animations', () => {
 			const eased = easeInOut(progress);
 
 			// Keyframe animation with easing
-			const interpolator = interpolate(
-				[0, 50, 100],
-				[0, 50, 100]
-			);
+			const interpolator = interpolate([0, 50, 100], [0, 50, 100]);
 			const interpolated = interpolator(eased);
 
 			expect(interpolated).toBeDefined();

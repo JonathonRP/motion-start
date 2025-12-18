@@ -4,19 +4,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-	createPresenceContext,
-	type PresenceContextType
-} from '../context/PresenceContext.svelte';
+import { createPresenceContext, type PresenceContextType } from '../context/PresenceContext.svelte';
 import {
 	createMotionConfigContext,
 	type MotionConfigContextType,
-	defaultMotionConfig
+	defaultMotionConfig,
 } from '../context/MotionConfigContext.svelte';
-import {
-	createLayoutGroupContext,
-	type LayoutGroupContextType
-} from '../context/LayoutGroupContext.svelte';
+import { createLayoutGroupContext, type LayoutGroupContextType } from '../context/LayoutGroupContext.svelte';
 
 describe('Integration: Context Propagation', () => {
 	describe('PresenceContext integration', () => {
@@ -52,12 +46,8 @@ describe('Integration: Context Propagation', () => {
 			const context = createPresenceContext();
 
 			// Register multiple children's exit animations
-			const child1Promise = new Promise<void>((resolve) =>
-				setTimeout(resolve, 50)
-			);
-			const child2Promise = new Promise<void>((resolve) =>
-				setTimeout(resolve, 100)
-			);
+			const child1Promise = new Promise<void>((resolve) => setTimeout(resolve, 50));
+			const child2Promise = new Promise<void>((resolve) => setTimeout(resolve, 100));
 
 			context.registerExitAnimation('child-1', child1Promise);
 			context.registerExitAnimation('child-2', child2Promise);
@@ -77,13 +67,13 @@ describe('Integration: Context Propagation', () => {
 			const parentConfig = createMotionConfigContext({
 				...defaultMotionConfig,
 				reducedMotion: 'user',
-				transition: { duration: 0.3 }
+				transition: { duration: 0.3 },
 			});
 
 			// Child config (would normally getContext parent first)
 			const childConfig = createMotionConfigContext({
 				...defaultMotionConfig,
-				transition: { duration: 0.5 } // Override
+				transition: { duration: 0.5 }, // Override
 				// reducedMotion inherited
 			});
 
@@ -112,7 +102,7 @@ describe('Integration: Context Propagation', () => {
 				...defaultMotionConfig,
 				reducedMotion: 'user',
 				transition: { duration: 0.3 },
-				isStatic: false
+				isStatic: false,
 			});
 
 			// Partial update
@@ -142,7 +132,7 @@ describe('Integration: Context Propagation', () => {
 				left: 0,
 				right: 100,
 				bottom: 100,
-				toJSON: () => ({})
+				toJSON: () => ({}),
 			});
 
 			// Verify registration
@@ -159,7 +149,7 @@ describe('Integration: Context Propagation', () => {
 				left: 0,
 				right: 150,
 				bottom: 100,
-				toJSON: () => ({})
+				toJSON: () => ({}),
 			});
 
 			// Verify layout changed detected
@@ -201,7 +191,7 @@ describe('Integration: Context Propagation', () => {
 				left: 0,
 				right: 100,
 				bottom: 100,
-				toJSON: () => ({})
+				toJSON: () => ({}),
 			});
 			context.registerElement('el-2', {
 				x: 100,
@@ -212,7 +202,7 @@ describe('Integration: Context Propagation', () => {
 				left: 100,
 				right: 200,
 				bottom: 100,
-				toJSON: () => ({})
+				toJSON: () => ({}),
 			});
 
 			expect(context.dimensions.size).toBe(2);
@@ -231,7 +221,7 @@ describe('Integration: Context Propagation', () => {
 			// Motion config with reduced motion
 			const motionConfig = createMotionConfigContext({
 				...defaultMotionConfig,
-				reducedMotion: 'always'
+				reducedMotion: 'always',
 			});
 
 			// Layout group for coordinated animations
@@ -247,7 +237,7 @@ describe('Integration: Context Propagation', () => {
 				left: 0,
 				right: 100,
 				bottom: 100,
-				toJSON: () => ({})
+				toJSON: () => ({}),
 			});
 
 			// Start animation (should respect reduced motion from config)
@@ -266,7 +256,7 @@ describe('Integration: Context Propagation', () => {
 			// Motion config
 			const motionConfig = createMotionConfigContext({
 				...defaultMotionConfig,
-				transition: { duration: 0.3 }
+				transition: { duration: 0.3 },
 			});
 
 			// Presence context
@@ -276,9 +266,7 @@ describe('Integration: Context Propagation', () => {
 			presenceContext.addChild('child-1');
 
 			// Trigger exit animation
-			const exitPromise = new Promise<void>((resolve) =>
-				setTimeout(resolve, 50)
-			);
+			const exitPromise = new Promise<void>((resolve) => setTimeout(resolve, 50));
 			presenceContext.registerExitAnimation('child-1', exitPromise);
 
 			expect(presenceContext.isExiting).toBe(true);

@@ -13,6 +13,6 @@ export function useMotionValueEvent<V, EventName extends keyof MotionValueEventC
 	const unlisten = value.on(event, callback);
 
 	$effect(() => unlisten);
-	
+
 	return unlisten;
 }

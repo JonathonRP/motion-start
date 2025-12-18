@@ -73,16 +73,7 @@ export type MotionCSS = MakeMotion<
 	Omit<
 		Properties,
 		// Exclude properties that overlap with TransformProperties to avoid conflicts
-		| 'x'
-		| 'y'
-		| 'z'
-		| 'rotate'
-		| 'scale'
-		| 'perspective'
-		| 'translate'
-		| 'translateX'
-		| 'translateY'
-		| 'translateZ'
+		'x' | 'y' | 'z' | 'rotate' | 'scale' | 'perspective' | 'translate' | 'translateX' | 'translateY' | 'translateZ'
 	>
 >;
 

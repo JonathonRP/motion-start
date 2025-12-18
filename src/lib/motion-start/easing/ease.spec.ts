@@ -10,7 +10,7 @@ describe('easeIn', () => {
 	it('should start slow and end fast', () => {
 		expect(easeIn(0)).toBe(0);
 		expect(easeIn(1)).toBe(1);
-		
+
 		// Should accelerate: slower at start, faster at end
 		const firstQuarter = easeIn(0.25);
 		const thirdQuarter = easeIn(0.75);
@@ -29,7 +29,7 @@ describe('easeOut', () => {
 	it('should start fast and end slow', () => {
 		expect(easeOut(0)).toBe(0);
 		expect(easeOut(1)).toBe(1);
-		
+
 		// Should decelerate: faster at start, slower at end
 		const firstQuarter = easeOut(0.25);
 		const thirdQuarter = easeOut(0.75);
@@ -54,7 +54,7 @@ describe('easeInOut', () => {
 	it('should be symmetric', () => {
 		const quarter = easeInOut(0.25);
 		const threeQuarters = easeInOut(0.75);
-		
+
 		// Should be roughly symmetric around midpoint
 		expect(quarter).toBeLessThan(0.25);
 		expect(threeQuarters).toBeGreaterThan(0.75);

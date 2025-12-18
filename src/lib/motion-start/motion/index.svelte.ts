@@ -3,9 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import {
-	type Component,
-} from 'svelte';
+import { type Component } from 'svelte';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
 // import { MotionConfigContext } from '../context/MotionConfigContext';

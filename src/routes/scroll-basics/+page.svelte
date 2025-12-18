@@ -1,42 +1,42 @@
 <script lang="ts">
-    let scrollProgress = $state(0);
-    let scrollY = $state(0);
-    let inView = $state(false);
+let scrollProgress = $state(0);
+let scrollY = $state(0);
+let inView = $state(false);
 
-    function handleScroll() {
-        scrollY = window.scrollY;
-        const windowHeight = window.innerHeight;
-        const documentHeight = document.documentElement.scrollHeight;
-        const maxScroll = documentHeight - windowHeight;
-        scrollProgress = maxScroll > 0 ? scrollY / maxScroll : 0;
-    }
+function handleScroll() {
+	scrollY = window.scrollY;
+	const windowHeight = window.innerHeight;
+	const documentHeight = document.documentElement.scrollHeight;
+	const maxScroll = documentHeight - windowHeight;
+	scrollProgress = maxScroll > 0 ? scrollY / maxScroll : 0;
+}
 
-    $effect(() => {
-        if (typeof window !== "undefined") {
-            window.addEventListener("scroll", handleScroll);
-            handleScroll(); // Initial call
-            return () => window.removeEventListener("scroll", handleScroll);
-        }
-    });
+$effect(() => {
+	if (typeof window !== 'undefined') {
+		window.addEventListener('scroll', handleScroll);
+		handleScroll(); // Initial call
+		return () => window.removeEventListener('scroll', handleScroll);
+	}
+});
 
-    // Intersection observer for whileInView
-    let whileInViewElement: HTMLDivElement;
+// Intersection observer for whileInView
+let whileInViewElement: HTMLDivElement;
 
-    $effect(() => {
-        if (typeof window !== "undefined" && whileInViewElement) {
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        inView = entry.isIntersecting;
-                    });
-                },
-                { threshold: 0.5 },
-            );
+$effect(() => {
+	if (typeof window !== 'undefined' && whileInViewElement) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					inView = entry.isIntersecting;
+				});
+			},
+			{ threshold: 0.5 }
+		);
 
-            observer.observe(whileInViewElement);
-            return () => observer.disconnect();
-        }
-    });
+		observer.observe(whileInViewElement);
+		return () => observer.disconnect();
+	}
+});
 </script>
 
 <div class="scroll-container">

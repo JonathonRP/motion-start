@@ -29,9 +29,7 @@ import { supportsWaapi } from './waapi/utils/supports-waapi';
  * This is needed because MotionValue instances may come from different contexts
  * (motion-dom vs motion-start) but have compatible structure.
  */
-function isMotionValue<T extends string | number>(
-	value: unknown
-): value is MotionValue<T> {
+function isMotionValue<T extends string | number>(value: unknown): value is MotionValue<T> {
 	return (
 		typeof value === 'object' &&
 		value !== null &&
@@ -130,9 +128,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 	// Override options with proper autoplay type
 	protected declare options: ValueAnimationOptionsWithDefaults<T> & { name: string; motionValue: MotionValue<T> };
 
-	constructor(
-		options: ValueAnimationOptionsWithRenderContext<T> & { name: string; motionValue: MotionValue<T> }
-	) {
+	constructor(options: ValueAnimationOptionsWithRenderContext<T> & { name: string; motionValue: MotionValue<T> }) {
 		// Ensure autoplay has a value to satisfy base class type requirements
 		super({ autoplay: true, ...options });
 
@@ -203,12 +199,12 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			type = 'keyframes';
 		}
 
-		const animation = startWaapiAnimation(
-			mv.owner!.current as unknown as HTMLElement,
-			name,
-			keyframes as string[],
-			{ ...this.options, duration, times, ease }
-		);
+		const animation = startWaapiAnimation(mv.owner!.current as unknown as HTMLElement, name, keyframes as string[], {
+			...this.options,
+			duration,
+			times,
+			ease,
+		});
 
 		// Override the browser calculated startTime with one synchronised to other JS
 		// and WAAPI animations starting this event loop.

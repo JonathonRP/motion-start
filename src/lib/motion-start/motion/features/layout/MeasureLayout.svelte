@@ -3,22 +3,22 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-	interface MeasureContextProps {
-		layoutGroup: LayoutGroupContext;
-		switchLayoutGroup?: SwitchLayoutGroupContext;
-		isPresent: boolean;
-		safeToRemove?: VoidFunction | null;
-	}
+interface MeasureContextProps {
+	layoutGroup: LayoutGroupContext;
+	switchLayoutGroup?: SwitchLayoutGroupContext;
+	isPresent: boolean;
+	safeToRemove?: VoidFunction | null;
+}
 
-	export interface MeasureProps extends MotionProps, MeasureContextProps {
-		visualElement: VisualElement<unknown>;
-	}
+export interface MeasureProps extends MotionProps, MeasureContextProps {
+	visualElement: VisualElement<unknown>;
+}
 
-	export const animateLayout = {
-		track: <A extends unknown[], R>(fn: (...args: A) => R) => {
-			return fn;
-		},
-	};
+export const animateLayout = {
+	track: <A extends unknown[], R>(fn: (...args: A) => R) => {
+		return fn;
+	},
+};
 </script>
 
 <script lang="ts">

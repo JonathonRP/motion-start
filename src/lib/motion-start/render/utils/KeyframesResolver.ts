@@ -19,7 +19,11 @@ let anyNeedsMeasurement = false;
 function measureAllKeyframes() {
 	if (anyNeedsMeasurement) {
 		const resolversToMeasure = Array.from(toResolve).filter((resolver: KeyframeResolver) => resolver.needsMeasurement);
-		const elementsToMeasure = new Set(resolversToMeasure.map((resolver) => resolver.element).filter((el): el is VisualElement<HTMLElement> => el !== undefined));
+		const elementsToMeasure = new Set(
+			resolversToMeasure
+				.map((resolver) => resolver.element)
+				.filter((el): el is VisualElement<HTMLElement> => el !== undefined)
+		);
 		const transformsToRestore = new Map<VisualElement<unknown, unknown>, [string, string | number][]>();
 
 		/**

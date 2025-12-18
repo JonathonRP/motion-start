@@ -103,8 +103,9 @@ export function useVisualElement<Instance, RenderState>(
 	const optimisedAppearId = $derived.by(() => props()[optimizedAppearDataAttribute as keyof typeof props]);
 	let wantsHandoff = $derived(
 		Boolean(optimisedAppearId) &&
-		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
-		window.MotionHasOptimisedAnimation?.(optimisedAppearId));
+			!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
+			window.MotionHasOptimisedAnimation?.(optimisedAppearId)
+	);
 
 	$effect(() => {
 		if (!visualElement) return;

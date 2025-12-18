@@ -41,7 +41,7 @@ export interface LayoutProps {
 	 *
 	 * @public
 	 */
-	layout?: ReturnType<AnimateLayout["track"]> | boolean | 'position' | 'size' | 'preserve-aspect';
+	layout?: ReturnType<AnimateLayout['track']> | boolean | 'position' | 'size' | 'preserve-aspect';
 
 	/**
 	 * Enable shared layout transitions between different components with the same `layoutId`.

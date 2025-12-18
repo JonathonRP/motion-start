@@ -40,10 +40,7 @@ export async function waitFrames(count = 1): Promise<void> {
 /**
  * Wait for animation to complete (polls MotionValue.isAnimating)
  */
-export async function waitForAnimation(
-	motionValue: MotionValue,
-	timeout = 5000
-): Promise<void> {
+export async function waitForAnimation(motionValue: MotionValue, timeout = 5000): Promise<void> {
 	const startTime = Date.now();
 
 	while (motionValue.isAnimating()) {
@@ -57,10 +54,7 @@ export async function waitForAnimation(
 /**
  * Wait for condition to be true
  */
-export async function waitFor(
-	condition: () => boolean,
-	timeout = 5000
-): Promise<void> {
+export async function waitFor(condition: () => boolean, timeout = 5000): Promise<void> {
 	const startTime = Date.now();
 
 	while (!condition()) {
@@ -82,12 +76,7 @@ export async function advanceTime(ms: number): Promise<void> {
 /**
  * Create mock DOMRect for testing
  */
-export function createMockDOMRect(
-	x = 0,
-	y = 0,
-	width = 100,
-	height = 100
-): DOMRect {
+export function createMockDOMRect(x = 0, y = 0, width = 100, height = 100): DOMRect {
 	return {
 		x,
 		y,
@@ -97,17 +86,14 @@ export function createMockDOMRect(
 		right: x + width,
 		bottom: y + height,
 		left: x,
-		toJSON: () => ({ x, y, width, height, top: y, right: x + width, bottom: y + height, left: x })
+		toJSON: () => ({ x, y, width, height, top: y, right: x + width, bottom: y + height, left: x }),
 	};
 }
 
 /**
  * Mock element.getBoundingClientRect()
  */
-export function mockGetBoundingClientRect(
-	element: HTMLElement,
-	rect: DOMRect
-): void {
+export function mockGetBoundingClientRect(element: HTMLElement, rect: DOMRect): void {
 	element.getBoundingClientRect = () => rect;
 }
 
@@ -151,6 +137,6 @@ export function createSpy<T extends (...args: any[]) => any>(): {
 		},
 		reset() {
 			calls.length = 0;
-		}
+		},
 	};
 }

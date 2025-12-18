@@ -2,16 +2,16 @@ import type { AnimationScope } from '../types';
 import { createScopedAnimate } from '../animate';
 
 export function useAnimate<T extends Element = Element>() {
-		const scope: AnimationScope<T> = {
-			current: null! as T, // hydrated by Svelte action
-			animations: [],
-		};
+	const scope: AnimationScope<T> = {
+		current: null! as T, // hydrated by Svelte action
+		animations: [],
+	};
 
-		const animate = createScopedAnimate(scope);
+	const animate = createScopedAnimate(scope);
 
-		$effect(() => () => {
-			scope.animations.forEach((animation) => animation.stop());
-		});
+	$effect(() => () => {
+		scope.animations.forEach((animation) => animation.stop());
+	});
 
-		return [scope, animate] as [AnimationScope<T>, typeof animate];
+	return [scope, animate] as [AnimationScope<T>, typeof animate];
 }
