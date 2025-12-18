@@ -2,59 +2,60 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" module>
-export interface Props<V> {
-	/**
-	 * A HTML element to render this component as. Defaults to `"ul"`.
-	 *
-	 * @public
-	 */
-	as?: keyof SvelteHTMLElements;
+	export interface Props<V> {
+		/**
+		 * A HTML element to render this component as. Defaults to `"ul"`.
+		 *
+		 * @public
+		 */
+		as?: keyof SvelteHTMLElements;
 
-	/**
-	 * The axis to reorder along. By default, items will be draggable on this axis.
-	 * To make draggable on both axes, set `<Reorder.Item drag />`
-	 *
-	 * @public
-	 */
-	axis?: 'x' | 'y';
+		/**
+		 * The axis to reorder along. By default, items will be draggable on this axis.
+		 * To make draggable on both axes, set `<Reorder.Item drag />`
+		 *
+		 * @public
+		 */
+		axis?: "x" | "y";
 
-	/**
-	 * A callback to fire with the new value order. For instance, if the values
-	 * are provided as a state from `useState`, this could be the set state function.
-	 *
-	 * @public
-	 */
-	onReorder?: (newOrder: V[]) => void;
+		/**
+		 * A callback to fire with the new value order. For instance, if the values
+		 * are provided as a state from `useState`, this could be the set state function.
+		 *
+		 * @public
+		 */
+		onReorder?: (newOrder: V[]) => void;
 
-	/**
-	 * The latest values state.
-	 *
-	 * ```jsx
-	 * function Component() {
-	 *   const [items, setItems] = useState([0, 1, 2])
-	 *
-	 *   return (
-	 *     <Reorder.Group values={items} onReorder={setItems}>
-	 *         {items.map((item) => <Reorder.Item key={item} value={item} />)}
-	 *     </Reorder.Group>
-	 *   )
-	 * }
-	 * ```
-	 *
-	 * @public
-	 */
-	values: V[];
-}
+		/**
+		 * The latest values state.
+		 *
+		 * ```jsx
+		 * function Component() {
+		 *   const [items, setItems] = useState([0, 1, 2])
+		 *
+		 *   return (
+		 *     <Reorder.Group values={items} onReorder={setItems}>
+		 *         {items.map((item) => <Reorder.Item key={item} value={item} />)}
+		 *     </Reorder.Group>
+		 *   )
+		 * }
+		 * ```
+		 *
+		 * @public
+		 */
+		values: V[];
+	}
 
-type ReorderGroupProps<V> = Props<V> & Omit<HTMLMotionProps<any>, 'values' | 'children'>;
+	type ReorderGroupProps<V> = Props<V> &
+		Omit<HTMLMotionProps<any>, "values" | "children">;
 
-function getValue<V>(item: ItemData<V>) {
-	return item.value;
-}
+	function getValue<V>(item: ItemData<V>) {
+		return item.value;
+	}
 
-function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
-	return a.layout.min - b.layout.min;
-}
+	function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
+		return a.layout.min - b.layout.min;
+	}
 </script>
 
 <script lang="ts" generics="V">

@@ -1,34 +1,40 @@
 <script lang="ts">
-import { motion, useMotionValue, useTransform, type PanInfo, type Variants } from '$lib/motion-start';
-let exitX = $state(0);
-const x = useMotionValue(0);
-const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
-const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
-	clamp: false,
-});
-let { drag = false, frontCard = false, index = 0 } = $props();
+    import {
+        motion,
+        useMotionValue,
+        useTransform,
+        type PanInfo,
+        type Variants,
+    } from "$lib/motion-start";
+    let exitX = $state(0);
+    const x = useMotionValue(0);
+    const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
+    const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
+        clamp: false,
+    });
+    let { drag = false, frontCard = false, index = 0 } = $props();
 
-const variantsFrontCard: Variants = {
-	animate: { scale: 1, y: 0, opacity: 1 },
-	exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
-};
-const variantsBackCard: Variants = {
-	initial: { scale: 0.3, y: 105, opacity: 0 },
-	animate: { scale: 0.75, y: 30, opacity: 0.5 },
-};
+    const variantsFrontCard: Variants = {
+        animate: { scale: 1, y: 0, opacity: 1 },
+        exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
+    };
+    const variantsBackCard: Variants = {
+        initial: { scale: 0.3, y: 105, opacity: 0 },
+        animate: { scale: 0.75, y: 30, opacity: 0.5 },
+    };
 
-const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
+    const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
 
-function handleDragEnd(_: PointerEvent, info: PanInfo) {
-	if (info.offset.x < -100) {
-		exitX = -250;
-		index = index + 1;
-	}
-	if (info.offset.x > 100) {
-		exitX = 250;
-		index = index + 1;
-	}
-}
+    function handleDragEnd(_: PointerEvent, info: PanInfo) {
+        if (info.offset.x < -100) {
+            exitX = -250;
+            index = index + 1;
+        }
+        if (info.offset.x > 100) {
+            exitX = 250;
+            index = index + 1;
+        }
+    }
 </script>
 
 <!-- Animate Presence Stack -->
