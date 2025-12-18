@@ -227,7 +227,7 @@ export abstract class VisualElement<
 	/**
 	 * The AnimationState, this is hydrated by the animation Feature.
 	 */
-	animationState?: AnimationState;
+	animationState?: AnimationState = $state();
 
 	KeyframeResolver = KeyframeResolver;
 

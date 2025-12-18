@@ -89,8 +89,8 @@ export function useVisualElement<Instance, RenderState>(
 			untrack(() => {
 				visualElement.update(props, () => presenceContext);
 				// Trigger exit animation feature update when presence context changes
-				if (visualElement.features.animation) {
-					visualElement.features.animation.update();
+				if (visualElement.features.exit) {
+					visualElement.features.exit.update();
 				}
 			});
 		}
