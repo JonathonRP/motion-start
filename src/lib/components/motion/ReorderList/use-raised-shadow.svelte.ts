@@ -1,9 +1,9 @@
-import { useMotionValue } from '$lib/motion-start';
+import { MotionValue, useMotionValue } from '$lib/motion-start';
 import { animate } from '$lib/motion-start/animation/animate';
 
 const inactiveShadow = '0px 0px 0px rgba(0,0,0,0.8)';
 
-export function useRaisedShadow(value: { on: (evt: 'change', cb: (latest: number) => void) => void }) {
+export function useRaisedShadow(value: MotionValue) {
 	const boxShadow = useMotionValue(inactiveShadow);
 
 	$effect(() => {

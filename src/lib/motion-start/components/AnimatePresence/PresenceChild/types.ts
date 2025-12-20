@@ -10,5 +10,5 @@ export interface PresenceChildProps {
 	custom?: any;
 	presenceAffectsLayout: boolean;
 	mode: 'wait' | 'sync' | 'popLayout';
-	children: Snippet<[{ measure?: Attachment }]>;
+	children: Snippet;
 }

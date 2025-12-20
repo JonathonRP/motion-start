@@ -36,6 +36,7 @@ export function useVisualElement<Instance, RenderState>(
 	const reducedMotionContext = $derived(useMotionConfig().reducedMotion);
 
 	const visualElementRef = ref<VisualElement<Instance> | null>(null);
+	
 
 	/**
 	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
@@ -51,15 +52,15 @@ export function useVisualElement<Instance, RenderState>(
 			get props() {
 				return props();
 			},
-			presenceContext,
+			get presenceContext() {
+				return presenceContext;
+			},
 			blockInitialAnimation: presenceContext ? presenceContext?.initial === false : false,
 			reducedMotionConfig: reducedMotionContext,
 		});
 	}
 
 	const visualElement = $derived(visualElementRef.current);
-
-	$inspect(visualElement);
 
 	const initialLayoutGroupConfig = SwitchLayoutGroupContext.getOr({});
 
@@ -73,9 +74,9 @@ export function useVisualElement<Instance, RenderState>(
 	}
 
 	const isMounted = new IsMounted();
-	$inspect(presenceContext);
 
 	$effect.pre(() => {
+		// $inspect.trace();
 		props();
 		presenceContext;
 		/**
@@ -86,13 +87,7 @@ export function useVisualElement<Instance, RenderState>(
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 */
-			untrack(() => {
-				visualElement.update(props, () => presenceContext);
-				// Trigger exit animation feature update when presence context changes
-				if (visualElement.features.exit) {
-					visualElement.features.exit.update();
-				}
-			});
+			untrack(() => visualElement.update(props, presenceContext));
 		}
 	});
 
@@ -100,7 +95,7 @@ export function useVisualElement<Instance, RenderState>(
 	 * Cache this value as we want to know whether HandoffAppearAnimations
 	 * was present on initial render - it will be deleted after this.
 	 */
-	const optimisedAppearId = $derived.by(() => props()[optimizedAppearDataAttribute as keyof typeof props]);
+	const optimisedAppearId = $derived(props()[optimizedAppearDataAttribute as keyof typeof props]);
 	let wantsHandoff = $derived(
 		Boolean(optimisedAppearId) &&
 			!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
@@ -108,10 +103,12 @@ export function useVisualElement<Instance, RenderState>(
 	);
 
 	$effect(() => {
+		// $inspect.trace();
+
 		if (!visualElement) return;
 
 		window.MotionIsMounted = true;
-
+		
 		visualElement.updateFeatures();
 		microtask.render(() => visualElement.render);
 
@@ -128,15 +125,10 @@ export function useVisualElement<Instance, RenderState>(
 		if (wantsHandoff && visualElement.animationState) {
 			visualElement.animationState.animateChanges();
 		}
-
-		// return () => {
-		// 	visualElement.updateFeatures();
-		// 	console.log('dismounting');
-		// 	visualElement.unmount();
-		// };
 	});
 
 	$effect(() => {
+		// $inspect.trace();
 		if (!visualElement) return;
 
 		if (!wantsHandoff && visualElement.animationState) {

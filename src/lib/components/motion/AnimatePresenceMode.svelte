@@ -1,13 +1,13 @@
 <!-- https://codesandbox.io/p/sandbox/t7qxhv?file=/src/styles.css -->
 
 <script lang="ts">
-import { AnimatePresence, motion } from '$lib/motion-start';
-import Box from '../Box.svelte';
+    import { AnimatePresence, motion } from "$lib/motion-start";
+    import Box from "../Box.svelte";
 
-let count = $state(0);
-let items = $state<number[]>([0]);
-let popLayout = $state(false);
-let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
+    let count = $state(0);
+    let items = $state<number[]>([0]);
+    let popLayout = $state(false);
+    let mode: "popLayout" | "sync" = $derived(popLayout ? "popLayout" : "sync");
 </script>
 
 <Box>
@@ -42,7 +42,6 @@ let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
                 {mode}
                 values={items.map((id) => ({ key: id }))}
                 let:item
-                let:measure
             >
                 <motion.li
                     key={item.key}
@@ -55,7 +54,6 @@ let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
                     onclick={() => {
                         items = items.filter((value) => value !== item.key);
                     }}
-                    {@attach mode === "popLayout" && measure}
                 />
             </AnimatePresence>
         </ul>

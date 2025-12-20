@@ -1,4 +1,3 @@
-import type { Action } from 'svelte/action';
 import type { MutableRefObject, RefObject } from '../../../utils/safe-react-types';
 import type { Snippet } from 'svelte';
 import type { Attachment } from 'svelte/attachments';
@@ -11,7 +10,7 @@ export interface Size {
 }
 
 export interface Props {
-	children?: Snippet<[{ measure: Attachment }]>;
+	children: Snippet;
 	isPresent: boolean;
 }
 

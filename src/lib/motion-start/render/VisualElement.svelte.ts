@@ -146,7 +146,7 @@ export abstract class VisualElement<
 	 * A reference to the current underlying Instance, e.g. a HTMLElement
 	 * or Three.Mesh etc.
 	 */
-	current: Instance | null = null;
+	current: Instance | null = $state(null);
 
 	/**
 	 * A reference to the parent VisualElement (if exists).
@@ -227,7 +227,7 @@ export abstract class VisualElement<
 	/**
 	 * The AnimationState, this is hydrated by the animation Feature.
 	 */
-	animationState?: AnimationState = $state();
+	animationState?: AnimationState;
 
 	KeyframeResolver = KeyframeResolver;
 
@@ -393,7 +393,7 @@ export abstract class VisualElement<
 		if (this.parent) this.parent.children.add(this as VisualElement<unknown>);
 		this.update(
 			() => this.props,
-			() => this.presenceContext
+			this.presenceContext
 		);
 	}
 
@@ -539,14 +539,14 @@ export abstract class VisualElement<
 	 * Update the provided props. Ensure any newly-added motion values are
 	 * added to our map, old ones removed, and listeners updated.
 	 */
-	update(props: () => MotionProps, presenceContext: () => PresenceContext | null) {
+	update(props: () => MotionProps, presenceContext: PresenceContext | null) {
 		if (props().transformTemplate || this.props.transformTemplate) {
 			this.scheduleRender();
 		}
 
 		this.props = props();
 
-		this.presenceContext = presenceContext();
+		this.presenceContext = presenceContext;
 
 		/**
 		 * Update prop event handlers ie onAnimationStart, onAnimationComplete

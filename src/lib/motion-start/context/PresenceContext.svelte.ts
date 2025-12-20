@@ -6,6 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import { createContext } from 'svelte';
 import type { VariantLabels } from '../motion/types';
 import type { MutableRefObject } from '../utils/safe-react-types';
+import type { Attachment } from 'svelte/attachments';
 
 /**
  * @public
@@ -15,6 +16,7 @@ export interface PresenceContext {
 	isPresent: boolean;
 	register: (id: string | number) => () => void;
 	onExitComplete?: (id: string | number) => void;
+	measurePop?: Attachment;
 	initial?: false | VariantLabels;
 	custom?: any;
 }

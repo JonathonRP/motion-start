@@ -138,7 +138,7 @@ export class MotionValue<V = any> {
 	 */
 	liveStyle?: boolean;
 
-	#subscribe;
+	// #subscribe;
 
 	/**
 	 * @param init - The initiating value
@@ -152,11 +152,11 @@ export class MotionValue<V = any> {
 		this.setCurrent(init);
 		this.owner = options.owner;
 
-		this.#subscribe = createSubscriber((update) => {
-			for (const event in this.events) {
-				return this.events[event].add(update);
-			}
-		});
+		// this.#subscribe = createSubscriber((update) => {
+		// 	for (const event in this.events) {
+		// 		return this.events[event].add(update);
+		// 	}
+		// });
 	}
 
 	setCurrent(current: V) {
@@ -239,7 +239,7 @@ export class MotionValue<V = any> {
 			this.events[eventName] = new SubscriptionManager();
 		}
 
-		this.#subscribe();
+		// this.#subscribe();
 
 		const unsubscribe = this.events[eventName].add(callback);
 
@@ -355,7 +355,7 @@ export class MotionValue<V = any> {
 	 * @public
 	 */
 	get() {
-		this.#subscribe();
+		// this.#subscribe();
 
 		if (collectMotionValues.current) {
 			collectMotionValues.current.push(this);
@@ -390,7 +390,7 @@ export class MotionValue<V = any> {
 			return 0;
 		}
 
-		this.#subscribe();
+		// this.#subscribe();
 
 		const delta = Math.min(this.updatedAt - this.prevUpdatedAt!, MAX_VELOCITY_DELTA);
 
