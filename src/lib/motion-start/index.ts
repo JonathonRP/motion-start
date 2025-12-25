@@ -1,30 +1,13 @@
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-export { FramerTreeLayoutContext } from "./context/SharedLayoutContext.js";
-
-export { UseGestures } from "./gestures/use-gestures.js";
-export { UsePanGesture } from "./gestures/use-pan-gesture.js";
-export { UseTapGesture } from "./gestures/use-tap-gesture.js";
-
-export { default as MotionSSR } from "./motion/MotionSSR.svelte";
-
-export { UseAnimation } from "./animation/use-animation.js";
-
-export {
-  default as Mdiv,
-  default as MotionDiv,
-} from "./components/MotionDiv.svelte";
-
-// ----------------------------------------------------------------------------------------------
-
-/** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
 /**
- * Components
+ * motion-start - Svelte 5 animation library
+ * Based on framer-motion@11.11.11 and compatible patterns
+ * Copyright (c) 2018 Framer B.V. (original framer-motion)
+ */
+
+/**
+ * ========================================
+ * COMPONENTS
+ * ========================================
  */
 export { AnimatePresence } from "./components/AnimatePresence/index.js";
 export { AnimateSharedLayout } from "./components/AnimateSharedLayout/index.js";
@@ -36,8 +19,27 @@ export {
   motion as Motion,
 } from "./render/dom/motion.js";
 export { m, m as M } from "./render/dom/motion-minimal.js";
+export { default as MotionSSR } from "./motion/MotionSSR.svelte";
+export {
+  default as Mdiv,
+  default as MotionDiv,
+} from "./components/MotionDiv.svelte";
+
 /**
- * Features
+ * ========================================
+ * ANIMATION & CONTROLS
+ * ========================================
+ */
+export { animate } from "./animation/animate.js";
+export { animationControls } from "./animation/animation-controls.js";
+export { useAnimation } from "./animation/use-animation.js";
+export { UseAnimation } from "./animation/use-animation.js";
+export type { AnimationControls } from "./animation/types.js";
+
+/**
+ * ========================================
+ * FEATURES
+ * ========================================
  */
 export {
   featureBundle,
@@ -46,7 +48,9 @@ export {
   gestureAnimations,
 } from "./render/dom/featureBundle.js";
 /**
- * Motion values
+ * ========================================
+ * MOTION VALUES & HOOKS
+ * ========================================
  */
 export {
   MotionValue,
@@ -62,28 +66,33 @@ export { useSpring } from "./value/use-spring.js";
 export { useTransform } from "./value/use-transform.js";
 export { useVelocity } from "./value/use-velocity.js";
 export { resolveMotionValue } from "./value/utils/resolve-motion-value.js";
+
 /**
- * Accessibility
+ * ========================================
+ * GESTURES & DRAG
+ * ========================================
  */
+export {
+  DragControls,
+  useDragControls,
+} from "./gestures/drag/use-drag-controls.js";
+export { UseGestures } from "./gestures/use-gestures.js";
+export { UsePanGesture } from "./gestures/use-pan-gesture.js";
+export { UseTapGesture } from "./gestures/use-tap-gesture.js";
+
+/**
+ * ========================================
+ * UTILITIES
+ * ========================================
+ */
+export { useCycle } from "./utils/use-cycle.js";
 export { useReducedMotion } from "./utils/use-reduced-motion.js";
-/**
- * Utils
- */
-export { animate } from "./animation/animate.js";
-export { animationControls } from "./animation/animation-controls.js";
-export type { AnimationControls } from "./animation/types.js";
-export { useAnimation } from "./animation/use-animation.js";
+export { UseDomEvent } from "./events/use-dom-event.js";
 export {
   useIsPresent,
   usePresence,
 } from "./components/AnimatePresence/use-presence.js";
 export { createCrossfader } from "./components/AnimateSharedLayout/utils/crossfader.js";
-export { UseDomEvent } from "./events/use-dom-event.js";
-export type { PanInfo } from "./gestures/PanSession.js";
-export {
-  DragControls,
-  useDragControls,
-} from "./gestures/drag/use-drag-controls.js";
 export type {
   FocusHandlers,
   HoverHandlers,
@@ -100,16 +109,23 @@ export { visualElement } from "./render/index.js";
 export type { VisualElement } from "./render/types.js";
 export { animateVisualElement } from "./render/utils/animation.js";
 export { transform } from "./utils/transform.js";
-export { useCycle } from "./utils/use-cycle.js";
+
 /**
- * Contexts
+ * ========================================
+ * CONTEXTS
+ * ========================================
  */
+export { FramerTreeLayoutContext } from "./context/SharedLayoutContext.js";
 export { LayoutGroupContext } from "./context/LayoutGroupContext.js";
 export { MotionConfigContext } from "./context/MotionConfigContext.js";
 export { PresenceContext } from "./context/PresenceContext.js";
+
 /**
- * Types
+ * ========================================
+ * TYPES
+ * ========================================
  */
+export type { PanInfo } from "./gestures/PanSession.js";
 export type {
   AnimationOptions,
   AnimationPlaybackControls,

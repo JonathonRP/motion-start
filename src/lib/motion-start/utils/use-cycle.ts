@@ -61,18 +61,18 @@ Copyright (c) 2018 Framer B.V.
 import { wrap } from "popmotion";
 import { writable } from 'svelte/store';
 
-export const useCycle = <T>(...items: T[]) => {
+export const useCycle = <T>(...items: T[]): CycleState<T> => {
     let index = 0;
-    const x = (writable(items[index]) as any) satisfies Writable<T> & {
-        /** Cycle through to next value or set the next value by index. */
-        next: (index?: number) => void
-    }
-    const next = (i?: number) => {
-        index = typeof i !== "number" ?
-            wrap(0, items.length, index + 1) :
-            i;
-        x.set(items[index])
-    }
-    x.next = next;
-    return x;
-}
+    const store = writable(items[index]);
+
+    const cycle = (i?: number) => {
+        index = typeof i !== "number"
+            ? wrap(0, items.length, index + 1)
+            : i;
+        store.set(items[index]);
+    };
+
+    // Return tuple: [store, cycle function]
+    // This matches framer-motion's pattern but uses Svelte stores
+    return [store, cycle];
+};
