@@ -17,7 +17,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
     import { setContext, tick } from "svelte";
     import { setDomContext } from "../../../context/DOMcontext.js";
-    import { PresenceContext } from "../../../context/PresenceContext.js";
+    import { PresenceContext, PRESENCE_CONTEXT_KEY } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
 
     interface Props extends PresenceChildProps {}
@@ -58,15 +58,16 @@ Copyright (c) 2018 Framer B.V. -->
             },
         };
     };
-    let context = PresenceContext();
 
+    // Set context using the proper API
     $effect(() => {
-        if (presenceAffectsLayout) {
-            context.set(memoContext());
+        const contextValue = memoContext(refresh);
+        if (isCustom) {
+            setDomContext("Presence", isCustom, contextValue);
+        } else {
+            setContext(PRESENCE_CONTEXT_KEY, contextValue);
         }
     });
-
-    $effect(() => context.set(memoContext(refresh)));
 
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
@@ -77,8 +78,6 @@ Copyright (c) 2018 Framer B.V. -->
             !isPresent && !presenceChildren.size && onExitComplete?.();
         });
     });
-    setContext(PresenceContext, context);
-    setDomContext("Presence", isCustom, context);
 </script>
 
 {@render children?.()}

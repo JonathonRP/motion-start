@@ -107,8 +107,8 @@ function createCrossfader(): Crossfader {
 		return animate(
 			progress,
 			target,
-			// @ts-expect-error
-			Object.assign(Object.assign({}, transition), {
+			{
+				...(transition as any),
 				onUpdate: onUpdate,
 				onComplete: () => {
 					if (!hasUpdated) {// @ts-expect-error

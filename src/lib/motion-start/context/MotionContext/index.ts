@@ -21,7 +21,7 @@ export const MOTION_CONTEXT_KEY = Symbol('MotionContext');
 
 export const MotionContext = (c?: any): MotionContextProps => {
     const domContext = getDomContext("Motion", c);
-    return domContext || {};
+    return (domContext || {}) as MotionContextProps;
 };
 
 export const useVisualElementContext = (c?: any) => {

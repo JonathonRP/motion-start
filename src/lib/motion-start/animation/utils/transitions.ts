@@ -216,7 +216,7 @@ function startAnimation(key: string, value: MotionValue, target: ResolvedValueTa
 		transition = {};
 	}
 	return value.start((onComplete) => {
-		var delayTimer: string | number | NodeJS.Timeout | undefined;
+		var delayTimer: ReturnType<typeof setTimeout> | undefined;
 		var controls: { stop: any } | null | undefined;
 		var animation = getAnimation(key, value, target, transition, onComplete);
 		var delay = getDelayFromTransition(transition, key);

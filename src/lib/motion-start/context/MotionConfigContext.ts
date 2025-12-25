@@ -41,10 +41,10 @@ export const MOTION_CONFIG_CONTEXT_KEY = Symbol('MotionConfigContext');
  */
 var MotionConfigContext = (c?: any): MotionConfigContextObject => {
     const domContext = getDomContext("MotionConfig", c);
-    return domContext || {
+    return (domContext || {
         transformPagePoint: function (p) { return p; },
         isStatic: false,
-    };
+    }) as MotionConfigContextObject;
 };
 
 export { MotionConfigContext };

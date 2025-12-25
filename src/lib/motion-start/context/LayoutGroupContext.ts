@@ -15,5 +15,5 @@ export const LAYOUT_GROUP_CONTEXT_KEY = Symbol('LayoutGroupContext');
  */
 export const LayoutGroupContext = (c?: any): string | null => {
     const domContext = getDomContext("LayoutGroup", c);
-    return domContext || null;
+    return (domContext || null) as string | null;
 };

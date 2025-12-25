@@ -22,7 +22,7 @@ export const LAZY_CONTEXT_KEY = Symbol('LazyContext');
  */
 const LazyContext = (c?: any): LazyContextProps => {
     const domContext = getDomContext('Lazy', c);
-    return domContext || { strict: false };
+    return (domContext || { strict: false }) as LazyContextProps;
 };
 
 export { LazyContext };

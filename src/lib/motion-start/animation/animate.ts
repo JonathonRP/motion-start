@@ -148,14 +148,14 @@ function animate<V>(
 			const value = isMotionValue(element) ? element : motionValue(element);
 
 			// Calculate delay for staggered animations
-			let delay = transition?.delay ?? 0;
-			if (typeof delay === 'function') {
-				delay = delay(index, elements.length);
-			}
+			const delayValue = transition?.delay ?? 0;
+			const resolvedDelay = typeof delayValue === 'function'
+				? delayValue(index, elements.length)
+				: delayValue;
 
 			const elementTransition = {
 				...transition,
-				delay
+				delay: resolvedDelay
 			};
 
 			startAnimation('', value, to, elementTransition);
@@ -173,14 +173,14 @@ function animate<V>(
 	// Single value animation
 	const value = isMotionValue(from) ? from : motionValue(from as V);
 
-	let delay = transition?.delay ?? 0;
-	if (typeof delay === 'function') {
-		delay = delay(0, 1);
-	}
+	const delayValue = transition?.delay ?? 0;
+	const resolvedDelay = typeof delayValue === 'function'
+		? delayValue(0, 1)
+		: delayValue;
 
 	const finalTransition = {
 		...transition,
-		delay
+		delay: resolvedDelay
 	};
 
 	startAnimation('', value, to, finalTransition);

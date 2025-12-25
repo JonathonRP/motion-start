@@ -47,17 +47,14 @@ Copyright (c) 2018 Framer B.V. -->
 
   const createElement = (state: any) => {
     if (state) {
-      // @ts-expect-error
       element = sve({ props: {}, visualState: state });
     }
   };
 
   $effect(() => {
     if (element) {
-      // @ts-expect-error
       element.mount({});
       return () => {
-        // @ts-expect-error
         element.unmount();
       };
     }
@@ -65,7 +62,6 @@ Copyright (c) 2018 Framer B.V. -->
 
   const _afterUpdate = () => {
     if (element) {
-      // @ts-expect-error
       element.setProps({
         onUpdate: (v: VisualElementOptions<any, any>) => (animationState = { ...v }),
       });
@@ -88,7 +84,6 @@ Copyright (c) 2018 Framer B.V. -->
   );
 
   let startAnimation = (animationDefinition: AnimationDefinition) => {
-    // @ts-expect-error
     return animateVisualElement(element, animationDefinition);
   };
 </script>

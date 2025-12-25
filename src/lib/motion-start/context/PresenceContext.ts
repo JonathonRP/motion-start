@@ -29,5 +29,5 @@ export const PRESENCE_CONTEXT_KEY = Symbol('PresenceContext');
  */
 export const PresenceContext = (c?: any): PresenceContextProps | null => {
     const domContext = getDomContext("Presence", c);
-    return domContext || null;
+    return (domContext || null) as PresenceContextProps | null;
 };

@@ -1,22 +1,34 @@
+// Type augmentations for polyfilled process
+declare global {
+    interface Window {
+        process?: {
+            env?: Record<string, string | undefined>;
+        };
+    }
+    // eslint-disable-next-line no-var
+    var process: {
+        env?: Record<string, string | undefined>;
+    };
+}
 
 const fix = ()=>{
     try{
-        
+
         if (!process.env){
             process.env={};
         }
         return true;;
     }catch(e){}
-    
+
     if (!window || (window.process && window.process.env)){
         return false;
     }
-    
+
     if (!window.process){
         window.process = <any>{}
     }
     window.process.env={};
-    return true;    
+    return true;
 }
 
 export const fixed = fix();
