@@ -3,7 +3,7 @@ Based on Motion v11.11.11 -->
 
 <script lang="ts" generics="T">
   import { setContext } from "svelte";
-  import { Motion } from "../../render/dom/motion.js";
+  import { motion } from "../../render/dom/motion.js";
   import { REORDER_CONTEXT_KEY } from "./ReorderContext.js";
   import type { ReorderGroupProps, ReorderContextValue } from "./types.js";
 
@@ -50,7 +50,7 @@ Based on Motion v11.11.11 -->
   setContext(REORDER_CONTEXT_KEY, contextValue);
 </script>
 
-<Motion.div
+<motion.div
   {...motionProps}
   layout={layoutScroll ? "position" : true}
   style={{
@@ -59,4 +59,4 @@ Based on Motion v11.11.11 -->
   }}
 >
   {@render children?.({ values: order })}
-</Motion.div>
+</motion.div>

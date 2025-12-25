@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 
 describe('Gesture Interactions', () => {
   beforeEach(() => {

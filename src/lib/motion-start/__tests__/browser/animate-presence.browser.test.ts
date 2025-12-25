@@ -102,14 +102,20 @@ describe('AnimatePresence', () => {
     // Start exit animation
     element.style.opacity = '0';
 
-    // Wait for animation to complete
-    await new Promise(resolve => {
+    // Wait for animation to complete with timeout
+    await new Promise<void>((resolve) => {
+      const timeout = setTimeout(() => {
+        element.remove();
+        resolve();
+      }, 1000);
+
       element.addEventListener('transitionend', () => {
+        clearTimeout(timeout);
         const duration = performance.now() - startTime;
         expect(duration).toBeGreaterThanOrEqual(250);
         element.remove();
-        resolve(undefined);
-      });
+        resolve();
+      }, { once: true });
     });
 
     expect(container.querySelector('#wait-for-exit')).toBeNull();

@@ -24,7 +24,8 @@ export default defineConfig({
 		browser: isBrowserMode ? {
 			enabled: true,
 			instances: [{ browser: 'chromium' }],
-			provider: playwright({ launchOptions: { headless: true } }),
+			provider: playwright(),
+			headless: true,
 		} : undefined,
 		// Include pattern - browser tests only when VITEST_BROWSER is set
 		include: isBrowserMode

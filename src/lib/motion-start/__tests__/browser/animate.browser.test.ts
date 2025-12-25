@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { page, userEvent } from '@vitest/browser/context';
+import { page, userEvent } from 'vitest/browser';
 
 describe('Basic Animations', () => {
   beforeEach(async () => {
