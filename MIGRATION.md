@@ -143,6 +143,63 @@ Many `Use*` components have been converted to runes-based functions for better e
 <div bind:this={divRef} />
 ```
 
+### Gesture Hooks
+
+**Before (UseTapGesture):**
+```svelte
+<UseTapGesture props={props} visualElement={visualElement}>
+  <slot />
+</UseTapGesture>
+```
+
+**After:**
+```svelte
+<script>
+  import { useTapGesture } from 'motion-start/utils';
+
+  let props = $props();
+  let visualElement = $state();
+
+  useTapGesture(
+    () => visualElement,
+    () => props
+  );
+</script>
+```
+
+**Other gesture hooks follow the same pattern:**
+- `useHoverGesture` - Mouse hover detection
+- `useFocusGesture` - Focus state tracking
+- `usePanGesture` - Pan/swipe gestures with velocity
+- `useDrag` - Full drag support with constraints
+
+### UseAnimation
+
+**Before:**
+```svelte
+<UseAnimation let:controls>
+  <Motion.div animate={controls} />
+  <button onclick={() => controls.start({ x: 100 })}>Animate</button>
+</UseAnimation>
+```
+
+**After:**
+```svelte
+<script>
+  import { useAnimation } from 'motion-start/utils';
+  import { Motion } from 'motion-start';
+
+  const controls = useAnimation();
+
+  function handleClick() {
+    controls.start({ x: 100 });
+  }
+</script>
+
+<Motion.div animate={controls} />
+<button onclick={handleClick}>Animate</button>
+```
+
 ---
 
 ## Helper Functions

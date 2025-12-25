@@ -5,8 +5,10 @@
  * @module presence-context
  */
 
-import { createContext } from 'svelte';
+import { getContext, setContext } from 'svelte';
 import type { VariantLabels } from '../motion/types.js';
+
+const PRESENCE_CONTEXT_KEY = Symbol('presence-context');
 
 /**
  * Presence context properties
@@ -44,7 +46,14 @@ export interface PresenceContextValue {
  *
  * @public
  */
-export const presenceContext = createContext<PresenceContextValue | null>('presence-context');
+export const presenceContext = {
+	set(value: PresenceContextValue | null): void {
+		setContext(PRESENCE_CONTEXT_KEY, value);
+	},
+	get(): PresenceContextValue | null | undefined {
+		return getContext<PresenceContextValue | null>(PRESENCE_CONTEXT_KEY);
+	},
+};
 
 /**
  * Get the current presence state
@@ -53,7 +62,7 @@ export const presenceContext = createContext<PresenceContextValue | null>('prese
  * @public
  */
 export function usePresence(): PresenceContextValue | null {
-    return presenceContext.get();
+    return presenceContext.get() ?? null;
 }
 
 /**

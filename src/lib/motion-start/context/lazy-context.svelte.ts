@@ -5,8 +5,10 @@
  * @module lazy-context
  */
 
-import { createContext } from 'svelte';
+import { getContext, setContext } from 'svelte';
 import type { CreateVisualElement } from '../render/types.js';
+
+const LAZY_CONTEXT_KEY = Symbol('lazy-context');
 
 /**
  * Lazy context properties
@@ -43,7 +45,14 @@ const DEFAULT_LAZY: LazyContextValue = {
  *
  * @public
  */
-export const lazyContext = createContext<LazyContextValue>('lazy-context');
+export const lazyContext = {
+	set(value: LazyContextValue): void {
+		setContext(LAZY_CONTEXT_KEY, value);
+	},
+	get(): LazyContextValue | undefined {
+		return getContext<LazyContextValue>(LAZY_CONTEXT_KEY);
+	},
+};
 
 /**
  * Get the current lazy configuration

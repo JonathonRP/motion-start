@@ -1,16 +1,11 @@
-/** 
+/**
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { FeatureProps } from "../motion/features/types";
-/**
- *
- * @param props
- * @param ref
- * @internal
- */
-export type useFocusGesture = ({ whileFocus, visualElement }: FeatureProps | any) => void;
 
+// Modern function-based API (Svelte 5)
+export { useFocusGesture, type FocusGestureHandlers } from './use-focus-gesture.svelte.js';
 
+// Legacy component-based API (backwards compatibility)
 export { default as UseFocusGesture } from './UseFocusGesture.svelte';
 

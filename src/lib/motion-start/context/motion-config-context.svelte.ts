@@ -1,12 +1,14 @@
 /**
- * MotionConfig Context using Svelte 5 createContext
+ * MotionConfig Context using Svelte 5
  * Provides global motion configuration
  *
  * @module motion-config-context
  */
 
-import { createContext } from 'svelte';
-import type { Transition } from '../types/index.js';
+import { getContext, setContext } from 'svelte';
+import type { Transition } from '../types.js';
+
+const MOTION_CONFIG_CONTEXT_KEY = Symbol('motion-config-context');
 
 /**
  * Transform a point from page coordinates
@@ -57,7 +59,14 @@ const DEFAULT_CONFIG: MotionConfigContextValue = {
  *
  * @public
  */
-export const motionConfigContext = createContext<MotionConfigContextValue>('motion-config-context');
+export const motionConfigContext = {
+	set(value: MotionConfigContextValue): void {
+		setContext(MOTION_CONFIG_CONTEXT_KEY, value);
+	},
+	get(): MotionConfigContextValue | undefined {
+		return getContext<MotionConfigContextValue>(MOTION_CONFIG_CONTEXT_KEY);
+	},
+};
 
 /**
  * Get the current motion configuration

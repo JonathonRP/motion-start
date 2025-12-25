@@ -1,8 +1,12 @@
-/** 
+/**
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { EventInfo } from "./types";
+
+// Re-export EventInfo for convenience
+export type { EventInfo };
+
 export type EventListenerWithPointInfo = (e: PointerEvent, info: EventInfo) => void;
 
 
