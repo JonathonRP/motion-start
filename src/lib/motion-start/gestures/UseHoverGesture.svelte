@@ -20,10 +20,8 @@ Copyright (c) 2018 Framer B.V. -->
   import { isMouseEvent } from "./utils/event-type.js";
   import type { VisualElement } from "../render/types.js";
 
-  export let props, visualElement;
-  let { onHoverStart, onHoverEnd, whileHover } = props;
-  $: ({ onHoverStart, onHoverEnd, whileHover } = props);
-  
+  let { props, visualElement } = $props();
+  let { onHoverStart, onHoverEnd, whileHover } = $derived(props);
 </script>
 
 <UsePointerEvent

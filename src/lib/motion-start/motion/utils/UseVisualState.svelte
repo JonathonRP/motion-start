@@ -119,10 +119,12 @@ Copyright (c) 2018 Framer B.V. -->
     isCustom?: any | undefined;
   };
 
-  export let config: $$Props["config"] = undefined,
-    props: $$Props["props"],
-    isStatic: $$Props["isStatic"],
-    isCustom: $$Props["isCustom"] = undefined;
+  let {
+    config = undefined,
+    props,
+    isStatic,
+    isCustom = undefined
+  }: $$Props = $props();
 
   const context =
     getContext<Writable<MotionContextProps>>(MotionContext) ||
@@ -130,21 +132,22 @@ Copyright (c) 2018 Framer B.V. -->
   const presenceContext =
     getContext<Writable<PresenceContextProps>>(PresenceContext) ||
     PresenceContext(isCustom);
-  let state = makeState(
-    config as UseVisualStateConfig<Instance, RenderState>,
-    props,
-    get(context),
-    get(presenceContext),
+
+  let state = $derived(
+    isStatic
+      ? makeState(
+          config as UseVisualStateConfig<Instance, RenderState>,
+          props,
+          $context,
+          $presenceContext,
+        )
+      : makeState(
+          config as UseVisualStateConfig<Instance, RenderState>,
+          props,
+          get(context),
+          get(presenceContext),
+        )
   );
-  const ms = makeState;
-  $: if (isStatic) {
-    state = ms(
-      config as UseVisualStateConfig<Instance, RenderState>,
-      props,
-      $context,
-      $presenceContext,
-    );
-  }
 </script>
 
 <slot {state} />

@@ -10,7 +10,7 @@ Copyright (c) 2018 Framer B.V. -->
     props: any;
   };
 
-  export let visualElement: $$Props["visualElement"], props: $$Props["props"];
+  let { visualElement, props }: $$Props = $props();
 
   const createAttrs = (
     visualElement: $$Props["visualElement"],
@@ -27,11 +27,14 @@ Copyright (c) 2018 Framer B.V. -->
 
     return { ...attrs, ...resolvedMotionValueProps };
   };
-  let svgProps = createAttrs(visualElement, props);
 
-  $: if (visualElement.isStatic) {
-    svgProps = createAttrs(visualElement, props);
-  }
+  let svgProps = $state(createAttrs(visualElement, props));
+
+  $effect(() => {
+    if (visualElement.isStatic) {
+      svgProps = createAttrs(visualElement, props);
+    }
+  });
 </script>
 
 <slot {svgProps} />

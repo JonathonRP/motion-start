@@ -4,10 +4,14 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import { usePresence } from "../../../components/AnimatePresence/use-presence.js";
   import Animate from "./Animate.svelte";
-  export let visualElement, props, isCustom;
 
-  let { layout } = props;
-  $: ({ layout } = props);
+  let { visualElement, props, isCustom }: {
+    visualElement: any;
+    props: any;
+    isCustom: any;
+  } = $props();
+
+  let { layout } = $derived(props);
   const presence = usePresence(isCustom);
 </script>
 

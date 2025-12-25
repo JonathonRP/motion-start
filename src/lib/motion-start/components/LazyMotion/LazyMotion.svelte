@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { onMount, setContext } from "svelte";
+  import { setContext } from "svelte";
   import { writable } from "svelte/store";
   import { setDomContext } from "../../context/DOMcontext";
   import type { LazyProps } from "./index.js";
@@ -49,40 +49,51 @@ Copyright (c) 2018 Framer B.V. -->
    *
    * @public
    */
-  export let features: $$Props["features"],
-    strict: $$Props["strict"] = false,
-    isCustom = false;
+  let {
+    features,
+    strict = false,
+    isCustom = false
+  }: $$Props = $props();
 
-  let _ = !isLazyBundle(features);
-  let loadedRenderer = undefined as any;
-  /**
-   * If this is a synchronous load, load features immediately
-   */
-  $: if (!isLazyBundle(features) && _) {
-    const { renderer, ...loadedFeatures } = features;
-    loadedRenderer.current = renderer;
-    loadFeatures(loadedFeatures);
-  }
+  let _ = $state(!isLazyBundle(features));
+  let loadedRenderer = $state<any>(undefined);
+
   function isLazyBundle(
     features: FeatureBundle | LazyFeatureBundle,
   ): features is LazyFeatureBundle {
     return typeof features === "function";
   }
-  onMount(() => {
+
+  /**
+   * If this is a synchronous load, load features immediately
+   */
+  $effect(() => {
+    if (!isLazyBundle(features) && _) {
+      const { renderer, ...loadedFeatures } = features;
+      loadedRenderer = { current: renderer };
+      loadFeatures(loadedFeatures);
+    }
+  });
+
+  $effect(() => {
     if (isLazyBundle(features)) {
       features().then(({ renderer, ...loadedFeatures }) => {
         loadFeatures(loadedFeatures);
-        loadedRenderer.current = renderer;
+        loadedRenderer = { current: renderer };
 
         // @ts-expect-error
         setIsLoaded(true);
       });
     }
   });
-  let context = writable({ renderer: loadedRenderer.current, strict });
+
+  let context = writable({ renderer: loadedRenderer?.current, strict });
   setContext(LazyContext, context);
   setDomContext("Lazy", isCustom, context);
-  $: context.set({ renderer: loadedRenderer.current, strict });
+
+  $effect(() => {
+    context.set({ renderer: loadedRenderer?.current, strict });
+  });
 </script>
 
 <slot />

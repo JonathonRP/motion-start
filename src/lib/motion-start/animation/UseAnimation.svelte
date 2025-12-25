@@ -2,8 +2,6 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
-
   import { animationControls } from "./animation-controls.js";
   /**
    * Creates `AnimationControls`, which can be used to manually start, stop
@@ -55,7 +53,10 @@ Copyright (c) 2018 Framer B.V. -->
    * @public
    */
   let controls = animationControls();
-  onMount(controls.mount);
+
+  $effect(() => {
+    controls.mount();
+  });
 </script>
 
 <slot {controls} />

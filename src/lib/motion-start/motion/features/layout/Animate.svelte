@@ -28,7 +28,6 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
   import {
     getValueTransition,
     startAnimation,
@@ -41,68 +40,15 @@ Copyright (c) 2018 Framer B.V. -->
   import type { Axis, AxisBox2D } from "../../../types/geometry.js";
   import type { VisualElement } from "../../../render/types.js";
 
-  export let visualElement: VisualElement,
-    //initial = undefined,
-    //style = undefined,
-    //transformTemplate = undefined,
-    //transformValues = undefined,
-    //AnimationProps
-    //animate = undefined,
-    //exit = undefined,
-    //variants = undefined,
-    //transition = undefined,
-    //VisualElementLifecycles
-    //onViewportBoxUpdate = undefined,
-    //onBeforeLayoutMeasure = undefined,
-    //onLayoutMeasure = undefined,
-    //onUpdate = undefined,
-    //onAnimationStart = undefined,
-    //onAnimationComplete = undefined,
-    //onLayoutAnimationComplete = undefined,
-    //GestureHandlers
-    // PanHandlers
-    //onPan = undefined,
-    //onPanStart = undefined,
-    //onPanSessionStart = undefined,
-    //onPanEnd = undefined,
-    // TapHandlers
-    //onTap = undefined,
-    //onTapStart = undefined,
-    //onTapCancel = undefined,
-    //whileTap = undefined,
-    //HoverHandlers
-    //whileHover = undefined,
-    //onHoverStart = undefined,
-    //onHoverEnd = undefined,
-    //FocusHandlers
-    //whileFocus = undefined,
-    //DraggableProps
-    //drag = undefined,
-    //whileDrag = undefined,
-    //dragDirectionLock = undefined,
-    //dragPropagation = undefined,
-    //dragConstraints = undefined,
-    //dragElastic = undefined,
-    //dragMomentum = undefined,
-    //dragTransition = undefined,
-    //dragControls = undefined,
-    //dragListener = undefined,
-    //onMeasureDragConstraints = undefined,
-    //_dragX = undefined,
-    //_dragY = undefined,
-    //DragHandlers
-    //onDragStart = undefined,
-    //onDragEnd = undefined,
-    //onDrag = undefined,
-    //onDirectionLock = undefined,
-    //onDragTransitionEnd = undefined,
-    // LayoutProps
+  let {
+    visualElement,
     layout = undefined,
-    //layoutId = undefined,
-    //MotionAdvancedProps
-    //custom = undefined,
-    //inherit = undefined,
-    safeToRemove;
+    safeToRemove
+  }: {
+    visualElement: VisualElement;
+    layout?: any;
+    safeToRemove: any;
+  } = $props();
 
   /**
    * A mutable object that tracks the target viewport box
@@ -312,7 +258,12 @@ Copyright (c) 2018 Framer B.V. -->
     };
   };
 
-  onMount(subLayoutReady);
+  $effect(() => {
+    const cleanup = subLayoutReady();
+    return () => {
+      if (cleanup) cleanup();
+    };
+  });
   // beforeUpdate(subLayoutReady);
 
   // afterUpdate(subLayoutReady);

@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V. -->
   import UseStyle from "./UseStyle.svelte";
   import type { HTMLProps } from "./types";
 
-  export let props, visualState, isStatic;
+  let { props, visualState, isStatic }: { props: any; visualState: any; isStatic: any } = $props();
 
   const getHTMLProps = (
     style: HTMLProps["style"],

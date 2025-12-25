@@ -2,10 +2,11 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-    import { onDestroy } from "svelte";
-    export let callback = () => {};
+    let { callback = () => {} }: { callback?: () => void } = $props();
 
-    onDestroy(() => callback());
+    $effect(() => {
+        return () => callback();
+    });
 </script>
 
 <slot />

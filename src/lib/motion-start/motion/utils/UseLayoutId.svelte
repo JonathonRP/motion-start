@@ -5,8 +5,14 @@ Copyright (c) 2018 Framer B.V. -->
   import { getContext } from "svelte";
   import type { Writable } from "svelte/store";
   import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
-  export let props, isCustom;
-  $: ({ layoutId } = props);
+
+  let { props, isCustom }: {
+    props: any;
+    isCustom: any;
+  } = $props();
+
+  let { layoutId } = $derived(props);
+
   const layoutGroupId =
     getContext<Writable<string | null>>(LayoutGroupContext) ||
     LayoutGroupContext(isCustom);

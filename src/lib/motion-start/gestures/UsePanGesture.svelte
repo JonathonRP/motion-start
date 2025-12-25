@@ -2,24 +2,23 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { afterUpdate, getContext, onDestroy } from "svelte";
+  import { getContext } from "svelte";
   import { get } from "svelte/store";
   import { MotionConfigContext } from "../context/MotionConfigContext.js";
   import { UsePointerEvent } from "../events/use-pointer-event";
   import { PanSession } from "./PanSession";
 
-  export let props,
-    visualElement,
-    isCustom = false;
-  let { onPan, onPanStart, onPanEnd, onPanSessionStart } = props;
-  $: ({ onPan, onPanStart, onPanEnd, onPanSessionStart } = props);
-  $: hasPanEvents = onPan || onPanStart || onPanEnd || onPanSessionStart;
-  let panSession: PanSession | null = null;
+  let { props, visualElement, isCustom = false } = $props();
+
+  let { onPan, onPanStart, onPanEnd, onPanSessionStart } = $derived(props);
+  let hasPanEvents = $derived(onPan || onPanStart || onPanEnd || onPanSessionStart);
+  let panSession = $state<PanSession | null>(null);
+
   const mcc = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
   // @ts-expect-error
-  $: ( { transformPagePoint } = get(mcc));
-  // $: ({ transformPagePoint } = $mcc);
-  let handlers = {
+  let { transformPagePoint } = $derived(get(mcc));
+
+  let handlers = $derived({
     onSessionStart: onPanSessionStart,
     onStart: onPanStart,
     onMove: onPan,
@@ -27,27 +26,25 @@ Copyright (c) 2018 Framer B.V. -->
       panSession = null;
       onPanEnd && onPanEnd(event, info);
     },
-  };
-  $: handlers = {
-    onSessionStart: onPanSessionStart,
-    onStart: onPanStart,
-    onMove: onPan,
-    onEnd: (event, info) => {
-      panSession = null;
-      onPanEnd && onPanEnd(event, info);
-    },
-  };
+  });
+
   function onPointerDown(event: PointerEvent) {
     panSession = new PanSession(event, handlers, {
       transformPagePoint,
     });
   }
-  afterUpdate(() => {
+
+  $effect(() => {
     if (panSession !== null) {
       panSession.updateHandlers(handlers);
     }
   });
-  onDestroy(() => panSession && panSession.end());
+
+  $effect(() => {
+    return () => {
+      panSession && panSession.end();
+    };
+  });
 </script>
 
 <UsePointerEvent

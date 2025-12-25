@@ -5,15 +5,14 @@ Copyright (c) 2018 Framer B.V. -->
   import { featureDefinitions } from "./definitions";
   const featureNames = Object.keys(featureDefinitions);
   const numFeatures = featureNames.length;
-  export let visualElement, props;
 
-  let features: { Component: any; key: string; props: any; visualElement: any; }[] = [];
+  let { visualElement, props } = $props();
 
   // If this is a static component, or we're rendering on the server, we don't load
   // any feature components
   // Decide which features we should render and add them to the returned array
-  $: {
-    features = [];
+  let features = $derived.by(() => {
+    const result: { Component: any; key: string; props: any; visualElement: any; }[] = [];
     for (let i = 0; i < numFeatures; i++) {
       const name = featureNames[i];
       const { isEnabled, Component } = (featureDefinitions as any)[name];
@@ -23,7 +22,7 @@ Copyright (c) 2018 Framer B.V. -->
        * was producing a lot of duplication amongst bundles.
        */
       if (isEnabled(props) && Component) {
-        features.push({
+        result.push({
           Component: Component,
           key: name,
           props,
@@ -31,7 +30,8 @@ Copyright (c) 2018 Framer B.V. -->
         });
       }
     }
-  }
+    return result;
+  });
 </script>
 
 {#if visualElement}

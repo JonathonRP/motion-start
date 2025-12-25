@@ -3,7 +3,6 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { pipe } from "popmotion";
-  import { onDestroy } from "svelte";
   import {
     UsePointerEvent,
     addPointerEvent,
@@ -12,13 +11,13 @@ Copyright (c) 2018 Framer B.V. -->
   import { isDragActive } from "./drag/utils/lock.js";
   import { isNodeOrChild } from "./utils/is-node-or-child.js";
 
-  export let props, visualElement: any;
+  let { props, visualElement } = $props();
 
-  $: ({ onTap, onTapStart, onTapCancel, whileTap } = props);
-  $: hasPressListeners = onTap || onTapStart || onTapCancel || whileTap;
+  let { onTap, onTapStart, onTapCancel, whileTap } = $derived(props);
+  let hasPressListeners = $derived(onTap || onTapStart || onTapCancel || whileTap);
 
-  let isPressing = false;
-  let cancelPointerEndListeners: Function | null = null;
+  let isPressing = $state(false);
+  let cancelPointerEndListeners = $state<Function | null>(null);
 
   function removePointerEndListener() {
     cancelPointerEndListeners?.();
@@ -66,7 +65,9 @@ Copyright (c) 2018 Framer B.V. -->
     visualElement.animationState?.setActive(AnimationType.Tap, true);
   }
 
-  onDestroy(removePointerEndListener);
+  $effect(() => {
+    return removePointerEndListener;
+  });
 </script>
 
 <UsePointerEvent

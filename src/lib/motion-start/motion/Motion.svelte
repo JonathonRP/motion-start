@@ -32,10 +32,13 @@ Copyright (c) 2018 Framer B.V. -->
   };
 
   // component props
-  export let isSVG = false,
+  let {
+    isSVG = false,
     forwardMotionProps = false,
     externalRef = undefined,
-    targetEl = undefined; /*
+    targetEl = undefined,
+    ...restProps
+  }: $$Props = $props(); /*
         initial: $$Props["initial"] = undefined,
         style: $$Props["style"] = undefined,
         transformTemplate: $$Props["transformTemplate"] = undefined,
@@ -104,7 +107,7 @@ Copyright (c) 2018 Framer B.V. -->
         targetEl: $$Props["targetEl"] = undefined;
   */
 
-  $: motionProps = $$restProps; /*{
+  let motionProps = $derived(restProps); /*{
         initial,
         style,
         transformTemplate,
@@ -181,14 +184,17 @@ Copyright (c) 2018 Framer B.V. -->
   const a =
     getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
     MotionConfigContext(isCustom);
-  $: ({ isStatic } = $a || {});
+  let { isStatic } = $derived($a || {});
 
-  let mounted = false;
+  let mounted = $state(false);
   const setContext = (c: MotionContextProps, v: VisualElement | undefined) => {
     c.visualElement = v;
     return v;
   };
-  onMount(() => (mounted = true));
+
+  $effect(() => {
+    mounted = true;
+  });
 </script>
 
 <ScaleCorrectionProvider {isCustom}>

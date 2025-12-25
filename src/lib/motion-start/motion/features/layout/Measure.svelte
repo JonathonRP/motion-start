@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
+  import { getContext } from "svelte";
   import { get, type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
@@ -11,7 +11,12 @@ Copyright (c) 2018 Framer B.V. -->
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
 
-  export let visualElement, syncLayout, framerSyncLayout, update;
+  let { visualElement, syncLayout, framerSyncLayout, update }: {
+    visualElement: any;
+    syncLayout: any;
+    framerSyncLayout: any;
+    update: any;
+  } = $props();
 
   const scaleCorrectionContext = getContext<Writable<any[]>>(
     ScaleCorrectionContext,
@@ -20,7 +25,7 @@ Copyright (c) 2018 Framer B.V. -->
     ScaleCorrectionParentContext,
   );
 
-  onMount(() => {
+  $effect(() => {
     isSharedLayout(syncLayout) && syncLayout.register(visualElement);
     isSharedLayout(framerSyncLayout) &&
       framerSyncLayout.register(visualElement);
@@ -42,7 +47,7 @@ Copyright (c) 2018 Framer B.V. -->
    * If it is stand-alone component, add it to the batcher.
    */
 
-  let updated = false;
+  let updated = $state(false);
   const updater = (nc = false) => {
     if (updated) {
       return null;
@@ -64,11 +69,18 @@ Copyright (c) 2018 Framer B.V. -->
     return null;
   };
 
-  $: update !== undefined && updater(update);
+  $effect(() => {
+    if (update !== undefined) {
+      updater(update);
+    }
+  });
 
-  if (update === undefined) {
-    beforeUpdate(updater);
-  }
+  $effect.pre(() => {
+    if (update === undefined) {
+      updater();
+    }
+  });
+
   const afterU = (nc = false) => {
     updated = false;
     /* Second part of the updater calling in child layouts first.*/
@@ -96,5 +108,8 @@ Copyright (c) 2018 Framer B.V. -->
       },
     ]),
   );
-  afterUpdate(afterU);
+
+  $effect(() => {
+    afterU();
+  });
 </script>

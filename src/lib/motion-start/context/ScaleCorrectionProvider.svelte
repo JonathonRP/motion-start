@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-  export let isCustom;
+  let { isCustom } = $props();
   provideScaleCorrection(isCustom);
 </script>
 

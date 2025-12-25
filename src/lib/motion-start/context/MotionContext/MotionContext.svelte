@@ -4,7 +4,9 @@ Copyright (c) 2018 Framer B.V. -->
   import { getContext } from "svelte";
   import { type Writable } from "svelte/store";
   import { MotionContext, type MotionContextProps } from "./index.js";
-  export let isCustom;
+
+  let { isCustom } = $props();
+
   const motionContext =
     getContext<Writable<MotionContextProps>>(MotionContext) ||
     MotionContext(isCustom);

@@ -15,18 +15,21 @@ Copyright (c) 2018 Framer B.V. -->
 
   type $$Props = MotionConfigProps;
 
-  export let transformPagePoint: $$Props["transformPagePoint"] = undefined,
-    isStatic: $$Props["isStatic"] = undefined,
-    transition: $$Props["transition"] = undefined,
-    isCustom = false;
+  let {
+    transformPagePoint = undefined,
+    isStatic = undefined,
+    transition = undefined,
+    isCustom = false
+  }: $$Props = $props();
+
   const mcc =
     getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
     MotionConfigContext(isCustom);
+
   /**
    * Inherit props from any parent MotionConfig components
    */
-  let config = { ...get(mcc), ...{ transformPagePoint, isStatic, transition } };
-  $: config = { ...$mcc, ...{ transformPagePoint, isStatic, transition } };
+  let config = $derived({ ...$mcc, ...{ transformPagePoint, isStatic, transition } });
 
   // need to inform child layouts, or problems with scroll occur
   provideScaleCorrection();
@@ -40,19 +43,21 @@ Copyright (c) 2018 Framer B.V. -->
    * Creating a new config context object will re-render every `motion` component
    * every time it renders. So we only want to create a new one sparingly.
    */
-  $: transitionDependency =
-    typeof config.transition === "object" ? config.transition.toString() : "";
+  let transitionDependency = $derived(
+    typeof config.transition === "object" ? config.transition.toString() : ""
+  );
 
   let context = writable(config);
   setContext(MotionConfigContext, context);
   setDomContext("Motion", isCustom, context);
   const memo = () => config;
   const scaleCorrector = scaleCorrection();
-  $: {
+
+  $effect(() => {
     // @ts-expect-error
     context.set(memo(transitionDependency, config.transformPagePoint));
     scaleCorrector.update();
-  }
+  });
 </script>
 
 <slot />

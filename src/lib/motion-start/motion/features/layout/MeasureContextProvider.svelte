@@ -14,9 +14,13 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../../context/SharedLayoutContext.js";
   import Measure from "./Measure.svelte";
 
-  export let visualElement, props, isCustom;
+  let { visualElement, props, isCustom }: {
+    visualElement: any;
+    props: any;
+    isCustom: any;
+  } = $props();
 
-  $: ({ update } = props);
+  let { update } = $derived(props);
   const syncLayout =
     getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
       SharedLayoutContext,

@@ -8,14 +8,19 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import UseInitialMotionValues from "./UseInitialMotionValues.svelte";
 
-  export let visualState, props, isStatic;
-  $: styleProp = props.style || {};
-  let style = {};
+  let { visualState, props, isStatic }: { visualState: any; props: any; isStatic: any } = $props();
+
+  let styleProp = $derived(props.style || {});
+  let style = $state({});
+
   /**
    * Copy non-Motion Values straight into style
    */
   const cRVO = copyRawValuesOnly;
-  $: cRVO(style, styleProp, props);
+
+  $effect(() => {
+    cRVO(style, styleProp, props);
+  });
 
   const toStyle = (s1: { s1: {}; props: any; style: {} }) => {
     Object.assign(style, s1);

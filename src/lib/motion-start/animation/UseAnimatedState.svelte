@@ -27,7 +27,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import type { Writable } from "svelte/store";
-  import { afterUpdate, getContext, onMount } from "svelte";
+  import { getContext } from "svelte";
   import { ScaleCorrectionParentContext } from "../context/ScaleCorrectionProvider.svelte";
   import { UseVisualState } from "../motion/utils/use-visual-state.js";
   import { visualElement } from "../render/index.js";
@@ -38,27 +38,44 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../render/utils/setters.js";
     import type { VisualElementOptions } from "../render/types";
 
-  export let initialState: VisualElementOptions<any, any>;
+  let { initialState }: { initialState: VisualElementOptions<any, any> } = $props();
 
-  let animationState = initialState;
+  let animationState = $state(initialState);
   const sve = stateVisualElement;
-  
-  // @ts-expect-error
-  $:( element = sve({ props: {}, visualState: state }));
-  onMount(() => {
-    // @ts-expect-error
-    element.mount({});
-    // @ts-expect-error
-    return () => element.unmount();
-  });
-  const _afterUpdate = () => {
-    // @ts-expect-error
-    element.setProps({
-      onUpdate: (v: VisualElementOptions<any, any>) => (animationState = { ...v }),
-    });
+
+  let element = $state<any>(undefined);
+
+  const createElement = (state: any) => {
+    if (state) {
+      // @ts-expect-error
+      element = sve({ props: {}, visualState: state });
+    }
   };
 
-  afterUpdate(_afterUpdate);
+  $effect(() => {
+    if (element) {
+      // @ts-expect-error
+      element.mount({});
+      return () => {
+        // @ts-expect-error
+        element.unmount();
+      };
+    }
+  });
+
+  const _afterUpdate = () => {
+    if (element) {
+      // @ts-expect-error
+      element.setProps({
+        onUpdate: (v: VisualElementOptions<any, any>) => (animationState = { ...v }),
+      });
+    }
+  };
+
+  $effect(() => {
+    _afterUpdate();
+  });
+
   const scaleCorrectionParentContext = getContext<Writable<Array<unknown>>>(
     ScaleCorrectionParentContext
   );
@@ -69,6 +86,7 @@ Copyright (c) 2018 Framer B.V. -->
       },
     ])
   );
+
   let startAnimation = (animationDefinition: AnimationDefinition) => {
     // @ts-expect-error
     return animateVisualElement(element, animationDefinition);
@@ -84,5 +102,7 @@ Copyright (c) 2018 Framer B.V. -->
   isStatic={false}
   let:state
 >
+  {#if createElement(state)}
+  {/if}
   <slot animatedState={[animationState, startAnimation]} />
 </UseVisualState>

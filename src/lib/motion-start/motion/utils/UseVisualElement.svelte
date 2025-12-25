@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-  import { afterUpdate, getContext, onDestroy, tick } from "svelte";
+  import { getContext, tick, untrack } from "svelte";
   import { get, type Writable } from "svelte/store";
   import { isPresent } from "../../components/AnimatePresence/use-presence.js";
   import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
@@ -26,13 +26,15 @@ Copyright (c) 2018 Framer B.V. -->
     PresenceContext,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
-    import type { VisualElement } from "../../render/types.js";
+  import type { VisualElement } from "../../render/types.js";
 
-  export let createVisualElement = undefined,
+  let {
+    createVisualElement = undefined,
     props,
     Component,
     visualState,
-    isCustom;
+    isCustom
+  } = $props();
 
   const config =
     getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
@@ -46,67 +48,66 @@ Copyright (c) 2018 Framer B.V. -->
   const mc =
     getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
 
-  let parent = get(mc).visualElement;
-  $: parent = $mc.visualElement;
+  let parent = $derived($mc.visualElement);
 
   const layoutGroupId: Writable<string | null> =
     getContext(LayoutGroupContext) || LayoutGroupContext(isCustom);
 
-  let layoutId =
+  let layoutId = $derived(
     $layoutGroupId && props.layoutId !== undefined
       ? $layoutGroupId + "-" + props.layoutId
-      : props.layoutId;
+      : props.layoutId
+  );
 
-  $: layoutId =
-    $layoutGroupId && props.layoutId !== undefined
-      ? $layoutGroupId + "-" + props.layoutId
-      : props.layoutId;
+  let visualElementRef = $state<VisualElement | undefined>(undefined);
 
-  let visualElementRef: VisualElement | undefined = undefined;
   /**
    * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
    */
-  if (!createVisualElement) {
-    createVisualElement = $lazyContext.renderer;
-  }
+  $effect(() => {
+    if (!createVisualElement) {
+      createVisualElement = $lazyContext.renderer;
+    }
 
-  $: if (!visualElementRef && createVisualElement) {
-    visualElementRef = createVisualElement(Component, {
-      visualState,
-      parent: parent,
-      props: { ...props, layoutId },
-      presenceId: $presenceContext?.id,
-      blockInitialAnimation: $presenceContext?.initial === false,
-    });
-  }
-
-  let visualElement: VisualElement | undefined = visualElementRef;
-  $:(visualElement = visualElementRef);
-
-  $: if (visualElement) {
-    visualElement.setProps({
-      ...$config,
-      ...props,
-      layoutId,
-    });
-    visualElement.isPresent = isPresent($presenceContext);
-    visualElement.isPresenceRoot =
-      !parent || parent.presenceId !== $presenceContext?.id;
-
-    /**
-     * Fire a render to ensure the latest state is reflected on-screen.
-     */
-    visualElement.syncRender();
-  }
-
-  afterUpdate(() => {
-    tick().then(() => {
-      visualElement?.animationState?.animateChanges();
-    });
+    if (!visualElementRef && createVisualElement) {
+      visualElementRef = createVisualElement(Component, {
+        visualState,
+        parent: parent,
+        props: { ...props, layoutId },
+        presenceId: $presenceContext?.id,
+        blockInitialAnimation: $presenceContext?.initial === false,
+      });
+    }
   });
 
-  onDestroy(() => {
-    visualElement?.notifyUnmount();
+  let visualElement = $derived(visualElementRef);
+
+  $effect(() => {
+    if (visualElement) {
+      visualElement.setProps({
+        ...$config,
+        ...props,
+        layoutId,
+      });
+      visualElement.isPresent = isPresent($presenceContext);
+      visualElement.isPresenceRoot =
+        !parent || parent.presenceId !== $presenceContext?.id;
+
+      /**
+       * Fire a render to ensure the latest state is reflected on-screen.
+       */
+      visualElement.syncRender();
+
+      tick().then(() => {
+        visualElement?.animationState?.animateChanges();
+      });
+    }
+  });
+
+  $effect(() => {
+    return () => {
+      visualElement?.notifyUnmount();
+    };
   });
 </script>
 

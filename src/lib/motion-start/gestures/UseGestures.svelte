@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { UsePanGesture } from "./use-pan-gesture.js";
   import { UseTapGesture } from "./use-tap-gesture.js";
 
-  export let props, visualElement;
+  let { props, visualElement }: { props: any; visualElement: any } = $props();
 </script>
 
 <UsePanGesture {props} {visualElement} />

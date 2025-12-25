@@ -6,24 +6,41 @@ Copyright (c) 2018 Framer B.V. -->
   import { UseSVGProps } from "../svg/use-props.js";
   import { filterProps } from "./utils/filter-props.js";
 
-  export let props,
+  let {
+    props,
     visualState,
     Component,
     forwardMotionProps = false,
     isStatic,
     ref,
-    targetEl = undefined;
+    targetEl = undefined
+  }: {
+    props: any;
+    visualState: any;
+    Component: any;
+    forwardMotionProps?: boolean;
+    isStatic: any;
+    ref: any;
+    targetEl?: any;
+  } = $props();
+
   const motion = (node: any) => {
     ref(node);
   };
-  $: filteredProps = filterProps(
-    props,
-    typeof Component === "string",
-    forwardMotionProps,
+
+  let filteredProps = $derived(
+    filterProps(
+      props,
+      typeof Component === "string",
+      forwardMotionProps,
+    )
   );
-  $: if (targetEl) {
-    motion(targetEl);
-  }
+
+  $effect(() => {
+    if (targetEl) {
+      motion(targetEl);
+    }
+  });
 </script>
 
 <svelte:component

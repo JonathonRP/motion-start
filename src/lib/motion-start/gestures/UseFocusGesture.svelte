@@ -5,8 +5,9 @@ Copyright (c) 2018 Framer B.V. -->
   import { UseDomEvent } from "../events/use-dom-event.js";
   import { AnimationType } from "../render/utils/types.js";
 
-  export let props, visualElement;
-  $: ({ whileFocus } = props);
+  let { props, visualElement } = $props();
+  let { whileFocus } = $derived(props);
+
   const onFocus = () => {
     visualElement.animationState?.setActive(AnimationType.Focus, true);
   };

@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
   import { Presence, type SharedLayoutProps } from "./index.js";
   import { createBatcher } from "./utils/batcher.js";
 
-  import { getContext, onMount, setContext, tick } from "svelte";
+  import { getContext, setContext, tick } from "svelte";
   import { get, writable, type Writable } from "svelte/store";
   import { setDomContext } from "../../context/DOMcontext.js";
   import {
@@ -21,8 +21,10 @@ Copyright (c) 2018 Framer B.V. -->
 
   type $$Props = SharedLayoutProps;
 
-  export let type: $$Props["type"] = undefined,
-    isCustom = false;
+  let {
+    type = undefined,
+    isCustom = false
+  }: $$Props = $props();
 
   const context =
     getContext<Writable<MotionContextProps>>(MotionContext) ||
@@ -32,28 +34,28 @@ Copyright (c) 2018 Framer B.V. -->
    * Track whether the component has mounted. If it hasn't, the presence of added children
    * are set to Present, whereas if it has they're considered Entering
    */
-  let hasMounted = false;
+  let hasMounted = $state(false);
   /**
    * A list of all the children in the shared layout
    */
-  let children = new Set<VisualElement>();
+  let children = $state(new Set<VisualElement>());
   /**
    * As animate components with a defined `layoutId` are added/removed to the tree,
    * we store them in order. When one is added, it will animate out from the
    * previous one, and when it's removed, it'll animate to the previous one.
    */
-  let stacks = new Map();
+  let stacks = $state(new Map());
   /**
    * Track whether we already have an update scheduled. If we don't, we'll run snapshots
    * and schedule one.
    */
-  let updateScheduled = false;
+  let updateScheduled = $state(false);
   /**
    * Tracks whether we already have a render scheduled. If we don't, we'll force one with this.forceRender
    */
-  let renderScheduled = false;
+  let renderScheduled = $state(false);
 
-  let forced = false; /*
+  let forced = $state(false); /*
     const resetForced = ()=>{
         if (forced){
             forced=false;
@@ -226,7 +228,7 @@ Copyright (c) 2018 Framer B.V. -->
   setContext(SharedLayoutContext, sc);
   setDomContext("SharedLayout", isCustom, sc);
 
-  onMount(() => {
+  $effect(() => {
     hasMounted = true;
   });
 
@@ -234,11 +236,13 @@ Copyright (c) 2018 Framer B.V. -->
   //const falseForced = ()=>{forced=false;return true;}
   //$: forced && renderScheduled && falseForced() && startLayoutAnimation()
 
-  $: if (renderScheduled) {
-    tick().then(() => {
-      startLayoutAnimation();
-    });
-  }
+  $effect(() => {
+    if (renderScheduled) {
+      tick().then(() => {
+        startLayoutAnimation();
+      });
+    }
+  });
 
   //afterUpdate(startLayoutAnimation)
 </script>
