@@ -2,15 +2,21 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { getContext } from "svelte";
   import {
     LayoutGroupContext,
     LAYOUT_GROUP_CONTEXT_KEY,
   } from "../../context/LayoutGroupContext.js";
 
-  let { props, isCustom }: {
+  let {
+    props,
+    isCustom,
+    children
+  }: {
     props: any;
     isCustom: any;
+    children?: Snippet<[{ layoutId?: string }]>;
   } = $props();
 
   let { layoutId } = $derived(props);
@@ -18,10 +24,12 @@ Copyright (c) 2018 Framer B.V. -->
   const layoutGroupId =
     getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY) ||
     LayoutGroupContext(isCustom);
+
+  const computedLayoutId = $derived(
+    layoutGroupId && layoutId !== undefined
+      ? layoutGroupId + "-" + layoutId
+      : layoutId
+  );
 </script>
 
-<slot
-  layoutId={layoutGroupId && layoutId !== undefined
-    ? layoutGroupId + "-" + layoutId
-    : layoutId}
-/>
+{@render children?.({ layoutId: computedLayoutId })}

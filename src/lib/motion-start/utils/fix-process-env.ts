@@ -1,15 +1,4 @@
-// Type augmentations for polyfilled process
-declare global {
-    interface Window {
-        process?: {
-            env?: Record<string, string | undefined>;
-        };
-    }
-    // eslint-disable-next-line no-var
-    var process: {
-        env?: Record<string, string | undefined>;
-    };
-}
+import "../types/global.js";
 
 const fix = ()=>{
     try{

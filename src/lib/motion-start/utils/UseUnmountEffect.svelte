@@ -2,11 +2,19 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-    let { callback = () => {} }: { callback?: () => void } = $props();
+    import type { Snippet } from 'svelte';
+
+    let {
+        callback = () => {},
+        children
+    }: {
+        callback?: () => void;
+        children?: Snippet;
+    } = $props();
 
     $effect(() => {
         return () => callback();
     });
 </script>
 
-<slot />
+{@render children?.()}

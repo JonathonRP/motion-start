@@ -147,8 +147,8 @@ describe('Layout Animations', () => {
 
     await new Promise(resolve => setTimeout(resolve, 400));
 
-    const items = Array.from(container.querySelectorAll('.group-item'));
-    expect(items[items.length - 1].dataset.index).toBe('0');
+    const items = Array.from(container.querySelectorAll<HTMLElement>('.group-item'));
+    expect(items[items.length - 1]?.dataset.index).toBe('0');
   });
 
   it('should animate border radius changes', async () => {

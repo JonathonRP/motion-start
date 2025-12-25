@@ -2,15 +2,17 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { isMotionValue } from "../../../value/utils/is-motion-value.js";
   import type { VisualElement } from "../../types";
 
   type $$Props = {
     visualElement: VisualElement;
     props: any;
+    children?: Snippet<[{ svgProps: any }]>;
   };
 
-  let { visualElement, props }: $$Props = $props();
+  let { visualElement, props, children }: $$Props = $props();
 
   const createAttrs = (
     visualElement: $$Props["visualElement"],
@@ -37,4 +39,4 @@ Copyright (c) 2018 Framer B.V. -->
   });
 </script>
 
-<slot {svgProps} />
+{@render children?.({ svgProps })}

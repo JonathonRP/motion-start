@@ -1,15 +1,5 @@
 import { noop } from "./noop"
-
-// Type augmentation for process
-declare global {
-    // eslint-disable-next-line no-var
-    var process: {
-        env?: {
-            NODE_ENV?: string;
-            [key: string]: string | undefined;
-        };
-    };
-}
+import "../types/global.js";
 
 export type DevMessage = (check: boolean, message: string) => void
 

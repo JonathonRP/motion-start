@@ -86,6 +86,14 @@ Copyright (c) 2018 Framer B.V. -->
   let startAnimation = (animationDefinition: AnimationDefinition) => {
     return animateVisualElement(element, animationDefinition);
   };
+
+  let visualState = $state<any>(undefined);
+
+  $effect(() => {
+    if (visualState) {
+      createElement(visualState);
+    }
+  });
 </script>
 
 <UseVisualState
@@ -97,7 +105,6 @@ Copyright (c) 2018 Framer B.V. -->
   isStatic={false}
   let:state
 >
-  {#if createElement(state)}
-  {/if}
+  {visualState = state}
   <slot animatedState={[animationState, startAnimation]} />
 </UseVisualState>
