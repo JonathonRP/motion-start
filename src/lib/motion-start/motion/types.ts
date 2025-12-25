@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 import type { Properties } from 'csstype';
 import type { AnimationControls } from '../animation/types';
 import type { DraggableProps } from '../gestures/drag/types';
-import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types';
+import type { FocusHandlers, HoverHandlers, InViewHandlers, PanHandlers, TapHandlers } from '../gestures/types';
 import type { VisualElementLifecycles } from '../render/utils/lifecycles.ts';
 import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from '../types';
 import type { MotionValue } from '../value/index.js';
@@ -229,6 +229,7 @@ export interface MotionProps
 		TapHandlers,
 		HoverHandlers,
 		FocusHandlers,
+		InViewHandlers,
 		DraggableProps,
 		LayoutProps,
 		MotionAdvancedProps {

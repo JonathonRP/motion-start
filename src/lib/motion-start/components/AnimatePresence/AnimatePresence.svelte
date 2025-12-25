@@ -23,10 +23,14 @@ Copyright (c) 2018 Framer B.V. -->
         initial = true,
         onExitComplete = undefined,
         exitBeforeEnter = undefined,
+        mode = undefined,
         presenceAffectsLayout = true,
         show = undefined,
         isCustom = false
     }: $$Props = $props();
+
+    // Convert exitBeforeEnter to mode for backward compatibility
+    const actualMode = $derived(mode || (exitBeforeEnter ? "wait" : "sync"));
 
     let _list = $derived(list !== undefined ? list : show ? [{ key: 1 }] : []);
 
@@ -104,9 +108,9 @@ Copyright (c) 2018 Framer B.V. -->
                 }
             }
 
-            // If we currently have exiting children, and we're deferring rendering incoming children
-            // until after all current children have exiting, empty the childrenToRender array
-            if (exitBeforeEnter && exiting.size) {
+            // If we currently have exiting children, and we're in "wait" mode,
+            // defer rendering incoming children until after all current children have exited
+            if (actualMode === "wait" && exiting.size) {
                 childrenToRender = [];
             }
             // Loop through all currently exiting components and clone them to overwrite `animate`
@@ -176,14 +180,29 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 {#each childrenToRender as child (getChildKey(child))}
-    <PresenceChild
-        isPresent={child.present}
-        initial={initial ? undefined : false}
-        custom={child.onExit ? custom : undefined}
-        {presenceAffectsLayout}
-        onExitComplete={child.onExit}
-        {isCustom}
-    >
-        <slot item={child.item} />
-    </PresenceChild>
+    {#if actualMode === "popLayout" && !child.present}
+        <div style="position: absolute;">
+            <PresenceChild
+                isPresent={child.present}
+                initial={initial ? undefined : false}
+                custom={child.onExit ? custom : undefined}
+                {presenceAffectsLayout}
+                onExitComplete={child.onExit}
+                {isCustom}
+            >
+                <slot item={child.item} />
+            </PresenceChild>
+        </div>
+    {:else}
+        <PresenceChild
+            isPresent={child.present}
+            initial={initial ? undefined : false}
+            custom={child.onExit ? custom : undefined}
+            {presenceAffectsLayout}
+            onExitComplete={child.onExit}
+            {isCustom}
+        >
+            <slot item={child.item} />
+        </PresenceChild>
+    {/if}
 {/each}

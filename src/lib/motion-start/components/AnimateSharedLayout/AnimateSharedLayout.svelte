@@ -26,6 +26,14 @@ Copyright (c) 2018 Framer B.V. -->
     isCustom = false
   }: $$Props = $props();
 
+  // Deprecation warning
+  if (typeof console !== 'undefined') {
+    console.warn(
+      'AnimateSharedLayout is deprecated and will be removed in a future version. ' +
+      'Please use LayoutGroup instead for better performance and simpler API.'
+    );
+  }
+
   const context =
     getContext<Writable<MotionContextProps>>(MotionContext) ||
     MotionContext(isCustom);

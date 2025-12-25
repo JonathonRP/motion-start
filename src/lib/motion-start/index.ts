@@ -66,6 +66,9 @@ export { useScroll } from "./value/use-scroll.svelte.js";
 export { useInView, useInViewWithCallback } from "./value/use-in-view.svelte.js";
 export { useTime } from "./value/use-time.svelte.js";
 export { useWillChange, addWillChange, removeWillChange } from "./value/use-will-change.svelte.js";
+export { useAnimate } from "./value/use-animate.svelte.js";
+export { useAnimationFrame } from "./value/use-animation-frame.svelte.js";
+export { useMotionValueEvent } from "./value/use-motion-value-event.svelte.js";
 export { useMotionTemplate } from "./value/use-motion-template.js";
 export { useMotionValue } from "./value/use-motion-value.js";
 export { useSpring } from "./value/use-spring.js";
@@ -110,9 +113,11 @@ export { createCrossfader } from "./components/AnimateSharedLayout/utils/crossfa
 export type {
   FocusHandlers,
   HoverHandlers,
+  InViewHandlers,
   PanHandlers,
   TapHandlers,
   TapInfo,
+  ViewportOptions,
 } from "./gestures/types.js";
 export { createMotionComponent } from "./motion/index.js";
 export { isValidMotionProp } from "./motion/utils/valid-prop.js";
@@ -144,7 +149,7 @@ export type {
   AnimationOptions,
   AnimationPlaybackControls,
 } from "./animation/animate.js";
-export type { AnimatePresenceProps } from "./components/AnimatePresence/types.js";
+export type { AnimatePresenceProps, AnimatePresenceMode } from "./components/AnimatePresence/types.js";
 export type {
   SharedLayoutAnimationConfig,
   SharedLayoutProps,

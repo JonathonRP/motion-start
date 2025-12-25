@@ -1,7 +1,15 @@
-/** 
+/**
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
+
+/**
+ * Mode for AnimatePresence to handle entering and exiting children.
+ *
+ * @public
+ */
+export type AnimatePresenceMode = "sync" | "wait" | "popLayout";
+
 /**
  * @public
  */
@@ -41,8 +49,28 @@ export interface AnimatePresenceProps<T extends {key:any}> {
      */
     onExitComplete?: () => void;
     /**
+     * Determines how AnimatePresence handles entering and exiting children.
+     *
+     * - "sync" (default): Exiting elements removed as exit animation finishes
+     * - "wait": Only renders one component at a time. The exiting component finishes its exit animation before the entering component is rendered.
+     * - "popLayout": Exiting elements are "popped" from layout using position: absolute
+     *
+     * @motion
+     *
+     * ```jsx
+     * <AnimatePresence mode="wait">
+     *   <MotionDiv key={currentItem} exit={{ opacity: 0 }} />
+     * </AnimatePresence>
+     * ```
+     *
+     * @public
+     */
+    mode?: AnimatePresenceMode;
+    /**
      * If set to `true`, `AnimatePresence` will only render one component at a time. The exiting component
      * will finished its exit animation before the entering component is rendered.
+     *
+     * @deprecated Use `mode="wait"` instead
      *
      * @motion
      *

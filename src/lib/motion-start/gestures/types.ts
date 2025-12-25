@@ -255,3 +255,102 @@ export interface HoverHandlers {
      */
     onHoverEnd?(event: MouseEvent, info: EventInfo): void;
 }
+
+/**
+ * Configuration for viewport detection with whileInView
+ *
+ * @public
+ */
+export interface ViewportOptions {
+    /**
+     * Only trigger the animation once when entering the viewport
+     *
+     * @motion
+     *
+     * ```jsx
+     * <MotionDiv
+     *   whileInView={{ opacity: 1 }}
+     *   viewport={{ once: true }}
+     * />
+     * ```
+     */
+    once?: boolean;
+    /**
+     * Margin around the viewport for detection
+     * Supports CSS margin syntax (e.g., "0px 0px -200px 0px")
+     *
+     * @motion
+     *
+     * ```jsx
+     * <MotionDiv
+     *   whileInView={{ opacity: 1 }}
+     *   viewport={{ margin: "-100px" }}
+     * />
+     * ```
+     */
+    margin?: string;
+    /**
+     * How much of the element must intersect with the viewport to trigger
+     * - "some": Any part of the element
+     * - "all": The entire element
+     * - number (0-1): Fraction of the element (e.g., 0.5 = 50%)
+     *
+     * @motion
+     *
+     * ```jsx
+     * <MotionDiv
+     *   whileInView={{ opacity: 1 }}
+     *   viewport={{ amount: 0.8 }}
+     * />
+     * ```
+     */
+    amount?: "some" | "all" | number;
+}
+
+/**
+ * @public
+ */
+export interface InViewHandlers {
+    /**
+     * Properties or variant label to animate to while the element is in the viewport.
+     *
+     * @motion
+     *
+     * ```jsx
+     * <MotionDiv
+     *   initial={{ opacity: 0 }}
+     *   whileInView={{ opacity: 1 }}
+     *   viewport={{ once: true }}
+     * />
+     * ```
+     */
+    whileInView?: VariantLabels | TargetAndTransition;
+    /**
+     * Configuration for viewport detection
+     */
+    viewport?: ViewportOptions;
+    /**
+     * Callback when element enters viewport
+     *
+     * @motion
+     *
+     * ```jsx
+     * <MotionDiv
+     *   onViewportEnter={() => console.log('Entered viewport')}
+     * />
+     * ```
+     */
+    onViewportEnter?(): void;
+    /**
+     * Callback when element leaves viewport
+     *
+     * @motion
+     *
+     * ```jsx
+     * <MotionDiv
+     *   onViewportLeave={() => console.log('Left viewport')}
+     * />
+     * ```
+     */
+    onViewportLeave?(): void;
+}
