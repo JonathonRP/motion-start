@@ -13,6 +13,8 @@ export { AnimatePresence } from "./components/AnimatePresence/index.js";
 export { AnimateSharedLayout } from "./components/AnimateSharedLayout/index.js";
 export { LazyMotion } from "./components/LazyMotion/index.js";
 export { MotionConfig } from "./components/MotionConfig/index.js";
+export { LayoutGroup } from "./components/LayoutGroup/index.js";
+export { ReorderGroup, ReorderItem } from "./components/Reorder/index.js";
 export {
   motion,
   createDomMotionComponent,
@@ -60,6 +62,10 @@ export {
 } from "./value/index.js";
 export { useElementScroll } from "./value/scroll/use-element-scroll.js";
 export { useViewportScroll } from "./value/scroll/use-viewport-scroll.js";
+export { useScroll } from "./value/use-scroll.svelte.js";
+export { useInView, useInViewWithCallback } from "./value/use-in-view.svelte.js";
+export { useTime } from "./value/use-time.svelte.js";
+export { useWillChange, addWillChange, removeWillChange } from "./value/use-will-change.svelte.js";
 export { useMotionTemplate } from "./value/use-motion-template.js";
 export { useMotionValue } from "./value/use-motion-value.js";
 export { useSpring } from "./value/use-spring.js";
@@ -85,6 +91,7 @@ export { UseTapGesture } from "./gestures/use-tap-gesture.js";
  * UTILITIES
  * ========================================
  */
+export { stagger, simpleStagger } from "./utils/stagger.js";
 export { useCycle } from "./utils/use-cycle.svelte.js";
 export { useReducedMotion } from "./utils/use-reduced-motion.js";
 export { UseDomEvent } from "./events/use-dom-event.js";
