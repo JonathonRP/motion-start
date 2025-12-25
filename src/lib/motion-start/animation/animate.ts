@@ -1,4 +1,4 @@
-/** 
+/**
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
@@ -25,11 +25,11 @@ export interface AnimationPlaybackLifecycles<V> {
  */
 export type AnimationOptions<V> = (Tween | Spring) &
 	AnimationPlaybackLifecycles<V> & {
-		delay?: number;
+		delay?: number | ((index: number, total: number) => number);
 		type?: 'tween' | 'spring';
 	};
 
-/** 
+/**
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
@@ -65,12 +65,85 @@ import { startAnimation } from './utils/transitions.js';
  *
  * @public
  */
-function animate<V>(from: MotionValue<V> | V, to: ResolvedValueTarget, transition?: AnimationOptions<V>) {
+function animate<V>(
+	from: MotionValue<V> | V,
+	to: ResolvedValueTarget,
+	transition?: AnimationOptions<V>
+): AnimationPlaybackControls;
+
+/**
+ * Animate multiple elements with optional staggered delays.
+ *
+ * @example
+ * ```javascript
+ * import { animate, stagger } from "motion-start"
+ *
+ * const elements = document.querySelectorAll(".item")
+ * animate(elements, { opacity: 1 }, {
+ *   delay: stagger(0.1)
+ * })
+ * ```
+ *
+ * @public
+ */
+function animate<V>(
+	from: MotionValue<V>[] | V[] | NodeListOf<Element> | Element[],
+	to: ResolvedValueTarget,
+	transition?: AnimationOptions<V>
+): AnimationPlaybackControls;
+
+function animate<V>(
+	from: MotionValue<V> | V | MotionValue<V>[] | V[] | NodeListOf<Element> | Element[],
+	to: ResolvedValueTarget,
+	transition?: AnimationOptions<V>
+): AnimationPlaybackControls {
 	if (transition === void 0) {
 		transition = {};
 	}
-	var value = isMotionValue(from) ? from : motionValue(from);
-	startAnimation('', value, to, transition);
+
+	// Handle array of elements/values
+	if (Array.isArray(from) || from instanceof NodeList) {
+		const elements = Array.from(from as any);
+		const controls = elements.map((element, index) => {
+			const value = isMotionValue(element) ? element : motionValue(element);
+
+			// Calculate delay for staggered animations
+			let delay = transition?.delay ?? 0;
+			if (typeof delay === 'function') {
+				delay = delay(index, elements.length);
+			}
+
+			const elementTransition = {
+				...transition,
+				delay
+			};
+
+			startAnimation('', value, to, elementTransition);
+			return {
+				stop: () => value.stop(),
+			};
+		});
+
+		// Return combined controls
+		return {
+			stop: () => controls.forEach(ctrl => ctrl.stop())
+		};
+	}
+
+	// Single value animation
+	const value = isMotionValue(from) ? from : motionValue(from as V);
+
+	let delay = transition?.delay ?? 0;
+	if (typeof delay === 'function') {
+		delay = delay(0, 1);
+	}
+
+	const finalTransition = {
+		...transition,
+		delay
+	};
+
+	startAnimation('', value, to, finalTransition);
 	return {
 		stop: () => value.stop(),
 	} as AnimationPlaybackControls;

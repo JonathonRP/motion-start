@@ -8,6 +8,7 @@
 
 import { onMount } from 'svelte';
 import { MotionValue } from './index.js';
+import { hasRequestAnimationFrame } from '../utils/environment.js';
 
 /**
  * Create a motion value that tracks elapsed time
@@ -41,6 +42,8 @@ export function useTime(): MotionValue<number> {
     };
 
     onMount(() => {
+        if (!hasRequestAnimationFrame) return;
+
         rafId = requestAnimationFrame(updateTime);
 
         return () => {

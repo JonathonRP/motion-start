@@ -7,6 +7,7 @@
 
 import { onMount } from 'svelte';
 import { MotionValue } from './index.js';
+import { isBrowser } from '../utils/environment.js';
 
 export interface UseScrollOptions {
     /**
@@ -112,6 +113,8 @@ export function useScroll(
     const scrollYProgress = new MotionValue(0);
 
     onMount(() => {
+        if (!isBrowser) return;
+
         const containerElement = container?.() ?? window;
         const targetElement = target?.();
 

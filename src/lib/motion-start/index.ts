@@ -93,7 +93,14 @@ export { UseTapGesture } from "./gestures/use-tap-gesture.js";
  */
 export { stagger, simpleStagger } from "./utils/stagger.js";
 export { useCycle } from "./utils/use-cycle.svelte.js";
-export { useReducedMotion } from "./utils/use-reduced-motion.js";
+export { useReducedMotion } from "./utils/use-reduced-motion.svelte.js";
+export {
+  isBrowser,
+  isServer,
+  prefersReducedMotion,
+  hasIntersectionObserver,
+  hasRequestAnimationFrame
+} from "./utils/environment.js";
 export { UseDomEvent } from "./events/use-dom-event.js";
 export {
   useIsPresent,

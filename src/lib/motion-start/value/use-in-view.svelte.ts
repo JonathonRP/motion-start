@@ -6,6 +6,7 @@
  */
 
 import { onMount } from 'svelte';
+import { hasIntersectionObserver } from '../utils/environment.js';
 
 export interface UseInViewOptions {
     /**
@@ -65,7 +66,7 @@ export function useInView(
 
     onMount(() => {
         const element = elementRef();
-        if (!element || typeof IntersectionObserver === 'undefined') {
+        if (!element || !hasIntersectionObserver) {
             return;
         }
 
@@ -138,7 +139,7 @@ export function useInViewWithCallback(
 
     onMount(() => {
         const element = elementRef();
-        if (!element || typeof IntersectionObserver === 'undefined') {
+        if (!element || !hasIntersectionObserver) {
             return;
         }
 
