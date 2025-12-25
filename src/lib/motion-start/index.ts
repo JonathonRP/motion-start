@@ -85,7 +85,7 @@ export { UseTapGesture } from "./gestures/use-tap-gesture.js";
  * UTILITIES
  * ========================================
  */
-export { useCycle } from "./utils/use-cycle.js";
+export { useCycle } from "./utils/use-cycle.svelte.js";
 export { useReducedMotion } from "./utils/use-reduced-motion.js";
 export { UseDomEvent } from "./events/use-dom-event.js";
 export {

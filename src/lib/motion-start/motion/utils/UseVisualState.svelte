@@ -102,13 +102,14 @@ Copyright (c) 2018 Framer B.V. -->
   import type { MotionProps } from "..";
 
   import { getContext } from "svelte";
-  import { get, type Writable } from "svelte/store";
   import {
     MotionContext,
+    MOTION_CONTEXT_KEY,
     type MotionContextProps,
   } from "../../context/MotionContext/index.js";
   import {
     PresenceContext,
+    PRESENCE_CONTEXT_KEY,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
 
@@ -127,26 +128,19 @@ Copyright (c) 2018 Framer B.V. -->
   }: $$Props = $props();
 
   const context =
-    getContext<Writable<MotionContextProps>>(MotionContext) ||
+    getContext<MotionContextProps>(MOTION_CONTEXT_KEY) ||
     MotionContext(isCustom);
   const presenceContext =
-    getContext<Writable<PresenceContextProps>>(PresenceContext) ||
+    getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) ||
     PresenceContext(isCustom);
 
   let state = $derived(
-    isStatic
-      ? makeState(
-          config as UseVisualStateConfig<Instance, RenderState>,
-          props,
-          $context,
-          $presenceContext,
-        )
-      : makeState(
-          config as UseVisualStateConfig<Instance, RenderState>,
-          props,
-          get(context),
-          get(presenceContext),
-        )
+    makeState(
+      config as UseVisualStateConfig<Instance, RenderState>,
+      props,
+      context,
+      presenceContext || {} as PresenceContextProps,
+    )
   );
 </script>
 

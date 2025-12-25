@@ -12,16 +12,16 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../components/AnimatePresence/use-presence.js";
   import {
     PresenceContext,
+    PRESENCE_CONTEXT_KEY,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
   import { AnimationType } from "../../render/utils/types.js";
-  import type { Writable } from "svelte/store";
 
   let { props, visualElement, isCustom, children } = $props();
   const { custom } = $derived(props);
 
   const presenceContext = $derived(
-    getContext<Writable<PresenceContextProps>>(PresenceContext) ||
+    getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) ||
       PresenceContext(isCustom),
   );
   const presence = $derived(usePresence(isCustom));
@@ -32,12 +32,12 @@ Copyright (c) 2018 Framer B.V. -->
     const animation = visualElement.animationState?.setActive(
       AnimationType.Exit,
       !isPresent,
-      { custom: $presenceContext?.custom ?? custom },
+      { custom: presenceContext?.custom ?? custom },
     );
 
     !isPresent && animation?.then(onExitComplete);
   };
-  $effect(() => _effect($presence));
+  $effect(() => _effect(presence));
 </script>
 
 {@render children?.()}

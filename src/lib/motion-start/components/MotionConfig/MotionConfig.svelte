@@ -3,10 +3,10 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { getContext, setContext } from "svelte";
-  import { get, writable, type Writable } from "svelte/store";
   import { setDomContext } from "../../context/DOMcontext.js";
   import {
     MotionConfigContext,
+    MOTION_CONFIG_CONTEXT_KEY,
     type MotionConfigContextObject,
   } from "../../context/MotionConfigContext.js";
   import { provideScaleCorrection } from "../../context/ScaleCorrectionProvider.svelte";
@@ -23,13 +23,16 @@ Copyright (c) 2018 Framer B.V. -->
   }: $$Props = $props();
 
   const mcc =
-    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
+    getContext<MotionConfigContextObject>(MOTION_CONFIG_CONTEXT_KEY) ||
     MotionConfigContext(isCustom);
 
   /**
    * Inherit props from any parent MotionConfig components
    */
-  let config = $derived({ ...$mcc, ...{ transformPagePoint, isStatic, transition } });
+  let config = $state<MotionConfigContextObject>({
+    ...mcc,
+    ...{ transformPagePoint, isStatic, transition }
+  });
 
   // need to inform child layouts, or problems with scroll occur
   provideScaleCorrection();
@@ -47,15 +50,13 @@ Copyright (c) 2018 Framer B.V. -->
     typeof config.transition === "object" ? config.transition.toString() : ""
   );
 
-  let context = writable(config);
-  setContext(MotionConfigContext, context);
-  setDomContext("Motion", isCustom, context);
-  const memo = () => config;
+  setContext(MOTION_CONFIG_CONTEXT_KEY, config);
+  setDomContext("MotionConfig", isCustom, config);
   const scaleCorrector = scaleCorrection();
 
   $effect(() => {
-    // @ts-expect-error
-    context.set(memo(transitionDependency, config.transformPagePoint));
+    // Update config properties reactively
+    Object.assign(config, { transformPagePoint, isStatic, transition });
     scaleCorrector.update();
   });
 </script>

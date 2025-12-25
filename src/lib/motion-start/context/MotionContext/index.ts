@@ -1,27 +1,34 @@
-/** 
+/**
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VisualElement } from "../../render/types";
 import { getContext } from "svelte";
 import { getDomContext } from "../DOMcontext";
-import { writable } from "svelte/store";
 
 export interface MotionContextProps {
-	forEach?: any;
+    forEach?: any;
     visualElement?: VisualElement;
     initial?: false | string | string[];
     animate?: string | string[];
 }
 
-export const MotionContext = (c?: any) =>
-    getDomContext("Motion", c) || writable<MotionContextProps>({});
+/**
+ * Context key for Motion
+ * @public
+ */
+export const MOTION_CONTEXT_KEY = Symbol('MotionContext');
 
-  export const useVisualElementContext = (c?: any) => {
-    return (getContext(MotionContext) || MotionContext(c)) as
-      | VisualElement<any, any>
-      | undefined;
-  };
+export const MotionContext = (c?: any): MotionContextProps => {
+    const domContext = getDomContext("Motion", c);
+    return domContext || {};
+};
+
+export const useVisualElementContext = (c?: any) => {
+    return (getContext(MOTION_CONTEXT_KEY) || MotionContext(c)) as
+        | VisualElement<any, any>
+        | undefined;
+};
 
 export { default as UseVisualElementContext } from "./MotionContext.svelte";
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { getContext } from "svelte";
-  import type { Writable } from "svelte/store";
-  import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
+  import {
+    LayoutGroupContext,
+    LAYOUT_GROUP_CONTEXT_KEY,
+  } from "../../context/LayoutGroupContext.js";
 
   let { props, isCustom }: {
     props: any;
@@ -14,12 +16,12 @@ Copyright (c) 2018 Framer B.V. -->
   let { layoutId } = $derived(props);
 
   const layoutGroupId =
-    getContext<Writable<string | null>>(LayoutGroupContext) ||
+    getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY) ||
     LayoutGroupContext(isCustom);
 </script>
 
 <slot
-  layoutId={$layoutGroupId && layoutId !== undefined
-    ? $layoutGroupId + "-" + layoutId
+  layoutId={layoutGroupId && layoutId !== undefined
+    ? layoutGroupId + "-" + layoutId
     : layoutId}
 />

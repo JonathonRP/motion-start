@@ -3,17 +3,16 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
     import { getContext } from "svelte";
-    import { get, type Writable } from "svelte/store";
-    import { MotionContext, type MotionContextProps } from "./index.js";
+    import { MotionContext, MOTION_CONTEXT_KEY, type MotionContextProps } from "./index.js";
     import { getCurrentTreeVariants } from "./utils.js";
 
     let { props, isStatic, isCustom = undefined } = $props();
 
     let mc =
-        getContext<Writable<MotionContextProps>>(MotionContext) ||
+        getContext<MotionContextProps>(MOTION_CONTEXT_KEY) ||
         MotionContext(isCustom);
 
-    let { initial, animate } = $derived(getCurrentTreeVariants(props, $mc));
+    let { initial, animate } = $derived(getCurrentTreeVariants(props, mc));
 
     const variantLabelsAsDependency = (prop: string | boolean | any[] | undefined) => {
         return Array.isArray(prop) ? prop.join(" ") : prop;

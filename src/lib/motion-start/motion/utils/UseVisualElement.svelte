@@ -7,23 +7,29 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { getContext, tick, untrack } from "svelte";
-  import { get, type Writable } from "svelte/store";
   import { isPresent } from "../../components/AnimatePresence/use-presence.js";
-  import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
+  import {
+    LayoutGroupContext,
+    LAYOUT_GROUP_CONTEXT_KEY,
+  } from "../../context/LayoutGroupContext.js";
   import {
     LazyContext,
+    LAZY_CONTEXT_KEY,
     type LazyContextProps,
   } from "../../context/LazyContext.js";
   import {
     MotionConfigContext,
+    MOTION_CONFIG_CONTEXT_KEY,
     type MotionConfigContextObject,
   } from "../../context/MotionConfigContext.js";
   import {
     MotionContext,
+    MOTION_CONTEXT_KEY,
     type MotionContextProps,
   } from "../../context/MotionContext/index.js";
   import {
     PresenceContext,
+    PRESENCE_CONTEXT_KEY,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
   import type { VisualElement } from "../../render/types.js";
@@ -37,25 +43,25 @@ Copyright (c) 2018 Framer B.V. -->
   } = $props();
 
   const config =
-    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+    getContext<MotionConfigContextObject>(MOTION_CONFIG_CONTEXT_KEY) || MotionConfigContext(isCustom);
 
   const presenceContext =
-    getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+    getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) || PresenceContext(isCustom);
 
   const lazyContext =
-    getContext<Writable<LazyContextProps>>(LazyContext) || LazyContext(isCustom);
+    getContext<LazyContextProps>(LAZY_CONTEXT_KEY) || LazyContext(isCustom);
 
   const mc =
-    getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+    getContext<MotionContextProps>(MOTION_CONTEXT_KEY) || MotionContext(isCustom);
 
-  let parent = $derived($mc.visualElement);
+  let parent = $derived(mc.visualElement);
 
-  const layoutGroupId: Writable<string | null> =
-    getContext(LayoutGroupContext) || LayoutGroupContext(isCustom);
+  const layoutGroupId: string | null =
+    getContext(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext(isCustom);
 
   let layoutId = $derived(
-    $layoutGroupId && props.layoutId !== undefined
-      ? $layoutGroupId + "-" + props.layoutId
+    layoutGroupId && props.layoutId !== undefined
+      ? layoutGroupId + "-" + props.layoutId
       : props.layoutId
   );
 
@@ -66,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
    */
   $effect(() => {
     if (!createVisualElement) {
-      createVisualElement = $lazyContext.renderer;
+      createVisualElement = lazyContext.renderer;
     }
 
     if (!visualElementRef && createVisualElement) {
@@ -74,8 +80,8 @@ Copyright (c) 2018 Framer B.V. -->
         visualState,
         parent: parent,
         props: { ...props, layoutId },
-        presenceId: $presenceContext?.id,
-        blockInitialAnimation: $presenceContext?.initial === false,
+        presenceId: presenceContext?.id,
+        blockInitialAnimation: presenceContext?.initial === false,
       });
     }
   });

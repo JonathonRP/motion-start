@@ -2,14 +2,13 @@
 Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import { getContext } from "svelte";
-  import { type Writable } from "svelte/store";
-  import { MotionContext, type MotionContextProps } from "./index.js";
+  import { MOTION_CONTEXT_KEY, MotionContext, type MotionContextProps } from "./index.js";
 
   let { isCustom } = $props();
 
   const motionContext =
-    getContext<Writable<MotionContextProps>>(MotionContext) ||
+    getContext<MotionContextProps>(MOTION_CONTEXT_KEY) ||
     MotionContext(isCustom);
 </script>
 
-<slot parent={$motionContext.visualElement} />
+<slot parent={motionContext.visualElement} />
