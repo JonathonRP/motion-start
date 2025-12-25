@@ -52,10 +52,22 @@ export function useMotionValueEvent<V = any>(
                 unsubscribe = value.onChange(callback);
                 break;
             case 'animationStart':
-                unsubscribe = value.onAnimationStart?.(callback);
+                // MotionValue doesn't have onAnimationStart in current implementation
+                // Use onChange with a check for animation state instead
+                if ('onAnimationStart' in value && typeof (value as any).onAnimationStart === 'function') {
+                    unsubscribe = (value as any).onAnimationStart(callback);
+                } else {
+                    console.warn('animationStart event is not yet supported on this MotionValue');
+                }
                 break;
             case 'animationComplete':
-                unsubscribe = value.onAnimationComplete?.(callback);
+                // MotionValue doesn't have onAnimationComplete in current implementation
+                // Use onChange with a check for animation state instead
+                if ('onAnimationComplete' in value && typeof (value as any).onAnimationComplete === 'function') {
+                    unsubscribe = (value as any).onAnimationComplete(callback);
+                } else {
+                    console.warn('animationComplete event is not yet supported on this MotionValue');
+                }
                 break;
             case 'animationCancel':
                 // MotionValue doesn't have onAnimationCancel yet

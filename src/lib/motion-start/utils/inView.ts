@@ -7,8 +7,8 @@
 
 import { animate } from '../animation/animate.js';
 import type { AnimationOptions, AnimationPlaybackControls } from '../animation/animate.js';
-import type { TargetAndTransition } from '../types/index.js';
-import { hasIntersectionObserver, isBrowser } from '../utils/environment.js';
+import type { TargetAndTransition } from '../types.js';
+import { hasIntersectionObserver, isBrowser } from './environment.js';
 
 export interface InViewOptions {
     /**
@@ -127,7 +127,7 @@ export function inView(
 export function inViewAnimate(
     element: Element | string,
     values: TargetAndTransition,
-    options: InViewOptions & AnimationOptions = {}
+    options: InViewOptions & AnimationOptions<any> = {}
 ): () => void {
     const { root, margin, amount, ...animationOptions } = options;
 

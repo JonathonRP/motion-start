@@ -8,8 +8,8 @@
 
 import { animate } from '../animation/animate.js';
 import type { AnimationOptions, AnimationPlaybackControls } from '../animation/animate.js';
-import type { TargetAndTransition } from '../types/index.js';
-import { isBrowser } from '../utils/environment.js';
+import type { TargetAndTransition } from '../types.js';
+import { isBrowser } from './environment.js';
 
 export interface ScrollOptions {
     /**
@@ -149,7 +149,7 @@ export function scroll(
 export function scrollAnimate(
     element: Element | string,
     values: TargetAndTransition,
-    options: ScrollOptions & AnimationOptions = {}
+    options: ScrollOptions & AnimationOptions<any> = {}
 ): () => void {
     const { container, target, axis, offset, ...animationOptions } = options;
 

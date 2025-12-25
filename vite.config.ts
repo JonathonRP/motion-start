@@ -18,31 +18,32 @@ export default defineConfig({
 		typecheck: {
 			enabled: !isBrowserMode, // Type check in regular mode only
 		},
-		// Configure environment based on test file pattern
-		// Browser tests use .browser.test.ts suffix
+		// Pool options moved to top-level in Vitest 4
+		pool: 'threads',
 		poolOptions: {
 			threads: {
 				singleThread: true,
 			}
 		},
 		// Browser mode configuration for e2e-like tests
-		browser: {
-			enabled: isBrowserMode,
+		browser: isBrowserMode ? {
+			enabled: true,
 			name: 'chromium',
 			provider: 'playwright',
 			headless: true,
 			screenshotFailures: false,
-		},
+		} : undefined,
 		// Include pattern - browser tests only when VITEST_BROWSER is set
 		include: isBrowserMode
-			? ['**/*.browser.{test,spec}.{js,ts,svelte}']
-			: ['**/*.{test,spec}.{js,ts,svelte}'],
+			? ['src/**/*.browser.{test,spec}.{js,ts,svelte}']
+			: ['src/**/*.{test,spec}.{js,ts,svelte}'],
 		// Exclude pattern
 		exclude: isBrowserMode
-			? ['**/node_modules/**', '**/dist/**', '**/.{idea,git,cache,output,temp}/**']
+			? ['**/node_modules/**', '**/dist/**', '**/.{idea,git,cache,output,temp}/**', '**/.svelte-kit/**']
 			: [
 				'**/node_modules/**',
 				'**/dist/**',
+				'**/.svelte-kit/**',
 				'**/.{idea,git,cache,output,temp}/**',
 				'**/*.browser.{test,spec}.{js,ts,svelte}',
 			],

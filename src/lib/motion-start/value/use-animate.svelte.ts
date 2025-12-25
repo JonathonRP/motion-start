@@ -5,16 +5,15 @@
  */
 
 import { onMount } from 'svelte';
-import type { TargetAndTransition, AnimationOptions } from '../types/index.js';
-import { animate } from '../animation/animate.js';
-import type { AnimationPlaybackControls } from '../animation/types.js';
+import type { TargetAndTransition } from '../types.js';
+import { animate, type AnimationOptions, type AnimationPlaybackControls } from '../animation/animate.js';
 import { isBrowser } from '../utils/environment.js';
 
 export interface AnimateFunction {
     (
         selector: string | Element,
         values: TargetAndTransition,
-        options?: AnimationOptions
+        options?: AnimationOptions<any>
     ): AnimationPlaybackControls;
 }
 

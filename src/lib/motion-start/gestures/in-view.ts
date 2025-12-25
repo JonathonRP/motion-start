@@ -6,7 +6,7 @@
 
 import type { VisualElement } from '../render/types.js';
 import type { VariantLabels } from '../motion/types.js';
-import type { TargetAndTransition } from '../types/index.js';
+import type { TargetAndTransition } from '../types.js';
 import type { ViewportOptions } from './types.js';
 import { hasIntersectionObserver } from '../utils/environment.js';
 
@@ -61,8 +61,9 @@ export function addInViewGesture(
                     hasEnteredOnce = true;
 
                     // Trigger whileInView animation
-                    if (whileInView) {
-                        element.animationState?.setActive('whileInView', true);
+                    if (whileInView && element.animationState) {
+                        // Type assertion needed as whileInView is not in AnimationType yet
+                        element.animationState.setActive('whileInView' as any, true);
                     }
 
                     // Call onViewportEnter callback
@@ -78,8 +79,9 @@ export function addInViewGesture(
                     isInView = false;
 
                     // Stop whileInView animation
-                    if (whileInView && !once) {
-                        element.animationState?.setActive('whileInView', false);
+                    if (whileInView && !once && element.animationState) {
+                        // Type assertion needed as whileInView is not in AnimationType yet
+                        element.animationState.setActive('whileInView' as any, false);
                     }
 
                     // Call onViewportLeave callback
