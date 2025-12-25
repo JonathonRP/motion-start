@@ -95,6 +95,8 @@ export { UseTapGesture } from "./gestures/use-tap-gesture.js";
  * ========================================
  */
 export { stagger, simpleStagger } from "./utils/stagger.js";
+export { scroll, scrollAnimate } from "./utils/scroll.js";
+export { inView, inViewAnimate, getInViewInfo } from "./utils/inView.js";
 export { useCycle } from "./utils/use-cycle.svelte.js";
 export { useReducedMotion } from "./utils/use-reduced-motion.svelte.js";
 export {
@@ -119,6 +121,8 @@ export type {
   TapInfo,
   ViewportOptions,
 } from "./gestures/types.js";
+export type { InViewOptions } from "./utils/inView.js";
+export type { ScrollOptions } from "./utils/scroll.js";
 export { createMotionComponent } from "./motion/index.js";
 export { isValidMotionProp } from "./motion/utils/valid-prop.js";
 export { addScaleCorrection } from "./render/dom/projection/scale-correction.js";

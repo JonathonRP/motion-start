@@ -5,10 +5,50 @@ Copyright (c) 2018 Framer B.V.
 import type { ResolvedValueTarget, Spring, Tween } from '../types';
 import type { MotionValue } from '../value/index.js';
 /**
+ * Animation playback controls
+ * Matches Motion v11.11.11 API
+ *
  * @public
  */
 export interface AnimationPlaybackControls {
+	/**
+	 * Stop the animation
+	 */
 	stop: () => void;
+
+	/**
+	 * Play or resume the animation
+	 */
+	play?: () => void;
+
+	/**
+	 * Pause the animation
+	 */
+	pause?: () => void;
+
+	/**
+	 * Current time of the animation (ms)
+	 * Can be set to scrub the animation
+	 */
+	time?: number;
+
+	/**
+	 * Playback speed multiplier
+	 * 1 = normal, 2 = double speed, 0.5 = half speed
+	 */
+	speed?: number;
+
+	/**
+	 * Total duration of the animation (ms)
+	 * Read-only
+	 */
+	duration?: number;
+
+	/**
+	 * Promise-based completion handler
+	 * Allows chaining animations with .then()
+	 */
+	then?(onResolve: VoidFunction, onReject?: VoidFunction): Promise<void>;
 }
 /**
  * @public
