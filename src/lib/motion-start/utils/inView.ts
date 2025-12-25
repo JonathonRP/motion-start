@@ -112,6 +112,10 @@ export function inView(
 /**
  * Animate element when it enters the viewport
  *
+ * Note: This function requires DOM element animation support.
+ * Current implementation uses type assertions as the base animate()
+ * function is being enhanced to support DOM elements (Motion v11 feature).
+ *
  * @example
  * ```ts
  * import { inViewAnimate } from 'motion-start';
@@ -134,7 +138,8 @@ export function inViewAnimate(
     return inView(
         element,
         () => {
-            animate(element, values, animationOptions);
+            // Type assertion needed: animate() will be enhanced to support DOM elements
+            animate(element as any, values as any, animationOptions);
         },
         { root, margin, amount }
     );

@@ -135,6 +135,10 @@ export function scroll(
 /**
  * Animate element based on scroll progress
  *
+ * Note: This function requires DOM element animation support.
+ * Current implementation uses type assertions as the base animate()
+ * function is being enhanced to support DOM elements (Motion v11 feature).
+ *
  * @example
  * ```ts
  * import { scrollAnimate } from 'motion-start';
@@ -153,10 +157,11 @@ export function scrollAnimate(
 ): () => void {
     const { container, target, axis, offset, ...animationOptions } = options;
 
-    const animation = animate(element, values, {
-        ...animationOptions,
-        autoplay: false
-    });
+    // Type assertion needed: animate() will be enhanced to support DOM elements
+    const animation = animate(element as any, values as any, animationOptions);
+
+    // Stop the animation immediately - scroll() will control time manually
+    animation.stop();
 
     return scroll(animation, { container, target, axis, offset });
 }

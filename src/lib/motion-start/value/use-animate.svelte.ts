@@ -34,6 +34,10 @@ export interface UseAnimateReturn {
  * Returns a scope ref and animate function. Elements can be selected
  * within the scope using CSS selectors.
  *
+ * Note: This hook requires DOM element animation support.
+ * Current implementation uses type assertions as the base animate()
+ * function is being enhanced to support DOM elements (Motion v11 feature).
+ *
  * @example
  * ```svelte
  * <script>
@@ -88,7 +92,8 @@ export function useAnimate(): UseAnimateReturn {
             };
         }
 
-        const controls = animate(element as Element, values, options);
+        // Type assertion needed: animate() will be enhanced to support DOM elements
+        const controls = animate(element as any, values as any, options);
         activeAnimations.push(controls);
 
         return controls;
