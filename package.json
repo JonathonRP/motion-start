@@ -94,8 +94,9 @@
 		"@tailwindcss/vite": "^4.0.0",
 		"@tsconfig/svelte": "^5.0.4",
 		"@types/node": "^20.17.9",
-		"@vitest/browser": "latest",
-		"@vitest/ui": "latest",
+		"@vitest/browser": "^4.0.16",
+		"@vitest/browser-playwright": "^4.0.16",
+		"@vitest/ui": "^4.0.16",
 		"bits-ui": "^2.11.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -110,7 +111,7 @@
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.7.2",
 		"vite": "^7.0.0",
-		"vitest": "latest"
+		"vitest": "^4.0.16"
 	},
 	"peerDependencies": {
 		"svelte": "^5.33.16"

@@ -7,6 +7,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
+import { playwright } from '@vitest/browser-playwright';
 
 const isBrowserMode = process.env.VITEST_BROWSER === 'true';
 
@@ -18,20 +19,11 @@ export default defineConfig({
 		typecheck: {
 			enabled: !isBrowserMode, // Type check in regular mode only
 		},
-		// Pool options moved to top-level in Vitest 4
-		pool: 'threads',
-		poolOptions: {
-			threads: {
-				singleThread: true,
-			}
-		},
 		// Browser mode configuration for e2e-like tests
 		browser: isBrowserMode ? {
 			enabled: true,
-			name: 'chromium',
-			provider: 'playwright',
-			headless: true,
-			screenshotFailures: false,
+			instances: [{ browser: 'chromium' }],
+			provider: playwright({ launchOptions: { headless: true } }),
 		} : undefined,
 		// Include pattern - browser tests only when VITEST_BROWSER is set
 		include: isBrowserMode
