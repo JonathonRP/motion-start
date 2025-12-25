@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  Check:
-    name: Run svelte-check
+  Test:
+    name: Run all tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +24,11 @@ jobs:
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
-      - name: Run svelte-check
-        run: bun --bun run check
+      - name: Install Playwright browsers
+        run: bunx playwright install chromium --with-deps
+
+      - name: Run all tests (unit, browser, type check)
+        run: bun --bun run test
 
   # Lint:
   #   runs-on: ubuntu-latest
@@ -42,35 +45,3 @@ jobs:
   #         run: pnpm install
 
   #       - run: pnpm lint
-
-  Test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install Dependencies
-        run: bun --bun install --frozen-lockfile
-
-      - name: Run tests
-        run: bun --bun run test
-
-  BrowserTests:
-    name: Browser/UI Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install Dependencies
-        run: bun --bun install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: bunx playwright install chromium --with-deps
-
-      - name: Run browser tests
-        run: bun run test:browser

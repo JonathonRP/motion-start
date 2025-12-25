@@ -10,6 +10,7 @@ import { defineConfig } from 'vite';
 import { playwright } from '@vitest/browser-playwright';
 
 const isBrowserMode = process.env.VITEST_BROWSER === 'true';
+const isTypeCheckMode = process.env.VITEST_TYPECHECK === 'true';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
@@ -17,7 +18,7 @@ export default defineConfig({
 		/* for example, use global to avoid globals imports (describe, test, expect): */
 		globals: true,
 		typecheck: {
-			enabled: !isBrowserMode, // Type check in regular mode only
+			enabled: isTypeCheckMode, // Only enable when explicitly requested
 		},
 		// Browser mode configuration for e2e-like tests
 		browser: isBrowserMode ? {
