@@ -2,8 +2,8 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ResolvedValueTarget, Spring, Tween } from '../types';
-import type { MotionValue } from '../value/index.js';
+import type { ResolvedValueTarget, Spring, Tween } from '../../types';
+import type { MotionValue } from '../../value/index.js';
 /**
  * Animation playback controls
  * Matches Motion v11.11.11 API
@@ -74,9 +74,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { motionValue } from '../value/index.js';
-import { isMotionValue } from '../value/utils/is-motion-value.js';
-import { startAnimation } from './utils/transitions.js';
+import { motionValue } from '../../value/index.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
+import { startAnimation } from '../utils/transitions.js';
 
 /**
  * Animate a single value or a `MotionValue`.

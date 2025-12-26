@@ -10,7 +10,7 @@
  * Used when animation type is set to false or duration is 0.
  */
 
-import type { AnimationPlaybackControls } from '../animate.js';
+import type { AnimationPlaybackControls } from '../animate/index.js';
 
 /**
  * Create an instant animation that sets a value immediately

@@ -5,7 +5,7 @@
  */
 
 import { onMount } from 'svelte';
-import { type AnimationOptions, type AnimationPlaybackControls, animate } from '../animation/animate.js';
+import { type AnimationOptions, type AnimationPlaybackControls, animate } from '../animation/animate/index.js';
 import type { AnimationScope } from '../animation/types.js';
 import type { TargetAndTransition } from '../types.js';
 import { isBrowser } from '../utils/environment.js';

@@ -25,15 +25,15 @@ var stateVisualElement = visualElement({
 <script lang="ts">
   import type { Writable } from "svelte/store";
   import { getContext } from "svelte";
-  import { ScaleCorrectionParentContext } from "../context/ScaleCorrectionProvider.svelte";
-  import { UseVisualState } from "../motion/utils/use-visual-state.js";
-  import { visualElement } from "../render/index.js";
-  import { animateVisualElement, type AnimationDefinition } from "../render/utils/animation";
+  import { ScaleCorrectionParentContext } from "../../context/ScaleCorrectionProvider.svelte";
+  import { UseVisualState } from "../../motion/utils/use-visual-state.js";
+  import { visualElement } from "../../render/index.js";
+  import { animateVisualElement, type AnimationDefinition } from "../../render/utils/animation";
   import {
     checkTargetForNewValues,
     getOrigin,
-  } from "../render/utils/setters.js";
-    import type { VisualElementOptions } from "../render/types";
+  } from "../../render/utils/setters.js";
+    import type { VisualElementOptions } from "../../render/types";
 
   let { initialState }: { initialState: VisualElementOptions<any, any> } = $props();
 

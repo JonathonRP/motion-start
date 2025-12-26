@@ -38,7 +38,7 @@ export interface CrossfadeAnimationOptions {
 import sync, { getFrameData } from 'framesync';
 import { circOut, linear, mix, mixColor, progress } from 'popmotion';
 import type { Color } from 'style-value-types';
-import { animate } from '../../../animation/animate.js';
+import { animate } from '../../../animation/animate/index.js';
 import { getValueTransition } from '../../../animation/utils/transitions.js';
 /** 
 based on framer-motion@11.11.11,

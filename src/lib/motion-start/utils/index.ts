@@ -6,7 +6,7 @@
  */
 
 // Animation controls
-export { useAnimation } from '../animation/use-animation.svelte.js';
+export { useAnimation } from '../animation/hooks/use-animation.svelte.js';
 
 // Event utilities
 export {

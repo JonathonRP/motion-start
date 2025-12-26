@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { VisualElement } from '../render/types';
 import type { TargetAndTransition, TargetResolver, Transition } from '../types';
-import type { AnimationPlaybackControls } from './animate.js';
+import type { AnimationPlaybackControls } from './animate/index.js';
 
 /**
  * Animation scope for managing scoped animations

@@ -72,19 +72,28 @@ export function createAcceleratedAnimation(
 	element: Element,
 	keyframes: WaapiKeyframe[],
 	options: AcceleratedAnimationOptions = {}
-): NativeAnimation | null {
+): NativeAnimation | undefined {
 	// Check WAAPI support
 	if (!getSupportsWaapi()) {
-		return null;
+		return undefined;
 	}
 
 	// Convert easing to string
-	const easingString = easingToString(options.ease);
+	// If ease is an array of Easings (not a single cubic-bezier array), use first easing
+	let easeValue: Easing | undefined;
+	if (Array.isArray(options.ease) && Array.isArray(options.ease[0])) {
+		// It's an array of easings, use the first one
+		easeValue = options.ease[0] as Easing;
+	} else {
+		// It's a single easing or undefined
+		easeValue = options.ease as Easing | undefined;
+	}
+	const easingString = easingToString(easeValue);
 
 	// If easing can't be converted (e.g., custom function), return null
 	// The caller should fall back to MainThreadAnimation
 	if (!easingString && options.ease) {
-		return null;
+		return undefined;
 	}
 
 	// Build WAAPI options
@@ -109,7 +118,7 @@ export function createAcceleratedAnimation(
 		return new NativeAnimation(animation);
 	} catch (e) {
 		console.warn('Failed to create WAAPI animation:', e);
-		return null;
+		return undefined;
 	}
 }
 

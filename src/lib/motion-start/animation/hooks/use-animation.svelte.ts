@@ -6,8 +6,8 @@
  * @module use-animation
  */
 
-import { animationControls } from './animation-controls.js';
-import type { AnimationControls } from './types.js';
+import { animationControls } from '../animation-controls.js';
+import type { AnimationControls } from '../types.js';
 
 /**
  * Use animation controls
@@ -53,3 +53,9 @@ export function useAnimation(startStopNotifier?: () => () => void): AnimationCon
 
 	return controls;
 }
+
+/**
+ * Alias for useAnimation
+ * @public
+ */
+export const useAnimationControls = useAnimation;

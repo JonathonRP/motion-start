@@ -145,9 +145,9 @@ export class AcceleratedAnimation<V = any> extends BaseAnimation<V, AcceleratedR
 	/**
 	 * Create WAAPI animation
 	 */
-	protected createNativeAnimation(): NativeAnimation | null {
+	protected createNativeAnimation(): NativeAnimation | undefined {
 		if (!this.resolved.canAccelerate) {
-			return null;
+			return undefined;
 		}
 
 		// Convert keyframes to WAAPI format

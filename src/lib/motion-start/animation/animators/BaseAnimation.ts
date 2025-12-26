@@ -10,7 +10,7 @@
  * Provides core lifecycle management, promise handling, and timing coordination.
  */
 
-import type { AnimationPlaybackControls } from '../animate.js';
+import type { AnimationPlaybackControls } from '../animate/index.js';
 
 /**
  * Animation state enum

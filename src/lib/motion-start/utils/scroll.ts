@@ -6,8 +6,8 @@
  * with fallback to scroll event listeners.
  */
 
-import type { AnimationOptions, AnimationPlaybackControls } from '../animation/animate.js';
-import { animate } from '../animation/animate.js';
+import type { AnimationOptions, AnimationPlaybackControls } from '../animation/animate/index.js';
+import { animate } from '../animation/animate/index.js';
 import type { TargetAndTransition } from '../types.js';
 import { isBrowser } from './environment.js';
 

@@ -7,16 +7,16 @@
 export type {
 	AnimationOptions,
 	AnimationPlaybackControls,
-} from './animation/animate.js';
+} from './animation/animate/index.js';
 /**
  * ========================================
  * ANIMATION & CONTROLS
  * ========================================
  */
-export { animate } from './animation/animate.js';
+export { animate } from './animation/animate/index.js';
 export { animationControls } from './animation/animation-controls.js';
 export type { AnimationControls, AnimationScope } from './animation/types.js';
-export { useAnimation, useAnimationControls } from './animation/use-animation.js';
+export { useAnimation, useAnimationControls } from './animation/hooks/use-animation.svelte.js';
 /**
  * ========================================
  * FRAMELOOP
