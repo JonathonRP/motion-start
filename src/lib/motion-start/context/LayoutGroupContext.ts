@@ -1,42 +1,28 @@
 /**
-based on framer-motion@11.11.11,
-Copyright (c) 2018 Framer B.V.
-*/
-
-import { createContext } from 'svelte';
-
-/**
- * Layout group context created with Svelte 5's createContext
- * @internal
+ * @deprecated Use layout-group-context.svelte.ts instead
+ * This file re-exports from the new Svelte 5 implementation for backwards compatibility
+ *
+ * based on framer-motion@11.11.11,
+ * Copyright (c) 2018 Framer B.V.
  */
-const [getLayoutGroupContext, setLayoutGroupContext] = createContext<string | null>();
+
+import { layoutGroupContext, useLayoutGroup } from './layout-group-context.svelte.js';
 
 /**
  * Layout group context - provides layout group ID for shared layout animations
+ * @deprecated Use layoutGroupContext from layout-group-context.svelte.ts
  * @public
  */
-export const LayoutGroupContext = {
-	/**
-	 * Set layout group context value and return it
-	 */
-	set(value: string | null): string | null {
-		return setLayoutGroupContext(value);
-	},
-
-	/**
-	 * Get layout group context value (returns null if not in context)
-	 */
-	get(): string | null {
-		try {
-			return getLayoutGroupContext();
-		} catch {
-			return null;
-		}
-	},
-};
+export const LayoutGroupContext = layoutGroupContext;
 
 /**
  * Context key for backwards compatibility
  * @public
  */
 export const LAYOUT_GROUP_CONTEXT_KEY = LayoutGroupContext;
+
+/**
+ * Hook to get layout group ID
+ * @public
+ */
+export { useLayoutGroup };

@@ -1,56 +1,45 @@
 /**
-based on framer-motion@11.11.11,
-Copyright (c) 2018 Framer B.V.
-*/
-
-import { createContext } from 'svelte';
-import type { CreateVisualElement } from '../render/types.js';
-
-export interface LazyContext {
-	renderer?: CreateVisualElement<any>;
-	strict: boolean;
-}
-
-const DEFAULT_LAZY: LazyContext = { strict: false };
-
-/**
- * Lazy context created with Svelte 5's createContext
- * @internal
+ * @deprecated Use lazy-context.svelte.ts instead
+ * This file re-exports from the new Svelte 5 implementation for backwards compatibility
+ *
+ * based on framer-motion@11.11.11,
+ * Copyright (c) 2018 Framer B.V.
  */
-const [getLazyContext, setLazyContext] = createContext<LazyContext>();
+
+import {
+	lazyContext,
+	useLazyContext,
+	type LazyContextValue as LazyContextValueType,
+} from './lazy-context.svelte.js';
 
 /**
- * Lazy context - provides lazy-loaded renderer
+ * Lazy context interface
+ * @deprecated Use LazyContextValue from lazy-context.svelte.ts
  * @public
  */
-export const LazyContext = {
-	/**
-	 * Set lazy context value and return it
-	 */
-	set(value: LazyContext): LazyContext {
-		return setLazyContext(value);
-	},
-
-	/**
-	 * Get lazy context value (returns default if not in context)
-	 */
-	get(): LazyContext {
-		try {
-			return getLazyContext();
-		} catch {
-			return DEFAULT_LAZY;
-		}
-	},
-};
+export interface LazyContext extends LazyContextValueType {}
 
 /**
- * Type alias for backwards compatibility
+ * @deprecated Legacy type alias for backwards compatibility
  * @public
  */
-export type { LazyContext as LazyContextProps };
+export type LazyContextProps = LazyContext;
+
+/**
+ * Lazy context - manages lazy loading of motion features
+ * @deprecated Use lazyContext from lazy-context.svelte.ts
+ * @public
+ */
+export const LazyContext = lazyContext;
 
 /**
  * Context key for backwards compatibility
  * @public
  */
 export const LAZY_CONTEXT_KEY = LazyContext;
+
+/**
+ * Hook to get lazy context
+ * @public
+ */
+export { useLazyContext };

@@ -9,6 +9,12 @@ import { createContext } from 'svelte';
 import type { Transition } from '../types.js';
 
 /**
+ * Reduced motion configuration
+ * @public
+ */
+export type ReducedMotionConfig = 'always' | 'never' | 'user';
+
+/**
  * Transform a point from page coordinates
  */
 export type TransformPoint2D = (point: { x: number; y: number }) => { x: number; y: number };
@@ -31,6 +37,11 @@ export interface MotionConfigContextValue {
 	 */
 	transition?: Transition;
 	/**
+	 * If true, will respect the device prefersReducedMotion setting
+	 * @public
+	 */
+	reducedMotion?: ReducedMotionConfig;
+	/**
 	 * Nonce for inline styles (CSP compliance)
 	 */
 	nonce?: string;
@@ -42,6 +53,7 @@ export interface MotionConfigContextValue {
 const DEFAULT_CONFIG: MotionConfigContextValue = {
 	transformPagePoint: (point) => point,
 	isStatic: false,
+	reducedMotion: 'never',
 };
 
 /**
