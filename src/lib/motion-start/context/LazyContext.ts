@@ -1,34 +1,14 @@
 /**
- * Lazy Context (Legacy compatibility layer)
- * This file provides backwards compatibility while using the new context system
- *
- * based on framer-motion@11.11.11,
- * Copyright (c) 2018 Framer B.V.
- */
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
 
-import {
-    lazyContext,
-    useLazyContext,
-    type LazyContextValue,
-} from './lazy-context.svelte.js';
-import { getDomContext } from './DOMcontext';
+import type { CreateVisualElement } from '../render/types.js';
+import { createContext } from './create.js';
 
-// Re-export new context API
-export {
-    lazyContext,
-    useLazyContext,
-    type LazyContextValue as LazyContextProps,
-} from './lazy-context.svelte.js';
+export interface LazyContext {
+	renderer?: CreateVisualElement<any>;
+	strict: boolean;
+}
 
-// Re-export context as LAZY_CONTEXT_KEY for backwards compatibility
-export { lazyContext as LAZY_CONTEXT_KEY };
-
-/**
- * Legacy function - use lazyContext.get() or useLazyContext() instead
- * @deprecated
- * @internal
- */
-export const LazyContext = (c?: any): LazyContextValue => {
-    const domContext = getDomContext('Lazy', c);
-    return (domContext || { strict: false }) as LazyContextValue;
-};
+export const LazyContext = createContext<LazyContext>({ strict: false });
