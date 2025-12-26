@@ -2,6 +2,10 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script module lang="ts">
+import { visualElement } from '../../render/index.js';
+import { axisBox } from '../../utils/geometry/index.js';
+import { getOrigin, checkTargetForNewValues } from '../../render/utils/setters.js';
+
 var createObject = () => ({});
 var stateVisualElement = visualElement({
 	build: () => {},
@@ -27,13 +31,8 @@ var stateVisualElement = visualElement({
   import { getContext } from "svelte";
   import { ScaleCorrectionParentContext } from "../../context/ScaleCorrectionProvider.svelte";
   import { UseVisualState } from "../../motion/utils/use-visual-state.js";
-  import { visualElement } from "../../render/index.js";
   import { animateVisualElement, type AnimationDefinition } from "../../render/utils/animation";
-  import {
-    checkTargetForNewValues,
-    getOrigin,
-  } from "../../render/utils/setters.js";
-    import type { VisualElementOptions } from "../../render/types";
+  import type { VisualElementOptions } from "../../render/types";
 
   let { initialState }: { initialState: VisualElementOptions<any, any> } = $props();
 

@@ -98,6 +98,7 @@ export {
  * ========================================
  */
 export type { PanInfo } from './gestures/pan/PanSession.js';
+export { PanSession } from './gestures/pan/PanSession.js';
 export type {
 	FocusHandlers,
 	HoverHandlers,
