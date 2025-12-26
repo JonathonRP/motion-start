@@ -5,10 +5,8 @@
  * @module presence-context
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { VariantLabels } from '../motion/types.js';
-
-const PRESENCE_CONTEXT_KEY = Symbol('presence-context');
 
 /**
  * Presence context properties
@@ -30,6 +28,13 @@ export interface PresenceContextValue {
 }
 
 /**
+ * Presence context created with Svelte 5's createContext
+ * Returns a tuple of [get, set] functions for type-safe context access
+ * @internal
+ */
+const [getPresenceContext, setPresenceContext] = createContext<PresenceContextValue | null>();
+
+/**
  * Presence context - manages AnimatePresence state
  *
  * @example
@@ -47,11 +52,20 @@ export interface PresenceContextValue {
  * @public
  */
 export const presenceContext = {
-	set(value: PresenceContextValue | null): void {
-		setContext(PRESENCE_CONTEXT_KEY, value);
-	},
+	/**
+	 * Set presence context value
+	 */
+	set: setPresenceContext,
+
+	/**
+	 * Get presence context value (returns undefined if not in context)
+	 */
 	get(): PresenceContextValue | null | undefined {
-		return getContext<PresenceContextValue | null>(PRESENCE_CONTEXT_KEY);
+		try {
+			return getPresenceContext();
+		} catch {
+			return undefined;
+		}
 	},
 };
 

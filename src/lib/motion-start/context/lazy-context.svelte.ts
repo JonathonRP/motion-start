@@ -5,10 +5,8 @@
  * @module lazy-context
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { CreateVisualElement } from '../render/types.js';
-
-const LAZY_CONTEXT_KEY = Symbol('lazy-context');
 
 /**
  * Lazy context properties
@@ -29,6 +27,13 @@ const DEFAULT_LAZY: LazyContextValue = {
 };
 
 /**
+ * Lazy context created with Svelte 5's createContext
+ * Returns a tuple of [get, set] functions for type-safe context access
+ * @internal
+ */
+const [getLazyContext, setLazyContext] = createContext<LazyContextValue>();
+
+/**
  * Lazy context - manages lazy loading of motion features
  *
  * @example
@@ -46,11 +51,20 @@ const DEFAULT_LAZY: LazyContextValue = {
  * @public
  */
 export const lazyContext = {
-	set(value: LazyContextValue): void {
-		setContext(LAZY_CONTEXT_KEY, value);
-	},
+	/**
+	 * Set lazy context value
+	 */
+	set: setLazyContext,
+
+	/**
+	 * Get lazy context value (returns undefined if not in context)
+	 */
 	get(): LazyContextValue | undefined {
-		return getContext<LazyContextValue>(LAZY_CONTEXT_KEY);
+		try {
+			return getLazyContext();
+		} catch {
+			return undefined;
+		}
 	},
 };
 

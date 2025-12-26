@@ -1,11 +1,11 @@
 /**
- * Modern Motion Context using Svelte 5
+ * Modern Motion Context using Svelte 5 createContext
  * Based on framer-motion@11.11.11
  *
  * @module motion-context
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { VisualElement } from '../render/types.js';
 
 /**
@@ -21,9 +21,11 @@ export interface MotionContextValue {
 }
 
 /**
- * Motion context key
+ * Motion context created with Svelte 5's createContext
+ * Returns a tuple of [get, set] functions for type-safe context access
+ * @internal
  */
-const MOTION_CONTEXT_KEY = Symbol('motion-context');
+const [getMotionContext, setMotionContext] = createContext<MotionContextValue>();
 
 /**
  * Motion context - provides visual element and animation state to descendants
@@ -43,15 +45,17 @@ export const motionContext = {
 	/**
 	 * Set motion context value
 	 */
-	set(value: MotionContextValue): void {
-		setContext(MOTION_CONTEXT_KEY, value);
-	},
+	set: setMotionContext,
 
 	/**
-	 * Get motion context value
+	 * Get motion context value (returns undefined if not in context)
 	 */
 	get(): MotionContextValue | undefined {
-		return getContext<MotionContextValue>(MOTION_CONTEXT_KEY);
+		try {
+			return getMotionContext();
+		} catch {
+			return undefined;
+		}
 	},
 };
 

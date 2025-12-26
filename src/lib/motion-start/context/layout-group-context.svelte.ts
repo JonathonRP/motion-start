@@ -5,9 +5,14 @@
  * @module layout-group-context
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 
-const LAYOUT_GROUP_CONTEXT_KEY = Symbol('layout-group-context');
+/**
+ * Layout group context created with Svelte 5's createContext
+ * Returns a tuple of [get, set] functions for type-safe context access
+ * @internal
+ */
+const [getLayoutGroupContext, setLayoutGroupContext] = createContext<string | null>();
 
 /**
  * Layout group context - provides a group ID for shared layout animations
@@ -24,11 +29,20 @@ const LAYOUT_GROUP_CONTEXT_KEY = Symbol('layout-group-context');
  * @public
  */
 export const layoutGroupContext = {
-	set(value: string | null): void {
-		setContext(LAYOUT_GROUP_CONTEXT_KEY, value);
-	},
+	/**
+	 * Set layout group context value
+	 */
+	set: setLayoutGroupContext,
+
+	/**
+	 * Get layout group context value (returns undefined if not in context)
+	 */
 	get(): string | null | undefined {
-		return getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY);
+		try {
+			return getLayoutGroupContext();
+		} catch {
+			return undefined;
+		}
 	},
 };
 

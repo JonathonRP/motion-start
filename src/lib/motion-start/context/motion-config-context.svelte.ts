@@ -5,10 +5,8 @@
  * @module motion-config-context
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { Transition } from '../types.js';
-
-const MOTION_CONFIG_CONTEXT_KEY = Symbol('motion-config-context');
 
 /**
  * Transform a point from page coordinates
@@ -43,6 +41,13 @@ const DEFAULT_CONFIG: MotionConfigContextValue = {
 };
 
 /**
+ * Motion config context created with Svelte 5's createContext
+ * Returns a tuple of [get, set] functions for type-safe context access
+ * @internal
+ */
+const [getMotionConfigContext, setMotionConfigContext] = createContext<MotionConfigContextValue>();
+
+/**
  * Motion config context - provides global configuration
  *
  * @example
@@ -60,11 +65,20 @@ const DEFAULT_CONFIG: MotionConfigContextValue = {
  * @public
  */
 export const motionConfigContext = {
-	set(value: MotionConfigContextValue): void {
-		setContext(MOTION_CONFIG_CONTEXT_KEY, value);
-	},
+	/**
+	 * Set motion config context value
+	 */
+	set: setMotionConfigContext,
+
+	/**
+	 * Get motion config context value (returns undefined if not in context)
+	 */
 	get(): MotionConfigContextValue | undefined {
-		return getContext<MotionConfigContextValue>(MOTION_CONFIG_CONTEXT_KEY);
+		try {
+			return getMotionConfigContext();
+		} catch {
+			return undefined;
+		}
 	},
 };
 
