@@ -2,31 +2,20 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-import { UseDomEvent } from '../events/use-dom-event.js';
-import { AnimationType } from '../render/utils/types.js';
+import type { Snippet } from 'svelte';
+import { useFocusGesture } from './use-focus-gesture.svelte.js';
 
-let { props, visualElement } = $props();
-let { whileFocus } = $derived(props);
+interface Props {
+	props: any;
+	visualElement: any;
+	isCustom?: any;
+	children?: Snippet;
+}
 
-const onFocus = () => {
-	visualElement.animationState?.setActive(AnimationType.Focus, true);
-};
+let { props, visualElement, children }: Props = $props();
 
-const onBlur = () => {
-	visualElement.animationState?.setActive(AnimationType.Focus, false);
-};
+// Use the function-based API
+useFocusGesture(() => visualElement, () => props);
 </script>
 
-<UseDomEvent
-  ref={visualElement}
-  eventName="focus"
-  handler={whileFocus ? onFocus : undefined}
->
-  <UseDomEvent
-    ref={visualElement}
-    eventName="blur"
-    handler={whileFocus ? onBlur : undefined}
-  >
-    <slot />
-  </UseDomEvent>
-</UseDomEvent>
+{@render children?.()}

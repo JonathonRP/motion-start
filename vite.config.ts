@@ -18,7 +18,7 @@ export default defineConfig({
 		/* for example, use global to avoid globals imports (describe, test, expect): */
 		globals: true,
 		typecheck: {
-			enabled: isTypeCheckMode, // Only enable when explicitly requested
+			enabled: isTypeCheckMode || !isBrowserMode, // Enable for unit tests and type tests
 		},
 		// Browser mode configuration for e2e-like tests
 		browser: isBrowserMode
@@ -30,7 +30,9 @@ export default defineConfig({
 				}
 			: undefined,
 		// Include pattern - browser tests only when VITEST_BROWSER is set
-		include: isBrowserMode ? ['src/**/*.browser.{test,spec}.{js,ts,svelte}'] : ['src/**/*.{test,spec}.{js,ts,svelte}'],
+		include: isBrowserMode
+			? ['src/**/*.browser.{test,spec}.{js,ts,svelte}']
+			: ['src/**/*.{test,spec,spec-d}.{js,ts,svelte}'],
 		// Exclude pattern
 		exclude: isBrowserMode
 			? ['**/node_modules/**', '**/dist/**', '**/.{idea,git,cache,output,temp}/**', '**/.svelte-kit/**']

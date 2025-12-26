@@ -1,8 +1,7 @@
 import { getContext } from 'svelte';
 import { get, type Writable } from 'svelte/store';
 import type { MotionContextProps } from '../../context/MotionContext/index.js';
-import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../context/ScaleCorrectionProvider.svelte';
-// '$lib/motion-start/context/MotionContext';
+import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../context/scale-correction-context.svelte.js';
 
 export const scaleCorrection = () => {
 	const scaleCorrectionContext = getContext<Writable<MotionContextProps>>(ScaleCorrectionContext);

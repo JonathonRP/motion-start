@@ -1,41 +1,21 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
-<script lang="ts" context="module">
-import { isDragActive } from './drag/utils/lock.js';
-
-function createHoverEvent(visualElement: VisualElement, isActive: boolean, callback: any) {
-	return (event?: any | MouseEvent | TouchEvent | PointerEvent, info?: any) => {
-		if (!isMouseEvent(event) || isDragActive()) return;
-		callback?.(event, info);
-
-		visualElement.animationState?.setActive(AnimationType.Hover, isActive);
-	};
-}
-</script>
-
 <script lang="ts">
-  import { UsePointerEvent } from "../events/use-pointer-event.js";
-  import { AnimationType } from "../render/utils/types.js";
-  import { isMouseEvent } from "./utils/event-type.js";
-  import type { VisualElement } from "../render/types.js";
+import type { Snippet } from 'svelte';
+import { useHoverGesture } from './use-hover-gesture.svelte.js';
 
-  let { props, visualElement } = $props();
-  let { onHoverStart, onHoverEnd, whileHover } = $derived(props);
+interface Props {
+	props: any;
+	visualElement: any;
+	isCustom?: any;
+	children?: Snippet;
+}
+
+let { props, visualElement, children }: Props = $props();
+
+// Use the function-based API
+useHoverGesture(() => visualElement, () => props);
 </script>
 
-<UsePointerEvent
-  ref={visualElement}
-  eventName="pointerenter"
-  handler={onHoverStart || whileHover
-    ? createHoverEvent(visualElement, true, onHoverStart)
-    : undefined}
-/>
-<UsePointerEvent
-  ref={visualElement}
-  eventName="pointerleave"
-  handler={onHoverEnd || whileHover
-    ? createHoverEvent(visualElement, false, onHoverEnd)
-    : undefined}
-/>
-<slot />
+{@render children?.()}

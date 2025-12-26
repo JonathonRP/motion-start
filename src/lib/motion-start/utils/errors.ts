@@ -1,5 +1,5 @@
 import { noop } from './noop';
-import '../types/global.js';
+// Type augmentation for process.env is in global.d.ts
 
 export type DevMessage = (check: boolean, message: string) => void;
 
