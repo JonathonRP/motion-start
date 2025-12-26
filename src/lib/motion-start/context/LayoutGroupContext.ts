@@ -4,42 +4,39 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { NodeGroup } from '../projection/node/group.js';
-
-export interface LayoutGroupContext {
-	id?: string;
-	group?: NodeGroup;
-	forceRender?: VoidFunction;
-}
-
-const DEFAULT_LAYOUT_GROUP: LayoutGroupContext = {};
 
 /**
  * Layout group context created with Svelte 5's createContext
  * @internal
  */
-const [getLayoutGroupContext, setLayoutGroupContext] = createContext<LayoutGroupContext>();
+const [getLayoutGroupContext, setLayoutGroupContext] = createContext<string | null>();
 
 /**
- * Layout group context - provides layout group coordination
+ * Layout group context - provides layout group ID for shared layout animations
  * @public
  */
 export const LayoutGroupContext = {
 	/**
 	 * Set layout group context value and return it
 	 */
-	set(value: LayoutGroupContext): LayoutGroupContext {
+	set(value: string | null): string | null {
 		return setLayoutGroupContext(value);
 	},
 
 	/**
-	 * Get layout group context value (returns default if not in context)
+	 * Get layout group context value (returns null if not in context)
 	 */
-	get(): LayoutGroupContext {
+	get(): string | null {
 		try {
 			return getLayoutGroupContext();
 		} catch {
-			return DEFAULT_LAYOUT_GROUP;
+			return null;
 		}
 	},
 };
+
+/**
+ * Context key for backwards compatibility
+ * @public
+ */
+export const LAYOUT_GROUP_CONTEXT_KEY = LayoutGroupContext;

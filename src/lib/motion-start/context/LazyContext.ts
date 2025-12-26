@@ -42,3 +42,15 @@ export const LazyContext = {
 		}
 	},
 };
+
+/**
+ * Type alias for backwards compatibility
+ * @public
+ */
+export type { LazyContext as LazyContextProps };
+
+/**
+ * Context key for backwards compatibility
+ * @public
+ */
+export const LAZY_CONTEXT_KEY = LazyContext;

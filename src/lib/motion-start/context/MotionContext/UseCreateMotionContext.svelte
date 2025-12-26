@@ -8,9 +8,7 @@ Copyright (c) 2018 Framer B.V. -->
 
     let { props, isStatic, isCustom = undefined } = $props();
 
-    let mc =
-        getContext<MotionContextProps>(MOTION_CONTEXT_KEY) ||
-        MotionContext(isCustom);
+    let mc = MotionContext.get();
 
     let { initial, animate } = $derived(getCurrentTreeVariants(props, mc));
 

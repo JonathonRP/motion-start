@@ -49,3 +49,15 @@ export const PresenceContext = {
 		}
 	},
 };
+
+/**
+ * Type alias for backwards compatibility
+ * @public
+ */
+export type { PresenceContext as PresenceContextProps };
+
+/**
+ * Context key for backwards compatibility
+ * @public
+ */
+export const PRESENCE_CONTEXT_KEY = PresenceContext;

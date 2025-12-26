@@ -4,10 +4,14 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { TransformPoint } from '../projection/geometry/types.js';
 import type { Transition } from '../types.js';
 
 export type ReducedMotionConfig = 'always' | 'never' | 'user';
+
+/**
+ * Transform a point from page coordinates
+ */
+export type TransformPoint = (point: { x: number; y: number }) => { x: number; y: number };
 
 /**
  * @public
@@ -50,7 +54,7 @@ export interface MotionConfigContext {
 }
 
 const DEFAULT_CONFIG: MotionConfigContext = {
-	transformPagePoint: (p) => p,
+	transformPagePoint: (p: { x: number; y: number }) => p,
 	isStatic: false,
 	reducedMotion: 'never',
 };
@@ -84,3 +88,15 @@ export const MotionConfigContext = {
 		}
 	},
 };
+
+/**
+ * Type alias for backwards compatibility
+ * @public
+ */
+export type { MotionConfigContext as MotionConfigContextObject };
+
+/**
+ * Context key for backwards compatibility
+ * @public
+ */
+export const MOTION_CONFIG_CONTEXT_KEY = MotionConfigContext;

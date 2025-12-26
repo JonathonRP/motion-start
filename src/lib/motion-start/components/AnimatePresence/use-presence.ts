@@ -43,8 +43,8 @@ export function isPresent(context: PresenceContextProps) {
  * @public
  */
 export const useIsPresent = (isCustom = false): Readable<boolean> => {
-    let presenceContext = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
-    return derived(presenceContext, $v => $v === null ? true : $v.isPresent)
+    let presenceContext = PresenceContext.get();
+    return readable(presenceContext === null ? true : presenceContext.isPresent);
 }
 
 /**
@@ -71,20 +71,22 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  */
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
 
-    const context = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
-    const id = get(context) === null ? undefined : incrementId();
+    const context = PresenceContext.get();
+    const id = context === null ? undefined : incrementId();
+
     onMount(() => {
-        if (get(context) !== null) {
-            get(context).register(id!);
+        if (context !== null && id !== undefined) {
+            context.register(id);
         }
     })
 
-    if (get(context) === null) {
+    if (context === null) {
         return readable([true, null]) satisfies Readable<AlwaysPresent>;
     }
-    return derived<typeof context, Present | NotPresent>(context, $v =>
-        (!$v.isPresent && $v.onExitComplete) ?
-            [false, () => $v.onExitComplete?.(id!)] satisfies NotPresent :
+
+    return readable<Present | NotPresent>(
+        (!context.isPresent && context.onExitComplete) ?
+            [false, () => context.onExitComplete?.(id!)] satisfies NotPresent :
             [true] satisfies Present
     );
 }

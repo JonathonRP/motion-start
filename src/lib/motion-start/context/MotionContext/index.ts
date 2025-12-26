@@ -59,6 +59,9 @@ export {
 	type MotionContextValue,
 } from '../motion-context.svelte.js';
 
+// Type alias for backwards compatibility
+export type { MotionContextValue as MotionContextProps } from '../motion-context.svelte.js';
+
 // Re-export context as MOTION_CONTEXT_KEY for backwards compatibility
 export { motionContext as MOTION_CONTEXT_KEY };
 
