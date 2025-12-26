@@ -76,7 +76,39 @@ Copyright (c) 2018 Framer B.V.
 
 import { motionValue } from '../../value/index.js';
 import { isMotionValue } from '../../value/utils/is-motion-value.js';
-import { startAnimation } from '../utils/transitions.js';
+import { MainThreadAnimation, type MainThreadAnimationOptions } from '../animators/MainThreadAnimation.js';
+import { secondsToMilliseconds } from '../../utils/time-conversion.js';
+
+/**
+ * Convert AnimationOptions to MainThreadAnimationOptions
+ */
+const convertToAnimatorOptions = <V>(
+	from: V,
+	to: ResolvedValueTarget,
+	transition: AnimationOptions<V>
+): MainThreadAnimationOptions<V> => {
+	const { delay, type, onUpdate, onPlay, onComplete, onRepeat, onStop, ...rest } = transition;
+
+	// Convert delay from seconds to milliseconds if provided
+	const delayMs = delay ? (typeof delay === 'number' ? secondsToMilliseconds(delay) : 0) : 0;
+
+	// Build keyframes array
+	const keyframes = Array.isArray(to) ? [from, ...to] : [from, to];
+
+	// Map animation type
+	const animType = type === 'spring' ? 'spring' : 'keyframes';
+
+	return {
+		type: animType,
+		delay: delayMs,
+		onUpdate,
+		onPlay,
+		onComplete,
+		onRepeat,
+		onStop,
+		...rest,
+	} as MainThreadAnimationOptions<V>;
+};
 
 /**
  * Animate a single value or a `MotionValue`.
@@ -144,8 +176,11 @@ function animate<V>(
 	// Handle array of elements/values
 	if (Array.isArray(from) || from instanceof NodeList) {
 		const elements = Array.from(from as any);
-		const controls = elements.map((element, index) => {
+		const animations: MainThreadAnimation<V>[] = [];
+
+		elements.forEach((element, index) => {
 			const value = isMotionValue(element) ? element : motionValue(element);
+			const currentValue = value.get() as V;
 
 			// Calculate delay for staggered animations
 			const delayValue = transition?.delay ?? 0;
@@ -159,20 +194,42 @@ function animate<V>(
 				delay: resolvedDelay,
 			};
 
-			startAnimation('', value, to, elementTransition);
-			return {
-				stop: () => value.stop(),
-			};
+			// Convert options and create animator
+			const animatorOptions = convertToAnimatorOptions(currentValue, to, elementTransition);
+
+			// Build keyframes
+			const keyframes = (Array.isArray(to) ? [currentValue, ...to] : [currentValue, to]) as V[];
+
+			// Create animation with updated onUpdate that sets the MotionValue
+			const animation = new MainThreadAnimation(keyframes, {
+				...animatorOptions,
+				onUpdate: (v: V) => {
+					value.set(v);
+					transition?.onUpdate?.(v);
+				},
+			});
+
+			animation.play();
+			animations.push(animation);
 		});
 
 		// Return combined controls
 		return {
-			stop: () => controls.forEach((ctrl) => ctrl.stop()),
+			stop: () => animations.forEach((anim) => anim.stop()),
+			play: () => animations.forEach((anim) => anim.play()),
+			pause: () => animations.forEach((anim) => anim.pause()),
+			then: (onResolve: VoidFunction, onReject?: VoidFunction) => {
+				return Promise.all(animations.map((anim) => anim.then(onResolve, onReject))).then(
+					() => {},
+					() => {}
+				);
+			},
 		};
 	}
 
 	// Single value animation
 	const value = isMotionValue(from) ? from : motionValue(from as V);
+	const currentValue = value.get() as V;
 
 	const delayValue = transition?.delay ?? 0;
 	const resolvedDelay: number =
@@ -185,10 +242,24 @@ function animate<V>(
 		delay: resolvedDelay,
 	};
 
-	startAnimation('', value, to, finalTransition);
-	return {
-		stop: () => value.stop(),
-	} as AnimationPlaybackControls;
+	// Convert options and create animator
+	const animatorOptions = convertToAnimatorOptions(currentValue, to, finalTransition);
+
+	// Build keyframes
+	const keyframes = (Array.isArray(to) ? [currentValue, ...to] : [currentValue, to]) as V[];
+
+	// Create animation with updated onUpdate that sets the MotionValue
+	const animation = new MainThreadAnimation(keyframes, {
+		...animatorOptions,
+		onUpdate: (v: V) => {
+			value.set(v);
+			transition?.onUpdate?.(v);
+		},
+	});
+
+	animation.play();
+
+	return animation as AnimationPlaybackControls;
 }
 
 export { animate };
