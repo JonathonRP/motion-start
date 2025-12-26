@@ -103,7 +103,7 @@ interface ResolvedSpringOptions extends Required<SpringOptions> {
 /**
  * Get spring options, resolving duration/bounce to stiffness/damping if needed
  */
-function getSpringOptions(options: SpringGeneratorOptions): ResolvedSpringOptions {
+function getSpringOptions(options: Omit<SpringGeneratorOptions, 'keyframes'>): ResolvedSpringOptions {
 	let springOptions: ResolvedSpringOptions = {
 		velocity: 0.0,
 		stiffness: 100,

@@ -14,8 +14,10 @@
  * - Custom generators
  */
 
-import { animate as popmotionAnimate, spring, inertia } from 'popmotion';
+import { animate as popmotionAnimate } from 'popmotion';
 import type { AnimationOptions as PopmotionOptions } from 'popmotion';
+import { spring } from '../generators/spring/index.js';
+import { inertia } from '../generators/inertia.js';
 import {
 	BaseAnimation,
 	AnimationState,

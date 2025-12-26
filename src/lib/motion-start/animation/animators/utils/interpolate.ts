@@ -42,7 +42,7 @@ export function interpolateKeyframes<T>(
 	if (length === 2 && !offset) {
 		const easingFn = easing
 			? Array.isArray(easing)
-				? easingDefinitionToFunction(easing[0])
+				? easingDefinitionToFunction(easing[0] as Easing)
 				: easingDefinitionToFunction(easing)
 			: defaultEasing;
 
@@ -65,7 +65,7 @@ export function interpolateKeyframes<T>(
 	} else if (Array.isArray(easing)) {
 		// Array of easings - one per segment
 		// There should be (length - 1) easings for the segments between keyframes
-		easingFunctions = easing.map(easingDefinitionToFunction);
+		easingFunctions = easing.map((e) => easingDefinitionToFunction(e as Easing));
 	} else {
 		// Single easing - use for all segments
 		const singleEasing = easingDefinitionToFunction(easing);
