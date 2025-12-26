@@ -16,7 +16,7 @@ export type {
 export { animate } from './animation/animate.js';
 export { animationControls } from './animation/animation-controls.js';
 export type { AnimationControls, AnimationScope } from './animation/types.js';
-export { UseAnimation, useAnimation, useAnimationControls } from './animation/use-animation.js';
+export { useAnimation, useAnimationControls } from './animation/use-animation.js';
 /**
  * ========================================
  * COMPONENTS
