@@ -99,6 +99,7 @@ export { scroll, scrollAnimate } from "./utils/scroll.js";
 export { inView, inViewAnimate, getInViewInfo } from "./utils/inView.js";
 export { useCycle } from "./utils/use-cycle.svelte.js";
 export { useReducedMotion } from "./utils/use-reduced-motion.svelte.js";
+export { useReducedMotionConfig } from "./utils/use-reduced-motion-config.svelte.js";
 export {
   isBrowser,
   isServer,
