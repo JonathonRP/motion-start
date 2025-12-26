@@ -1,33 +1,36 @@
 /**
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { VariantLabels } from "../motion/types";
-
-/**
- * @public
+ * Presence Context (Legacy compatibility layer)
+ * This file provides backwards compatibility while using the new context system
+ *
+ * based on framer-motion@4.1.17,
+ * Copyright (c) 2018 Framer B.V.
  */
-export interface PresenceContextProps {
-    id: number;
-    isPresent: boolean;
-    register: (id: number) => () => void;
-    onExitComplete?: (id: number) => void;
-    initial?: false | VariantLabels;
-    custom?: any;
-}
 
+import {
+    presenceContext,
+    usePresence,
+    isPresent,
+    type PresenceContextValue,
+} from './presence-context.svelte.js';
 import { getDomContext } from "./DOMcontext";
 
-/**
- * Context key for Presence
- * @public
- */
-export const PRESENCE_CONTEXT_KEY = Symbol('PresenceContext');
+// Re-export new context API
+export {
+    presenceContext,
+    usePresence,
+    isPresent,
+    type PresenceContextValue as PresenceContextProps,
+} from './presence-context.svelte.js';
+
+// Re-export context as PRESENCE_CONTEXT_KEY for backwards compatibility
+export { presenceContext as PRESENCE_CONTEXT_KEY };
 
 /**
+ * Legacy function - use presenceContext.get() or usePresence() instead
+ * @deprecated
  * @public
  */
-export const PresenceContext = (c?: any): PresenceContextProps | null => {
+export const PresenceContext = (c?: any): PresenceContextValue | null => {
     const domContext = getDomContext("Presence", c);
-    return (domContext || null) as PresenceContextProps | null;
+    return (domContext || null) as PresenceContextValue | null;
 };

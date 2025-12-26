@@ -1,50 +1,38 @@
 /**
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { Transition } from "../types";
-import type { TransformPoint2D } from "../types/geometry";
-
-/**
- * @public
+ * MotionConfig Context (Legacy compatibility layer)
+ * This file provides backwards compatibility while using the new context system
+ *
+ * based on framer-motion@4.1.17,
+ * Copyright (c) 2018 Framer B.V.
  */
-export interface MotionConfigContextObject {
-    /**
-     * @internal
-     */
-    transformPagePoint: TransformPoint2D;
-    /**
-     * Determines whether this is a static context ie the Framer canvas. If so,
-     * it'll disable all dynamic functionality.
-     *
-     * @internal
-     */
-    isStatic: boolean;
-    /**
-     * Defines a new default transition for the entire tree.
-     *
-     * @public
-     */
-    transition?: Transition;
-}
 
+import {
+    motionConfigContext,
+    useMotionConfig,
+    type MotionConfigContextValue,
+} from './motion-config-context.svelte.js';
 import { getDomContext } from "./DOMcontext";
 
-/**
- * Context key for MotionConfig
- * @public
- */
-export const MOTION_CONFIG_CONTEXT_KEY = Symbol('MotionConfigContext');
+// Re-export new context API
+export {
+    motionConfigContext,
+    useMotionConfig,
+    type MotionConfigContextValue as MotionConfigContextObject,
+    type TransformPoint2D,
+} from './motion-config-context.svelte.js';
+
+// Re-export context as MOTION_CONFIG_CONTEXT_KEY for backwards compatibility
+export { motionConfigContext as MOTION_CONFIG_CONTEXT_KEY };
 
 /**
+ * Legacy function - use motionConfigContext.get() or useMotionConfig() instead
+ * @deprecated
  * @public
  */
-var MotionConfigContext = (c?: any): MotionConfigContextObject => {
+export const MotionConfigContext = (c?: any): MotionConfigContextValue => {
     const domContext = getDomContext("MotionConfig", c);
     return (domContext || {
         transformPagePoint: function (p) { return p; },
         isStatic: false,
-    }) as MotionConfigContextObject;
+    }) as MotionConfigContextValue;
 };
-
-export { MotionConfigContext };
