@@ -1,9 +1,7 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
 
 <script lang="ts">
-  import { useContext } from "../../context/use.js";
   import { MotionConfigContext } from "../../context/MotionConfigContext.js";
   import type { MotionConfigProps } from "./index.js";
   import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
@@ -14,30 +12,32 @@ Copyright (c) 2018 Framer B.V. -->
 
   isValidProp && loadExternalIsValidProp(isValidProp);
 
-  const motionConfigContext = useContext(MotionConfigContext);
+  // Get parent config (returns default if no parent context)
+  const parentConfig = MotionConfigContext.get();
+
   /**
    * Inherit props from any parent MotionConfig components
    */
-  const config = $derived({
+  let config = $state({
+    ...parentConfig,
     ...configure,
-    ...motionConfigContext.current,
   });
 
   /**
-   * Don't allow isStatic to change between renders as it affects how many hooks
-   * motion components fire.
+   * Update config when props change
    */
-  //config.isStatic = useConstant(() => config.isStatic)
-
   $effect(() => {
-    $state.snapshot(config.transition);
-    config.transformPagePoint;
-    config.reducedMotion;
-    /**
-     * Creating a new config context object will re-render every `motion` component
-     * every time it renders. So we only want to create a new one sparingly.
-     */
-    motionConfigContext.current = config;
+    config = {
+      ...parentConfig,
+      ...configure,
+    };
+  });
+
+  /**
+   * Provide config to children
+   */
+  $effect(() => {
+    MotionConfigContext.set(config);
   });
 </script>
 
