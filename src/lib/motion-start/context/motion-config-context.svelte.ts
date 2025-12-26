@@ -30,6 +30,10 @@ export interface MotionConfigContextValue {
      * Default transition for all motion components
      */
     transition?: Transition;
+    /**
+     * Nonce for inline styles (CSP compliance)
+     */
+    nonce?: string;
 }
 
 /**

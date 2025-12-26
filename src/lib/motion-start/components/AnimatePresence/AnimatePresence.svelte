@@ -3,17 +3,12 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
     import {
-        SharedLayoutContext,
+        sharedLayoutContext,
         isSharedLayout,
-    } from "../../context/SharedLayoutContext.js";
+    } from "../../context/shared-layout-context.svelte.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-    import type { Writable } from "svelte/store";
-    import {
-        type SharedLayoutSyncMethods,
-        type SyncLayoutBatcher,
-    } from "../AnimateSharedLayout/types.js";
+    import PopChild from "./PopChild.svelte";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -34,14 +29,11 @@ Copyright (c) 2018 Framer B.V. -->
 
     let _list = $derived(list !== undefined ? list : show ? [{ key: 1 }] : []);
 
-    const layoutContext =
-        getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
-            SharedLayoutContext,
-        ) || SharedLayoutContext(isCustom);
+    const layoutContext = sharedLayoutContext.get();
 
     const forceRender = () => {
-        if (isSharedLayout($layoutContext)) {
-            $layoutContext.forceUpdate();
+        if (isSharedLayout(layoutContext)) {
+            layoutContext.forceUpdate();
         }
         _list = [..._list];
     };
@@ -182,18 +174,20 @@ Copyright (c) 2018 Framer B.V. -->
 
 {#each childrenToRender as child (getChildKey(child))}
     {#if actualMode === "popLayout" && !child.present}
-        <div style="position: absolute;">
-            <PresenceChild
-                isPresent={child.present}
-                initial={initial ? undefined : false}
-                custom={child.onExit ? custom : undefined}
-                {presenceAffectsLayout}
-                onExitComplete={child.onExit}
-                {isCustom}
-            >
-                <slot item={child.item} />
-            </PresenceChild>
-        </div>
+        <PopChild isPresent={child.present}>
+            {#snippet children()}
+                <PresenceChild
+                    isPresent={child.present}
+                    initial={initial ? undefined : false}
+                    custom={child.onExit ? custom : undefined}
+                    {presenceAffectsLayout}
+                    onExitComplete={child.onExit}
+                    {isCustom}
+                >
+                    <slot item={child.item} />
+                </PresenceChild>
+            {/snippet}
+        </PopChild>
     {:else}
         <PresenceChild
             isPresent={child.present}
