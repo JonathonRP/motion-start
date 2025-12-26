@@ -9,7 +9,6 @@ import { getOrigin, checkTargetForNewValues } from '../../render/utils/setters.j
 var createObject = () => ({});
 var stateVisualElement = visualElement({
 	build: () => {},
-	// @ts-expect-error
 	measureViewportBox: axisBox,
 	resetTransform: () => {},
 	restoreTransform: () => {},
