@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { AnimationOptions } from 'popmotion';
@@ -7,7 +7,7 @@ import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } 
 import type { MotionValue } from '../../value/index.js';
 
 /** 
-based on framer-motion@4.1.15,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { animate, inertia } from 'popmotion';

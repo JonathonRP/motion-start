@@ -1,12 +1,12 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Point2D, TransformPoint2D } from '../types/geometry';
 import type { EventInfo } from '../events/types';
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import sync, { cancelSync, getFrameData } from 'framesync';

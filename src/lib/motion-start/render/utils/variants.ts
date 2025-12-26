@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { MotionProps } from "../../motion/types";
@@ -8,7 +8,7 @@ import type { ResolvedValues, VisualElement } from "../types";
 
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 /**

@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { PanInfo } from '../PanSession';
@@ -23,7 +23,7 @@ type DragDirection = 'x' | 'y';
 export type expectsResolvedDragConstraints = ({ dragConstraints, onMeasureDragConstraints }: MotionProps) => boolean;
 
 /** 
-based on framer-motion@4.1.15,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { flushSync } from 'framesync';

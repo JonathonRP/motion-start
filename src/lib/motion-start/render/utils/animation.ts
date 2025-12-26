@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VariantLabels } from '../../motion/types';
@@ -24,7 +24,7 @@ export type MakeTargetAnimatable = (
 };
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { startAnimation } from '../../animation/utils/transitions.js';

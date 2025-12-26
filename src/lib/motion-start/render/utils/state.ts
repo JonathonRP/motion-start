@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { AxisBox2D, BoxDelta, Point2D } from "../../types/geometry.js";
@@ -86,7 +86,7 @@ export interface LayoutState {
 
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { axisBox, delta } from '../../utils/geometry/index.js';

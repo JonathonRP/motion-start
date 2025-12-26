@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Axis, AxisBox2D, BoundingBox2D, Point2D } from '../../../types/geometry';
@@ -16,7 +16,7 @@ import type { DragElastic, ResolvedConstraints } from '../types';
 export type calcProgressWithinConstraints = (layoutBox: AxisBox2D, constraintsBox: AxisBox2D) => Point2D;
 
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { mix } from 'popmotion';

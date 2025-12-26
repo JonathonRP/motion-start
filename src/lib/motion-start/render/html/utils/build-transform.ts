@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { DOMVisualElementOptions } from "../../dom/types";
@@ -19,7 +19,7 @@ import type { HTMLRenderState, TransformOrigin } from "../types";
 // export declare function buildTransformOrigin(): string;
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { sortTransformProps } from './transform.js';

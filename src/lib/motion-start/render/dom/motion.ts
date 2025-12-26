@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { DOMMotionComponents } from './types.js';
@@ -12,7 +12,7 @@ export interface IsSVG {
 }
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { createMotionComponent } from '../../motion/index.js';

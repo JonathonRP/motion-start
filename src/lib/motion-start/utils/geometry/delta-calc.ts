@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Axis, AxisDelta, BoxDelta, AxisBox2D } from "../../types/geometry";
@@ -8,7 +8,7 @@ import type { TargetProjection } from "../../render/utils/state";
 
 
 /** 
-based on framer-motion@4.1.15,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import {fixed} from '../fix-process-env';

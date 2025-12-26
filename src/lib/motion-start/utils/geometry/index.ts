@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Axis, AxisBox2D, BoundingBox2D, BoxDelta, TransformPoint2D } from '../../types/geometry';
@@ -10,7 +10,7 @@ import type { Axis, AxisBox2D, BoundingBox2D, BoxDelta, TransformPoint2D } from 
 export type calcAxisCenter = ({ min, max }: Axis) => number;
 
 /** 
-based on framer-motion@4.1.15,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { noop } from '../noop.js';

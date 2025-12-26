@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { WithDepth } from './compare-by-depth';
@@ -25,7 +25,7 @@ class FlatTree {
 }
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { addUniqueItem, removeItem } from '../../utils/array.js';

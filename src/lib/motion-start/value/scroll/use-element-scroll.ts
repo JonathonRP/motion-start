@@ -1,11 +1,11 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { ScrollMotionValues } from './utils';
 
 /** 
-based on framer-motion@4.1.16,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { createScrollMotionValues, createScrollUpdater } from './utils';

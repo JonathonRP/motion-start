@@ -1,11 +1,11 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 // export declare const svgVisualElement: ({ parent, props, presenceId, blockInitialAnimation, visualState, }: import("../types").VisualElementOptions<SVGElement, any>, options?: DOMVisualElementOptions) => import("../types").VisualElement<SVGElement, any>;
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { camelToDash } from '../dom/utils/camel-to-dash.js';

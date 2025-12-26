@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 // TODO: import type { EasingFunction } from "svelte/transition"; future idea, maybe use svelte built in easing function...
@@ -8,7 +8,7 @@ import type { Easing, EasingFunction } from '../../types';
 // export declare const isEasingArray: (ease: any) => ease is Easing[];
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import {

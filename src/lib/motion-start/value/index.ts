@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../utils/fix-process-env.js';
@@ -7,7 +7,7 @@ import sync, { getFrameData } from 'framesync';
 import { velocityPerSecond } from 'popmotion';
 import { SubscriptionManager } from '../utils/subscription-manager.js';
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Writable, Unsubscriber } from 'svelte/store';

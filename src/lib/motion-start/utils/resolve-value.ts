@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { CustomValueType, ValueTarget, SingleTarget } from "../types";
@@ -7,7 +7,7 @@ import type { CustomValueType, ValueTarget, SingleTarget } from "../types";
 // export declare const resolveFinalValueInKeyframes: (v: ValueTarget) => SingleTarget;
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { isKeyframesTarget } from '../animation/utils/is-keyframes-target.js';

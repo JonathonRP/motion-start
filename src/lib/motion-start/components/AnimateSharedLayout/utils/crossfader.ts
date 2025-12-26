@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { PlaybackControls } from 'popmotion';
@@ -36,7 +36,7 @@ export interface CrossfadeAnimationOptions {
 }
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env.js';

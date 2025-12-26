@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { BoxDelta, Point2D } from "../../../types/geometry";
@@ -10,7 +10,7 @@ export type BuildProjectionTransformOrigin = (layout: LayoutState) => string;
 
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { zeroLayout } from '../../utils/state.js';

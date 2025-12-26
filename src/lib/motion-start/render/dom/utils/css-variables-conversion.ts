@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Target, TargetWithKeyframes } from '../../../types';
@@ -23,7 +23,7 @@ import type { VisualElement } from '../../types';
 // export declare function resolveCSSVariables(): ;
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 // import { invariant } from '../../../utils/errors.js';

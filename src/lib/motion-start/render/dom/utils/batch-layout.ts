@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 type Job = () => void;
@@ -7,7 +7,7 @@ type JobSetter = (job: Job) => void;
 type ReadWrites = (read: JobSetter, write: JobSetter) => void;
 
 /** 
-based on framer-motion@4.1.15,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import sync from 'framesync';

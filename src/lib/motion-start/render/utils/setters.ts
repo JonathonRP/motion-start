@@ -1,5 +1,5 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type {
@@ -14,7 +14,7 @@ import type { ResolvedValues, VisualElement } from '../types';
 import type { AnimationDefinition } from './animation';
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { complex } from 'style-value-types';

@@ -1,12 +1,12 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { ResolvedValues, VisualElement } from "../types";
 import type { LayoutState, TargetProjection } from "./state";
 
 /** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { resetBox, applyTreeDeltas } from '../../utils/geometry/delta-apply.js';
