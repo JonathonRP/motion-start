@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VisualElement } from '../../render/types';
-import type { VisualState } from './use-visual-state';
 import type { Ref } from '../types';
+import type { VisualState } from './use-visual-state';
 
 /** 
 based on framer-motion@11.11.11,
@@ -31,7 +31,8 @@ function useMotionRef<Instance, RenderState>(
 		if (externalRef) {
 			if (typeof externalRef === 'function') {
 				externalRef(instance);
-			} else if (isRefObject(externalRef)) {// @ts-expect-error
+			} else if (isRefObject(externalRef)) {
+				// @ts-expect-error
 				externalRef.current = instance;
 			}
 		}

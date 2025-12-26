@@ -1,27 +1,27 @@
 <script lang="ts">
-    import * as Card from "$lib/components/ui/card";
-    import {
-        AnimateLayout,
-        AnimatePresenceStack,
-        AnimationSequence,
-        ColorInterpolation,
-        CyclingThroughStates,
-        Drag3DTransform,
-        DragConstraints,
-        DragDirectionLocking,
-        DragTransform,
-        DurBasedSpring,
-        KeyFramesPosition,
-        MorphSvg,
-        Repeat,
-        ReverseEffect,
-        ScrollProgress,
-        Spring,
-        Tweened,
-        WhileDragEffect,
-        WhileHoverEffect,
-        WhileTapEffect,
-    } from "$lib/components/motion";
+import {
+	AnimateLayout,
+	AnimatePresenceStack,
+	AnimationSequence,
+	ColorInterpolation,
+	CyclingThroughStates,
+	Drag3DTransform,
+	DragConstraints,
+	DragDirectionLocking,
+	DragTransform,
+	DurBasedSpring,
+	KeyFramesPosition,
+	MorphSvg,
+	Repeat,
+	ReverseEffect,
+	ScrollProgress,
+	Spring,
+	Tweened,
+	WhileDragEffect,
+	WhileHoverEffect,
+	WhileTapEffect,
+} from '$lib/components/motion';
+import * as Card from '$lib/components/ui/card';
 </script>
 
 <div class="grid gap-1 m-3 max-w-full">

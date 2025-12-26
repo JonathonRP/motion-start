@@ -7,9 +7,9 @@
  */
 
 import { useMotionConfig } from '../../context/motion-config-context.svelte.js';
-import { VisualElementDragControls } from './VisualElementDragControls.js';
 import type { VisualElement } from '../../render/types.js';
-import type { DragHandlers, DraggableProps } from './types.js';
+import type { DraggableProps, DragHandlers } from './types.js';
+import { VisualElementDragControls } from './VisualElementDragControls.js';
 
 /**
  * Drag gesture configuration
@@ -47,10 +47,7 @@ export interface DragGestureHandlers extends DragHandlers, DraggableProps {}
  * @param getProps - Function returning drag configuration and handlers
  * @public
  */
-export function useDrag(
-	getVisualElement: () => VisualElement | undefined,
-	getProps: () => DragGestureHandlers
-): void {
+export function useDrag(getVisualElement: () => VisualElement | undefined, getProps: () => DragGestureHandlers): void {
 	const config = useMotionConfig();
 	let dragControls: VisualElementDragControls | null = null;
 	let mountCleanup: (() => void) | null = null;

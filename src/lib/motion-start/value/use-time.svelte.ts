@@ -7,8 +7,8 @@
  */
 
 import { onMount } from 'svelte';
-import { MotionValue } from './index.js';
 import { hasRequestAnimationFrame } from '../utils/environment.js';
+import { MotionValue } from './index.js';
 
 /**
  * Create a motion value that tracks elapsed time
@@ -28,30 +28,30 @@ import { hasRequestAnimationFrame } from '../utils/environment.js';
  * @returns A MotionValue tracking time in milliseconds
  */
 export function useTime(): MotionValue<number> {
-    const time = new MotionValue(0);
-    let rafId: number | undefined;
-    let startTime: number | undefined;
+	const time = new MotionValue(0);
+	let rafId: number | undefined;
+	let startTime: number | undefined;
 
-    const updateTime = (timestamp: number) => {
-        if (startTime === undefined) {
-            startTime = timestamp;
-        }
+	const updateTime = (timestamp: number) => {
+		if (startTime === undefined) {
+			startTime = timestamp;
+		}
 
-        time.set(timestamp - startTime);
-        rafId = requestAnimationFrame(updateTime);
-    };
+		time.set(timestamp - startTime);
+		rafId = requestAnimationFrame(updateTime);
+	};
 
-    onMount(() => {
-        if (!hasRequestAnimationFrame) return;
+	onMount(() => {
+		if (!hasRequestAnimationFrame) return;
 
-        rafId = requestAnimationFrame(updateTime);
+		rafId = requestAnimationFrame(updateTime);
 
-        return () => {
-            if (rafId !== undefined) {
-                cancelAnimationFrame(rafId);
-            }
-        };
-    });
+		return () => {
+			if (rafId !== undefined) {
+				cancelAnimationFrame(rafId);
+			}
+		};
+	});
 
-    return time;
+	return time;
 }

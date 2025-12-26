@@ -2,14 +2,14 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ScrollMotionValues } from './utils';
 
+import { addDomEvent } from '../../events/use-dom-event';
+import type { ScrollMotionValues } from './utils';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { createScrollMotionValues, createScrollUpdater } from './utils';
-import { addDomEvent } from '../../events/use-dom-event';
 
 const getElementScrollOffsets =
 	(element: {

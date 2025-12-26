@@ -18,30 +18,30 @@ export type TransformPoint2D = (point: { x: number; y: number }) => { x: number;
  * @public
  */
 export interface MotionConfigContextValue {
-    /**
-     * Transform page point - useful for drag constraints in transformed containers
-     */
-    transformPagePoint?: TransformPoint2D;
-    /**
-     * If true, motion components will not animate
-     */
-    isStatic?: boolean;
-    /**
-     * Default transition for all motion components
-     */
-    transition?: Transition;
-    /**
-     * Nonce for inline styles (CSP compliance)
-     */
-    nonce?: string;
+	/**
+	 * Transform page point - useful for drag constraints in transformed containers
+	 */
+	transformPagePoint?: TransformPoint2D;
+	/**
+	 * If true, motion components will not animate
+	 */
+	isStatic?: boolean;
+	/**
+	 * Default transition for all motion components
+	 */
+	transition?: Transition;
+	/**
+	 * Nonce for inline styles (CSP compliance)
+	 */
+	nonce?: string;
 }
 
 /**
  * Default motion configuration
  */
 const DEFAULT_CONFIG: MotionConfigContextValue = {
-    transformPagePoint: (point) => point,
-    isStatic: false,
+	transformPagePoint: (point) => point,
+	isStatic: false,
 };
 
 /**
@@ -96,5 +96,5 @@ export const motionConfigContext = {
  * @public
  */
 export function useMotionConfig(): MotionConfigContextValue {
-    return motionConfigContext.get();
+	return motionConfigContext.get();
 }

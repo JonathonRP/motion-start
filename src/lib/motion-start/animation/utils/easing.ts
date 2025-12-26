@@ -28,6 +28,7 @@ import {
 	easeOut,
 	linear,
 } from 'popmotion';
+
 // import { invariant } from '../../utils/errors.js';
 
 var easingLookup = {

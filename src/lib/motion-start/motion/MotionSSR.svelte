@@ -2,45 +2,42 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-    import type { MotionProps } from "./index.js";
-    import {
-        MotionConfigContext,
-        type MotionConfigContextObject,
-    } from "../context/MotionConfigContext";
-    import { UseVisualElement } from "./utils/use-visual-element";
-    import { UseFeatures } from "./features/use-features";
-    import MotionContextProvider from "../context/MotionContext/MotionContextProvider.svelte";
-    import { getContext, onMount } from "svelte";
-    import { UseRender } from "../render/dom/use-render.js";
-    import { createDomVisualElement } from "../render/dom/create-visual-element.js";
-    import { svgMotionConfig } from "../render/svg/config-motion.js";
-    import { htmlMotionConfig } from "../render/html/config-motion.js";
-    import { UseCreateMotionContext } from "../context/MotionContext/create";
-    import { UseVisualState } from "./utils/use-visual-state.js";
-    import { useMotionRef } from "./utils/use-motion-ref.js";
-    import ScaleCorrectionProvider from "../context/ScaleCorrectionProvider.svelte";
-    import { featureBundle } from "../render/dom/featureBundle.js";
-    import { loadFeatures } from "./features/definitions";
-    import type { Writable } from "svelte/store";
-    import type { VisualElement } from "../index.js";
-    import type { MotionContextProps } from "../context/MotionContext/index.js";
+import { getContext, onMount } from 'svelte';
+import type { Writable } from 'svelte/store';
+import { MotionConfigContext, type MotionConfigContextObject } from '../context/MotionConfigContext';
+import { UseCreateMotionContext } from '../context/MotionContext/create';
+import type { MotionContextProps } from '../context/MotionContext/index.js';
+import MotionContextProvider from '../context/MotionContext/MotionContextProvider.svelte';
+import ScaleCorrectionProvider from '../context/ScaleCorrectionProvider.svelte';
+import type { VisualElement } from '../index.js';
+import { createDomVisualElement } from '../render/dom/create-visual-element.js';
+import { featureBundle } from '../render/dom/featureBundle.js';
+import { UseRender } from '../render/dom/use-render.js';
+import { htmlMotionConfig } from '../render/html/config-motion.js';
+import { svgMotionConfig } from '../render/svg/config-motion.js';
+import { loadFeatures } from './features/definitions';
+import { UseFeatures } from './features/use-features';
+import type { MotionProps } from './index.js';
+import { useMotionRef } from './utils/use-motion-ref.js';
+import { UseVisualElement } from './utils/use-visual-element';
+import { UseVisualState } from './utils/use-visual-state.js';
 
-    type $$Props = MotionProps & {
-        isSVG?: boolean;
-        update?: any;
-        forwardMotionProps?: boolean;
-        externalRef?: any;
-        targetEl?: any;
-    };
+type $$Props = MotionProps & {
+	isSVG?: boolean;
+	update?: any;
+	forwardMotionProps?: boolean;
+	externalRef?: any;
+	targetEl?: any;
+};
 
-    // component props
-    let {
-        isSVG = false,
-        forwardMotionProps = false,
-        externalRef = undefined,
-        targetEl = undefined,
-        ...restProps
-    }: $$Props = $props(); /*
+// component props
+let {
+	isSVG = false,
+	forwardMotionProps = false,
+	externalRef = undefined,
+	targetEl = undefined,
+	...restProps
+}: $$Props = $props(); /*
         initial: $$Props["initial"] = undefined,
         style: $$Props["style"] = undefined,
         transformTemplate: $$Props["transformTemplate"] = undefined,
@@ -111,7 +108,7 @@ Copyright (c) 2018 Framer B.V. -->
         targetEl = undefined;
     */
 
-    let motionProps = $derived(restProps); /*{
+let motionProps = $derived(restProps); /*{
         initial,
         style,
         transformTemplate,
@@ -174,39 +171,34 @@ Copyright (c) 2018 Framer B.V. -->
         inherit,
         ...(isSVG ? $$restProps : {}),
     };*/
-    //$: (allProps = {...motionProps,$$restProps});
+//$: (allProps = {...motionProps,$$restProps});
 
-    // The SSR component needs to load this here
-    loadFeatures(featureBundle);
+// The SSR component needs to load this here
+loadFeatures(featureBundle);
 
-    let Component = isSVG ? "SVG" : "DOM";
-    let isCustom = targetEl || false;
-    let createVisualElement = createDomVisualElement;
-    let visualStateConfig = isSVG ? svgMotionConfig : htmlMotionConfig;
+let Component = isSVG ? 'SVG' : 'DOM';
+let isCustom = targetEl || false;
+let createVisualElement = createDomVisualElement;
+let visualStateConfig = isSVG ? svgMotionConfig : htmlMotionConfig;
 
-    /**
-     * If a component is static, we only visually update it as a
-     * result of a React re-render, rather than any interactions or animations.
-     * If this component or any ancestor is static, we disable hardware acceleration
-     * and don't load any additional functionality.
-     */
-    const a =
-        getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
-        MotionConfigContext(isCustom);
+/**
+ * If a component is static, we only visually update it as a
+ * result of a React re-render, rather than any interactions or animations.
+ * If this component or any ancestor is static, we disable hardware acceleration
+ * and don't load any additional functionality.
+ */
+const a = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
 
-    let { isStatic } = $derived($a || {});
-    let mounted = $state(false);
-    const setContext = (
-        c: MotionContextProps,
-        v: VisualElement | undefined,
-    ) => {
-        c.visualElement = v;
-        return v;
-    };
+let { isStatic } = $derived($a || {});
+let mounted = $state(false);
+const setContext = (c: MotionContextProps, v: VisualElement | undefined) => {
+	c.visualElement = v;
+	return v;
+};
 
-    $effect(() => {
-        mounted = true;
-    });
+$effect(() => {
+	mounted = true;
+});
 </script>
 
 <ScaleCorrectionProvider {isCustom}>

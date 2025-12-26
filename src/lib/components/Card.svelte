@@ -1,40 +1,41 @@
 <script lang="ts">
-    import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
-    let exitX = 0;
-    const x = useMotionValue(0);
-    const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
-    const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
-        clamp: false,
-    });
-    export let drag: any = false;
-    export let frontCard = false;
-    export let index: any = 0;
-    const variantsFrontCard = {
-        animate: { scale: 1, y: 0, opacity: 1 },
-        exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
-    };
-    const variantsBackCard = {
-        initial: { scale: 0.3, y: 105, opacity: 0 },
-        animate: { scale: 0.75, y: 30, opacity: 0.5 },
-    };
-    $: isFront = frontCard ? variantsFrontCard : variantsBackCard;
+import { Motion, useMotionValue, useTransform } from '$lib/motion-start';
 
-    function handleDragEnd(_: any, info: { offset: { x: number } }) {
-        // console.log("info", info);
-        if (info.offset.x < -100) {
-            // setExitX(-250);
-            exitX = -250;
-            //   props.setIndex(index + 1);
-            index = index + 1;
-        }
-        if (info.offset.x > 100) {
-            exitX = 250;
-            //   props.setIndex(index + 1);
-            index = index + 1;
-            //   console.log("trigger");
-        }
-    }
-    let i = 0;
+let exitX = 0;
+const x = useMotionValue(0);
+const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
+const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
+	clamp: false,
+});
+export let drag: any = false;
+export let frontCard = false;
+export let index: any = 0;
+const variantsFrontCard = {
+	animate: { scale: 1, y: 0, opacity: 1 },
+	exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
+};
+const variantsBackCard = {
+	initial: { scale: 0.3, y: 105, opacity: 0 },
+	animate: { scale: 0.75, y: 30, opacity: 0.5 },
+};
+$: isFront = frontCard ? variantsFrontCard : variantsBackCard;
+
+function handleDragEnd(_: any, info: { offset: { x: number } }) {
+	// console.log("info", info);
+	if (info.offset.x < -100) {
+		// setExitX(-250);
+		exitX = -250;
+		//   props.setIndex(index + 1);
+		index = index + 1;
+	}
+	if (info.offset.x > 100) {
+		exitX = 250;
+		//   props.setIndex(index + 1);
+		index = index + 1;
+		//   console.log("trigger");
+	}
+}
+let i = 0;
 </script>
 
 <!-- Animate Presence Stack -->

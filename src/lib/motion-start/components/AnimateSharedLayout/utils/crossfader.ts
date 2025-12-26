@@ -35,17 +35,17 @@ export interface CrossfadeAnimationOptions {
 	preserveFollowOpacity?: boolean;
 }
 
+import sync, { getFrameData } from 'framesync';
+import { circOut, linear, mix, mixColor, progress } from 'popmotion';
+import type { Color } from 'style-value-types';
+import { animate } from '../../../animation/animate.js';
+import { getValueTransition } from '../../../animation/utils/transitions.js';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env.js';
-import sync, { getFrameData } from 'framesync';
-import { mix, progress, linear, mixColor, circOut } from 'popmotion';
-import { animate } from '../../../animation/animate.js';
-import { getValueTransition } from '../../../animation/utils/transitions.js';
 import { motionValue } from '../../../value/index.js';
-import type { Color } from 'style-value-types';
 
 function createCrossfader(): Crossfader {
 	/**

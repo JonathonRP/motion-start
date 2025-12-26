@@ -2,33 +2,29 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { getContext } from "svelte";
-  import type { Writable } from "svelte/store";
-  import type {
-    SharedLayoutSyncMethods,
-    SyncLayoutBatcher,
-  } from "../../../components/AnimateSharedLayout/types.js";
-  import {
-    FramerTreeLayoutContext,
-    SharedLayoutContext,
-  } from "../../../context/SharedLayoutContext.js";
-  import Measure from "./Measure.svelte";
+import { getContext } from 'svelte';
+import type { Writable } from 'svelte/store';
+import type { SharedLayoutSyncMethods, SyncLayoutBatcher } from '../../../components/AnimateSharedLayout/types.js';
+import { FramerTreeLayoutContext, SharedLayoutContext } from '../../../context/SharedLayoutContext.js';
+import Measure from './Measure.svelte';
 
-  let { visualElement, props, isCustom }: {
-    visualElement: any;
-    props: any;
-    isCustom: any;
-  } = $props();
+let {
+	visualElement,
+	props,
+	isCustom,
+}: {
+	visualElement: any;
+	props: any;
+	isCustom: any;
+} = $props();
 
-  let { update } = $derived(props);
-  const syncLayout =
-    getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
-      SharedLayoutContext,
-    ) || SharedLayoutContext(isCustom);
+let { update } = $derived(props);
+const syncLayout =
+	getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(SharedLayoutContext) ||
+	SharedLayoutContext(isCustom);
 
-  const framerSyncLayout =
-    getContext<Writable<SyncLayoutBatcher>>(FramerTreeLayoutContext) ||
-    FramerTreeLayoutContext(isCustom);
+const framerSyncLayout =
+	getContext<Writable<SyncLayoutBatcher>>(FramerTreeLayoutContext) || FramerTreeLayoutContext(isCustom);
 </script>
 
 <Measure

@@ -1,7 +1,8 @@
 <script>
-    import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
-    let i = 0;
+import { Motion } from '$lib/motion-start';
+import Box from '../Box.svelte';
+
+let i = 0;
 </script>
 
 <Box cls="bg-slate-800 flex" minHeight={350}>

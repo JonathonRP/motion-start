@@ -1,8 +1,9 @@
 <script>
-  import Box from "../Box.svelte";
-  import { Button } from "../ui/button";
-  import { Motion } from "$lib/motion-start";
-  let i = 0;
+import { Motion } from '$lib/motion-start';
+import Box from '../Box.svelte';
+import { Button } from '../ui/button';
+
+let i = 0;
 </script>
 
 <Box cls="bg-slate-800 flex-col gap-20" minHeight={350}>

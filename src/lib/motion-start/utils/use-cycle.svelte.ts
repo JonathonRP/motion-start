@@ -5,8 +5,8 @@ Copyright (c) 2018 Framer B.V.
 
 type Cycle = (i?: number) => void;
 type CycleState<T> = {
-    readonly current: T;
-    cycle: Cycle;
+	readonly current: T;
+	cycle: Cycle;
 };
 
 /**
@@ -53,23 +53,21 @@ Copyright (c) 2018 Framer B.V.
  *
  * @public
  */
-import { wrap } from "popmotion";
+import { wrap } from 'popmotion';
 
 export const useCycle = <T>(...items: T[]): CycleState<T> => {
-    let index = 0;
-    let current = $state(items[index]);
+	let index = 0;
+	let current = $state(items[index]);
 
-    const cycle = (i?: number) => {
-        index = typeof i !== "number"
-            ? wrap(0, items.length, index + 1)
-            : i;
-        current = items[index];
-    };
+	const cycle = (i?: number) => {
+		index = typeof i !== 'number' ? wrap(0, items.length, index + 1) : i;
+		current = items[index];
+	};
 
-    return {
-        get current() {
-            return current;
-        },
-        cycle
-    };
+	return {
+		get current() {
+			return current;
+		},
+		cycle,
+	};
 };

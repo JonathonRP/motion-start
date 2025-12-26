@@ -2,16 +2,16 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
-  import { isDragActive } from "./drag/utils/lock.js";
-  function createHoverEvent(visualElement:VisualElement, isActive:boolean, callback:any) {
-    return (event?: any | MouseEvent | TouchEvent | PointerEvent, info?: any) => {
-      if (!isMouseEvent(event) || isDragActive()) return;
-      callback?.(event, info);
+import { isDragActive } from './drag/utils/lock.js';
 
-      visualElement.animationState?.setActive(AnimationType.Hover, isActive);
-    };
-  }
-  
+function createHoverEvent(visualElement: VisualElement, isActive: boolean, callback: any) {
+	return (event?: any | MouseEvent | TouchEvent | PointerEvent, info?: any) => {
+		if (!isMouseEvent(event) || isDragActive()) return;
+		callback?.(event, info);
+
+		visualElement.animationState?.setActive(AnimationType.Hover, isActive);
+	};
+}
 </script>
 
 <script lang="ts">

@@ -4,8 +4,8 @@
  */
 
 import { onMount } from 'svelte';
-import { motionValue, type MotionValue } from './index.js';
 import { useMotionConfig } from '../context/motion-config-context.svelte.js';
+import { type MotionValue, motionValue } from './index.js';
 
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.
@@ -30,26 +30,26 @@ import { useMotionConfig } from '../context/motion-config-context.svelte.js';
  * @public
  */
 export function useMotionValue<T>(initial: T): MotionValue<T> {
-    // In Svelte, component scripts run once per instance, so we can directly create the value
-    const value = motionValue(initial);
+	// In Svelte, component scripts run once per instance, so we can directly create the value
+	const value = motionValue(initial);
 
-    /**
-     * If this motion value is being used in static mode, like on
-     * the Framer canvas, force components to rerender when the motion
-     * value is updated.
-     */
-    const config = useMotionConfig();
+	/**
+	 * If this motion value is being used in static mode, like on
+	 * the Framer canvas, force components to rerender when the motion
+	 * value is updated.
+	 */
+	const config = useMotionConfig();
 
-    if (config.isStatic) {
-        // In Svelte, we use $state to trigger reactivity
-        let latest = $state(initial);
+	if (config.isStatic) {
+		// In Svelte, we use $state to trigger reactivity
+		let latest = $state(initial);
 
-        onMount(() => {
-            return value.onChange((v) => {
-                latest = v;
-            });
-        });
-    }
+		onMount(() => {
+			return value.onChange((v) => {
+				latest = v;
+			});
+		});
+	}
 
-    return value;
+	return value;
 }

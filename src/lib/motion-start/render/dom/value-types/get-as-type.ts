@@ -2,8 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ValueType } from "style-value-types";
-
+import type { ValueType } from 'style-value-types';
 
 /** 
 based on framer-motion@11.11.11,
@@ -12,10 +11,9 @@ Copyright (c) 2018 Framer B.V.
 /**
  * Provided a value and a ValueType, returns the value as that value type.
  */
-var getValueAsType = function (value: any, type?: ValueType | undefined) {
-    return type && typeof value === "number" //@ts-ignore
-        ? type.transform(value)
-        : value;
-};
+var getValueAsType = (value: any, type?: ValueType | undefined) =>
+	type && typeof value === 'number' //@ts-ignore
+		? type.transform(value)
+		: value;
 
 export { getValueAsType };

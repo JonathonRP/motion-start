@@ -2,7 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { PopmotionTransitionProps, ValueTarget, SingleTarget, KeyframesTarget } from '../../types';
+import type { KeyframesTarget, PopmotionTransitionProps, SingleTarget, ValueTarget } from '../../types';
 
 /** 
 based on framer-motion@11.11.11,

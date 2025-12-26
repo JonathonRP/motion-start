@@ -2,14 +2,14 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Writable, Readable } from 'svelte/store';
-
+import type { Readable, Writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { motionValue } from '../value/index.js';
-import { derived } from 'svelte/store';
+
 // Does this device prefer reduced motion? Returns `null` server-side.
 let prefersReducedMotion: Writable<boolean | null>;
 

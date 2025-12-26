@@ -5,6 +5,7 @@ Copyright (c) 2018 Framer B.V.
 import type { CreateVisualElement } from '../render/types';
 import type { FeatureBundle, RenderComponent } from './features/types';
 import type { UseVisualState } from './utils/use-visual-state';
+
 export type { MotionProps } from './types';
 
 export interface MotionComponentConfig<Instance, RenderState> {
@@ -15,14 +16,14 @@ export interface MotionComponentConfig<Instance, RenderState> {
 	Component: string | Component;
 }
 
+import type { Component } from 'svelte';
+import { loadFeatures } from './features/definitions';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import Motion from './Motion.svelte';
-import { loadFeatures } from './features/definitions';
 import type { MotionProps } from './types';
-import type { Component } from 'svelte';
 
 /**
  * Create a `motion` component.

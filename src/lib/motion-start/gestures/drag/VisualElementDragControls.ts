@@ -2,10 +2,11 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { PanInfo } from '../PanSession';
+
 import type { MotionProps } from '../../motion/types';
 import type { VisualElement } from '../../render/types';
 import type { AxisBox2D, Point2D, TransformPoint2D } from '../../types/geometry';
+import type { PanInfo } from '../PanSession';
 import type { DraggableProps, ResolvedConstraints } from './types';
 import type { Lock } from './utils/lock.js';
 
@@ -42,6 +43,7 @@ import {
 } from '../../render/dom/projection/utils.js';
 import { batchLayout, flushLayout } from '../../render/dom/utils/batch-layout.js';
 import { AnimationType } from '../../render/utils/types.js';
+import type { Transition } from '../../types';
 import { eachAxis } from '../../utils/each-axis.js';
 import { invariant } from '../../utils/errors.js';
 import { calcOrigin } from '../../utils/geometry/delta-calc.js';
@@ -59,7 +61,6 @@ import {
 	resolveDragElastic,
 } from './utils/constraints.js';
 import { getGlobalLock } from './utils/lock.js';
-import type { Transition } from '../../types';
 
 var elementDragControls: WeakMap<VisualElement<any, any>, VisualElementDragControls> = new WeakMap();
 /**

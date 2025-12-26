@@ -13,17 +13,17 @@ import type { CreateVisualElement } from '../render/types.js';
  * @public
  */
 export interface LazyContextValue {
-    /** Custom renderer for visual elements */
-    renderer?: CreateVisualElement<any>;
-    /** Whether to use strict mode (throw errors on missing features) */
-    strict: boolean;
+	/** Custom renderer for visual elements */
+	renderer?: CreateVisualElement<any>;
+	/** Whether to use strict mode (throw errors on missing features) */
+	strict: boolean;
 }
 
 /**
  * Default lazy configuration
  */
 const DEFAULT_LAZY: LazyContextValue = {
-    strict: false,
+	strict: false,
 };
 
 /**
@@ -78,5 +78,5 @@ export const lazyContext = {
  * @public
  */
 export function useLazyContext(): LazyContextValue {
-    return lazyContext.get();
+	return lazyContext.get();
 }

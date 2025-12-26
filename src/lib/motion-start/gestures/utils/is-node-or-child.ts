@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
@@ -17,16 +16,14 @@ Copyright (c) 2018 Framer B.V.
  * @param child - Element to test against parent
  */
 // @ts-expect-error
-var isNodeOrChild = function (parent: Element, child?: Element | null | undefined) {
-    if (!child) {
-        return false;
-    }
-    else if (parent === child) {
-        return true;
-    }
-    else {
-        return isNodeOrChild(parent, child.parentElement);
-    }
+var isNodeOrChild = (parent: Element, child?: Element | null | undefined) => {
+	if (!child) {
+		return false;
+	} else if (parent === child) {
+		return true;
+	} else {
+		return isNodeOrChild(parent, child.parentElement);
+	}
 };
 
 export { isNodeOrChild };

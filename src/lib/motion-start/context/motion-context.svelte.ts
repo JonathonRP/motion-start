@@ -13,11 +13,11 @@ import type { VisualElement } from '../render/types.js';
  * @public
  */
 export interface MotionContextValue {
-    visualElement?: VisualElement;
-    initial?: false | string | string[];
-    animate?: string | string[];
-    /** @deprecated Legacy property for backwards compatibility */
-    forEach?: any;
+	visualElement?: VisualElement;
+	initial?: false | string | string[];
+	animate?: string | string[];
+	/** @deprecated Legacy property for backwards compatibility */
+	forEach?: any;
 }
 
 /**
@@ -74,8 +74,8 @@ export const motionContext = {
  * @public
  */
 export function useVisualElement(): VisualElement | undefined {
-    const ctx = motionContext.get();
-    return ctx?.visualElement;
+	const ctx = motionContext.get();
+	return ctx?.visualElement;
 }
 
 /**
@@ -85,5 +85,5 @@ export function useVisualElement(): VisualElement | undefined {
  * @public
  */
 export function useMotionContext(): MotionContextValue {
-    return motionContext.get();
+	return motionContext.get();
 }

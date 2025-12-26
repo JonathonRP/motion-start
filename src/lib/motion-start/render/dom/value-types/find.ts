@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { color, complex } from 'style-value-types';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env.js';
-import { color, complex } from 'style-value-types';
 import { dimensionValueTypes } from './dimensions.js';
 import { testValueType } from './test.js';
 

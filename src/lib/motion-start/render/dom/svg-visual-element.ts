@@ -2,15 +2,16 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { visualElement } from '../index.js';
+
 import { isMotionValue } from '../../value/utils/is-motion-value';
-import { htmlConfig } from '../html/visual-element';
-import { buildSVGAttrs } from '../svg/utils/build-attrs';
-import { camelToDash } from './utils/camel-to-dash';
-import { camelCaseAttributes } from '../svg/utils/camel-case-attrs';
 import { isTransformProp } from '../html/utils/transform';
-import { getDefaultValueType } from './value-types/defaults';
+import { htmlConfig } from '../html/visual-element';
+import { visualElement } from '../index.js';
 import type { SVGRenderState } from '../svg/types';
+import { buildSVGAttrs } from '../svg/utils/build-attrs';
+import { camelCaseAttributes } from '../svg/utils/camel-case-attrs';
+import { camelToDash } from './utils/camel-to-dash';
+import { getDefaultValueType } from './value-types/defaults';
 
 const zeroDimensions = {
 	x: 0,
@@ -20,7 +21,7 @@ const zeroDimensions = {
 };
 
 export const svgMutableState = () => ({
-	//@ts-ignore
+	//@ts-expect-error
 	...htmlConfig.createRenderState(),
 	attrs: {},
 	dimensions: zeroDimensions,
@@ -28,7 +29,7 @@ export const svgMutableState = () => ({
 
 export const svgVisualElement = visualElement({
 	...htmlConfig,
-	//@ts-ignore
+	//@ts-expect-error
 	createRenderState: svgMutableState,
 	onMount(element: { scheduleRender: () => void }, instance: SVGGraphicsElement, mutableState: any) {
 		try {
@@ -40,7 +41,7 @@ export const svgVisualElement = visualElement({
 		}
 
 		if (isPath(instance)) {
-			//@ts-ignore
+			//@ts-expect-error
 			mutableState.totalPathLength = instance.getTotalLength();
 		}
 
@@ -48,12 +49,12 @@ export const svgVisualElement = visualElement({
 		 * Ensure we render the element as soon as possible to reflect the measured dimensions.
 		 * Preferably this would happen synchronously but we put it in rAF to prevent layout thrashing.
 		 */
-		//@ts-ignore
+		//@ts-expect-error
 		element.scheduleRender();
 	},
 
 	getBaseTarget(props, key) {
-		//@ts-ignore
+		//@ts-expect-error
 		return props[key];
 	},
 
@@ -69,12 +70,12 @@ export const svgVisualElement = visualElement({
 		const newValues = htmlConfig.scrapeMotionValuesFromProps(props);
 
 		for (let key in props) {
-			//@ts-ignore
+			//@ts-expect-error
 			if (isMotionValue(props[key])) {
 				if (key === 'x' || key === 'y') {
 					key = 'attr' + key.toUpperCase();
 				}
-				//@ts-ignore
+				//@ts-expect-error
 				newValues[key] = props[key];
 			}
 		}
@@ -95,11 +96,11 @@ export const svgVisualElement = visualElement({
 
 	render(element, mutableState) {
 		htmlConfig.render(element, mutableState);
-		//@ts-ignore
+		//@ts-expect-error
 		for (const key in mutableState.attrs) {
 			element.setAttribute(
 				!camelCaseAttributes.has(key) ? camelToDash(key) : key,
-				//@ts-ignore
+				//@ts-expect-error
 				mutableState.attrs[key]
 			);
 		}

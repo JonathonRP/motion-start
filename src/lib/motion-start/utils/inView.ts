@@ -5,32 +5,30 @@
  * Built on IntersectionObserver for performant viewport detection.
  */
 
-import { animate } from '../animation/animate.js';
 import type { AnimationOptions, AnimationPlaybackControls } from '../animation/animate.js';
+import { animate } from '../animation/animate.js';
 import type { TargetAndTransition } from '../types.js';
 import { hasIntersectionObserver, isBrowser } from './environment.js';
 
 export interface InViewOptions {
-    /**
-     * Root element for intersection detection
-     * Defaults to viewport
-     */
-    root?: Element;
-    /**
-     * Margin around root for detection
-     * Supports CSS margin syntax (e.g., "0px 0px -200px 0px")
-     */
-    margin?: string;
-    /**
-     * Threshold for intersection (0-1)
-     * Can be a single number or array of numbers
-     */
-    amount?: 'some' | 'all' | number | number[];
+	/**
+	 * Root element for intersection detection
+	 * Defaults to viewport
+	 */
+	root?: Element;
+	/**
+	 * Margin around root for detection
+	 * Supports CSS margin syntax (e.g., "0px 0px -200px 0px")
+	 */
+	margin?: string;
+	/**
+	 * Threshold for intersection (0-1)
+	 * Can be a single number or array of numbers
+	 */
+	amount?: 'some' | 'all' | number | number[];
 }
 
-export interface InViewCallback {
-    (entry: IntersectionObserverEntry): void;
-}
+export type InViewCallback = (entry: IntersectionObserverEntry) => void;
 
 /**
  * Detect when an element enters the viewport
@@ -56,57 +54,51 @@ export interface InViewCallback {
  * );
  * ```
  */
-export function inView(
-    element: Element | string,
-    callback: InViewCallback,
-    options: InViewOptions = {}
-): () => void {
-    if (!isBrowser || !hasIntersectionObserver) {
-        return () => {};
-    }
+export function inView(element: Element | string, callback: InViewCallback, options: InViewOptions = {}): () => void {
+	if (!isBrowser || !hasIntersectionObserver) {
+		return () => {};
+	}
 
-    const el = typeof element === 'string'
-        ? document.querySelector(element)
-        : element;
+	const el = typeof element === 'string' ? document.querySelector(element) : element;
 
-    if (!el) {
-        console.warn(`inView: Element not found: ${element}`);
-        return () => {};
-    }
+	if (!el) {
+		console.warn(`inView: Element not found: ${element}`);
+		return () => {};
+	}
 
-    const { root, margin = '0px', amount = 'some' } = options;
+	const { root, margin = '0px', amount = 'some' } = options;
 
-    // Convert amount to threshold
-    let threshold: number | number[];
-    if (amount === 'some') {
-        threshold = 0.001; // Any intersection
-    } else if (amount === 'all') {
-        threshold = 0.99; // Essentially all visible
-    } else {
-        threshold = amount;
-    }
+	// Convert amount to threshold
+	let threshold: number | number[];
+	if (amount === 'some') {
+		threshold = 0.001; // Any intersection
+	} else if (amount === 'all') {
+		threshold = 0.99; // Essentially all visible
+	} else {
+		threshold = amount;
+	}
 
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    callback(entry);
-                }
-            });
-        },
-        {
-            root: root || null,
-            rootMargin: margin,
-            threshold
-        }
-    );
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					callback(entry);
+				}
+			});
+		},
+		{
+			root: root || null,
+			rootMargin: margin,
+			threshold,
+		}
+	);
 
-    observer.observe(el);
+	observer.observe(el);
 
-    // Cleanup function
-    return () => {
-        observer.disconnect();
-    };
+	// Cleanup function
+	return () => {
+		observer.disconnect();
+	};
 }
 
 /**
@@ -129,20 +121,20 @@ export function inView(
  * ```
  */
 export function inViewAnimate(
-    element: Element | string,
-    values: TargetAndTransition,
-    options: InViewOptions & AnimationOptions<any> = {}
+	element: Element | string,
+	values: TargetAndTransition,
+	options: InViewOptions & AnimationOptions<any> = {}
 ): () => void {
-    const { root, margin, amount, ...animationOptions } = options;
+	const { root, margin, amount, ...animationOptions } = options;
 
-    return inView(
-        element,
-        () => {
-            // Type assertion needed: animate() will be enhanced to support DOM elements
-            animate(element as any, values as any, animationOptions);
-        },
-        { root, margin, amount }
-    );
+	return inView(
+		element,
+		() => {
+			// Type assertion needed: animate() will be enhanced to support DOM elements
+			animate(element as any, values as any, animationOptions);
+		},
+		{ root, margin, amount }
+	);
 }
 
 /**
@@ -158,13 +150,17 @@ export function inViewAnimate(
  * ```
  */
 export function getInViewInfo(
-    element: Element | string,
-    options: InViewOptions = {}
+	element: Element | string,
+	options: InViewOptions = {}
 ): Promise<IntersectionObserverEntry> {
-    return new Promise((resolve) => {
-        const cleanup = inView(element, (entry) => {
-            resolve(entry);
-            cleanup();
-        }, options);
-    });
+	return new Promise((resolve) => {
+		const cleanup = inView(
+			element,
+			(entry) => {
+				resolve(entry);
+				cleanup();
+			},
+			options
+		);
+	});
 }

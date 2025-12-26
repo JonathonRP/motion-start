@@ -2,24 +2,24 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { VisualElement } from "../index.js";
+import type { VisualElement } from '../index.js';
 export interface UseDomEventProps {
-    /**
-     * Ref object that's been provided to the element you want to bind the listener to.
-     */
-    ref: { current: Node } | VisualElement<EventTarget>,
-    /**
-     * Name of the event you want listen for.
-     */
-    eventName: string,
-    /**
-     * Function to fire when receiving the event.
-     */
-    handler?: EventListener,
-    /**
-     * Options to pass to `Event.addEventListener`.
-     */
-    options?: AddEventListenerOptions
+	/**
+	 * Ref object that's been provided to the element you want to bind the listener to.
+	 */
+	ref: { current: Node } | VisualElement<EventTarget>;
+	/**
+	 * Name of the event you want listen for.
+	 */
+	eventName: string;
+	/**
+	 * Function to fire when receiving the event.
+	 */
+	handler?: EventListener;
+	/**
+	 * Options to pass to `Event.addEventListener`.
+	 */
+	options?: AddEventListenerOptions;
 }
 /**
  * Attaches an event listener directly to the provided DOM element.
@@ -46,15 +46,12 @@ export interface UseDomEventProps {
  */
 
 export function addDomEvent(
-    target: EventTarget,
-    eventName: string,
-    handler: EventListener,
-    options?: AddEventListenerOptions
-  ) {
-    target.addEventListener(eventName, handler, options);
-    return function () {
-      return target.removeEventListener(eventName, handler, options);
-    };
-  }
+	target: EventTarget,
+	eventName: string,
+	handler: EventListener,
+	options?: AddEventListenerOptions
+) {
+	target.addEventListener(eventName, handler, options);
+	return () => target.removeEventListener(eventName, handler, options);
+}
 export { default as UseDomEvent } from './UseDomEvent.svelte';
-

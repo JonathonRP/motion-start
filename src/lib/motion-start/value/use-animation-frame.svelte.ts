@@ -7,9 +7,7 @@
 import { onMount } from 'svelte';
 import { isBrowser } from '../utils/environment.js';
 
-export interface AnimationFrameCallback {
-    (time: number, delta: number): void;
-}
+export type AnimationFrameCallback = (time: number, delta: number) => void;
 
 /**
  * Runs a callback on every animation frame
@@ -28,30 +26,30 @@ export interface AnimationFrameCallback {
  * ```
  */
 export function useAnimationFrame(callback: AnimationFrameCallback): void {
-    onMount(() => {
-        if (!isBrowser || !window.requestAnimationFrame) return;
+	onMount(() => {
+		if (!isBrowser || !window.requestAnimationFrame) return;
 
-        let previousTime: number | undefined;
-        let rafId: number;
+		let previousTime: number | undefined;
+		let rafId: number;
 
-        const frame = (currentTime: number) => {
-            if (previousTime === undefined) {
-                previousTime = currentTime;
-            }
+		const frame = (currentTime: number) => {
+			if (previousTime === undefined) {
+				previousTime = currentTime;
+			}
 
-            const delta = currentTime - previousTime;
-            callback(currentTime, delta);
+			const delta = currentTime - previousTime;
+			callback(currentTime, delta);
 
-            previousTime = currentTime;
-            rafId = requestAnimationFrame(frame);
-        };
+			previousTime = currentTime;
+			rafId = requestAnimationFrame(frame);
+		};
 
-        rafId = requestAnimationFrame(frame);
+		rafId = requestAnimationFrame(frame);
 
-        return () => {
-            if (rafId !== undefined) {
-                cancelAnimationFrame(rafId);
-            }
-        };
-    });
+		return () => {
+			if (rafId !== undefined) {
+				cancelAnimationFrame(rafId);
+			}
+		};
+	});
 }

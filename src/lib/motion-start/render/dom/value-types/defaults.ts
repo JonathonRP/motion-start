@@ -2,15 +2,16 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ValueTypeMap } from './types';
+
+import { color, filter } from 'style-value-types';
 
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env.js';
-import { color, filter } from 'style-value-types';
 import { numberValueTypes } from './number.js';
+import type { ValueTypeMap } from './types';
 
 /**
  * A map of default value types for common values

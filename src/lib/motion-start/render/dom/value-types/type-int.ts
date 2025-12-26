@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { number } from 'style-value-types';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env';
-import { number } from 'style-value-types';
 
 var int = Object.assign(Object.assign({}, number), { transform: Math.round }) as {
 	transform: (x: number) => number;

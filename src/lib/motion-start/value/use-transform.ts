@@ -1,11 +1,10 @@
 import type { TransformOptions } from '../utils/transform';
+import { transform } from '../utils/transform';
 /** 
  based on framer-motion@11.11.11,
  Copyright (c) 2018 Framer B.V.
  */
 import type { MotionValue } from '.';
-
-import { transform } from '../utils/transform';
 import { useCombineMotionValues } from './use-combine-values';
 
 export type InputRange = number[];
@@ -161,7 +160,7 @@ export function useTransform<I, O>(
 	type Input = typeof input;
 	type inputRangeOrTransformer = typeof inputRangeOrTransformer;
 	type OutputRange = typeof outputRange;
-	type Options = typeof options;// @ts-expect-error
+	type Options = typeof options; // @ts-expect-error
 	const latest: I & (string | number)[] & number & any[{}] = [] as any;
 
 	const update = (

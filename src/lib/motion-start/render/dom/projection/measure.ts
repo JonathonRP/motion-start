@@ -2,8 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { TransformPoint2D, AxisBox2D } from "../../../types/geometry";
-
+import type { AxisBox2D, TransformPoint2D } from '../../../types/geometry';
 
 /** 
 based on framer-motion@11.11.11,
@@ -21,8 +20,8 @@ import { convertBoundingBoxToAxisBox, transformBoundingBox } from '../../../util
  * for, for instance, measuring the element within a scaled plane like a Framer devivce preview component.
  */
 function getBoundingBox(element: Element, transformPagePoint?: TransformPoint2D) {
-    var box = element.getBoundingClientRect();
-    return convertBoundingBoxToAxisBox(transformBoundingBox(box, transformPagePoint));
+	var box = element.getBoundingClientRect();
+	return convertBoundingBoxToAxisBox(transformBoundingBox(box, transformPagePoint));
 }
 
 export { getBoundingBox };

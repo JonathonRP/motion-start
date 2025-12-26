@@ -51,18 +51,17 @@ export const MotionContext = {
 	},
 };
 
+// Type alias for backwards compatibility
+export type { MotionContextValue as MotionContextProps } from '../motion-context.svelte.js';
 // Re-export from motion-context.svelte.ts for backwards compatibility
 export {
+	type MotionContextValue,
 	motionContext,
 	useMotionContext,
 	useVisualElement,
-	type MotionContextValue,
 } from '../motion-context.svelte.js';
 
-// Type alias for backwards compatibility
-export type { MotionContextValue as MotionContextProps } from '../motion-context.svelte.js';
-
 // Re-export context as MOTION_CONTEXT_KEY for backwards compatibility
-export { motionContext as MOTION_CONTEXT_KEY };
+export type { motionContext as MOTION_CONTEXT_KEY };
 
 export { default as UseVisualElementContext } from './MotionContext.svelte';

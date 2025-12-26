@@ -2,8 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionProps } from "../..";
-
+import type { MotionProps } from '../..';
 
 /** 
 based on framer-motion@11.11.11,
@@ -12,12 +11,17 @@ Copyright (c) 2018 Framer B.V.
 import { valueScaleCorrection } from '../../render/dom/projection/scale-correction.js';
 import { isTransformOriginProp, isTransformProp } from '../../render/html/utils/transform.js';
 
-function isForcedMotionValue(key: string, _a: { layout?: MotionProps['layout'], layoutId?: MotionProps['layoutId'] }): boolean {
-    var layout = _a.layout, layoutId = _a.layoutId;
-    return (isTransformProp(key) ||
-        isTransformOriginProp(key) ||
-        ((layout || layoutId !== undefined) && !!valueScaleCorrection[key]));
+function isForcedMotionValue(
+	key: string,
+	_a: { layout?: MotionProps['layout']; layoutId?: MotionProps['layoutId'] }
+): boolean {
+	var layout = _a.layout,
+		layoutId = _a.layoutId;
+	return (
+		isTransformProp(key) ||
+		isTransformOriginProp(key) ||
+		((layout || layoutId !== undefined) && !!valueScaleCorrection[key])
+	);
 }
 
 export { isForcedMotionValue };
-

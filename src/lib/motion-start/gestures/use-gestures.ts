@@ -1,2 +1,1 @@
-
-export { default as UseGestures } from "./UseGestures.svelte";
+export { default as UseGestures } from './UseGestures.svelte';

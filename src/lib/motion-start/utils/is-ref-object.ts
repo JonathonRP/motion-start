@@ -4,5 +4,5 @@ Copyright (c) 2018 Framer B.V.
 */
 
 export function isRefObject<E = any>(ref: any): ref is { current: E } {
-	return ref && typeof ref === 'object' && Object.prototype.hasOwnProperty.call(ref, 'current');
+	return ref && typeof ref === 'object' && Object.hasOwn(ref, 'current');
 }

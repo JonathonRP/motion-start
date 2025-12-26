@@ -30,13 +30,13 @@ export interface TransformOptions<T> {
 	mixer?: (from: T, to: T) => (v: number) => any;
 }
 
+import { interpolate } from 'popmotion';
+import type { CustomValueType } from '../types';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from './fix-process-env';
-import { interpolate } from 'popmotion';
-import type { CustomValueType } from '../types';
 
 var isCustomValueType = (v: any): v is CustomValueType => typeof v === 'object' && v.mix;
 var getMixer = (v: any) => (isCustomValueType(v) ? v.mix : undefined);

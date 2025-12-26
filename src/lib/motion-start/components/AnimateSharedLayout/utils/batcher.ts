@@ -39,13 +39,14 @@ function createBatcher(): SyncLayoutBatcher {
 				var ancestors = parent ? collectProjectingAncestors(parent) : [];
 				write(() => {
 					var allElements = [...ancestors, ...order];
-					allElements.forEach((element:any) => element.resetTransform());
+					allElements.forEach((element: any) => element.resetTransform());
 				});
-				read(() => {// @ts-expect-error
+				read(() => {
+					// @ts-expect-error
 					order.forEach(updateLayoutMeasurement);
 				});
 				write(() => {
-					ancestors.forEach((element) => element.restoreTransform());// @ts-expect-error
+					ancestors.forEach((element) => element.restoreTransform()); // @ts-expect-error
 					order.forEach(layoutReady);
 				});
 				read(() => {
@@ -55,7 +56,7 @@ function createBatcher(): SyncLayoutBatcher {
 					 * could be moved to the start loop. But it needs to happen after all the animations configs
 					 * are generated in AnimateSharedLayout as this relies on presence data
 					 */
-					order.forEach((child:any) => {
+					order.forEach((child: any) => {
 						if (child.isPresent) child.presence = Presence.Present;
 					});
 				});

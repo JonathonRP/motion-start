@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import type { Component } from 'svelte';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { lowercaseSVGElements } from '../../svg/lowercase-elements.js';
-import type { Component } from 'svelte';
 
 function isSVGComponent(Component: string | Component) {
 	if (

@@ -52,7 +52,7 @@ export const hasPointerEvents = isBrowser && 'PointerEvent' in window;
  * ```
  */
 export function runInBrowser<T>(fn: () => T): T | undefined {
-    return isBrowser ? fn() : undefined;
+	return isBrowser ? fn() : undefined;
 }
 
 /**
@@ -60,14 +60,14 @@ export function runInBrowser<T>(fn: () => T): T | undefined {
  * Returns { width: 0, height: 0 } on server
  */
 export function getWindowDimensions() {
-    if (!isBrowser) {
-        return { width: 0, height: 0 };
-    }
+	if (!isBrowser) {
+		return { width: 0, height: 0 };
+	}
 
-    return {
-        width: window.innerWidth,
-        height: window.innerHeight
-    };
+	return {
+		width: window.innerWidth,
+		height: window.innerHeight,
+	};
 }
 
 /**
@@ -75,14 +75,14 @@ export function getWindowDimensions() {
  * Returns { width: 0, height: 0 } on server
  */
 export function getDocumentDimensions() {
-    if (!isBrowser || !document.documentElement) {
-        return { width: 0, height: 0 };
-    }
+	if (!isBrowser || !document.documentElement) {
+		return { width: 0, height: 0 };
+	}
 
-    return {
-        width: document.documentElement.scrollWidth,
-        height: document.documentElement.scrollHeight
-    };
+	return {
+		width: document.documentElement.scrollWidth,
+		height: document.documentElement.scrollHeight,
+	};
 }
 
 /**
@@ -90,9 +90,9 @@ export function getDocumentDimensions() {
  * Returns false on server
  */
 export function prefersReducedMotion(): boolean {
-    if (!isBrowser || !window.matchMedia) {
-        return false;
-    }
+	if (!isBrowser || !window.matchMedia) {
+		return false;
+	}
 
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }

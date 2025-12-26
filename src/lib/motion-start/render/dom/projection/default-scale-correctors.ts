@@ -2,16 +2,16 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Axis } from '../../../types/geometry';
-import type { LayoutState, TargetProjection } from '../../utils/state';
 
+import { mix } from 'popmotion';
+import { complex, px } from 'style-value-types';
+import type { Axis } from '../../../types/geometry';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env.js';
-import { complex, px } from 'style-value-types';
-import { mix } from 'popmotion';
+import type { LayoutState, TargetProjection } from '../../utils/state';
 import { cssVariableRegex } from '../utils/css-variables-conversion.js';
 
 function pixelsToPercent(pixels: number, axis: Axis) {
@@ -53,7 +53,8 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	// @ts-expect-error
 	var containsCSSVariables = latest.includes('var(');
 	var cssVariables: any[] = [];
-	if (containsCSSVariables) {// @ts-expect-error
+	if (containsCSSVariables) {
+		// @ts-expect-error
 		latest = latest.replace(cssVariableRegex, (match) => {
 			cssVariables.push(match);
 			return varToken;
@@ -67,7 +68,7 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	// Calculate the overall context scale
 	var xScale = delta.x.scale * treeScale.x;
 	var yScale = delta.y.scale * treeScale.y;
-	//@ts-ignore
+	//@ts-expect-error
 	shadow[0 + offset] /= xScale; //@ts-ignore
 	shadow[1 + offset] /= yScale;
 	/**
@@ -79,11 +80,11 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	var averageScale = mix(xScale, yScale, 0.5);
 	// Blur
 	if (typeof shadow[2 + offset] === 'number')
-		//@ts-ignore
+		//@ts-expect-error
 		shadow[2 + offset] /= averageScale;
 	// Spread
 	if (typeof shadow[3 + offset] === 'number')
-		//@ts-ignore
+		//@ts-expect-error
 		shadow[3 + offset] /= averageScale;
 	var output = template(shadow);
 	if (containsCSSVariables) {

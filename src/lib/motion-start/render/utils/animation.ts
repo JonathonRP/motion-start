@@ -202,7 +202,7 @@ function sortByTreeOrder(a: VisualElement, b: VisualElement) {
 function shouldBlockAnimation(_a: { protectedKeys: any; needsAnimating: any }, key: string) {
 	var protectedKeys = _a.protectedKeys,
 		needsAnimating = _a.needsAnimating;
-	var shouldBlock = protectedKeys.hasOwnProperty(key) && needsAnimating[key] !== true;
+	var shouldBlock = Object.hasOwn(protectedKeys, key) && needsAnimating[key] !== true;
 	needsAnimating[key] = false;
 	return shouldBlock;
 }

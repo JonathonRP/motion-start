@@ -6,8 +6,8 @@
  * @module use-focus-gesture
  */
 
-import { AnimationType } from '../render/utils/types.js';
 import type { VisualElement } from '../render/types.js';
+import { AnimationType } from '../render/utils/types.js';
 
 /**
  * Focus gesture event handlers

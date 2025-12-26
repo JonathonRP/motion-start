@@ -2,114 +2,111 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { getContext } from "svelte";
-  import { get, type Writable } from "svelte/store";
-  import {
-    ScaleCorrectionContext,
-    ScaleCorrectionParentContext,
-  } from "../../../context/ScaleCorrectionProvider.svelte";
-  import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
-  import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
+import { getContext } from 'svelte';
+import { get, type Writable } from 'svelte/store';
+import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../../context/ScaleCorrectionProvider.svelte';
+import { isSharedLayout } from '../../../context/SharedLayoutContext.js';
+import { snapshotViewportBox } from '../../../render/dom/projection/utils.js';
 
-  let { visualElement, syncLayout, framerSyncLayout, update }: {
-    visualElement: any;
-    syncLayout: any;
-    framerSyncLayout: any;
-    update: any;
-  } = $props();
+let {
+	visualElement,
+	syncLayout,
+	framerSyncLayout,
+	update,
+}: {
+	visualElement: any;
+	syncLayout: any;
+	framerSyncLayout: any;
+	update: any;
+} = $props();
 
-  const scaleCorrectionContext = getContext<Writable<any[]>>(
-    ScaleCorrectionContext,
-  );
-  const scaleCorrectionParentContext = getContext<Writable<any[]>>(
-    ScaleCorrectionParentContext,
-  );
+const scaleCorrectionContext = getContext<Writable<any[]>>(ScaleCorrectionContext);
+const scaleCorrectionParentContext = getContext<Writable<any[]>>(ScaleCorrectionParentContext);
 
-  $effect(() => {
-    isSharedLayout(syncLayout) && syncLayout.register(visualElement);
-    isSharedLayout(framerSyncLayout) &&
-      framerSyncLayout.register(visualElement);
+$effect(() => {
+	isSharedLayout(syncLayout) && syncLayout.register(visualElement);
+	isSharedLayout(framerSyncLayout) && framerSyncLayout.register(visualElement);
 
-    visualElement.onUnmount(() => {
-      if (isSharedLayout(syncLayout)) {
-        syncLayout.remove(visualElement);
-      }
+	visualElement.onUnmount(() => {
+		if (isSharedLayout(syncLayout)) {
+			syncLayout.remove(visualElement);
+		}
 
-      if (isSharedLayout(framerSyncLayout)) {
-        framerSyncLayout.remove(visualElement);
-      }
-    });
-  });
-  /**
-   * If this is a child of a SyncContext, notify it that it needs to re-render. It will then
-   * handle the snapshotting.
-   *
-   * If it is stand-alone component, add it to the batcher.
-   */
+		if (isSharedLayout(framerSyncLayout)) {
+			framerSyncLayout.remove(visualElement);
+		}
+	});
+});
+/**
+ * If this is a child of a SyncContext, notify it that it needs to re-render. It will then
+ * handle the snapshotting.
+ *
+ * If it is stand-alone component, add it to the batcher.
+ */
 
-  let updated = $state(false);
-  const updater = (nc = false) => {
-    if (updated) {
-      return null;
-    }
-    updated = true;
+let updated = $state(false);
+const updater = (nc = false) => {
+	if (updated) {
+		return null;
+	}
+	updated = true;
 
-    // in React the updater function is called on children first, in Svelte the child does not call it.
-    get(scaleCorrectionContext).forEach((v) => {
-      v.updater?.(true);
-    });
+	// in React the updater function is called on children first, in Svelte the child does not call it.
+	get(scaleCorrectionContext).forEach((v) => {
+		v.updater?.(true);
+	});
 
-    if (isSharedLayout(syncLayout)) {
-      syncLayout.syncUpdate();
-    } else {
-      snapshotViewportBox(visualElement, nc);
-      syncLayout.add(visualElement);
-    }
+	if (isSharedLayout(syncLayout)) {
+		syncLayout.syncUpdate();
+	} else {
+		snapshotViewportBox(visualElement, nc);
+		syncLayout.add(visualElement);
+	}
 
-    return null;
-  };
+	return null;
+};
 
-  $effect(() => {
-    if (update !== undefined) {
-      updater(update);
-    }
-  });
+$effect(() => {
+	if (update !== undefined) {
+		updater(update);
+	}
+});
 
-  $effect.pre(() => {
-    if (update === undefined) {
-      updater();
-    }
-  });
+$effect.pre(() => {
+	if (update === undefined) {
+		updater();
+	}
+});
 
-  const afterU = (nc = false) => {
-    updated = false;
-    /* Second part of the updater calling in child layouts first.*/
-    const scc = get(scaleCorrectionContext);
+const afterU = (nc = false) => {
+	updated = false;
+	/* Second part of the updater calling in child layouts first.*/
+	const scc = get(scaleCorrectionContext);
 
-    scc.forEach((v: any, i) => {
-      v.afterU?.(true);
-    });
+	scc.forEach((v: any, i) => {
+		v.afterU?.(true);
+	});
 
-    if (!isSharedLayout(syncLayout)) {
-      syncLayout.flush();
-    }
+	if (!isSharedLayout(syncLayout)) {
+		syncLayout.flush();
+	}
 
-    /**
-     * If this axis isn't animating as a result of this render we want to reset the targetBox
-     * to the measured box
-     */
-    //setCurrentViewportBox(visualElement);
-  };
-  scaleCorrectionParentContext.update((v) =>
-    v.concat([
-      {
-        updater,
-        afterU,
-      },
-    ]),
-  );
+	/**
+	 * If this axis isn't animating as a result of this render we want to reset the targetBox
+	 * to the measured box
+	 */
+	//setCurrentViewportBox(visualElement);
+};
+scaleCorrectionParentContext.update((v) =>
+	v.concat([
+		{
+			updater,
+			afterU,
+		},
+	])
+);
 
-  $effect(() => {
-    afterU();
-  });
+$effect(() => {
+	afterU();
+});
 </script>

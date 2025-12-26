@@ -20,13 +20,13 @@ import type { VisualElement } from '../index.js';
  * @internal
  */
 export function addDomEvent(
-    target: EventTarget,
-    eventName: string,
-    handler: EventListener,
-    options?: AddEventListenerOptions
+	target: EventTarget,
+	eventName: string,
+	handler: EventListener,
+	options?: AddEventListenerOptions
 ): () => void {
-    target.addEventListener(eventName, handler, options);
-    return () => target.removeEventListener(eventName, handler, options);
+	target.addEventListener(eventName, handler, options);
+	return () => target.removeEventListener(eventName, handler, options);
 }
 
 /**
@@ -62,20 +62,20 @@ export function addDomEvent(
  * @public
  */
 export function useDomEvent(
-    ref: () => HTMLElement | null | undefined | { current: Node } | VisualElement<EventTarget>,
-    eventName: string,
-    handler: EventListener | undefined,
-    options?: AddEventListenerOptions
+	ref: () => HTMLElement | null | undefined | { current: Node } | VisualElement<EventTarget>,
+	eventName: string,
+	handler: EventListener | undefined,
+	options?: AddEventListenerOptions
 ): void {
-    $effect(() => {
-        const target = ref();
-        if (!target || !handler) return;
+	$effect(() => {
+		const target = ref();
+		if (!target || !handler) return;
 
-        // Handle ref objects with .current property
-        const element = 'current' in target ? target.current : target;
+		// Handle ref objects with .current property
+		const element = 'current' in target ? target.current : target;
 
-        if (element instanceof EventTarget) {
-            return addDomEvent(element, eventName, handler, options);
-        }
-    });
+		if (element instanceof EventTarget) {
+			return addDomEvent(element, eventName, handler, options);
+		}
+	});
 }

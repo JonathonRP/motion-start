@@ -14,9 +14,9 @@
  * @public
  */
 export function useReducedMotionConfig(): (shouldReduce: boolean) => void {
-    return (shouldReduce: boolean) => {
-        // Implementation would set global config
-        // This is a placeholder for v11.11.11 API compatibility
-        console.warn('useReducedMotionConfig: Configuration not yet implemented');
-    };
+	return (shouldReduce: boolean) => {
+		// Implementation would set global config
+		// This is a placeholder for v11.11.11 API compatibility
+		console.warn('useReducedMotionConfig: Configuration not yet implemented');
+	};
 }

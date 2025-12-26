@@ -8,10 +8,10 @@ Copyright (c) 2018 Framer B.V.
  * @public
  */
 export interface BoundingBox2D {
-    top: number;
-    left: number;
-    bottom: number;
-    right: number;
+	top: number;
+	left: number;
+	bottom: number;
+	right: number;
 }
 /**
  * A 3D bounding box
@@ -19,8 +19,8 @@ export interface BoundingBox2D {
  * @public
  */
 export interface BoundingBox3D extends BoundingBox2D {
-    front: number;
-    back: number;
+	front: number;
+	back: number;
 }
 /**
  * A description of a single axis using non-axis specific terms to denote the min and max
@@ -30,8 +30,8 @@ export interface BoundingBox3D extends BoundingBox2D {
  */
 
 export interface Axis {
-    min: number;
-    max: number;
+	min: number;
+	max: number;
 }
 /**
  * A description of a bounding box describing each axis individually. This allows us
@@ -40,17 +40,17 @@ export interface Axis {
  * @public
  */
 export interface AxisBox2D {
-    x: Axis;
-    y: Axis;
+	x: Axis;
+	y: Axis;
 }
 
-export type AxisKey = keyof AxisBox2D 
+export type AxisKey = keyof AxisBox2D;
 /**
  * @public
  */
 
 export interface AxisBox3D extends AxisBox2D {
-    z: Axis;
+	z: Axis;
 }
 /**
  * A description of a two-dimensional point
@@ -58,8 +58,8 @@ export interface AxisBox3D extends AxisBox2D {
  * @public
  */
 export interface Point2D {
-    x: number;
-    y: number;
+	x: number;
+	y: number;
 }
 /**
  * A description of a three-dimensional point
@@ -67,7 +67,7 @@ export interface Point2D {
  * @public
  */
 export interface Point3D extends Point2D {
-    z: number;
+	z: number;
 }
 /**
  * A function that accepts a two-dimensional point and returns a new one.
@@ -80,16 +80,16 @@ export type TransformPoint2D = (point: Point2D) => Point2D;
  * @public
  */
 export interface AxisDelta {
-    translate: number;
-    scale: number;
-    origin: number;
-    originPoint: number;
+	translate: number;
+	scale: number;
+	origin: number;
+	originPoint: number;
 }
 /**
  * The transform delta that, when applied to Box a will visually transform it to Box b.
  * @public
  */
 export interface BoxDelta {
-    x: AxisDelta;
-    y: AxisDelta;
+	x: AxisDelta;
+	y: AxisDelta;
 }

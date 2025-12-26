@@ -25,7 +25,7 @@
  * @public
  */
 export function useUnmountEffect(callback: () => void): void {
-    $effect(() => {
-        return () => callback();
-    });
+	$effect(() => {
+		return () => callback();
+	});
 }

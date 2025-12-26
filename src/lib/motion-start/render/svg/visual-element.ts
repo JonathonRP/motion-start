@@ -4,6 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 // export declare const svgVisualElement: ({ parent, props, presenceId, blockInitialAnimation, visualState, }: import("../types").VisualElementOptions<SVGElement, any>, options?: DOMVisualElementOptions) => import("../types").VisualElement<SVGElement, any>;
 
+import type { TransformProperties } from '../../motion/types.js';
+import type { DOMVisualElementOptions } from '../dom/types.js';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
@@ -17,17 +19,16 @@ import {
 import { isTransformProp } from '../html/utils/transform.js';
 import { htmlConfig } from '../html/visual-element.js';
 import { visualElement } from '../index.js';
+import type { ResolvedValues } from '../types.js';
+import type { LayoutState, TargetProjection } from '../utils/state.js';
+import type { SVGRenderState } from './types.js';
 import { buildSVGAttrs } from './utils/build-attrs.js';
 import { camelCaseAttributes } from './utils/camel-case-attrs.js';
 import { renderSVG } from './utils/render.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
-import type { TransformProperties } from '../../motion/types.js';
-import type { DOMVisualElementOptions } from '../dom/types.js';
-import type { ResolvedValues } from '../types.js';
-import type { TargetProjection, LayoutState } from '../utils/state.js';
-import type { SVGRenderState } from './types.js';
 
-var svgVisualElement = visualElement<SVGElement>(// @ts-expect-error
+var svgVisualElement = visualElement<SVGElement>(
+	// @ts-expect-error
 	Object.assign(Object.assign({}, htmlConfig), {
 		getBaseTarget: (props: { [x: string]: any }, key: string | number) => props[key],
 		readValueFromInstance: (domElement: { getAttribute: (arg0: any) => any }, key: string) => {

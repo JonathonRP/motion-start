@@ -2,97 +2,74 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
-  import { isAnimationControls } from "../../animation/utils/is-animation-controls.js";
-  import {
-    checkIfControllingVariants,
-    checkIfVariantNode,
-    resolveVariantFromProps,
-  } from "../../render/utils/variants.js";
-  import { resolveMotionValue } from "../../value/utils/resolve-motion-value.js";
+import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
+import {
+	checkIfControllingVariants,
+	checkIfVariantNode,
+	resolveVariantFromProps,
+} from '../../render/utils/variants.js';
+import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
 
-  const makeState = <Instance, RenderState>(
-    {
-      scrapeMotionValuesFromProps,
-      createRenderState,
-      onMount,
-    }: UseVisualStateConfig<Instance, RenderState>,
-    props: MotionProps,
-    context: MotionContextProps,
-    presenceContext: PresenceContextProps,
-  ) => {
-    const state: any = {
-      latestValues: makeLatestValues(
-        props,
-        context,
-        presenceContext,
-        scrapeMotionValuesFromProps,
-      ),
-      renderState: createRenderState(),
-    };
+const makeState = <Instance, RenderState>(
+	{ scrapeMotionValuesFromProps, createRenderState, onMount }: UseVisualStateConfig<Instance, RenderState>,
+	props: MotionProps,
+	context: MotionContextProps,
+	presenceContext: PresenceContextProps
+) => {
+	const state: any = {
+		latestValues: makeLatestValues(props, context, presenceContext, scrapeMotionValuesFromProps),
+		renderState: createRenderState(),
+	};
 
-    if (onMount) {
-      state.mount = (instance: Instance) => onMount(props, instance, state);
-    }
+	if (onMount) {
+		state.mount = (instance: Instance) => onMount(props, instance, state);
+	}
 
-    return state;
-  };
-  function makeLatestValues(
-    props: MotionProps,
-    context: MotionContextProps,
-    presenceContext: PresenceContextProps,
-    scrapeMotionValues: {
-      (props: MotionProps): { [key: string]: MotionValue | string | number };
-      (arg0: any): any;
-    },
-  ) {
-    const values: any = {};
-    const blockInitialAnimation = presenceContext?.initial === false;
+	return state;
+};
+function makeLatestValues(
+	props: MotionProps,
+	context: MotionContextProps,
+	presenceContext: PresenceContextProps,
+	scrapeMotionValues: {
+		(props: MotionProps): { [key: string]: MotionValue | string | number };
+		(arg0: any): any;
+	}
+) {
+	const values: any = {};
+	const blockInitialAnimation = presenceContext?.initial === false;
 
-    const motionValues = scrapeMotionValues(props);
-    for (const key in motionValues) {
-      values[key] = resolveMotionValue(motionValues[key]);
-    }
+	const motionValues = scrapeMotionValues(props);
+	for (const key in motionValues) {
+		values[key] = resolveMotionValue(motionValues[key]);
+	}
 
-    let { initial, animate } = props;
-    const isControllingVariants = checkIfControllingVariants(props);
-    const isVariantNode = checkIfVariantNode(props);
+	let { initial, animate } = props;
+	const isControllingVariants = checkIfControllingVariants(props);
+	const isVariantNode = checkIfVariantNode(props);
 
-    if (
-      context &&
-      isVariantNode &&
-      !isControllingVariants &&
-      props.inherit !== false
-    ) {
-      initial !== null && initial !== void 0
-        ? initial
-        : (initial = context.initial);
-      animate !== null && animate !== void 0
-        ? animate
-        : (animate = context.animate);
-    }
+	if (context && isVariantNode && !isControllingVariants && props.inherit !== false) {
+		initial !== null && initial !== void 0 ? initial : (initial = context.initial);
+		animate !== null && animate !== void 0 ? animate : (animate = context.animate);
+	}
 
-    const variantToSet =
-      blockInitialAnimation || initial === false ? animate : initial;
+	const variantToSet = blockInitialAnimation || initial === false ? animate : initial;
 
-    if (
-      variantToSet &&
-      typeof variantToSet !== "boolean" &&
-      !isAnimationControls(variantToSet)
-    ) {
-      const list = Array.isArray(variantToSet) ? variantToSet : [variantToSet];
-      list.forEach((definition) => {
-        const resolved = resolveVariantFromProps(props, definition);
-        if (!resolved) return;
+	if (variantToSet && typeof variantToSet !== 'boolean' && !isAnimationControls(variantToSet)) {
+		const list = Array.isArray(variantToSet) ? variantToSet : [variantToSet];
+		list.forEach((definition) => {
+			const resolved = resolveVariantFromProps(props, definition);
+			if (!resolved) return;
 
-        const { transitionEnd, transition, ...target } = resolved;
-        // @ts-expect-error
-        for (const key in target) values[key] = target[key]; // @ts-expect-error
-        for (const key in transitionEnd) values[key] = transitionEnd[key];
-      });
-    }
+			const { transitionEnd, transition, ...target } = resolved;
+			// @ts-expect-error
+			for (const key in target) values[key] = target[key]; // @ts-expect-error
+			for (const key in transitionEnd) values[key] = transitionEnd[key];
+		});
+	}
 
-    return values;
-  }
+	return values;
+}
 </script>
 
 <script lang="ts" generics="Instance, RenderState">

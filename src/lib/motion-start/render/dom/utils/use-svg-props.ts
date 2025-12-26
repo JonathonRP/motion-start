@@ -1,1 +1,1 @@
-export {default as UseSVGProps} from '../../svg/UseSVGProps.svelte';
+export { default as UseSVGProps } from '../../svg/UseSVGProps.svelte';

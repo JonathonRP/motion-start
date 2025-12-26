@@ -2,7 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { VisualElementDragControls, DragControlOptions } from './VisualElementDragControls';
+import type { DragControlOptions, VisualElementDragControls } from './VisualElementDragControls';
 /**
  * Can manually trigger a drag gesture on one or more `drag`-enabled `motion` components.
  *
@@ -55,7 +55,8 @@ export class DragControls {
 	};
 
 	updateConstraints = (flush?: boolean): void => {
-		this.componentControls.forEach((controls) => {// @ts-expect-error
+		this.componentControls.forEach((controls) => {
+			// @ts-expect-error
 			controls.prepareBoundingBox();
 			controls.resolveDragConstraints();
 		});

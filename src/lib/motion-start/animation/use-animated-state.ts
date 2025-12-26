@@ -1,1 +1,1 @@
-export {default as UseAnimatedState} from './UseAnimatedState.svelte';
+export { default as UseAnimatedState } from './UseAnimatedState.svelte';

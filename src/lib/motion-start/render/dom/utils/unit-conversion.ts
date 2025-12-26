@@ -4,6 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { Target, TargetWithKeyframes, Transition } from '../../../types';
 import type { VisualElement } from '../../types';
+
 enum BoundingBoxDimension {
 	width = 'width',
 	height = 'height',
@@ -13,19 +14,19 @@ enum BoundingBoxDimension {
 	bottom = 'bottom',
 }
 
+import { number, px, type ValueType } from 'style-value-types';
+import { isKeyframesTarget } from '../../../animation/utils/is-keyframes-target.js';
+import type { MotionValue } from '../../../index.js';
+import type { AxisBox2D, BoundingBox2D } from '../../../types/geometry';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../../../utils/fix-process-env.js';
-import { number, px, type ValueType } from 'style-value-types';
-import { isKeyframesTarget } from '../../../animation/utils/is-keyframes-target.js';
 // import { invariant } from '../../../utils/errors.js';
 import { transformProps } from '../../html/utils/transform.js';
-import { findDimensionValueType } from '../value-types/dimensions.js';
-import type { MotionValue } from '../../../index.js';
-import type { AxisBox2D, BoundingBox2D } from '../../../types/geometry';
 import type { TargetProjection } from '../../utils/state.js';
+import { findDimensionValueType } from '../value-types/dimensions.js';
 
 var positionalKeys = new Set(['width', 'height', 'top', 'left', 'right', 'bottom', 'x', 'y']);
 var isPositionalKey = (key: string) => positionalKeys.has(key);
@@ -129,9 +130,9 @@ var convertChangedValueTypes = (
 		// Restore styles to their **calculated computed style**, not their actual
 		// originally set style. This allows us to animate between equivalent pixel units.
 		var value = visualElement.getValue(key);
-		//@ts-ignore
+		//@ts-expect-error
 		setAndResetVelocity(value!, positionalValues[key](originBbox, originComputedStyle));
-		//@ts-ignore
+		//@ts-expect-error
 		target[key] = positionalValues[key](targetBbox, elementComputedStyle);
 	});
 	return target;
@@ -198,10 +199,10 @@ var checkAndConvertChangedValueTypes = (visualElement: VisualElement, target: an
 				// If one or the other value is 0, it's safe to coerce it to the
 				// type of the other without measurement
 				if (from === 0) {
-					// @ts-ignore
+					// @ts-expect-error
 					value?.set(toType?.transform(from));
 				} else {
-					// @ts-ignore
+					// @ts-expect-error
 					target[key] = fromType?.transform(to);
 				}
 			} else {

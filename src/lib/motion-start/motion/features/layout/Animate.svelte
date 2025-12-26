@@ -2,29 +2,25 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
-  const progressTarget = 1000;
+const progressTarget = 1000;
 
-  function hasMoved(a: AxisBox2D, b: AxisBox2D) {
-    return (
-      !isZeroBox(a) &&
-      !isZeroBox(b) &&
-      (!axisIsEqual(a.x, b.x) || !axisIsEqual(a.y, b.y))
-    );
-  }
+function hasMoved(a: AxisBox2D, b: AxisBox2D) {
+	return !isZeroBox(a) && !isZeroBox(b) && (!axisIsEqual(a.x, b.x) || !axisIsEqual(a.y, b.y));
+}
 
-  const zeroAxis = { min: 0, max: 0 } satisfies Axis;
-  function isZeroBox(a: AxisBox2D) {
-    return axisIsEqual(a.x, zeroAxis) && axisIsEqual(a.y, zeroAxis);
-  }
+const zeroAxis = { min: 0, max: 0 } satisfies Axis;
+function isZeroBox(a: AxisBox2D) {
+	return axisIsEqual(a.x, zeroAxis) && axisIsEqual(a.y, zeroAxis);
+}
 
-  function axisIsEqual(a: Axis, b: Axis) {
-    return a.min === b.min && a.max === b.max;
-  }
+function axisIsEqual(a: Axis, b: Axis) {
+	return a.min === b.min && a.max === b.max;
+}
 
-  const defaultLayoutTransition = {
-    duration: 0.45,
-    ease: [0.4, 0, 0.1, 1],
-  };
+const defaultLayoutTransition = {
+	duration: 0.45,
+	ease: [0.4, 0, 0.1, 1],
+};
 </script>
 
 <script lang="ts">

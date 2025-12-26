@@ -1,8 +1,8 @@
 import { getContext } from 'svelte';
 import { get, type Writable } from 'svelte/store';
-// @ts-ignore
+import type { MotionContextProps } from '../../context/MotionContext/index.js';
+// @ts-expect-error
 import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../context/ScaleCorrectionProvider.svelte';
-import type { MotionContextProps } from '../../context/MotionContext/index.js'
 // '$lib/motion-start/context/MotionContext';
 
 export const scaleCorrection = () => {

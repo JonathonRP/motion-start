@@ -149,13 +149,14 @@ function animate<V>(
 
 			// Calculate delay for staggered animations
 			const delayValue = transition?.delay ?? 0;
-			const resolvedDelay: number = typeof delayValue === 'function'
-				? (delayValue as (index: number, total: number) => number)(index, elements.length)
-				: (delayValue as number);
+			const resolvedDelay: number =
+				typeof delayValue === 'function'
+					? (delayValue as (index: number, total: number) => number)(index, elements.length)
+					: (delayValue as number);
 
 			const elementTransition = {
 				...transition,
-				delay: resolvedDelay
+				delay: resolvedDelay,
 			};
 
 			startAnimation('', value, to, elementTransition);
@@ -166,7 +167,7 @@ function animate<V>(
 
 		// Return combined controls
 		return {
-			stop: () => controls.forEach(ctrl => ctrl.stop())
+			stop: () => controls.forEach((ctrl) => ctrl.stop()),
 		};
 	}
 
@@ -174,13 +175,14 @@ function animate<V>(
 	const value = isMotionValue(from) ? from : motionValue(from as V);
 
 	const delayValue = transition?.delay ?? 0;
-	const resolvedDelay: number = typeof delayValue === 'function'
-		? (delayValue as (index: number, total: number) => number)(0, 1)
-		: (delayValue as number);
+	const resolvedDelay: number =
+		typeof delayValue === 'function'
+			? (delayValue as (index: number, total: number) => number)(0, 1)
+			: (delayValue as number);
 
 	const finalTransition = {
 		...transition,
-		delay: resolvedDelay
+		delay: resolvedDelay,
 	};
 
 	startAnimation('', value, to, finalTransition);

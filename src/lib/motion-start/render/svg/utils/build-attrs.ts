@@ -2,23 +2,23 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { DOMVisualElementOptions } from '../../dom/types';
-import type { ResolvedValues } from '../../types';
+
 import type { MotionProps } from '../../../motion/types';
-import type { LayoutState, TargetProjection } from '../../utils/state';
-import type { SVGRenderState } from '../types';
+import type { DOMVisualElementOptions } from '../../dom/types';
 import type {
 	BuildProjectionTransform,
 	BuildProjectionTransformOrigin,
 } from '../../html/utils/build-projection-transform';
-
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { buildHTMLStyles } from '../../html/utils/build-styles.js';
-import { calcSVGTransformOrigin } from './transform-origin.js';
+import type { ResolvedValues } from '../../types';
+import type { LayoutState, TargetProjection } from '../../utils/state';
+import type { SVGRenderState } from '../types';
 import { buildSVGPath } from './path.js';
+import { calcSVGTransformOrigin } from './transform-origin.js';
 
 /**
  * Build SVG visual attrbutes, like cx and style.transform
@@ -60,7 +60,7 @@ function buildSVGAttrs(
 	// Parse transformOrigin
 	if (dimensions && (originX !== undefined || originY !== undefined || style.transform)) {
 		style.transformOrigin = calcSVGTransformOrigin(
-			dimensions,// @ts-expect-error
+			dimensions, // @ts-expect-error
 			originX !== undefined ? originX : 0.5,
 			originY !== undefined ? originY : 0.5
 		);

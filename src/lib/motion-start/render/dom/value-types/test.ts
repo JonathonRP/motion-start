@@ -2,8 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ValueType } from "style-value-types";
-
+import type { ValueType } from 'style-value-types';
 
 /** 
 based on framer-motion@11.11.11,
@@ -12,6 +11,6 @@ Copyright (c) 2018 Framer B.V.
 /**
  * Tests a provided value against a ValueType
  */
-var testValueType = function (v: any) { return function (type: ValueType) { return type.test(v); }; };
+var testValueType = (v: any) => (type: ValueType) => type.test(v);
 
 export { testValueType };

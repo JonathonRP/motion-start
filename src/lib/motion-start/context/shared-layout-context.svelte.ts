@@ -66,9 +66,7 @@ export const sharedLayoutContext = {
  * Check if the context value is SharedLayoutSyncMethods
  * @internal
  */
-export function isSharedLayout(
-	context: SharedLayoutContextValue
-): context is SharedLayoutSyncMethods {
+export function isSharedLayout(context: SharedLayoutContextValue): context is SharedLayoutSyncMethods {
 	return 'forceUpdate' in context;
 }
 

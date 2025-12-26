@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
-  export const ssr = false;
+export const ssr = false;
 </script>
 
 <script lang="ts">

@@ -2,13 +2,13 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+import { getContext, onMount } from 'svelte';
 import type { Readable, Writable } from 'svelte/store';
-import type { PresenceContextProps } from "../../context/PresenceContext";
 
 import { derived, get, readable } from 'svelte/store';
+import type { PresenceContextProps } from '../../context/PresenceContext';
 import { PresenceContext } from '../../context/PresenceContext.js';
-
-import { getContext, onMount } from "svelte";
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -19,7 +19,7 @@ let counter = 0;
 const incrementId = () => counter++;
 
 export function isPresent(context: PresenceContextProps) {
-    return context === null ? true : context.isPresent
+	return context === null ? true : context.isPresent;
 }
 
 /**
@@ -43,9 +43,9 @@ export function isPresent(context: PresenceContextProps) {
  * @public
  */
 export const useIsPresent = (isCustom = false): Readable<boolean> => {
-    let presenceContext = PresenceContext.get();
-    return readable(presenceContext === null ? true : presenceContext.isPresent);
-}
+	const presenceContext = PresenceContext.get();
+	return readable(presenceContext === null ? true : presenceContext.isPresent);
+};
 
 /**
  * When a component is the child of `AnimatePresence`, it can use `usePresence`
@@ -56,9 +56,9 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  *
  * const [isPresent, safeToRemove] = usePresence()
  *
- * 
+ *
  *  $: !isPresent && setTimeout(safeToRemove, 1000)
- * 
+ *
  *
  *   return <div />
  * }
@@ -70,23 +70,22 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
  * @public
  */
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
+	const context = PresenceContext.get();
+	const id = context === null ? undefined : incrementId();
 
-    const context = PresenceContext.get();
-    const id = context === null ? undefined : incrementId();
+	onMount(() => {
+		if (context !== null && id !== undefined) {
+			context.register(id);
+		}
+	});
 
-    onMount(() => {
-        if (context !== null && id !== undefined) {
-            context.register(id);
-        }
-    })
+	if (context === null) {
+		return readable([true, null]) satisfies Readable<AlwaysPresent>;
+	}
 
-    if (context === null) {
-        return readable([true, null]) satisfies Readable<AlwaysPresent>;
-    }
-
-    return readable<Present | NotPresent>(
-        (!context.isPresent && context.onExitComplete) ?
-            [false, () => context.onExitComplete?.(id!)] satisfies NotPresent :
-            [true] satisfies Present
-    );
-}
+	return readable<Present | NotPresent>(
+		!context.isPresent && context.onExitComplete
+			? ([false, () => context.onExitComplete?.(id!)] satisfies NotPresent)
+			: ([true] satisfies Present)
+	);
+};

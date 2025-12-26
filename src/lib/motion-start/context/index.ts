@@ -5,39 +5,36 @@
  * @module context
  */
 
-// Motion Context
+// Layout Group Context
 export {
-    motionContext,
-    useVisualElement,
-    useMotionContext,
-    type MotionContextValue,
-} from './motion-context.svelte.js';
-
-// Presence Context
+	layoutGroupContext,
+	useLayoutGroup,
+} from './layout-group-context.svelte.js';
+// Lazy Context
 export {
-    presenceContext,
-    usePresence,
-    isPresent,
-    type PresenceContextValue,
-} from './presence-context.svelte.js';
+	type LazyContextValue,
+	lazyContext,
+	useLazyContext,
+} from './lazy-context.svelte.js';
 
 // Motion Config Context
 export {
-    motionConfigContext,
-    useMotionConfig,
-    type MotionConfigContextValue,
-    type TransformPoint2D,
+	type MotionConfigContextValue,
+	motionConfigContext,
+	type TransformPoint2D,
+	useMotionConfig,
 } from './motion-config-context.svelte.js';
-
-// Lazy Context
+// Motion Context
 export {
-    lazyContext,
-    useLazyContext,
-    type LazyContextValue,
-} from './lazy-context.svelte.js';
-
-// Layout Group Context
+	type MotionContextValue,
+	motionContext,
+	useMotionContext,
+	useVisualElement,
+} from './motion-context.svelte.js';
+// Presence Context
 export {
-    layoutGroupContext,
-    useLayoutGroup,
-} from './layout-group-context.svelte.js';
+	isPresent,
+	type PresenceContextValue,
+	presenceContext,
+	usePresence,
+} from './presence-context.svelte.js';

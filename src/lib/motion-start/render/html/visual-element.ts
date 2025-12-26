@@ -2,20 +2,20 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { DOMVisualElementOptions } from '../dom/types';
-import type { VisualElementConfig } from '../types';
-import type { HTMLRenderState } from './types';
 
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { getBoundingBox } from '../dom/projection/measure.js';
+import type { DOMVisualElementOptions } from '../dom/types';
 import { isCSSVariable } from '../dom/utils/is-css-variable.js';
 import { parseDomVariant } from '../dom/utils/parse-dom-variant.js';
 import { getDefaultValueType } from '../dom/value-types/defaults.js';
 import { visualElement } from '../index.js';
+import type { VisualElementConfig } from '../types';
 import { checkTargetForNewValues, getOrigin } from '../utils/setters.js';
+import type { HTMLRenderState } from './types';
 import {
 	buildLayoutProjectionTransform,
 	buildLayoutProjectionTransformOrigin,
@@ -49,7 +49,7 @@ var htmlConfig = {
 		return a.compareDocumentPosition(b) & 2 ? 1 : -1;
 	},
 	getBaseTarget: (props, key) => {
-		var _a;// @ts-expect-error
+		var _a; // @ts-expect-error
 		return (_a = props.style) === null || _a === void 0 ? void 0 : _a[key];
 	},
 	measureViewportBox: (element, _a) => {
@@ -88,7 +88,7 @@ var htmlConfig = {
 		if (isMounted === void 0) {
 			isMounted = true;
 		}
-		var { transition, transitionEnd, ...target } = _a;// @ts-expect-error
+		var { transition, transitionEnd, ...target } = _a; // @ts-expect-error
 		var origin = getOrigin(target, transition || {}, element);
 		/**
 		 * If Framer has provided a function to convert `Color` etc value types, convert them
@@ -99,7 +99,7 @@ var htmlConfig = {
 			if (origin) origin = transformValues(origin);
 		}
 		if (isMounted) {
-			checkTargetForNewValues(element, target, origin);// @ts-expect-error
+			checkTargetForNewValues(element, target, origin); // @ts-expect-error
 			var parsed = parseDomVariant(element, target, origin, transitionEnd);
 			transitionEnd = parsed.transitionEnd;
 			target = parsed.target;

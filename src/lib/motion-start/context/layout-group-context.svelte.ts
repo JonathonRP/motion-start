@@ -56,5 +56,5 @@ export const layoutGroupContext = {
  * @public
  */
 export function useLayoutGroup(): string | null {
-    return layoutGroupContext.get();
+	return layoutGroupContext.get();
 }

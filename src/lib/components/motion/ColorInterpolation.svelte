@@ -1,11 +1,8 @@
 <script>
-    import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
-    let x = useMotionValue(0);
-    let background = useTransform(
-        x,
-        [-120, 0, 120],
-        ["#a0d", "rgba(0,0,0,0)", "#0bf"],
-    );
+import { Motion, useMotionValue, useTransform } from '$lib/motion-start';
+
+let x = useMotionValue(0);
+let background = useTransform(x, [-120, 0, 120], ['#a0d', 'rgba(0,0,0,0)', '#0bf']);
 </script>
 
 <!-- Color Interpolation -->

@@ -2,9 +2,9 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionComponentConfig, MotionProps } from "../../motion";
-import type { TargetProjection } from "../utils/state";
-import type { SVGRenderState } from "./types";
+import type { MotionComponentConfig, MotionProps } from '../../motion';
+import type { TargetProjection } from '../utils/state';
+import type { SVGRenderState } from './types';
 
 /** 
 based on framer-motion@11.11.11,
@@ -16,40 +16,45 @@ import { renderSVG } from './utils/render.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.js';
 
 var svgMotionConfig = {
-        //@ts-ignore
-        scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
-        createRenderState: createSvgRenderState,
-        onMount: function (props:MotionProps, instance:SVGGraphicsElement, _a: { renderState: any; latestValues: any; }) {
-            var renderState = _a.renderState, latestValues = _a.latestValues;
-            try {
-                renderState.dimensions =
-                    typeof (instance as SVGGraphicsElement).getBBox ===
-                        "function"
-                        ? instance.getBBox()
-                        : instance.getBoundingClientRect();
-            }
-            catch (e) {
-                // Most likely trying to measure an unrendered element under Firefox
-                renderState.dimensions = {
-                    x: 0,
-                    y: 0,
-                    width: 0,
-                    height: 0,
-                };
-            }
-            if (isPath(instance)) {
-                //@ts-ignore
-                renderState.totalPathLength = instance.getTotalLength();
-            }
-            buildSVGAttrs(renderState, latestValues, undefined, undefined, { enableHardwareAcceleration: false }, props.transformTemplate);
-            // TODO: Replace with direct assignment
-            // @ts-expect-error
-            renderSVG(instance, renderState);
-        },
-    } satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>
+	//@ts-expect-error
+	scrapeMotionValuesFromProps: scrapeMotionValuesFromProps,
+	createRenderState: createSvgRenderState,
+	onMount: (props: MotionProps, instance: SVGGraphicsElement, _a: { renderState: any; latestValues: any }) => {
+		var renderState = _a.renderState,
+			latestValues = _a.latestValues;
+		try {
+			renderState.dimensions =
+				typeof (instance as SVGGraphicsElement).getBBox === 'function'
+					? instance.getBBox()
+					: instance.getBoundingClientRect();
+		} catch (e) {
+			// Most likely trying to measure an unrendered element under Firefox
+			renderState.dimensions = {
+				x: 0,
+				y: 0,
+				width: 0,
+				height: 0,
+			};
+		}
+		if (isPath(instance)) {
+			//@ts-expect-error
+			renderState.totalPathLength = instance.getTotalLength();
+		}
+		buildSVGAttrs(
+			renderState,
+			latestValues,
+			undefined,
+			undefined,
+			{ enableHardwareAcceleration: false },
+			props.transformTemplate
+		);
+		// TODO: Replace with direct assignment
+		// @ts-expect-error
+		renderSVG(instance, renderState);
+	},
+} satisfies Partial<MotionComponentConfig<SVGElement, SVGRenderState>>;
 function isPath(element: SVGGraphicsElement) {
-    return element.tagName === "path";
+	return element.tagName === 'path';
 }
 
 export { svgMotionConfig };
-

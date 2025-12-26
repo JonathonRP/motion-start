@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" context="module">
-  import { copyRawValuesOnly } from "./use-props.js";
+import { copyRawValuesOnly } from './use-props.js';
 </script>
 
 <script lang="ts">

@@ -2,45 +2,37 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ScrollMotionValues } from "./utils";
 
-
+import { tick } from 'svelte';
+import { addDomEvent } from '../../events/use-dom-event';
+import type { ScrollMotionValues } from './utils';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import {
-    createScrollMotionValues,
-    createScrollUpdater,
-} from "./utils"
-import { addDomEvent } from "../../events/use-dom-event"
-import { tick } from "svelte"
+import { createScrollMotionValues, createScrollUpdater } from './utils';
 
-let viewportScrollValues: ScrollMotionValues
-
+let viewportScrollValues: ScrollMotionValues;
 
 function getViewportScrollOffsets() {
-    return {
-        xOffset: window.pageXOffset,
-        yOffset: window.pageYOffset,
-        xMaxOffset: document.body.clientWidth - window.innerWidth,
-        yMaxOffset: document.body.clientHeight - window.innerHeight,
-    }
+	return {
+		xOffset: window.pageXOffset,
+		yOffset: window.pageYOffset,
+		xMaxOffset: document.body.clientWidth - window.innerWidth,
+		yMaxOffset: document.body.clientHeight - window.innerHeight,
+	};
 }
 
-let hasListeners = false
+let hasListeners = false;
 
 function addEventListeners() {
-    hasListeners = true
-    if (typeof window === "undefined") return
+	hasListeners = true;
+	if (typeof window === 'undefined') return;
 
-    const updateScrollValues = createScrollUpdater(
-        viewportScrollValues,
-        getViewportScrollOffsets
-    )
+	const updateScrollValues = createScrollUpdater(viewportScrollValues, getViewportScrollOffsets);
 
-    addDomEvent(window, "scroll", updateScrollValues, { passive: true })
-    addDomEvent(window, "resize", updateScrollValues)
+	addDomEvent(window, 'scroll', updateScrollValues, { passive: true });
+	addDomEvent(window, 'resize', updateScrollValues);
 }
 
 /**
@@ -66,16 +58,16 @@ function addEventListeners() {
  * @public
  */
 export function useViewportScroll() {
-    /**
-     * Lazy-initialise the viewport scroll values
-     */
-    if (!viewportScrollValues) {
-        viewportScrollValues = createScrollMotionValues()
-    }
+	/**
+	 * Lazy-initialise the viewport scroll values
+	 */
+	if (!viewportScrollValues) {
+		viewportScrollValues = createScrollMotionValues();
+	}
 
-    tick().then(_ => {
-        !hasListeners && addEventListeners()
-    })
+	tick().then((_) => {
+		!hasListeners && addEventListeners();
+	});
 
-    return viewportScrollValues as ScrollMotionValues
+	return viewportScrollValues as ScrollMotionValues;
 }

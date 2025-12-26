@@ -13,18 +13,18 @@ import type { VariantLabels } from '../motion/types.js';
  * @public
  */
 export interface PresenceContextValue {
-    /** Unique ID for this presence context */
-    id: number;
-    /** Whether this element should be present in the DOM */
-    isPresent: boolean;
-    /** Register a child element for presence tracking */
-    register: (id: number) => () => void;
-    /** Callback when all exit animations complete */
-    onExitComplete?: (id: number) => void;
-    /** Initial animation state */
-    initial?: false | VariantLabels;
-    /** Custom data to pass to animations */
-    custom?: any;
+	/** Unique ID for this presence context */
+	id: number;
+	/** Whether this element should be present in the DOM */
+	isPresent: boolean;
+	/** Register a child element for presence tracking */
+	register: (id: number) => () => void;
+	/** Callback when all exit animations complete */
+	onExitComplete?: (id: number) => void;
+	/** Initial animation state */
+	initial?: false | VariantLabels;
+	/** Custom data to pass to animations */
+	custom?: any;
 }
 
 /**
@@ -79,7 +79,7 @@ export const presenceContext = {
  * @public
  */
 export function usePresence(): PresenceContextValue | null {
-    return presenceContext.get();
+	return presenceContext.get();
 }
 
 /**
@@ -89,6 +89,6 @@ export function usePresence(): PresenceContextValue | null {
  * @public
  */
 export function isPresent(): boolean {
-    const presence = presenceContext.get();
-    return presence?.isPresent ?? true;
+	const presence = presenceContext.get();
+	return presence?.isPresent ?? true;
 }

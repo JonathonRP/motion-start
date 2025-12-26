@@ -1,5 +1,5 @@
 <script>
-    import { Button } from "$lib/components/ui/button";
+import { Button } from '$lib/components/ui/button';
 </script>
 
 <div class="grid gap-1 max-w-full prose container items-center justify-center">

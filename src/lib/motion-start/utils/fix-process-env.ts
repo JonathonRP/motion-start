@@ -1,23 +1,22 @@
-import "../types/global.js";
+import '../types/global.js';
 
-const fix = ()=>{
-    try{
+const fix = () => {
+	try {
+		if (!process.env) {
+			process.env = {};
+		}
+		return true;
+	} catch (e) {}
 
-        if (!process.env){
-            process.env={};
-        }
-        return true;;
-    }catch(e){}
+	if (!window || (window.process && window.process.env)) {
+		return false;
+	}
 
-    if (!window || (window.process && window.process.env)){
-        return false;
-    }
-
-    if (!window.process){
-        window.process = <any>{}
-    }
-    window.process.env={};
-    return true;
-}
+	if (!window.process) {
+		window.process = <any>{};
+	}
+	window.process.env = {};
+	return true;
+};
 
 export const fixed = fix();

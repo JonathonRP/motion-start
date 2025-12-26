@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { cn } from "$lib/utils.js";
-  import { buttonVariants, type ButtonProps } from ".";
+import { cn } from '$lib/utils.js';
+import { type ButtonProps, buttonVariants } from '.';
 
-  let {
-    class: className,
-    variant = "default",
-    size = "default",
-    ref = $bindable(null),
-    href = undefined,
-    type = "button",
-    disabled,
-    children,
-    ...restProps
-  }: ButtonProps = $props();
+let {
+	class: className,
+	variant = 'default',
+	size = 'default',
+	ref = $bindable(null),
+	href = undefined,
+	type = 'button',
+	disabled,
+	children,
+	...restProps
+}: ButtonProps = $props();
 </script>
 
 {#if href}

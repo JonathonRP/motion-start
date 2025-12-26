@@ -2,6 +2,13 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+/** 
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
+import { complex } from 'style-value-types';
+import type { VariantLabels } from '../../motion/types';
 import type {
 	CustomValueType,
 	Target,
@@ -10,20 +17,13 @@ import type {
 	TargetWithKeyframes,
 	Transition,
 } from '../../types';
-import type { ResolvedValues, VisualElement } from '../types';
-import type { AnimationDefinition } from './animation';
-
-/** 
-based on framer-motion@11.11.11,
-Copyright (c) 2018 Framer B.V.
-*/
-import { complex } from 'style-value-types';
-import type { VariantLabels } from '../../motion/types';
 import { isNumericalString } from '../../utils/is-numerical-string.js';
 import { resolveFinalValueInKeyframes } from '../../utils/resolve-value.js';
 import { motionValue } from '../../value/index.js';
 import { getAnimatableNone } from '../dom/value-types/animatable-none.js';
 import { findValueType } from '../dom/value-types/find.js';
+import type { ResolvedValues, VisualElement } from '../types';
+import type { AnimationDefinition } from './animation';
 import { resolveVariant } from './variants.js';
 
 export { checkTargetForNewValues, getOrigin, getOriginFromTransition, setTarget, setValues };
@@ -96,7 +96,7 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
 		 * if not read the value from the DOM. As an absolute fallback, take the defined target value.
 		 */
 		if (value === null) {
-			//@ts-ignore
+			//@ts-expect-error
 			value =
 				(_b = (_a = origin[key]) !== null && _a !== void 0 ? _a : visualElement.readValue(key)) !== null &&
 				_b !== void 0
@@ -128,7 +128,7 @@ function getOrigin(target: Target, transition: Transition, visualElement: Visual
 	var _a, _b;
 	var origin = {};
 	for (var key in target) {
-		//@ts-ignore
+		//@ts-expect-error
 		origin[key] =
 			(_a = getOriginFromTransition(key, transition)) !== null && _a !== void 0
 				? _a

@@ -9,7 +9,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 function noop<T>(any: T) {
-    return any;
+	return any;
 }
 
 export { noop };

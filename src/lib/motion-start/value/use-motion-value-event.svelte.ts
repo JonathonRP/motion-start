@@ -7,11 +7,7 @@
 import { onMount } from 'svelte';
 import type { MotionValue } from './index.js';
 
-export type MotionValueEventType =
-    | 'change'
-    | 'animationStart'
-    | 'animationComplete'
-    | 'animationCancel';
+export type MotionValueEventType = 'change' | 'animationStart' | 'animationComplete' | 'animationCancel';
 
 export type MotionValueEventHandler<V = any> = (value: V) => void;
 
@@ -40,44 +36,44 @@ export type MotionValueEventHandler<V = any> = (value: V) => void;
  * ```
  */
 export function useMotionValueEvent<V = any>(
-    value: MotionValue<V>,
-    event: MotionValueEventType,
-    callback: MotionValueEventHandler<V>
+	value: MotionValue<V>,
+	event: MotionValueEventType,
+	callback: MotionValueEventHandler<V>
 ): void {
-    onMount(() => {
-        let unsubscribe: (() => void) | undefined;
+	onMount(() => {
+		let unsubscribe: (() => void) | undefined;
 
-        switch (event) {
-            case 'change':
-                unsubscribe = value.onChange(callback);
-                break;
-            case 'animationStart':
-                // MotionValue doesn't have onAnimationStart in current implementation
-                // Use onChange with a check for animation state instead
-                if ('onAnimationStart' in value && typeof (value as any).onAnimationStart === 'function') {
-                    unsubscribe = (value as any).onAnimationStart(callback);
-                } else {
-                    console.warn('animationStart event is not yet supported on this MotionValue');
-                }
-                break;
-            case 'animationComplete':
-                // MotionValue doesn't have onAnimationComplete in current implementation
-                // Use onChange with a check for animation state instead
-                if ('onAnimationComplete' in value && typeof (value as any).onAnimationComplete === 'function') {
-                    unsubscribe = (value as any).onAnimationComplete(callback);
-                } else {
-                    console.warn('animationComplete event is not yet supported on this MotionValue');
-                }
-                break;
-            case 'animationCancel':
-                // MotionValue doesn't have onAnimationCancel yet
-                // This is a placeholder for future compatibility
-                console.warn('animationCancel event is not yet supported');
-                break;
-        }
+		switch (event) {
+			case 'change':
+				unsubscribe = value.onChange(callback);
+				break;
+			case 'animationStart':
+				// MotionValue doesn't have onAnimationStart in current implementation
+				// Use onChange with a check for animation state instead
+				if ('onAnimationStart' in value && typeof (value as any).onAnimationStart === 'function') {
+					unsubscribe = (value as any).onAnimationStart(callback);
+				} else {
+					console.warn('animationStart event is not yet supported on this MotionValue');
+				}
+				break;
+			case 'animationComplete':
+				// MotionValue doesn't have onAnimationComplete in current implementation
+				// Use onChange with a check for animation state instead
+				if ('onAnimationComplete' in value && typeof (value as any).onAnimationComplete === 'function') {
+					unsubscribe = (value as any).onAnimationComplete(callback);
+				} else {
+					console.warn('animationComplete event is not yet supported on this MotionValue');
+				}
+				break;
+			case 'animationCancel':
+				// MotionValue doesn't have onAnimationCancel yet
+				// This is a placeholder for future compatibility
+				console.warn('animationCancel event is not yet supported');
+				break;
+		}
 
-        return () => {
-            unsubscribe?.();
-        };
-    });
+		return () => {
+			unsubscribe?.();
+		};
+	});
 }

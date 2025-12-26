@@ -2,13 +2,13 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionValue } from '.';
 
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import sync from 'framesync';
+import type { MotionValue } from '.';
 import { motionValue } from '.';
 
 export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], combineValues: () => R) => {

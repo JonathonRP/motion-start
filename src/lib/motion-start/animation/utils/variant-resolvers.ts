@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { MotionValue } from '../../value/index.js';
+
 type VariantNameList = string[];
 type VariantName = string | VariantNameList;
 type UnresolvedVariant = VariantName | MotionValue;

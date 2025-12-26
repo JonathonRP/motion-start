@@ -9,14 +9,14 @@ import { onMount } from 'svelte';
 import { MotionValue } from './index.js';
 
 export type WillChangeProperty =
-    | 'auto'
-    | 'transform'
-    | 'opacity'
-    | 'scroll-position'
-    | 'contents'
-    | 'background-color'
-    | 'clip-path'
-    | 'filter';
+	| 'auto'
+	| 'transform'
+	| 'opacity'
+	| 'scroll-position'
+	| 'contents'
+	| 'background-color'
+	| 'clip-path'
+	| 'filter';
 
 /**
  * Create a motion value that manages will-change CSS property
@@ -35,29 +35,27 @@ export type WillChangeProperty =
  * @param properties - Properties to optimize with will-change
  * @returns A MotionValue managing will-change
  */
-export function useWillChange(
-    properties?: WillChangeProperty[]
-): MotionValue<string> {
-    const willChangeValue = new MotionValue('auto');
+export function useWillChange(properties?: WillChangeProperty[]): MotionValue<string> {
+	const willChangeValue = new MotionValue('auto');
 
-    if (properties && properties.length > 0) {
-        const value = properties.join(', ');
-        willChangeValue.set(value);
-    }
+	if (properties && properties.length > 0) {
+		const value = properties.join(', ');
+		willChangeValue.set(value);
+	}
 
-    // Automatically add transform by default for motion components
-    onMount(() => {
-        if (!properties || properties.length === 0) {
-            willChangeValue.set('transform');
-        }
+	// Automatically add transform by default for motion components
+	onMount(() => {
+		if (!properties || properties.length === 0) {
+			willChangeValue.set('transform');
+		}
 
-        // Clean up will-change after animations complete (best practice)
-        return () => {
-            willChangeValue.set('auto');
-        };
-    });
+		// Clean up will-change after animations complete (best practice)
+		return () => {
+			willChangeValue.set('auto');
+		};
+	});
 
-    return willChangeValue;
+	return willChangeValue;
 }
 
 /**
@@ -66,14 +64,11 @@ export function useWillChange(
  * @param willChange - The will-change MotionValue
  * @param properties - Properties to add
  */
-export function addWillChange(
-    willChange: MotionValue<string>,
-    ...properties: WillChangeProperty[]
-): void {
-    const current = willChange.get();
-    const currentProps = current === 'auto' ? [] : current.split(', ');
-    const newProps = [...new Set([...currentProps, ...properties])];
-    willChange.set(newProps.join(', '));
+export function addWillChange(willChange: MotionValue<string>, ...properties: WillChangeProperty[]): void {
+	const current = willChange.get();
+	const currentProps = current === 'auto' ? [] : current.split(', ');
+	const newProps = [...new Set([...currentProps, ...properties])];
+	willChange.set(newProps.join(', '));
 }
 
 /**
@@ -82,14 +77,11 @@ export function addWillChange(
  * @param willChange - The will-change MotionValue
  * @param properties - Properties to remove
  */
-export function removeWillChange(
-    willChange: MotionValue<string>,
-    ...properties: WillChangeProperty[]
-): void {
-    const current = willChange.get();
-    if (current === 'auto') return;
+export function removeWillChange(willChange: MotionValue<string>, ...properties: WillChangeProperty[]): void {
+	const current = willChange.get();
+	if (current === 'auto') return;
 
-    const currentProps = current.split(', ');
-    const newProps = currentProps.filter(p => !properties.includes(p as WillChangeProperty));
-    willChange.set(newProps.length > 0 ? newProps.join(', ') : 'auto');
+	const currentProps = current.split(', ');
+	const newProps = currentProps.filter((p) => !properties.includes(p as WillChangeProperty));
+	willChange.set(newProps.length > 0 ? newProps.join(', ') : 'auto');
 }

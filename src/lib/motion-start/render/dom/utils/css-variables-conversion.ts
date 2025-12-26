@@ -4,6 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { Target, TargetWithKeyframes } from '../../../types';
 import type { VisualElement } from '../../types';
+
 /**
  * Parse Framer's special CSS variable format into a CSS token and a fallback.
  *
@@ -97,19 +98,19 @@ function resolveCSSVariables(
 	// Cycle through every target property and resolve CSS variables. Currently
 	// we only read single-var properties like `var(--foo)`, not `calc(var(--foo) + 20px)`
 	for (var key in target) {
-		//@ts-ignore
+		//@ts-expect-error
 		var current = target[key];
 		if (!isCSSVariable(current)) continue;
 		var resolved = getVariableValue(current, element);
 		if (!resolved) continue;
 		// Clone target if it hasn't already been
-		//@ts-ignore
+		//@ts-expect-error
 		target[key] = resolved;
 		// If the user hasn't already set this key on `transitionEnd`, set it to the unresolved
 		// CSS variable. This will ensure that after the animation the component will reflect
 		// changes in the value of the CSS variable.
 		if (transitionEnd)
-			//@ts-ignore
+			//@ts-expect-error
 			(_b = transitionEnd[key]) !== null && _b !== void 0 ? _b : (transitionEnd[key] = current);
 	}
 	return { target: target, transitionEnd: transitionEnd };

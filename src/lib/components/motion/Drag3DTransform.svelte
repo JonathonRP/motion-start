@@ -1,10 +1,11 @@
 <script>
-    import Box from "../Box.svelte";
-    import { Motion, useTransform, useMotionValue } from "$lib/motion-start";
-    let x = useMotionValue(0);
-    let y = useMotionValue(0);
-    let rotateX = useTransform(y, [-100, 100], [60, -60]);
-    let rotateY = useTransform(x, [-100, 100], [-60, 60]);
+import { Motion, useMotionValue, useTransform } from '$lib/motion-start';
+import Box from '../Box.svelte';
+
+let x = useMotionValue(0);
+let y = useMotionValue(0);
+let rotateX = useTransform(y, [-100, 100], [60, -60]);
+let rotateY = useTransform(x, [-100, 100], [-60, 60]);
 </script>
 
 <Box cls="bg-slate-800 flex text-black" minHeight={350}>

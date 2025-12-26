@@ -6,12 +6,12 @@
  * @module use-hover-gesture
  */
 
+import type { EventInfo } from '../events/event-info.js';
 import { addPointerEvent } from '../events/use-pointer-event.js';
+import type { VisualElement } from '../render/types.js';
 import { AnimationType } from '../render/utils/types.js';
 import { isDragActive } from './drag/utils/lock.js';
 import { isMouseEvent } from './utils/event-type.js';
-import type { VisualElement } from '../render/types.js';
-import type { EventInfo } from '../events/event-info.js';
 
 /**
  * Hover gesture event handlers
@@ -89,11 +89,7 @@ export function useHoverGesture(
 	$effect(() => {
 		const visualElement = getVisualElement();
 		const handlers = getHandlers();
-		const hasHoverListeners = !!(
-			handlers.onHoverStart ||
-			handlers.onHoverEnd ||
-			handlers.whileHover
-		);
+		const hasHoverListeners = !!(handlers.onHoverStart || handlers.onHoverEnd || handlers.whileHover);
 
 		if (!visualElement || !hasHoverListeners) {
 			return;
@@ -108,7 +104,7 @@ export function useHoverGesture(
 			'pointerenter',
 			handlers.onHoverStart || handlers.whileHover
 				? createHoverEvent(visualElement, true, handlers.onHoverStart)
-				: undefined as any
+				: (undefined as any)
 		);
 
 		// Set up hover end listener
@@ -117,7 +113,7 @@ export function useHoverGesture(
 			'pointerleave',
 			handlers.onHoverEnd || handlers.whileHover
 				? createHoverEvent(visualElement, false, handlers.onHoverEnd)
-				: undefined as any
+				: (undefined as any)
 		);
 
 		return () => {

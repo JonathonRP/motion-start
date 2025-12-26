@@ -1,19 +1,19 @@
 <svelte:options runes={true}/>
 <script lang="ts">
-  import type { SvelteHTMLElements } from "svelte/elements";
-  import type { MotionProps } from "../../motion";
-  import Motion from "../../motion/Motion.svelte";
+import type { SvelteHTMLElements } from 'svelte/elements';
+import type { MotionProps } from '../../motion';
+import Motion from '../../motion/Motion.svelte';
 
-  let {
-    ___tag,
-    el = $bindable(),
-    isSVG = false,
-    ...restProps
-  }: {
-    ___tag: keyof SvelteHTMLElements;
-    el?: SvelteHTMLElements[typeof ___tag]["this"];
-    isSVG?: boolean;
-  } & MotionProps = $props();
+let {
+	___tag,
+	el = $bindable(),
+	isSVG = false,
+	...restProps
+}: {
+	___tag: keyof SvelteHTMLElements;
+	el?: SvelteHTMLElements[typeof ___tag]['this'];
+	isSVG?: boolean;
+} & MotionProps = $props();
 </script>
 
 <Motion {...restProps} let:props let:motion {isSVG}>

@@ -1,6 +1,6 @@
 <script>
-    import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
+import { Motion } from '$lib/motion-start';
+import Box from '../Box.svelte';
 </script>
 
 <Box cls="bg-slate-800 flex text-black">

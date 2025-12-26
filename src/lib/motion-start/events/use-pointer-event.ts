@@ -3,13 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { EventListenerWithPointInfo } from './event-info';
-import { addDomEvent } from "./use-dom-event.js";
-import { wrapHandler } from "./event-info.js";
-import {
-    supportsMouseEvents,
-    supportsPointerEvents,
-    supportsTouchEvents,
-  } from "./utils.js";
+import { wrapHandler } from './event-info.js';
+import { addDomEvent } from './use-dom-event.js';
+import { supportsMouseEvents, supportsPointerEvents, supportsTouchEvents } from './utils.js';
 
 export type usePointerEvent = (
 	ref: { current: Element | null },
@@ -38,46 +34,46 @@ export interface UsePointerEventProps {
 }
 
 const mouseEventNames = {
-    pointerdown: "mousedown",
-    pointermove: "mousemove",
-    pointerup: "mouseup",
-    pointercancel: "mousecancel",
-    pointerover: "mouseover",
-    pointerout: "mouseout",
-    pointerenter: "mouseenter",
-    pointerleave: "mouseleave",
-  };
+	pointerdown: 'mousedown',
+	pointermove: 'mousemove',
+	pointerup: 'mouseup',
+	pointercancel: 'mousecancel',
+	pointerover: 'mouseover',
+	pointerout: 'mouseout',
+	pointerenter: 'mouseenter',
+	pointerleave: 'mouseleave',
+};
 
-  const touchEventNames = {
-    pointerdown: "touchstart",
-    pointermove: "touchmove",
-    pointerup: "touchend",
-    pointercancel: "touchcancel",
-  };
-  export function getPointerEventName(name: string) {
-    if (supportsPointerEvents()) {
-      return name;
-    } else if (supportsTouchEvents()) {
-      return (touchEventNames as any)[name];
-    } else if (supportsMouseEvents()) {
-      return (mouseEventNames as any)[name];
-    }
+const touchEventNames = {
+	pointerdown: 'touchstart',
+	pointermove: 'touchmove',
+	pointerup: 'touchend',
+	pointercancel: 'touchcancel',
+};
+export function getPointerEventName(name: string) {
+	if (supportsPointerEvents()) {
+		return name;
+	} else if (supportsTouchEvents()) {
+		return (touchEventNames as any)[name];
+	} else if (supportsMouseEvents()) {
+		return (mouseEventNames as any)[name];
+	}
 
-    return name;
-  }
+	return name;
+}
 
 export function addPointerEvent(
-    target: EventTarget,
-    eventName: string,
-    handler: EventListenerWithPointInfo,
-    options?: AddEventListenerOptions
-  ) {
-    return addDomEvent(
-      target,
-      getPointerEventName(eventName),
-      wrapHandler(handler, eventName === "pointerdown"),
-      options
-    );
-  }
+	target: EventTarget,
+	eventName: string,
+	handler: EventListenerWithPointInfo,
+	options?: AddEventListenerOptions
+) {
+	return addDomEvent(
+		target,
+		getPointerEventName(eventName),
+		wrapHandler(handler, eventName === 'pointerdown'),
+		options
+	);
+}
 
 export { default as UsePointerEvent } from './UsePointerEvent.svelte';

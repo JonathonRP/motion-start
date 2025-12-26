@@ -3,17 +3,16 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { AnimationOptions } from 'popmotion';
-import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } from '../../types';
-import type { MotionValue } from '../../value/index.js';
-
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { animate, inertia } from 'popmotion';
 import { getAnimatableNone } from '../../render/dom/value-types/animatable-none.js';
+import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } from '../../types';
 import { warning } from '../../utils/errors.js';
 import { secondsToMilliseconds } from '../../utils/time-conversion.js';
+import type { MotionValue } from '../../value/index.js';
 import { getDefaultTransition } from './default-transitions.js';
 import { easingDefinitionToFunction, isEasingArray } from './easing.js';
 import { isAnimatable } from './is-animatable.js';

@@ -2,19 +2,19 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { UseDomEvent } from "../events/use-dom-event.js";
-  import { AnimationType } from "../render/utils/types.js";
+import { UseDomEvent } from '../events/use-dom-event.js';
+import { AnimationType } from '../render/utils/types.js';
 
-  let { props, visualElement } = $props();
-  let { whileFocus } = $derived(props);
+let { props, visualElement } = $props();
+let { whileFocus } = $derived(props);
 
-  const onFocus = () => {
-    visualElement.animationState?.setActive(AnimationType.Focus, true);
-  };
+const onFocus = () => {
+	visualElement.animationState?.setActive(AnimationType.Focus, true);
+};
 
-  const onBlur = () => {
-    visualElement.animationState?.setActive(AnimationType.Focus, false);
-  };
+const onBlur = () => {
+	visualElement.animationState?.setActive(AnimationType.Focus, false);
+};
 </script>
 
 <UseDomEvent

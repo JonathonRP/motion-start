@@ -2,11 +2,12 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+import type { Component } from 'svelte';
 import type { SvelteHTMLElements } from 'svelte/elements';
 import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 import type { HTMLElements } from './supported-elements';
-import type { Component } from 'svelte';
 
 export type HTMLProps = {
 	draggable: boolean;

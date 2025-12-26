@@ -1,20 +1,21 @@
 <script>
-  import { motion, layoutAnimation } from "$lib/motion-start";
-  // import Motion from "$lib/motion-start/motion/MotionSSR.svelte";
+import { layoutAnimation, motion } from '$lib/motion-start';
 
-  const spring = {
-    type: "spring",
-    stiffness: 700,
-    damping: 30,
-  };
+// import Motion from "$lib/motion-start/motion/MotionSSR.svelte";
 
-  let active = false;
+const spring = {
+	type: 'spring',
+	stiffness: 700,
+	damping: 30,
+};
 
-  function toggleSwitch() {
-    active = !active;
-  }
+let active = false;
 
-  $: layout = layoutAnimation.track(() => active);
+function toggleSwitch() {
+	active = !active;
+}
+
+$: layout = layoutAnimation.track(() => active);
 </script>
 
 <div

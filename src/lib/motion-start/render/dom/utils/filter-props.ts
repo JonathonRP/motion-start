@@ -2,8 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionProps } from "../../../motion/types";
-
+import type { MotionProps } from '../../../motion/types';
 
 /** 
 based on framer-motion@11.11.11,
@@ -11,7 +10,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import { isValidMotionProp } from '../../../motion/utils/valid-prop.js';
 
-var shouldForward = function (key: string) { return !isValidMotionProp(key); };
+var shouldForward = (key: string) => !isValidMotionProp(key);
 /**
  * Emotion and Styled Components both allow users to pass through arbitrary props to their components
  * to dynamically generate CSS. They both use the `@emotion/is-prop-valid` package to determine which
@@ -26,31 +25,31 @@ var shouldForward = function (key: string) { return !isValidMotionProp(key); };
  * actually required.
  */
 try {
-    var emotionIsPropValid_1 = require("@emotion/is-prop-valid").default;
-    shouldForward = function (key) {
-        // Handle events explicitly as Emotion validates them all as true
-        if (key.startsWith("on")) {
-            return !isValidMotionProp(key);
-        }
-        else {
-            return emotionIsPropValid_1(key);
-        }
-    };
-}
-catch (_a) {
-    // We don't need to actually do anything here - the fallback is the existing `isPropValid`.
+	var emotionIsPropValid_1 = require('@emotion/is-prop-valid').default;
+	shouldForward = (key) => {
+		// Handle events explicitly as Emotion validates them all as true
+		if (key.startsWith('on')) {
+			return !isValidMotionProp(key);
+		} else {
+			return emotionIsPropValid_1(key);
+		}
+	};
+} catch (_a) {
+	// We don't need to actually do anything here - the fallback is the existing `isPropValid`.
 }
 function filterProps(props: MotionProps, isDom: boolean, forwardMotionProps: boolean) {
-    var filteredProps = {};
-    for (var key in props) {
-        if (shouldForward(key) ||
-            (forwardMotionProps === true && isValidMotionProp(key)) ||
-            (!isDom && !isValidMotionProp(key))) {
-                //@ts-ignore
-            filteredProps[key] = props[key];
-        }
-    }
-    return filteredProps;
+	var filteredProps = {};
+	for (var key in props) {
+		if (
+			shouldForward(key) ||
+			(forwardMotionProps === true && isValidMotionProp(key)) ||
+			(!isDom && !isValidMotionProp(key))
+		) {
+			//@ts-expect-error
+			filteredProps[key] = props[key];
+		}
+	}
+	return filteredProps;
 }
 
 export { filterProps };

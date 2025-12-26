@@ -2,8 +2,6 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Point2D, TransformPoint2D } from '../types/geometry';
-import type { EventInfo } from '../events/types';
 
 /** 
 based on framer-motion@11.11.11,
@@ -12,7 +10,9 @@ Copyright (c) 2018 Framer B.V.
 import sync, { cancelSync, getFrameData } from 'framesync';
 import { distance, pipe } from 'popmotion';
 import { extractEventInfo } from '../events/event-info.js';
+import type { EventInfo } from '../events/types';
 import { addPointerEvent } from '../events/use-pointer-event.js';
+import type { Point2D, TransformPoint2D } from '../types/geometry';
 import { secondsToMilliseconds } from '../utils/time-conversion.js';
 import { isMouseEvent, isTouchEvent } from './utils/event-type.js';
 

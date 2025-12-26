@@ -1,5 +1,5 @@
 <script>
-    import { Motion } from "$lib/motion-start";
+import { Motion } from '$lib/motion-start';
 </script>
 
 <Motion.div

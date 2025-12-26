@@ -204,12 +204,12 @@ function createAnimationState(visualElement: VisualElement) {
 				removedKeys.delete(key);
 				typeState.needsAnimating[key] = true;
 			};
-			for (var key in allKeys) { 
+			for (var key in allKeys) {
 				// @ts-expect-error
 				var next = resolvedValues[key];
 				var prev = prevResolvedValues[key];
 				// If we've already handled this we can just skip ahead
-				if (encounteredKeys.hasOwnProperty(key)) continue;
+				if (Object.hasOwn(encounteredKeys, key)) continue;
 				/**
 				 * If the value has changed, we probably want to animate it.
 				 */
@@ -298,7 +298,7 @@ function createAnimationState(visualElement: VisualElement) {
 			removedKeys.forEach((key) => {
 				var fallbackTarget = visualElement.getBaseTarget(key as string);
 				if (fallbackTarget !== undefined) {
-					//@ts-ignore
+					//@ts-expect-error
 					fallbackAnimation_1[key] = fallbackTarget;
 				}
 			});
@@ -317,7 +317,7 @@ function createAnimationState(visualElement: VisualElement) {
 	function setActive(type: AnimationType, isActive: boolean, options: any) {
 		var _a;
 		// If the active state hasn't changed, we can safely do nothing here
-		//@ts-ignore
+		//@ts-expect-error
 		if (state[type].isActive === isActive) return Promise.resolve();
 		// Propagate active change to children
 		(_a = visualElement.variantChildren) === null || _a === void 0
@@ -326,7 +326,7 @@ function createAnimationState(visualElement: VisualElement) {
 					var _a;
 					return (_a = child.animationState) === null || _a === void 0 ? void 0 : _a.setActive(type, isActive);
 				});
-		//@ts-ignore
+		//@ts-expect-error
 		state[type].isActive = isActive;
 		return animateChanges(options, type);
 	}

@@ -6,37 +6,37 @@
  * with fallback to scroll event listeners.
  */
 
-import { animate } from '../animation/animate.js';
 import type { AnimationOptions, AnimationPlaybackControls } from '../animation/animate.js';
+import { animate } from '../animation/animate.js';
 import type { TargetAndTransition } from '../types.js';
 import { isBrowser } from './environment.js';
 
 export interface ScrollOptions {
-    /**
-     * Container element to track scroll on
-     * Defaults to window
-     */
-    container?: Element;
-    /**
-     * Target element to measure scroll progress against
-     * Defaults to container
-     */
-    target?: Element;
-    /**
-     * Axis to track scroll on
-     * @default "y"
-     */
-    axis?: 'x' | 'y';
-    /**
-     * Offset to apply to scroll measurements
-     * Supports CSS syntax like "start end", "100px 200px"
-     */
-    offset?: string | [string, string];
+	/**
+	 * Container element to track scroll on
+	 * Defaults to window
+	 */
+	container?: Element;
+	/**
+	 * Target element to measure scroll progress against
+	 * Defaults to container
+	 */
+	target?: Element;
+	/**
+	 * Axis to track scroll on
+	 * @default "y"
+	 */
+	axis?: 'x' | 'y';
+	/**
+	 * Offset to apply to scroll measurements
+	 * Supports CSS syntax like "start end", "100px 200px"
+	 */
+	offset?: string | [string, string];
 }
 
 export interface ScrollInfo {
-    time: number;
-    velocity: number;
+	time: number;
+	velocity: number;
 }
 
 /**
@@ -56,80 +56,69 @@ export interface ScrollInfo {
  * );
  * ```
  */
-export function scroll(
-    animation: AnimationPlaybackControls,
-    options: ScrollOptions = {}
-): () => void {
-    if (!isBrowser) {
-        return () => {};
-    }
+export function scroll(animation: AnimationPlaybackControls, options: ScrollOptions = {}): () => void {
+	if (!isBrowser) {
+		return () => {};
+	}
 
-    const {
-        container = window,
-        target,
-        axis = 'y',
-        offset
-    } = options;
+	const { container = window, target, axis = 'y', offset } = options;
 
-    let rafId: number;
-    let prevScroll = 0;
-    let prevTime = 0;
+	let rafId: number;
+	const prevScroll = 0;
+	const prevTime = 0;
 
-    const updateAnimation = () => {
-        const scrollElement = container === window
-            ? document.documentElement
-            : container as Element;
+	const updateAnimation = () => {
+		const scrollElement = container === window ? document.documentElement : (container as Element);
 
-        const scroll = axis === 'x'
-            ? scrollElement.scrollLeft
-            : scrollElement.scrollTop;
+		const scroll = axis === 'x' ? scrollElement.scrollLeft : scrollElement.scrollTop;
 
-        const maxScroll = axis === 'x'
-            ? scrollElement.scrollWidth - scrollElement.clientWidth
-            : scrollElement.scrollHeight - scrollElement.clientHeight;
+		const maxScroll =
+			axis === 'x'
+				? scrollElement.scrollWidth - scrollElement.clientWidth
+				: scrollElement.scrollHeight - scrollElement.clientHeight;
 
-        // Calculate progress (0-1)
-        let progress = maxScroll > 0 ? scroll / maxScroll : 0;
+		// Calculate progress (0-1)
+		let progress = maxScroll > 0 ? scroll / maxScroll : 0;
 
-        // Apply offset if specified
-        if (offset) {
-            const [start, end] = Array.isArray(offset) ? offset : [offset, offset];
-            const startOffset = parseFloat(start) / 100 || 0;
-            const endOffset = parseFloat(end) / 100 || 1;
-            progress = (progress - startOffset) / (endOffset - startOffset);
-        }
+		// Apply offset if specified
+		if (offset) {
+			const [start, end] = Array.isArray(offset) ? offset : [offset, offset];
+			const startOffset = parseFloat(start) / 100 || 0;
+			const endOffset = parseFloat(end) / 100 || 1;
+			progress = (progress - startOffset) / (endOffset - startOffset);
+		}
 
-        // Clamp progress
-        progress = Math.max(0, Math.min(1, progress));
+		// Clamp progress
+		progress = Math.max(0, Math.min(1, progress));
 
-        // Update animation time
-        if (animation.time !== undefined) {
-            animation.time = progress * (animation.duration || 1);
-        }
-    };
+		// Update animation time
+		if (animation.time !== undefined) {
+			animation.time = progress * (animation.duration || 1);
+		}
+	};
 
-    const onScroll = () => {
-        if (rafId) return;
-        rafId = requestAnimationFrame(() => {
-            updateAnimation();
-            rafId = 0 as any;
-        });
-    };
+	const onScroll = () => {
+		if (rafId) return;
+		rafId = requestAnimationFrame(() => {
+			updateAnimation();
+			rafId = 0 as any;
+		});
+	};
 
-    // Initial update
-    updateAnimation();
+	// Initial update
+	updateAnimation();
 
-    // Listen for scroll
-    const scrollTarget = container === window ? window : container;
-    scrollTarget.addEventListener('scroll', onScroll, { passive: true });
+	// Listen for scroll
+	const scrollTarget = container === window ? window : container;
+	scrollTarget.addEventListener('scroll', onScroll, { passive: true });
 
-    // Cleanup function
-    return () => {
-        scrollTarget.removeEventListener('scroll', onScroll);
-        if (rafId) {
-            cancelAnimationFrame(rafId);
-        }
-    };
+	// Cleanup function
+	return () => {
+		scrollTarget.removeEventListener('scroll', onScroll);
+		if (rafId) {
+			cancelAnimationFrame(rafId);
+		}
+	};
 }
 
 /**
@@ -151,17 +140,17 @@ export function scroll(
  * ```
  */
 export function scrollAnimate(
-    element: Element | string,
-    values: TargetAndTransition,
-    options: ScrollOptions & AnimationOptions<any> = {}
+	element: Element | string,
+	values: TargetAndTransition,
+	options: ScrollOptions & AnimationOptions<any> = {}
 ): () => void {
-    const { container, target, axis, offset, ...animationOptions } = options;
+	const { container, target, axis, offset, ...animationOptions } = options;
 
-    // Type assertion needed: animate() will be enhanced to support DOM elements
-    const animation = animate(element as any, values as any, animationOptions);
+	// Type assertion needed: animate() will be enhanced to support DOM elements
+	const animation = animate(element as any, values as any, animationOptions);
 
-    // Stop the animation immediately - scroll() will control time manually
-    animation.stop();
+	// Stop the animation immediately - scroll() will control time manually
+	animation.stop();
 
-    return scroll(animation, { container, target, axis, offset });
+	return scroll(animation, { container, target, axis, offset });
 }

@@ -2,27 +2,24 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script module lang="ts">
-  var createObject = () => ({});
-  var stateVisualElement = visualElement({
-    build: () => {},
-    // @ts-expect-error
-    measureViewportBox: axisBox,
-    resetTransform: () => {},
-    restoreTransform: () => {},
-    removeValueFromRenderState: () => {},
-    render: () => {},
-    scrapeMotionValuesFromProps: createObject,
-    readValueFromInstance: (_state, key, options) => (options as any).initialState[key] || 0,
-    makeTargetAnimatable: (element, _a) => {
-      var {transition, transitionEnd, ...target} = _a;
-      var origin = getOrigin(target as any, transition || {}, element);
-      checkTargetForNewValues(element, target, origin);
-      return Object.assign(
-        { transition, transitionEnd },
-        target
-      );
-    },
-  });
+var createObject = () => ({});
+var stateVisualElement = visualElement({
+	build: () => {},
+	// @ts-expect-error
+	measureViewportBox: axisBox,
+	resetTransform: () => {},
+	restoreTransform: () => {},
+	removeValueFromRenderState: () => {},
+	render: () => {},
+	scrapeMotionValuesFromProps: createObject,
+	readValueFromInstance: (_state, key, options) => (options as any).initialState[key] || 0,
+	makeTargetAnimatable: (element, _a) => {
+		var { transition, transitionEnd, ...target } = _a;
+		var origin = getOrigin(target as any, transition || {}, element);
+		checkTargetForNewValues(element, target, origin);
+		return Object.assign({ transition, transitionEnd }, target);
+	},
+});
 </script>
 
 <script lang="ts">

@@ -3,15 +3,15 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-    let presenceId = 0;
-    function getPresenceId() {
-        const id = presenceId;
-        presenceId++;
-        return id;
-    }
-    function newChildrenMap(): Map<number, boolean> {
-        return new Map<number, boolean>();
-    }
+let presenceId = 0;
+function getPresenceId() {
+	const id = presenceId;
+	presenceId++;
+	return id;
+}
+function newChildrenMap(): Map<number, boolean> {
+	return new Map<number, boolean>();
+}
 </script>
 
 <script lang="ts">

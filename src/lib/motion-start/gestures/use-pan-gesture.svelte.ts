@@ -6,10 +6,10 @@
  * @module use-pan-gesture
  */
 
-import { addPointerEvent } from '../events/use-pointer-event.js';
 import { useMotionConfig } from '../context/motion-config-context.svelte.js';
-import { PanSession, type PanHandler } from './PanSession.js';
+import { addPointerEvent } from '../events/use-pointer-event.js';
 import type { VisualElement } from '../render/types.js';
+import { type PanHandler, PanSession } from './PanSession.js';
 
 /**
  * Pan gesture event handlers
@@ -82,12 +82,7 @@ export function usePanGesture(
 	$effect(() => {
 		const visualElement = getVisualElement();
 		const handlers = getHandlers();
-		const hasPanEvents = !!(
-			handlers.onPan ||
-			handlers.onPanStart ||
-			handlers.onPanEnd ||
-			handlers.onPanSessionStart
-		);
+		const hasPanEvents = !!(handlers.onPan || handlers.onPanStart || handlers.onPanEnd || handlers.onPanSessionStart);
 
 		if (!visualElement || !hasPanEvents) {
 			return;

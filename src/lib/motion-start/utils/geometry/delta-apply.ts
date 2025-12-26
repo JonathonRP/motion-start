@@ -2,16 +2,16 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { Axis, AxisBox2D, BoxDelta, Point2D } from '../../types/geometry';
-import type { ResolvedValues, VisualElement } from '../../render/types';
 
+import { mix } from 'popmotion';
+import type { ResolvedValues, VisualElement } from '../../render/types';
+import { isDraggable } from '../../render/utils/is-draggable.js';
+import type { Axis, AxisBox2D, BoxDelta, Point2D } from '../../types/geometry';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { fixed } from '../fix-process-env.js';
-import { mix } from 'popmotion';
-import { isDraggable } from '../../render/utils/is-draggable.js';
 
 /**
  * Reset an axis to the provided origin box.
@@ -91,7 +91,7 @@ function applyAxisTransforms(
 	var axisOrigin = transforms[originKey] !== undefined ? transforms[originKey] : 0.5;
 	var originPoint = mix(axis.min, axis.max, axisOrigin as number);
 	// Apply the axis delta to the final axis
-	//@ts-ignore
+	//@ts-expect-error
 	applyAxisDelta(final, transforms[key], transforms[scaleKey], originPoint, transforms.scale);
 }
 /**
@@ -139,7 +139,7 @@ function removeAxisDelta(axis: Axis, translate?: number, scale?: number, origin?
  * and acts as a bridge between motion values and removeAxisDelta
  */
 function removeAxisTransforms(axis: Axis, transforms: ResolvedValues, [key, scaleKey, originKey]: string[]) {
-	//@ts-ignore
+	//@ts-expect-error
 	removeAxisDelta(axis, transforms[key], transforms[scaleKey], transforms[originKey], transforms.scale);
 }
 /**

@@ -1,7 +1,8 @@
 <script>
-    import Box from "../Box.svelte";
-    import { Motion, useAnimation } from "$lib/motion-start";
-    let controls = useAnimation();
+import { Motion, useAnimation } from '$lib/motion-start';
+import Box from '../Box.svelte';
+
+let controls = useAnimation();
 </script>
 
 <Box cls="bg-slate-800 text-black" minHeight={350}>

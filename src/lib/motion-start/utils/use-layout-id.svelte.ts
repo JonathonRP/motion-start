@@ -29,15 +29,9 @@ import { useLayoutGroup } from '../context/layout-group-context.svelte.js';
  * @public
  */
 export function useLayoutId(layoutId: string | undefined | (() => string | undefined)): string | undefined {
-    const layoutGroupId = useLayoutGroup();
+	const layoutGroupId = useLayoutGroup();
 
-    const id = $derived(
-        typeof layoutId === 'function' ? layoutId() : layoutId
-    );
+	const id = $derived(typeof layoutId === 'function' ? layoutId() : layoutId);
 
-    return $derived(
-        layoutGroupId && id !== undefined
-            ? `${layoutGroupId}-${id}`
-            : id
-    );
+	return $derived(layoutGroupId && id !== undefined ? `${layoutGroupId}-${id}` : id);
 }

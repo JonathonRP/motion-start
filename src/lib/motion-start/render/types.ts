@@ -3,18 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Component, Snippet } from 'svelte';
-import type { startAnimation } from '../animation/utils/transitions';
-import type { Presence, SharedLayoutAnimationConfig } from '../components/AnimateSharedLayout/types';
-import type { Crossfader } from '../components/AnimateSharedLayout/utils/crossfader';
-import type { MotionProps } from '../motion/types';
-import type { VisualState } from '../motion/utils/use-visual-state';
-import type { CustomValueType, MakeCustomValueType, TargetAndTransition, Transition, Variant } from '../types';
-import type { AxisBox2D, Point2D } from '../types/geometry';
-import type { MotionValue } from '../value/index.js';
-import type { AnimationState } from './utils/animation-state';
-import type { FlatTree } from './utils/flat-tree';
-import type { LifecycleManager } from './utils/lifecycles';
-import type { LayoutState, TargetProjection } from './utils/state';
 import type {
 	Booleanish,
 	ClipboardEventHandler,
@@ -27,6 +15,18 @@ import type {
 	SVGAttributes,
 	ToggleEventHandler,
 } from 'svelte/elements';
+import type { startAnimation } from '../animation/utils/transitions';
+import type { Presence, SharedLayoutAnimationConfig } from '../components/AnimateSharedLayout/types';
+import type { Crossfader } from '../components/AnimateSharedLayout/utils/crossfader';
+import type { MotionProps } from '../motion/types';
+import type { VisualState } from '../motion/utils/use-visual-state';
+import type { CustomValueType, MakeCustomValueType, TargetAndTransition, Transition, Variant } from '../types';
+import type { AxisBox2D, Point2D } from '../types/geometry';
+import type { MotionValue } from '../value/index.js';
+import type { AnimationState } from './utils/animation-state';
+import type { FlatTree } from './utils/flat-tree';
+import type { LifecycleManager } from './utils/lifecycles';
+import type { LayoutState, TargetProjection } from './utils/state';
 
 export interface MotionPoint {
 	x: MotionValue<number>;

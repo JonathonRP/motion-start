@@ -2,10 +2,11 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+import type { MotionProps } from '../../motion/types';
 import { isForcedMotionValue } from '../../motion/utils/is-forced-motion-value.js';
 import type { MotionValue } from '../../value/index.js';
 import { isMotionValue } from '../../value/utils/is-motion-value.js';
-import type { MotionProps } from '../../motion/types';
 import type { ResolvedValues } from '../types';
 
 export type UseStyle = (props: MotionProps, visualState: ResolvedValues, isStatic: boolean) => ResolvedValues;

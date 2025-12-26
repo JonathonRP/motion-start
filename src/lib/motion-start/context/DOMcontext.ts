@@ -1,10 +1,7 @@
-import type { MotionContextProps } from './MotionContext';
 import type { SharedLayoutSyncMethods } from '../components/AnimateSharedLayout/types';
+import type { MotionContextProps } from './MotionContext';
 
-export const getDomContext = (
-	name: string,
-	el: any
-): MotionContextProps | SharedLayoutSyncMethods | undefined => {
+export const getDomContext = (name: string, el: any): MotionContextProps | SharedLayoutSyncMethods | undefined => {
 	if (!el || !window) {
 		return undefined;
 	}

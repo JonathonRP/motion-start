@@ -9,6 +9,7 @@ Copyright (c) 2018 Framer B.V.
 */
 import { animations } from './featureBundle.js';
 import { createMotionProxy } from './motion-proxy.js';
+
 // import { createMotionClass } from './create-motion-class.js';
 
 /**
