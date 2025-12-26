@@ -1,12 +1,8 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import {
-        sharedLayoutContext,
-        isSharedLayout,
-    } from "../../context/shared-layout-context.svelte.js";
     import PresenceChild from "./PresenceChild/PresenceChild.svelte";
     import PopChild from "./PopChild.svelte";
 
@@ -28,15 +24,6 @@ Copyright (c) 2018 Framer B.V. -->
     const actualMode = $derived(mode || (exitBeforeEnter ? "wait" : "sync"));
 
     let _list = $derived(list !== undefined ? list : show ? [{ key: 1 }] : []);
-
-    const layoutContext = sharedLayoutContext.get();
-
-    const forceRender = () => {
-        if (isSharedLayout(layoutContext)) {
-            layoutContext.forceUpdate();
-        }
-        _list = [..._list];
-    };
 
     function getChildKey(child: { key: number }) {
         return child.key || "";
@@ -134,7 +121,6 @@ Copyright (c) 2018 Framer B.V. -->
                     // Defer re-rendering until all exiting children have indeed left
                     if (!exitComplete.size) {
                         renderedChildren = [...filteredChildren];
-                        forceRender();
                         onExitComplete && onExitComplete();
                     }
                 };
