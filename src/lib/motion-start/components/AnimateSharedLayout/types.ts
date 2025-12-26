@@ -43,6 +43,10 @@ export interface SharedLayoutProps {
 	 * @public
 	 */
 	type?: 'switch' | 'crossfade';
+	/**
+	 * @internal
+	 */
+	isCustom?: boolean;
 }
 export interface SharedLayoutAnimationConfig {
 	visibilityAction?: VisibilityAction;
@@ -63,7 +67,7 @@ export interface SharedLayoutAnimationConfig {
  */
 export interface SyncLayoutLifecycles {
 	layoutReady: (child: VisualElement) => void;
-	parent?: VisualElement;
+	parent?: VisualElement | null;
 }
 /**
  * The exposed API for children to add themselves to the batcher and to flush it.

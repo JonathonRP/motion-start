@@ -98,8 +98,9 @@ function resolveVariant(
 	);
 }
 function checkIfControllingVariants(props: MotionProps) {
-	var _a; //@ts-ignore
+	var _a;
 	return (
+		// @ts-expect-error - Checking if animate is AnimationControls with start method
 		typeof ((_a = props.animate) === null || _a === void 0 ? void 0 : _a.start) === 'function' ||
 		isVariantLabel(props.initial) ||
 		isVariantLabel(props.animate) ||

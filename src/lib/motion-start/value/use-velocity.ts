@@ -27,15 +27,12 @@ export const useVelocity = (value: MotionValue<number>) => {
 		});
 	};
 
-	const velocity = useMotionValue(value.getVelocity(), () => {
-		cleanup?.();
-		cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
-			velocity.set(newVelocity);
-		});
-		return () => {
-			cleanup?.();
-		};
-	}) as MotionValue<number> & { reset: typeof reset };
+	const velocity = useMotionValue(value.getVelocity()) as MotionValue<number> & { reset: typeof reset };
+
+	// Set up subscription to velocity updates
+	cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
+		velocity.set(newVelocity);
+	});
 
 	velocity.reset = reset;
 

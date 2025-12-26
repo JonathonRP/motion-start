@@ -317,7 +317,6 @@ function createAnimationState(visualElement: VisualElement) {
 	function setActive(type: AnimationType, isActive: boolean, options: any) {
 		var _a;
 		// If the active state hasn't changed, we can safely do nothing here
-		//@ts-expect-error
 		if (state[type].isActive === isActive) return Promise.resolve();
 		// Propagate active change to children
 		(_a = visualElement.variantChildren) === null || _a === void 0
@@ -326,7 +325,6 @@ function createAnimationState(visualElement: VisualElement) {
 					var _a;
 					return (_a = child.animationState) === null || _a === void 0 ? void 0 : _a.setActive(type, isActive);
 				});
-		//@ts-expect-error
 		state[type].isActive = isActive;
 		return animateChanges(options, type);
 	}

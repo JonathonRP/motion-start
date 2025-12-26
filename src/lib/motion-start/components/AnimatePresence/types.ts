@@ -104,4 +104,8 @@ export interface AnimatePresenceProps<T extends { key: any }> {
 	 * Only used when list is undefined.
 	 */
 	show?: boolean;
+	/**
+	 * @internal
+	 */
+	isCustom?: boolean;
 }

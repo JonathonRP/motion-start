@@ -106,7 +106,7 @@ function makeLatestValues(
 
   const context =
     getContext<MotionContextProps>(MOTION_CONTEXT_KEY) ||
-    MotionContext(isCustom);
+    MotionContext.get();
   const presenceContext =
     getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) ||
     PresenceContext.get();

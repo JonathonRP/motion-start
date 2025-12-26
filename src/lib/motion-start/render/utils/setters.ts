@@ -96,12 +96,12 @@ function checkTargetForNewValues(visualElement: VisualElement, target: TargetWit
 		 * if not read the value from the DOM. As an absolute fallback, take the defined target value.
 		 */
 		if (value === null) {
-			//@ts-expect-error
 			value =
 				(_b = (_a = origin[key]) !== null && _a !== void 0 ? _a : visualElement.readValue(key)) !== null &&
 				_b !== void 0
-					? _b // @ts-expect-error
-					: target[key];
+					? _b
+					: // @ts-expect-error - Dynamic key access
+						target[key];
 		}
 		/**
 		 * If value is still undefined or null, ignore it. Preferably this would throw,

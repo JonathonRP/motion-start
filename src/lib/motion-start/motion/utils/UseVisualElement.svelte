@@ -52,7 +52,7 @@ export const ssr = false;
     getContext<LazyContextProps>(LAZY_CONTEXT_KEY) || LazyContext.get();
 
   const mc =
-    getContext<MotionContextProps>(MOTION_CONTEXT_KEY) || MotionContext(isCustom);
+    getContext<MotionContextProps>(MOTION_CONTEXT_KEY) || MotionContext.get();
 
   let parent = $derived(mc.visualElement);
 

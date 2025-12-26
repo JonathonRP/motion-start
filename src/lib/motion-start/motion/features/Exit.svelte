@@ -4,6 +4,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
 import { getContext } from 'svelte';
+import { get } from 'svelte/store';
 import {
 	type AlwaysPresent,
 	type NotPresent,
@@ -19,7 +20,7 @@ const { custom } = $derived(props);
 const presenceContext = $derived(
 	getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) || PresenceContext.get()
 );
-const presence = $derived(usePresence(isCustom));
+const presenceStore = usePresence(isCustom);
 
 const _effect = (pres: AlwaysPresent | Present | NotPresent) => {
 	const [isPresent, onExitComplete] = pres;
@@ -30,7 +31,7 @@ const _effect = (pres: AlwaysPresent | Present | NotPresent) => {
 
 	!isPresent && animation?.then(onExitComplete);
 };
-$effect(() => _effect(presence));
+$effect(() => _effect(get(presenceStore)));
 </script>
 
 {@render children?.()}

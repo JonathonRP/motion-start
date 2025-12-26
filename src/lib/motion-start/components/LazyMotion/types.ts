@@ -54,4 +54,8 @@ export interface LazyProps {
 	 * @public
 	 */
 	strict?: boolean;
+	/**
+	 * @internal
+	 */
+	isCustom?: boolean;
 }

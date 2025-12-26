@@ -18,7 +18,7 @@ export type NotPresent = [false, SafeToRemove];
 let counter = 0;
 const incrementId = () => counter++;
 
-export function isPresent(context: PresenceContextProps) {
+export function isPresent(context: PresenceContextProps | null) {
 	return context === null ? true : context.isPresent;
 }
 

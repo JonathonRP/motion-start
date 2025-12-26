@@ -126,7 +126,7 @@ function createCrossfader(): Crossfader {
 					}
 					onUpdate();
 				},
-			})
+			}
 		);
 	}
 	function updateCrossfade() {

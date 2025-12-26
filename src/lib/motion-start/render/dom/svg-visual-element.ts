@@ -49,7 +49,6 @@ export const svgVisualElement = visualElement({
 		 * Ensure we render the element as soon as possible to reflect the measured dimensions.
 		 * Preferably this would happen synchronously but we put it in rAF to prevent layout thrashing.
 		 */
-		//@ts-expect-error
 		element.scheduleRender();
 	},
 

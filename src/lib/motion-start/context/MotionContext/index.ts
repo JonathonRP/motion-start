@@ -62,6 +62,6 @@ export {
 } from '../motion-context.svelte.js';
 
 // Re-export context as MOTION_CONTEXT_KEY for backwards compatibility
-export { motionContext as MOTION_CONTEXT_KEY };
+export const MOTION_CONTEXT_KEY = MotionContext;
 
 export { default as UseVisualElementContext } from './MotionContext.svelte';

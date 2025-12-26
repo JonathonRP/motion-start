@@ -1,7 +1,6 @@
 import { getContext } from 'svelte';
 import { get, type Writable } from 'svelte/store';
 import type { MotionContextProps } from '../../context/MotionContext/index.js';
-// @ts-expect-error
 import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../context/ScaleCorrectionProvider.svelte';
 // '$lib/motion-start/context/MotionContext';
 

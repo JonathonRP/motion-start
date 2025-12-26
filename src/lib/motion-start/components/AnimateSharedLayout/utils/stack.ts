@@ -55,7 +55,6 @@ function layoutStack(): LayoutStack {
 		},
 		getLead: () => state.lead,
 		updateSnapshot: () => {
-			//@ts-expect-error
 			if (!state.lead) return;
 			prevValues = crossfader.isActive() ? crossfader.getLatestValues() : state.lead.getLatestValues(); //wierd
 			prevViewportBox = state.lead.prevViewportBox;

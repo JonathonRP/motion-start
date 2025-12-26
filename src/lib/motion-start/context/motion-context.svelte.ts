@@ -13,7 +13,7 @@ import type { VisualElement } from '../render/types.js';
  * @public
  */
 export interface MotionContextValue {
-	visualElement?: VisualElement;
+	visualElement?: VisualElement | null | undefined;
 	initial?: false | string | string[];
 	animate?: string | string[];
 	/** @deprecated Legacy property for backwards compatibility */
@@ -73,7 +73,7 @@ export const motionContext = {
  * @returns The visual element or undefined
  * @public
  */
-export function useVisualElement(): VisualElement | undefined {
+export function useVisualElement(): VisualElement | null | undefined {
 	const ctx = motionContext.get();
 	return ctx?.visualElement;
 }

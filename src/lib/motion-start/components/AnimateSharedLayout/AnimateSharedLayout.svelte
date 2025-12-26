@@ -27,7 +27,7 @@ if (typeof console !== 'undefined') {
 	);
 }
 
-const context = getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+const context = getContext<Writable<MotionContextProps>>(MotionContext) || writable(MotionContext.get());
 
 /**
  * Track whether the component has mounted. If it hasn't, the presence of added children
