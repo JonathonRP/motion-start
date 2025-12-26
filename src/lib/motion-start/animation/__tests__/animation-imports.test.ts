@@ -63,7 +63,7 @@ describe('Phase 2: Animation System Imports', () => {
 
 		it.skip('should export UseAnimatedState from hooks/', async () => {
 			// Skipped: UseAnimatedState requires browser environment (axisBox)
-			const { UseAnimatedState } = await import('../hooks/use-animated-state.js');
+			const { default: UseAnimatedState } = await import('../hooks/UseAnimatedState.svelte');
 			expect(UseAnimatedState).toBeDefined();
 		});
 

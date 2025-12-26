@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import type { MotionValue } from './index.js';
-import { useMotionValue } from './use-motion-value.js';
+import { useMotionValue } from './use-motion-value.svelte.js';
 /**
  * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.
  *

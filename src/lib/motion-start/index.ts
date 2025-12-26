@@ -108,7 +108,7 @@ export type {
 	TapInfo,
 	ViewportOptions,
 } from './gestures/types.js';
-export { UseGestures } from './gestures/use-gestures.js';
+export { default as UseGestures } from './gestures/UseGestures.svelte';
 export { UsePanGesture } from './gestures/pan/index.js';
 export { UseTapGesture } from './gestures/press/index.js';
 export type { LayoutProps } from './motion/features/layout/types.js';
@@ -217,10 +217,10 @@ export { useAnimate } from './value/use-animate.svelte.js';
 export { useAnimationFrame } from './value/use-animation-frame.svelte.js';
 export { useInView, useInViewWithCallback } from './value/use-in-view.svelte.js';
 export { useMotionTemplate } from './value/use-motion-template.js';
-export { useMotionValue } from './value/use-motion-value.js';
+export { useMotionValue } from './value/use-motion-value.svelte.js';
 export { useMotionValueEvent } from './value/use-motion-value-event.svelte.js';
 export { useScroll } from './value/use-scroll.svelte.js';
-export { useSpring } from './value/use-spring.js';
+export { useSpring } from './value/use-spring.svelte.js';
 export { useTime } from './value/use-time.svelte.js';
 export { useTransform } from './value/use-transform.js';
 export { useVelocity } from './value/use-velocity.js';

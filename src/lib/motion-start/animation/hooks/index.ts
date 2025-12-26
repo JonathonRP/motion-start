@@ -5,4 +5,4 @@ Copyright (c) 2018 Framer B.V.
 
 // Animation hooks for Svelte 5
 export { useAnimation, useAnimationControls } from './use-animation.svelte.js';
-export { UseAnimatedState } from './use-animated-state.js';
+export { default as UseAnimatedState } from './UseAnimatedState.svelte';
