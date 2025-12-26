@@ -6,16 +6,19 @@
  * Copyright (c) 2018 Framer B.V.
  */
 
-import { nanoid } from 'nanoid/non-secure';
 import type { MutableRefObject } from '../utils/safe-react-types.js';
 import { getContext, hasContext, setContext } from 'svelte';
+
+// Simple unique ID generator (replaces nanoid)
+let idCounter = 0;
+const generateId = () => `ctx_${Date.now()}_${++idCounter}_${Math.random().toString(36).slice(2, 11)}`;
 
 export class Context<T> {
 	readonly #key: symbol;
 	readonly #init: T;
 
 	public constructor(initial: T) {
-		this.#key = Symbol(nanoid());
+		this.#key = Symbol(generateId());
 		this.#init = initial;
 	}
 
