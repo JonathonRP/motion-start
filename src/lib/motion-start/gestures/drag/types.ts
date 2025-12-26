@@ -6,7 +6,7 @@ import type { VariantLabels } from '../../motion/types';
 import type { Inertia, TargetAndTransition } from '../../types';
 import type { Axis, BoundingBox2D } from '../../types/geometry.js';
 import type { MotionValue } from '../../value/index.js';
-import type { PanInfo } from '../PanSession';
+import type { PanInfo } from '../pan/PanSession';
 import type { DragControls } from './use-drag-controls';
 export type DragHandler = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
 export type DragElastic = boolean | number | Partial<BoundingBox2D>;

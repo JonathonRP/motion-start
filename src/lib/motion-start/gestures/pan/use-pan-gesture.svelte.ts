@@ -6,9 +6,9 @@
  * @module use-pan-gesture
  */
 
-import { useMotionConfig } from '../context/motion-config-context.svelte.js';
-import { addPointerEvent } from '../events/use-pointer-event.js';
-import type { VisualElement } from '../render/types.js';
+import { useMotionConfig } from '../../context/motion-config-context.svelte.js';
+import { addPointerEvent } from '../../events/use-pointer-event.js';
+import type { VisualElement } from '../../render/types.js';
 import { type PanHandler, PanSession } from './PanSession.js';
 
 /**

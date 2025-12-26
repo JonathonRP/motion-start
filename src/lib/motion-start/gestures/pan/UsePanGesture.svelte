@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
 import { getContext } from 'svelte';
 import { get } from 'svelte/store';
-import { MotionConfigContext } from '../context/MotionConfigContext.js';
-import { UsePointerEvent } from '../events/use-pointer-event';
+import { MotionConfigContext } from '../../context/MotionConfigContext.js';
+import { UsePointerEvent } from '../../events/use-pointer-event';
 import { PanSession } from './PanSession';
 
 let { props, visualElement, isCustom = false } = $props();

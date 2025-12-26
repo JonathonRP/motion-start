@@ -22,19 +22,19 @@ export {
 export {
 	type FocusGestureHandlers,
 	useFocusGesture,
-} from '../gestures/use-focus-gesture.svelte.js';
+} from '../gestures/focus/use-focus-gesture.svelte.js';
 export {
 	type HoverGestureHandlers,
 	useHoverGesture,
-} from '../gestures/use-hover-gesture.svelte.js';
+} from '../gestures/hover/use-hover-gesture.svelte.js';
 export {
 	type PanGestureHandlers,
 	usePanGesture,
-} from '../gestures/use-pan-gesture.svelte.js';
+} from '../gestures/pan/use-pan-gesture.svelte.js';
 export {
 	type TapGestureHandlers,
 	useTapGesture,
-} from '../gestures/use-tap-gesture.svelte.js';
+} from '../gestures/press/use-tap-gesture.svelte.js';
 
 // Layout utilities
 export { useLayoutId } from './use-layout-id.svelte.js';

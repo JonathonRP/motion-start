@@ -7,12 +7,12 @@
  */
 
 import { pipe } from 'popmotion';
-import type { EventInfo } from '../events/event-info.js';
-import { addPointerEvent } from '../events/use-pointer-event.js';
-import type { VisualElement } from '../render/types.js';
-import { AnimationType } from '../render/utils/types.js';
-import { isDragActive } from './drag/utils/lock.js';
-import { isNodeOrChild } from './utils/is-node-or-child.js';
+import type { EventInfo } from '../../events/event-info.js';
+import { addPointerEvent } from '../../events/use-pointer-event.js';
+import type { VisualElement } from '../../render/types.js';
+import { AnimationType } from '../../render/utils/types.js';
+import { isDragActive } from '../drag/utils/lock.js';
+import { isNodeOrChild } from '../utils/is-node-or-child.js';
 
 /**
  * Tap gesture event handlers

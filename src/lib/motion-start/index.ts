@@ -97,7 +97,7 @@ export {
  * TYPES
  * ========================================
  */
-export type { PanInfo } from './gestures/PanSession.js';
+export type { PanInfo } from './gestures/pan/PanSession.js';
 export type {
 	FocusHandlers,
 	HoverHandlers,
@@ -108,8 +108,8 @@ export type {
 	ViewportOptions,
 } from './gestures/types.js';
 export { UseGestures } from './gestures/use-gestures.js';
-export { UsePanGesture } from './gestures/use-pan-gesture.js';
-export { UseTapGesture } from './gestures/use-tap-gesture.js';
+export { UsePanGesture } from './gestures/pan/index.js';
+export { UseTapGesture } from './gestures/press/index.js';
 export type { LayoutProps } from './motion/features/layout/types.js';
 export { animateLayout as layoutAnimation } from './motion/features/layout/utils.js';
 export * from './motion/features/types.js';

@@ -10,7 +10,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { UseDrag } from '../../gestures/drag/use-drag.js';
-import { UsePanGesture } from '../../gestures/use-pan-gesture.js';
+import { UsePanGesture } from '../../gestures/pan/index.js';
 
 /**
  * @public

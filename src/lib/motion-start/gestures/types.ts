@@ -6,7 +6,7 @@ import type { EventInfo } from '../events/types';
 import type { VariantLabels } from '../motion/types';
 import type { TargetAndTransition } from '../types';
 import type { Point2D } from '../types/geometry';
-import type { PanInfo } from './PanSession';
+import type { PanInfo } from './pan/PanSession';
 export type RemoveEvent = () => void;
 /**
  * @public

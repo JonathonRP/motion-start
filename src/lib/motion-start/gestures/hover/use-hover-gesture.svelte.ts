@@ -6,12 +6,12 @@
  * @module use-hover-gesture
  */
 
-import type { EventInfo } from '../events/event-info.js';
-import { addPointerEvent } from '../events/use-pointer-event.js';
-import type { VisualElement } from '../render/types.js';
-import { AnimationType } from '../render/utils/types.js';
-import { isDragActive } from './drag/utils/lock.js';
-import { isMouseEvent } from './utils/event-type.js';
+import type { EventInfo } from '../../events/event-info.js';
+import { addPointerEvent } from '../../events/use-pointer-event.js';
+import type { VisualElement } from '../../render/types.js';
+import { AnimationType } from '../../render/utils/types.js';
+import { isDragActive } from '../drag/utils/lock.js';
+import { isMouseEvent } from '../utils/event-type.js';
 
 /**
  * Hover gesture event handlers

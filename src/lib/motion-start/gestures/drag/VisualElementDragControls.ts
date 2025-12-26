@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { MotionProps } from '../../motion/types';
 import type { VisualElement } from '../../render/types';
 import type { AxisBox2D, Point2D, TransformPoint2D } from '../../types/geometry';
-import type { PanInfo } from '../PanSession';
+import type { PanInfo } from '../pan/PanSession';
 import type { DraggableProps, ResolvedConstraints } from './types';
 import type { Lock } from './utils/lock.js';
 
@@ -50,7 +50,7 @@ import { calcOrigin } from '../../projection/geometry/delta-calc.js';
 import { createBox } from '../../projection/geometry/models.js';
 import { convertBoxToBoundingBox, convertBoundingBoxToBox } from '../../projection/geometry/conversion.js';
 import { isRefObject } from '../../utils/is-ref-object.js';
-import { PanSession } from '../PanSession.js';
+import { PanSession } from '../pan/PanSession.js';
 import {
 	applyConstraints,
 	calcConstrainedMinPoint,
