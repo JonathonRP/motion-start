@@ -80,7 +80,6 @@
 	"dependencies": {
 		"framesync": "^6.1.2",
 		"popmotion": "^11.0.5",
-		"runed": "^0.37.1",
 		"style-value-types": "5.1.2"
 	},
 	"devDependencies": {
