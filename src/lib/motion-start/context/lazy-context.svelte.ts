@@ -52,18 +52,21 @@ const [getLazyContext, setLazyContext] = createContext<LazyContextValue>();
  */
 export const lazyContext = {
 	/**
-	 * Set lazy context value
+	 * Set lazy context value and return it
 	 */
-	set: setLazyContext,
+	set(value: LazyContextValue): LazyContextValue {
+		setLazyContext(value);
+		return value;
+	},
 
 	/**
-	 * Get lazy context value (returns undefined if not in context)
+	 * Get lazy context value (returns default if not in context)
 	 */
-	get(): LazyContextValue | undefined {
+	get(): LazyContextValue {
 		try {
 			return getLazyContext();
 		} catch {
-			return undefined;
+			return DEFAULT_LAZY;
 		}
 	},
 };
@@ -75,5 +78,5 @@ export const lazyContext = {
  * @public
  */
 export function useLazyContext(): LazyContextValue {
-    return lazyContext.get() ?? DEFAULT_LAZY;
+    return lazyContext.get();
 }

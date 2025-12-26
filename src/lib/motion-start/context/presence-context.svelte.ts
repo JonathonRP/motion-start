@@ -53,18 +53,21 @@ const [getPresenceContext, setPresenceContext] = createContext<PresenceContextVa
  */
 export const presenceContext = {
 	/**
-	 * Set presence context value
+	 * Set presence context value and return it
 	 */
-	set: setPresenceContext,
+	set(value: PresenceContextValue | null): PresenceContextValue | null {
+		setPresenceContext(value);
+		return value;
+	},
 
 	/**
-	 * Get presence context value (returns undefined if not in context)
+	 * Get presence context value (returns null if not in context)
 	 */
-	get(): PresenceContextValue | null | undefined {
+	get(): PresenceContextValue | null {
 		try {
 			return getPresenceContext();
 		} catch {
-			return undefined;
+			return null;
 		}
 	},
 };
@@ -76,7 +79,7 @@ export const presenceContext = {
  * @public
  */
 export function usePresence(): PresenceContextValue | null {
-    return presenceContext.get() ?? null;
+    return presenceContext.get();
 }
 
 /**

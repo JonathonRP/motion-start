@@ -30,18 +30,21 @@ const [getLayoutGroupContext, setLayoutGroupContext] = createContext<string | nu
  */
 export const layoutGroupContext = {
 	/**
-	 * Set layout group context value
+	 * Set layout group context value and return it
 	 */
-	set: setLayoutGroupContext,
+	set(value: string | null): string | null {
+		setLayoutGroupContext(value);
+		return value;
+	},
 
 	/**
-	 * Get layout group context value (returns undefined if not in context)
+	 * Get layout group context value (returns null if not in context)
 	 */
-	get(): string | null | undefined {
+	get(): string | null {
 		try {
 			return getLayoutGroupContext();
 		} catch {
-			return undefined;
+			return null;
 		}
 	},
 };
@@ -53,5 +56,5 @@ export const layoutGroupContext = {
  * @public
  */
 export function useLayoutGroup(): string | null {
-    return layoutGroupContext.get() ?? null;
+    return layoutGroupContext.get();
 }

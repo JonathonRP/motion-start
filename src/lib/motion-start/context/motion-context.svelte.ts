@@ -28,6 +28,11 @@ export interface MotionContextValue {
 const [getMotionContext, setMotionContext] = createContext<MotionContextValue>();
 
 /**
+ * Default motion context value
+ */
+const DEFAULT_MOTION_CONTEXT: MotionContextValue = {};
+
+/**
  * Motion context - provides visual element and animation state to descendants
  *
  * @example
@@ -43,18 +48,21 @@ const [getMotionContext, setMotionContext] = createContext<MotionContextValue>()
  */
 export const motionContext = {
 	/**
-	 * Set motion context value
+	 * Set motion context value and return it
 	 */
-	set: setMotionContext,
+	set(value: MotionContextValue): MotionContextValue {
+		setMotionContext(value);
+		return value;
+	},
 
 	/**
-	 * Get motion context value (returns undefined if not in context)
+	 * Get motion context value (returns default empty object if not in context)
 	 */
-	get(): MotionContextValue | undefined {
+	get(): MotionContextValue {
 		try {
 			return getMotionContext();
 		} catch {
-			return undefined;
+			return DEFAULT_MOTION_CONTEXT;
 		}
 	},
 };
@@ -77,5 +85,5 @@ export function useVisualElement(): VisualElement | undefined {
  * @public
  */
 export function useMotionContext(): MotionContextValue {
-    return motionContext.get() ?? {};
+    return motionContext.get();
 }

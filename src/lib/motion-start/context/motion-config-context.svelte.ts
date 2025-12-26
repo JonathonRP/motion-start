@@ -66,18 +66,21 @@ const [getMotionConfigContext, setMotionConfigContext] = createContext<MotionCon
  */
 export const motionConfigContext = {
 	/**
-	 * Set motion config context value
+	 * Set motion config context value and return it
 	 */
-	set: setMotionConfigContext,
+	set(value: MotionConfigContextValue): MotionConfigContextValue {
+		setMotionConfigContext(value);
+		return value;
+	},
 
 	/**
-	 * Get motion config context value (returns undefined if not in context)
+	 * Get motion config context value (returns default if not in context)
 	 */
-	get(): MotionConfigContextValue | undefined {
+	get(): MotionConfigContextValue {
 		try {
 			return getMotionConfigContext();
 		} catch {
-			return undefined;
+			return DEFAULT_CONFIG;
 		}
 	},
 };
@@ -89,5 +92,5 @@ export const motionConfigContext = {
  * @public
  */
 export function useMotionConfig(): MotionConfigContextValue {
-    return motionConfigContext.get() ?? DEFAULT_CONFIG;
+    return motionConfigContext.get();
 }

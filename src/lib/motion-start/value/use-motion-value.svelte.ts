@@ -6,7 +6,6 @@
 import { onMount } from 'svelte';
 import { motionValue, type MotionValue } from './index.js';
 import { useMotionConfig } from '../context/motion-config-context.svelte.js';
-import { useConstant } from '../utils/use-constant.svelte.js';
 
 /**
  * Creates a `MotionValue` to track the state and velocity of a value.
@@ -31,7 +30,8 @@ import { useConstant } from '../utils/use-constant.svelte.js';
  * @public
  */
 export function useMotionValue<T>(initial: T): MotionValue<T> {
-    const value = useConstant(() => motionValue(initial));
+    // In Svelte, component scripts run once per instance, so we can directly create the value
+    const value = motionValue(initial);
 
     /**
      * If this motion value is being used in static mode, like on

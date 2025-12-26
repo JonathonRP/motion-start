@@ -8,7 +8,6 @@ import { onMount } from 'svelte';
 import type { TargetAndTransition } from '../types.js';
 import { animate, type AnimationOptions, type AnimationPlaybackControls } from '../animation/animate.js';
 import type { AnimationScope } from '../animation/types.js';
-import { useConstant } from '../utils/use-constant.svelte.js';
 import { isBrowser } from '../utils/environment.js';
 
 export interface AnimateFunction {
@@ -50,22 +49,21 @@ export interface AnimateFunction {
  * ```
  */
 export function useAnimate<T extends Element = HTMLElement>(): [AnimationScope<T>, AnimateFunction] {
-    const scope: AnimationScope<T> = useConstant(() => {
-        // Create a scope object with a reactive current property
-        let _current = $state<T | null>(null) as T;
+    // In Svelte, component scripts run once per instance, so we can directly create the scope
+    // Create a scope object with a reactive current property
+    let _current = $state<T | null>(null) as T;
 
-        return {
-            get current() {
-                return _current;
-            },
-            set current(value: T) {
-                _current = value;
-            },
-            animations: []
-        } as AnimationScope<T>;
-    });
+    const scope: AnimationScope<T> = {
+        get current() {
+            return _current;
+        },
+        set current(value: T) {
+            _current = value;
+        },
+        animations: []
+    } as AnimationScope<T>;
 
-    const animateScoped: AnimateFunction = useConstant(() => (selector, values, options) => {
+    const animateScoped: AnimateFunction = (selector, values, options) => {
         if (!isBrowser || !scope.current) {
             return {
                 stop: () => {},
@@ -100,7 +98,7 @@ export function useAnimate<T extends Element = HTMLElement>(): [AnimationScope<T
         scope.animations.push(controls);
 
         return controls;
-    });
+    };
 
     onMount(() => {
         return () => {
