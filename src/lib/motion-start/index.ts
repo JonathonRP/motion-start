@@ -34,7 +34,7 @@ export {
  */
 export { animate } from "./animation/animate.js";
 export { animationControls } from "./animation/animation-controls.js";
-export { useAnimation } from "./animation/use-animation.js";
+export { useAnimation, useAnimationControls } from "./animation/use-animation.js";
 export { UseAnimation } from "./animation/use-animation.js";
 export type { AnimationControls } from "./animation/types.js";
 
