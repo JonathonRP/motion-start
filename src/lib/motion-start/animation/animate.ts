@@ -149,9 +149,9 @@ function animate<V>(
 
 			// Calculate delay for staggered animations
 			const delayValue = transition?.delay ?? 0;
-			const resolvedDelay = typeof delayValue === 'function'
-				? delayValue(index, elements.length)
-				: delayValue;
+			const resolvedDelay: number = typeof delayValue === 'function'
+				? (delayValue as (index: number, total: number) => number)(index, elements.length)
+				: (delayValue as number);
 
 			const elementTransition = {
 				...transition,
@@ -174,9 +174,9 @@ function animate<V>(
 	const value = isMotionValue(from) ? from : motionValue(from as V);
 
 	const delayValue = transition?.delay ?? 0;
-	const resolvedDelay = typeof delayValue === 'function'
-		? delayValue(0, 1)
-		: delayValue;
+	const resolvedDelay: number = typeof delayValue === 'function'
+		? (delayValue as (index: number, total: number) => number)(0, 1)
+		: (delayValue as number);
 
 	const finalTransition = {
 		...transition,

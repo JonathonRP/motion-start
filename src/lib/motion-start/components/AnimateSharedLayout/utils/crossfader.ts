@@ -91,8 +91,10 @@ function createCrossfader(): Crossfader {
 		finalCrossfadeFrame = null;
 		var hasUpdated = false;
 		var onUpdate = () => {
-			hasUpdated = true;// @ts-expect-error
-			lead && lead.scheduleRender(); // @ts-expect-error
+			hasUpdated = true;
+			// @ts-expect-error
+			lead && lead.scheduleRender();
+			// @ts-expect-error
 			follow && follow.scheduleRender();
 		};
 		var onComplete = () => {
@@ -111,7 +113,8 @@ function createCrossfader(): Crossfader {
 				...(transition as any),
 				onUpdate: onUpdate,
 				onComplete: () => {
-					if (!hasUpdated) {// @ts-expect-error
+					if (!hasUpdated) {
+						// @ts-expect-error
 						progress.set(target);
 						/**
 						 * If we never ran an update, for instance if this was an instant transition, fire a

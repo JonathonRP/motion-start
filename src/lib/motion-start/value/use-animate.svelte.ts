@@ -7,6 +7,8 @@
 import { onMount } from 'svelte';
 import type { TargetAndTransition } from '../types.js';
 import { animate, type AnimationOptions, type AnimationPlaybackControls } from '../animation/animate.js';
+import type { AnimationScope } from '../animation/types.js';
+import { useConstant } from '../utils/use-constant.svelte.js';
 import { isBrowser } from '../utils/environment.js';
 
 export interface AnimateFunction {
@@ -17,22 +19,11 @@ export interface AnimateFunction {
     ): AnimationPlaybackControls;
 }
 
-export interface UseAnimateReturn {
-    /**
-     * Reference to the component scope element
-     */
-    readonly scope: HTMLElement | null;
-    /**
-     * Animate function with component-scoped selectors
-     */
-    readonly animate: AnimateFunction;
-}
-
 /**
  * Provides manual animation controls with automatic cleanup
  *
- * Returns a scope ref and animate function. Elements can be selected
- * within the scope using CSS selectors.
+ * Returns a tuple of [scope, animate]. The scope is a ref to attach to a container
+ * element, and animate is a function to animate elements within that scope.
  *
  * Note: This hook requires DOM element animation support.
  * Current implementation uses type assertions as the base animate()
@@ -43,7 +34,7 @@ export interface UseAnimateReturn {
  * <script>
  *   import { useAnimate } from 'motion-start';
  *
- *   const { scope, animate } = useAnimate();
+ *   const [scope, animate] = useAnimate();
  *
  *   function handleClick() {
  *     animate('.box', { x: 100 }, { duration: 0.5 });
@@ -51,19 +42,31 @@ export interface UseAnimateReturn {
  *   }
  * </script>
  *
- * <div bind:this={scope}>
+ * <div bind:this={scope.current}>
  *   <button onclick={handleClick}>Animate</button>
  *   <div class="box">Box</div>
  *   <div class="circle">Circle</div>
  * </div>
  * ```
  */
-export function useAnimate(): UseAnimateReturn {
-    let scope = $state<HTMLElement | null>(null);
-    let activeAnimations: AnimationPlaybackControls[] = [];
+export function useAnimate<T extends Element = HTMLElement>(): [AnimationScope<T>, AnimateFunction] {
+    const scope: AnimationScope<T> = useConstant(() => {
+        // Create a scope object with a reactive current property
+        let _current = $state<T | null>(null) as T;
 
-    const animateScoped: AnimateFunction = (selector, values, options) => {
-        if (!isBrowser || !scope) {
+        return {
+            get current() {
+                return _current;
+            },
+            set current(value: T) {
+                _current = value;
+            },
+            animations: []
+        } as AnimationScope<T>;
+    });
+
+    const animateScoped: AnimateFunction = useConstant(() => (selector, values, options) => {
+        if (!isBrowser || !scope.current) {
             return {
                 stop: () => {},
                 time: 0,
@@ -76,7 +79,7 @@ export function useAnimate(): UseAnimateReturn {
         let element: Element | null = null;
 
         if (typeof selector === 'string') {
-            element = scope.querySelector(selector);
+            element = (scope.current as any).querySelector(selector);
         } else {
             element = selector;
         }
@@ -94,25 +97,18 @@ export function useAnimate(): UseAnimateReturn {
 
         // Type assertion needed: animate() will be enhanced to support DOM elements
         const controls = animate(element as any, values as any, options);
-        activeAnimations.push(controls);
+        scope.animations.push(controls);
 
         return controls;
-    };
+    });
 
     onMount(() => {
         return () => {
             // Cleanup: stop all active animations
-            activeAnimations.forEach(ctrl => ctrl.stop());
-            activeAnimations = [];
+            scope.animations.forEach(ctrl => ctrl.stop());
+            scope.animations = [];
         };
     });
 
-    return {
-        get scope() {
-            return scope;
-        },
-        get animate() {
-            return animateScoped;
-        }
-    };
+    return [scope, animateScoped];
 }

@@ -1,9 +1,21 @@
-/** 
+/**
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { VisualElement } from "../render/types";
 import type { TargetAndTransition, TargetResolver, Transition } from "../types";
+import type { AnimationPlaybackControls } from "./animate.js";
+
+/**
+ * Animation scope for managing scoped animations
+ * Based on framer-motion@11.11.11
+ * @public
+ */
+export interface AnimationScope<T = any> {
+    readonly current: T;
+    animations: AnimationPlaybackControls[];
+}
+
 /**
  * @public
  */
