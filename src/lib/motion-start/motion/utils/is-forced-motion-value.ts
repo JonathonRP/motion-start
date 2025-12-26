@@ -8,7 +8,7 @@ import type { MotionProps } from '../..';
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { valueScaleCorrection } from '../../render/dom/projection/scale-correction.js';
+import { valueScaleCorrection } from '../../projection/utils/scale-correction.js';
 import { isTransformOriginProp, isTransformProp } from '../../render/html/utils/transform.js';
 
 function isForcedMotionValue(

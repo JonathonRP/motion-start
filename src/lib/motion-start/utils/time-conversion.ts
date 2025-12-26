@@ -13,6 +13,12 @@ Copyright (c) 2018 Framer B.V.
  * @param seconds - Time in seconds.
  * @return milliseconds - Converted time in milliseconds.
  */
-var secondsToMilliseconds = (seconds: number) => seconds * 1000;
+export const secondsToMilliseconds = (seconds: number) => seconds * 1000;
 
-export { secondsToMilliseconds };
+/**
+ * Converts milliseconds to seconds
+ *
+ * @param milliseconds - Time in milliseconds.
+ * @return seconds - Converted time in seconds.
+ */
+export const millisecondsToSeconds = (milliseconds: number) => milliseconds / 1000;

@@ -7,7 +7,7 @@ import { get, type Writable, writable } from 'svelte/store';
 import { setDomContext } from '../../context/DOMcontext.js';
 import { MotionContext, type MotionContextProps } from '../../context/MotionContext/index.js';
 import { SharedLayoutContext } from '../../context/SharedLayoutContext.js';
-import { snapshotViewportBox } from '../../render/dom/projection/utils.js';
+import { snapshotViewportBox } from '../../projection/utils/projection-utils.js';
 import type { VisualElement } from '../../render/types.js';
 import PresenceChild from '../AnimatePresence/PresenceChild/PresenceChild.svelte';
 import { Presence, type SharedLayoutProps } from './index.js';

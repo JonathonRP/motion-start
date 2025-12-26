@@ -19,6 +19,24 @@ export type { AnimationControls, AnimationScope } from './animation/types.js';
 export { useAnimation, useAnimationControls } from './animation/use-animation.js';
 /**
  * ========================================
+ * FRAMELOOP
+ * ========================================
+ */
+export { frame, cancelFrame, frameData, frameSteps } from './frameloop/index.js';
+export { microtask, cancelMicrotask } from './frameloop/microtask.js';
+export { time } from './frameloop/sync-time.js';
+export { stepsOrder } from './frameloop/batcher.js';
+export type {
+	Process,
+	Schedule,
+	Step,
+	StepId,
+	FrameData,
+	Batcher,
+	Steps,
+} from './frameloop/types.js';
+/**
+ * ========================================
  * COMPONENTS
  * ========================================
  */
@@ -126,8 +144,8 @@ export {
 } from './render/dom/motion.js';
 export { m, m as M } from './render/dom/motion-minimal.js';
 export type { CustomDomComponent } from './render/dom/motion-proxy.js';
-export { addScaleCorrection } from './render/dom/projection/scale-correction.js';
-export { snapshotViewportBox } from './render/dom/projection/utils.js';
+export { addScaleCorrection } from './projection/utils/scale-correction.js';
+export { snapshotViewportBox } from './projection/utils/projection-utils.js';
 export { batchLayout, flushLayout } from './render/dom/utils/batch-layout.js';
 export { visualElement } from './render/index.js';
 export type { VisualElement } from './render/types.js';

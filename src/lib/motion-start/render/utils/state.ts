@@ -88,23 +88,23 @@ export interface LayoutState {
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { axisBox, delta } from '../../utils/geometry/index.js';
+import { createBox, createDelta } from '../../projection/geometry/models.js';
 
 var createProjectionState = () =>
 	({
 		isEnabled: false,
 		isTargetLocked: false,
-		target: axisBox(),
-		targetFinal: axisBox(),
+		target: createBox(),
+		targetFinal: createBox(),
 	}) as TargetProjection;
 function createLayoutState() {
 	return {
 		isHydrated: false,
-		layout: axisBox(),
-		layoutCorrected: axisBox(),
+		layout: createBox(),
+		layoutCorrected: createBox(),
 		treeScale: { x: 1, y: 1 },
-		delta: delta(),
-		deltaFinal: delta(),
+		delta: createDelta(),
+		deltaFinal: createDelta(),
 		deltaTransform: '',
 	} as LayoutState;
 }

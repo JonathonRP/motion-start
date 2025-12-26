@@ -28,10 +28,10 @@ const defaultLayoutTransition = {
     getValueTransition,
     startAnimation,
   } from "../../../animation/utils/transitions.js";
-  import { defaultScaleCorrectors } from "../../../render/dom/projection/default-scale-correctors.js";
-  import { addScaleCorrection } from "../../../render/dom/projection/scale-correction.js";
+  import { defaultScaleCorrectors } from "../../../projection/utils/default-scale-correctors.js";
+  import { addScaleCorrection } from "../../../projection/utils/scale-correction.js";
   import { eachAxis } from "../../../utils/each-axis.js";
-  import { axisBox } from "../../../utils/geometry/index.js";
+  import { createBox } from "../../../projection/geometry/models.js";
   import { tweenAxis } from "./utils";
   import type { Axis, AxisBox2D } from "../../../types/geometry.js";
   import type { VisualElement } from "../../../render/types.js";
@@ -50,12 +50,12 @@ const defaultLayoutTransition = {
    * A mutable object that tracks the target viewport box
    * for the current animation frame.
    */
-  let frameTarget = axisBox();
+  let frameTarget = createBox();
   /**
    * The current animation target, we use this to check whether to start
    * a new animation or continue the existing one.
    */
-  let currentAnimationTarget = axisBox();
+  let currentAnimationTarget = createBox();
   /**
    * Track whether we're animating this axis.
    */

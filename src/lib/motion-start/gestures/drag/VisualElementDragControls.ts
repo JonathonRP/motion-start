@@ -34,20 +34,21 @@ import { getViewportPointFromEvent } from '../../events/event-info.js';
 import { addDomEvent } from '../../events/use-dom-event.js';
 import { addPointerEvent } from '../../events/use-pointer-event.js';
 import { calcRelativeOffset } from '../../motion/features/layout/utils.js';
-import { convertToRelativeProjection } from '../../render/dom/projection/convert-to-relative.js';
-import { getBoundingBox } from '../../render/dom/projection/measure.js';
+import { convertToRelativeProjection } from '../../projection/utils/convert-to-relative.js';
+import { getBoundingBox } from '../../projection/utils/measure.js';
 import {
 	collectProjectingAncestors,
 	collectProjectingChildren,
 	updateLayoutMeasurement,
-} from '../../render/dom/projection/utils.js';
+} from '../../projection/utils/projection-utils.js';
 import { batchLayout, flushLayout } from '../../render/dom/utils/batch-layout.js';
 import { AnimationType } from '../../render/utils/types.js';
 import type { Transition } from '../../types';
 import { eachAxis } from '../../utils/each-axis.js';
 import { invariant } from '../../utils/errors.js';
-import { calcOrigin } from '../../utils/geometry/delta-calc.js';
-import { axisBox, convertAxisBoxToBoundingBox, convertBoundingBoxToAxisBox } from '../../utils/geometry/index.js';
+import { calcOrigin } from '../../projection/geometry/delta-calc.js';
+import { createBox } from '../../projection/geometry/models.js';
+import { convertBoxToBoundingBox, convertBoundingBoxToBox } from '../../projection/geometry/conversion.js';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import { PanSession } from '../PanSession.js';
 import {
@@ -92,7 +93,7 @@ class VisualElementDragControls {
 	 *
 	 * @internal
 	 */
-	private elastic = axisBox();
+	private elastic = createBox();
 	/**
 	 * A reference to the host component's latest props.
 	 *
@@ -322,10 +323,10 @@ class VisualElementDragControls {
 		 * if different constraints are returned, set constraints to that
 		 */
 		if (onMeasureDragConstraints) {
-			var userConstraints = onMeasureDragConstraints(convertAxisBoxToBoundingBox(measuredConstraints));
+			var userConstraints = onMeasureDragConstraints(convertBoxToBoundingBox(measuredConstraints));
 			this.hasMutatedConstraints = !!userConstraints;
 			if (userConstraints) {
-				measuredConstraints = convertBoundingBoxToAxisBox(userConstraints);
+				measuredConstraints = convertBoundingBoxToBox(userConstraints);
 			}
 		}
 		return measuredConstraints;

@@ -10,7 +10,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import sync, { flushSync } from 'framesync';
-import { collectProjectingAncestors, updateLayoutMeasurement } from '../../../render/dom/projection/utils.js';
+import { collectProjectingAncestors, updateLayoutMeasurement } from '../../../projection/utils/projection-utils.js';
 import { batchLayout, flushLayout } from '../../../render/dom/utils/batch-layout.js';
 import { compareByDepth } from '../../../render/utils/compare-by-depth.js';
 import { Presence } from '../types.js';

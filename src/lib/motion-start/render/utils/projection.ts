@@ -7,8 +7,9 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { applyTreeDeltas, resetBox } from '../../utils/geometry/delta-apply.js';
-import { updateBoxDelta } from '../../utils/geometry/delta-calc.js';
+import { applyTreeDeltas } from '../../projection/geometry/delta-apply.js';
+import { copyBoxInto } from '../../projection/geometry/copy.js';
+import { updateBoxDelta } from '../../projection/geometry/delta-calc.js';
 import type { ResolvedValues, VisualElement } from '../types';
 import type { LayoutState, TargetProjection } from './state';
 
@@ -22,7 +23,7 @@ function updateLayoutDeltas(
 	 * Reset the corrected box with the latest values from box, as we're then going
 	 * to perform mutative operations on it.
 	 */
-	resetBox(layoutCorrected, layout);
+	copyBoxInto(layoutCorrected, layout);
 	/**
 	 * Apply all the parent deltas to this box to produce the corrected box. This
 	 * is the layout box, as it will appear on screen as a result of the transforms of its parents.

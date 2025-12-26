@@ -14,12 +14,13 @@ import type { MotionProps } from '../motion';
 import type { TargetAndTransition, Transition } from '../types';
 import type { AxisBox2D, AxisKey } from '../types/geometry';
 import { eachAxis } from '../utils/each-axis.js';
-import { applyBoxTransforms, removeBoxTransforms } from '../utils/geometry/delta-apply.js';
-import { calcRelativeBox, updateBoxDelta } from '../utils/geometry/delta-calc.js';
-import { axisBox } from '../utils/geometry/index.js';
+import { applyBoxTransforms } from '../projection/geometry/delta-apply.js';
+import { removeBoxTransforms } from '../projection/geometry/delta-remove.js';
+import { calcRelativeBox, updateBoxDelta } from '../projection/geometry/delta-calc.js';
+import { createBox } from '../projection/geometry/models.js';
 import { type MotionValue, motionValue } from '../value/index.js';
 import { isMotionValue } from '../value/utils/is-motion-value.js';
-import { setCurrentViewportBox } from './dom/projection/relative-set.js';
+import { setCurrentViewportBox } from '../projection/utils/relative-set.js';
 import { buildLayoutProjectionTransform } from './html/utils/build-projection-transform.js';
 import type { ResolvedValues, VisualElement, VisualElementConfig, VisualElementOptions } from './types';
 import { variantPriorityOrder } from './utils/animation-state.js';
@@ -632,7 +633,7 @@ var visualElement =
                 };*/
 					if (isRelative) {
 						if (!projection.relativeTarget) {
-							projection.relativeTarget = axisBox();
+							projection.relativeTarget = createBox();
 						}
 						target = projection.relativeTarget[axis];
 					} else {

@@ -1,0 +1,87 @@
+/**
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
+
+import { clamp, distance, mix, progress } from 'popmotion';
+import type { ResolvedValues } from '../../render/types.js';
+import type { TargetProjection } from '../../render/utils/state.js';
+import type { Axis, AxisDelta, Box, Delta } from './types.js';
+
+const clampProgress = (v: number) => clamp(0, 1, v);
+
+/**
+ * Returns true if the provided value is within maxDistance of the provided target
+ */
+export function isNear(value: number, target: number = 0, maxDistance: number = 0.01): boolean {
+	return distance(value, target) < maxDistance;
+}
+
+export function calcLength(axis: Axis): number {
+	return axis.max - axis.min;
+}
+
+/**
+ * Calculate a transform origin relative to the source axis, between 0-1, that results
+ * in an aesthetically pleasing scale/transform needed to project from source to target.
+ */
+export function calcOrigin(source: Axis, target: Axis): number {
+	let origin = 0.5;
+	const sourceLength = calcLength(source);
+	const targetLength = calcLength(target);
+
+	if (targetLength > sourceLength) {
+		origin = progress(target.min, target.max - sourceLength, source.min);
+	} else if (sourceLength > targetLength) {
+		origin = progress(source.min, source.max - targetLength, target.min);
+	}
+
+	return clampProgress(origin);
+}
+
+/**
+ * Update the AxisDelta with a transform that projects source into target.
+ *
+ * The transform `origin` is optional. If not provided, it'll be automatically
+ * calculated based on the relative positions of the two bounding boxes.
+ */
+export function updateAxisDelta(delta: AxisDelta, source: Axis, target: Axis, origin: number = 0.5): void {
+	delta.origin = origin;
+	delta.originPoint = mix(source.min, source.max, delta.origin);
+	delta.scale = calcLength(target) / calcLength(source);
+
+	if (isNear(delta.scale, 1, 0.0001)) delta.scale = 1;
+
+	delta.translate = mix(target.min, target.max, delta.origin) - delta.originPoint;
+
+	if (isNear(delta.translate)) delta.translate = 0;
+}
+
+/**
+ * Update the BoxDelta with a transform that projects the source into the target.
+ *
+ * The transform `origin` is optional. If not provided, it'll be automatically
+ * calculated based on the relative positions of the two bounding boxes.
+ */
+export function updateBoxDelta(delta: Delta, source: Box, target: Box, origin: ResolvedValues): void {
+	updateAxisDelta(delta.x, source.x, target.x, defaultOrigin(origin.originX as string | number | undefined));
+	updateAxisDelta(delta.y, source.y, target.y, defaultOrigin(origin.originY as string | number | undefined));
+}
+
+/**
+ * Currently this only accepts numerical origins, measured as 0-1, but could
+ * accept pixel values by comparing to the target axis.
+ */
+function defaultOrigin(origin: string | number | undefined): number {
+	return typeof origin === 'number' ? origin : 0.5;
+}
+
+export function calcRelativeAxis(target: Axis, relative: Axis, parent: Axis): void {
+	target.min = parent.min + relative.min;
+	target.max = target.min + calcLength(relative);
+}
+
+export function calcRelativeBox(projection: TargetProjection, parentProjection: TargetProjection): void {
+	calcRelativeAxis(projection.target.x, projection.relativeTarget!.x, parentProjection.target.x);
+	calcRelativeAxis(projection.target.y, projection.relativeTarget!.y, parentProjection.target.y);
+}

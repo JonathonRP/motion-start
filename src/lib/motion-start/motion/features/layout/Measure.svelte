@@ -6,7 +6,7 @@ import { getContext } from 'svelte';
 import { get, type Writable } from 'svelte/store';
 import { ScaleCorrectionContext, ScaleCorrectionParentContext } from '../../../context/ScaleCorrectionProvider.svelte';
 import { isSharedLayout } from '../../../context/SharedLayoutContext.js';
-import { snapshotViewportBox } from '../../../render/dom/projection/utils.js';
+import { snapshotViewportBox } from '../../../projection/utils/projection-utils.js';
 
 let {
 	visualElement,
