@@ -246,3 +246,77 @@ import { useConstant, AnimationScope } from 'motion-start';
 **Tests Passing**: 27/27 ✅
 **Svelte Version**: 5.46.1
 **Target Compatibility**: framer-motion@11.11.11
+
+---
+
+## 🔄 Recent Updates (2025-12-26)
+
+### Removed useConstant Utility
+- **Rationale**: Svelte's execution model makes this unnecessary
+- **Changes**:
+  - Deleted `src/lib/motion-start/utils/use-constant.svelte.ts`
+  - Removed export from index.ts
+  - Updated useMotionValue to directly create MotionValue instances
+  - Updated useAnimate to directly create scope objects
+- **Impact**: Simpler code, no functional changes
+
+### Enhanced Context Patterns
+All 5 contexts now follow consistent, ergonomic patterns:
+
+#### Default Values in get()
+- `motionContext.get()` → returns `{}` (not undefined)
+- `presenceContext.get()` → returns `null` (not undefined)
+- `motionConfigContext.get()` → returns `DEFAULT_CONFIG`
+- `layoutGroupContext.get()` → returns `null`
+- `lazyContext.get()` → returns `DEFAULT_LAZY`
+
+#### set() Returns Value
+All context `set()` methods now return the value they set, enabling chaining and convenience patterns.
+
+**Before:**
+```typescript
+const config = { isStatic: true };
+motionConfigContext.set(config);
+// Need to track config separately
+```
+
+**After:**
+```typescript
+const config = motionConfigContext.set({ isStatic: true });
+// set() returns the value
+```
+
+### Enhanced useSpring
+- **File**: Created `src/lib/motion-start/value/use-spring.svelte.ts`
+- **Improvements**:
+  - Better animation lifecycle management
+  - Separate `startAnimation()` and `stopAnimation()` functions  
+  - Proper cleanup on unmount
+  - Samples current value before starting new animations
+  - Respects `isStatic` mode from MotionConfigContext
+- **Patterns Matched**: Closer to v11.11.11 lifecycle management
+
+### AnimatePresence Variable Naming
+Updated internal variables to match v11.11.11 naming conventions:
+- `presentChildren` → `renderedChildren`
+- `exiting` → `exitComplete` (matches v11.11.11 exitComplete Set)
+- Kept: `isInitialRender`, `allChildren` (same as v11.11.11)
+
+**Impact**: Improved code readability and alignment with framer-motion source
+
+## ✅ Testing Status
+
+- **All 27 browser tests passing** after all changes
+- No regressions in functionality
+- Contexts work correctly with new patterns
+- AnimatePresence exit animations work correctly
+- useSpring animations work smoothly
+
+## 📈 Compatibility Score
+
+- **Core APIs**: ✅ 100% compatible with v11.11.11
+- **Implementation Patterns**: ⬆️ Improved (closer to v11.11.11)
+- **Variable Naming**: ⬆️ Improved (matches v11.11.11)
+- **Type Safety**: ✅ Maintained
+- **Performance**: ✅ No regressions
+

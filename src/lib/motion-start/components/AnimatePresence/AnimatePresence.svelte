@@ -53,9 +53,10 @@ Copyright (c) 2018 Framer B.V. -->
     let isInitialRender = $state(true);
     let filteredChildren = $derived(_list);
 
-    let presentChildren = $state(filteredChildren);
+    // State matching v11.11.11 patterns
+    let renderedChildren = $state(filteredChildren);
     let allChildren = $state(new Map<string | number, { key: number }>());
-    let exiting = $state(new Set<"" | number>());
+    let exitComplete = $state(new Set<"" | number>());
 
     $effect(() => {
         const children = filteredChildren;
@@ -93,29 +94,29 @@ Copyright (c) 2018 Framer B.V. -->
             ];
 
             // Diff the keys of the currently-present and target children to update our
-            // exiting list.
-            const presentKeys = presentChildren.map(getChildKey);
+            // exit tracking (v11.11.11 uses exitComplete Set)
+            const presentKeys = renderedChildren.map(getChildKey);
             const targetKeys = filteredChildren.map(getChildKey);
-            // Diff the present children with our target children and mark those that are exiting
+            // Diff the rendered children with our target children and mark those that are exiting
             const numPresent = presentKeys.length;
             for (let i = 0; i < numPresent; i++) {
                 const key = presentKeys[i];
                 if (targetKeys.indexOf(key) === -1) {
-                    exiting.add(key);
+                    exitComplete.add(key);
                 } else {
-                    // In case this key has re-entered, remove from the exiting list
-                    exiting.delete(key);
+                    // In case this key has re-entered, remove from the exit tracking
+                    exitComplete.delete(key);
                 }
             }
 
             // If we currently have exiting children, and we're in "wait" mode,
             // defer rendering incoming children until after all current children have exited
-            if (actualMode === "wait" && exiting.size) {
+            if (actualMode === "wait" && exitComplete.size) {
                 childrenToRender = [];
             }
             // Loop through all currently exiting components and clone them to overwrite `animate`
             // with any `exit` prop they might have defined.
-            exiting.forEach((key) => {
+            exitComplete.forEach((key) => {
                 // If this component is actually entering again, early return
                 if (targetKeys.indexOf(key) !== -1) return;
 
@@ -126,21 +127,21 @@ Copyright (c) 2018 Framer B.V. -->
 
                 const onExit = () => {
                     allChildren.delete(key);
-                    exiting.delete(key);
+                    exitComplete.delete(key);
 
                     // Remove this child from the present children
-                    const removeIndex = presentChildren.findIndex(
+                    const removeIndex = renderedChildren.findIndex(
                         (presentChild) => presentChild.key === key,
                     );
 
                     if (removeIndex < 0) {
                         return;
                     }
-                    presentChildren.splice(removeIndex, 1);
+                    renderedChildren.splice(removeIndex, 1);
 
                     // Defer re-rendering until all exiting children have indeed left
-                    if (!exiting.size) {
-                        presentChildren = [...filteredChildren];
+                    if (!exitComplete.size) {
+                        renderedChildren = [...filteredChildren];
                         forceRender();
                         onExitComplete && onExitComplete();
                     }
@@ -159,7 +160,7 @@ Copyright (c) 2018 Framer B.V. -->
             /*
             childrenToRender = childrenToRender.map((child) => {
                 const key = child.key as string | number;
-                return exiting.has(key) ? (
+                return exitComplete.has(key) ? (
                     child
                 ) : (
                     <PresenceChild
@@ -172,7 +173,7 @@ Copyright (c) 2018 Framer B.V. -->
                 );
             });
             */
-            presentChildren = childrenToRender;
+            renderedChildren = childrenToRender;
         } else {
             isInitialRender = false;
         }
