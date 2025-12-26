@@ -3,6 +3,8 @@
  *
  * Tests that gesture imports work correctly after reorganization
  * into subdirectories (focus, hover, pan, press, drag)
+ *
+ * Updated to test modern function-based API only (breaking changes applied)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -23,7 +25,7 @@ describe('Phase 3: Gestures System Imports', () => {
 		it('should have focus index.ts barrel export', async () => {
 			const focus = await import('../focus/index.js');
 			expect(focus.useFocusGesture).toBeDefined();
-			expect(focus.UseFocusGesture).toBeDefined();
+			// Legacy component export removed - modern function-based API only
 		});
 	});
 
@@ -42,7 +44,7 @@ describe('Phase 3: Gestures System Imports', () => {
 		it('should have hover index.ts barrel export', async () => {
 			const hover = await import('../hover/index.js');
 			expect(hover.useHoverGesture).toBeDefined();
-			expect(hover.UseHoverGesture).toBeDefined();
+			// Legacy component export removed - modern function-based API only
 		});
 	});
 
@@ -67,8 +69,8 @@ describe('Phase 3: Gestures System Imports', () => {
 		it('should have pan index.ts barrel export', async () => {
 			const pan = await import('../pan/index.js');
 			expect(pan.usePanGesture).toBeDefined();
-			expect(pan.UsePanGesture).toBeDefined();
 			expect(pan.PanSession).toBeDefined();
+			// Legacy component export removed - modern function-based API only
 		});
 	});
 
@@ -87,7 +89,7 @@ describe('Phase 3: Gestures System Imports', () => {
 		it('should have press index.ts barrel export', async () => {
 			const press = await import('../press/index.js');
 			expect(press.useTapGesture).toBeDefined();
-			expect(press.UseTapGesture).toBeDefined();
+			// Legacy component export removed - modern function-based API only
 		});
 	});
 
@@ -105,21 +107,41 @@ describe('Phase 3: Gestures System Imports', () => {
 		});
 	});
 
-	describe('Backward compatibility', () => {
-		it('should maintain backward compatibility for PanSession import', async () => {
+	describe('Modern API exports', () => {
+		it('should export PanSession from main index', async () => {
 			const { PanSession } = await import('../../index.js');
 			expect(PanSession).toBeDefined();
 			expect(typeof PanSession).toBe('function');
 		});
 
-		it('should maintain backward compatibility for UsePanGesture import', async () => {
-			const { UsePanGesture } = await import('../../index.js');
-			expect(UsePanGesture).toBeDefined();
+		it('should export usePanGesture from main index', async () => {
+			const { usePanGesture } = await import('../../index.js');
+			expect(usePanGesture).toBeDefined();
+			expect(typeof usePanGesture).toBe('function');
 		});
 
-		it('should maintain backward compatibility for UseTapGesture import', async () => {
-			const { UseTapGesture } = await import('../../index.js');
-			expect(UseTapGesture).toBeDefined();
+		it('should export useTapGesture from main index', async () => {
+			const { useTapGesture } = await import('../../index.js');
+			expect(useTapGesture).toBeDefined();
+			expect(typeof useTapGesture).toBe('function');
+		});
+
+		it('should export useHoverGesture from main index', async () => {
+			const { useHoverGesture } = await import('../../index.js');
+			expect(useHoverGesture).toBeDefined();
+			expect(typeof useHoverGesture).toBe('function');
+		});
+
+		it('should export useFocusGesture from main index', async () => {
+			const { useFocusGesture } = await import('../../index.js');
+			expect(useFocusGesture).toBeDefined();
+			expect(typeof useFocusGesture).toBe('function');
+		});
+
+		it('should export useDrag from main index', async () => {
+			const { useDrag } = await import('../../index.js');
+			expect(useDrag).toBeDefined();
+			expect(typeof useDrag).toBe('function');
 		});
 	});
 

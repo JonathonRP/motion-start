@@ -92,6 +92,7 @@ export {
 	DragControls,
 	useDragControls,
 } from './gestures/drag/use-drag-controls.js';
+export { useDrag } from './gestures/drag/use-drag.svelte.js';
 /**
  * ========================================
  * TYPES
@@ -109,8 +110,11 @@ export type {
 	ViewportOptions,
 } from './gestures/types.js';
 export { default as UseGestures } from './gestures/UseGestures.svelte';
-export { UsePanGesture } from './gestures/pan/index.js';
-export { UseTapGesture } from './gestures/press/index.js';
+// Modern gesture function exports
+export { usePanGesture } from './gestures/pan/index.js';
+export { useTapGesture } from './gestures/press/index.js';
+export { useHoverGesture } from './gestures/hover/index.js';
+export { useFocusGesture } from './gestures/focus/index.js';
 export type { LayoutProps } from './motion/features/layout/types.js';
 export { animateLayout as layoutAnimation } from './motion/features/layout/utils.js';
 export * from './motion/features/types.js';
