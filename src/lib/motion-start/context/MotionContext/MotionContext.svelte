@@ -6,7 +6,7 @@ import { MOTION_CONTEXT_KEY, MotionContext, type MotionContextProps } from './in
 
 let { isCustom } = $props();
 
-const motionContext = getContext<MotionContextProps>(MOTION_CONTEXT_KEY) || MotionContext(isCustom);
+const motionContext = MotionContext.get();
 </script>
 
 <slot parent={motionContext.visualElement} />

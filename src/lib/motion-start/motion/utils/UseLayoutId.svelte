@@ -18,7 +18,7 @@ let {
 
 let { layoutId } = $derived(props);
 
-const layoutGroupId = getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext(isCustom);
+const layoutGroupId = getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext.get();
 
 const computedLayoutId = $derived(layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId);
 </script>

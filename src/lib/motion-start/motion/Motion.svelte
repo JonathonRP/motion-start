@@ -178,7 +178,7 @@ let visualStateConfig = isSVG ? svgMotionConfig : htmlMotionConfig;
  * If this component or any ancestor is static, we disable hardware acceleration
  * and don't load any additional functionality.
  */
-const a = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+const a = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext.get();
 let { isStatic } = $derived($a || {});
 
 let mounted = $state(false);

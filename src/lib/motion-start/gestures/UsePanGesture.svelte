@@ -14,7 +14,7 @@ let { onPan, onPanStart, onPanEnd, onPanSessionStart } = $derived(props);
 let hasPanEvents = $derived(onPan || onPanStart || onPanEnd || onPanSessionStart);
 let panSession = $state<PanSession | null>(null);
 
-const mcc = getContext(MotionConfigContext) || MotionConfigContext(isCustom);
+const mcc = getContext(MotionConfigContext) || MotionConfigContext.get();
 // @ts-expect-error
 let { transformPagePoint } = $derived(get(mcc));
 

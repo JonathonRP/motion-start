@@ -17,7 +17,7 @@ let { props, visualElement, isCustom, children } = $props();
 const { custom } = $derived(props);
 
 const presenceContext = $derived(
-	getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) || PresenceContext(isCustom)
+	getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) || PresenceContext.get()
 );
 const presence = $derived(usePresence(isCustom));
 

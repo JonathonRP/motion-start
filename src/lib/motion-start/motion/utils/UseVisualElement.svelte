@@ -43,13 +43,13 @@ export const ssr = false;
   } = $props();
 
   const config =
-    getContext<MotionConfigContextObject>(MOTION_CONFIG_CONTEXT_KEY) || MotionConfigContext(isCustom);
+    getContext<MotionConfigContextObject>(MOTION_CONFIG_CONTEXT_KEY) || MotionConfigContext.get();
 
   const presenceContext =
-    getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) || PresenceContext(isCustom);
+    getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) || PresenceContext.get();
 
   const lazyContext =
-    getContext<LazyContextProps>(LAZY_CONTEXT_KEY) || LazyContext(isCustom);
+    getContext<LazyContextProps>(LAZY_CONTEXT_KEY) || LazyContext.get();
 
   const mc =
     getContext<MotionContextProps>(MOTION_CONTEXT_KEY) || MotionContext(isCustom);
@@ -57,7 +57,7 @@ export const ssr = false;
   let parent = $derived(mc.visualElement);
 
   const layoutGroupId: string | null =
-    getContext(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext(isCustom);
+    getContext(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext.get();
 
   let layoutId = $derived(
     layoutGroupId && props.layoutId !== undefined

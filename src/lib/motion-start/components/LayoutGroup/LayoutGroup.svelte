@@ -13,7 +13,7 @@ let { id = undefined, inheritId = true, children, isCustom = false }: $$Props = 
 
 // Get parent layout group ID if inheriting
 const parentLayoutGroupId = inheritId
-	? getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext(isCustom)
+	? getContext<string | null>(LAYOUT_GROUP_CONTEXT_KEY) || LayoutGroupContext.get()
 	: null;
 
 // Generate unique layout group ID

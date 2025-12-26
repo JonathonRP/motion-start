@@ -5,7 +5,6 @@ Measures element dimensions before removal and preserves layout space
 -->
 
 <script lang="ts">
-import { afterUpdate, onMount } from 'svelte';
 import { useMotionConfig } from '../../context/motion-config-context.svelte.js';
 
 interface Size {

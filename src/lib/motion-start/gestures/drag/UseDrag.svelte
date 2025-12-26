@@ -10,7 +10,7 @@ import { VisualElementDragControls } from './VisualElementDragControls.js';
 
 let { visualElement, props, isCustom, children } = $props();
 
-const mcc = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+const mcc = getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext.get();
 
 let dragControls = new VisualElementDragControls({
 	visualElement,

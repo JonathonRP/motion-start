@@ -109,7 +109,7 @@ function makeLatestValues(
     MotionContext(isCustom);
   const presenceContext =
     getContext<PresenceContextProps | null>(PRESENCE_CONTEXT_KEY) ||
-    PresenceContext(isCustom);
+    PresenceContext.get();
 
   let state = $derived(
     makeState(
