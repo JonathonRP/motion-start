@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { complex } from 'style-value-types';
+import { complex } from '../../value-types/index.js';
 import type { VariantLabels } from '../../motion/types';
 import type {
 	CustomValueType,

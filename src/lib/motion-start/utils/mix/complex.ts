@@ -4,7 +4,7 @@ import { mixVisibility, invisibleValues } from './visibility.js';
 import { mixImmediate } from './immediate.js';
 import type { Mixer } from './types.js';
 import { warnOnce } from '../warn-once.js';
-import { complex } from 'style-value-types';
+import { complex } from '../../value-types/index.js';
 
 /**
  * Mixable array types - arrays containing numbers, colors, or strings
@@ -114,7 +114,7 @@ export function mixComplex(origin: string, target?: string): Mixer<string> {
 	}
 
 	const mixer = mixArray(originValue as any, targetValue as any);
-	const transformer = complex.createTransformer(origin);
+	const transformer = complex.createTransformer!(origin);
 
 	return (v: number) => transformer(mixer(v));
 }

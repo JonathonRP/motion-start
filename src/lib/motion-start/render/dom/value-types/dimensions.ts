@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { degrees, number, percent, px, vh, vw } from 'style-value-types';
+import { degrees, number, percent, px, vh, vw } from '../../../value-types/index.js';
 import type { CustomValueType } from '../../../types.js';
 /** 
 based on framer-motion@11.11.11,

@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mix } from 'popmotion';
-import { complex, px } from 'style-value-types';
+import { mix } from '../../utils/mix/index.js';
+import { complex, px } from '../../value-types/index.js';
 import type { Axis } from '../geometry/types.js';
 import type { LayoutState, TargetProjection } from '../../render/utils/state.js';
 import { cssVariableRegex } from '../../render/dom/utils/css-variables-conversion.js';

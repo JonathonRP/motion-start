@@ -14,7 +14,7 @@ enum BoundingBoxDimension {
 	bottom = 'bottom',
 }
 
-import { number, px, type ValueType } from 'style-value-types';
+import { number, px, type ValueType } from '../../../value-types/index.js';
 import { isKeyframesTarget } from '../../../animation/utils/is-keyframes-target.js';
 import type { MotionValue } from '../../../index.js';
 import type { AxisBox2D, BoundingBox2D } from '../../../types/geometry';

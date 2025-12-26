@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { px } from 'style-value-types';
+import { px } from '../../../value-types/index.js';
 
 /** 
 based on framer-motion@11.11.11,

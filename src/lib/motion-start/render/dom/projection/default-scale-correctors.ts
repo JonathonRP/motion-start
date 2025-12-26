@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { mix } from 'popmotion';
-import { complex, px } from 'style-value-types';
+import { complex, px } from '../../../value-types/index.js';
 import type { Axis } from '../../../types/geometry';
 /** 
 based on framer-motion@11.11.11,
@@ -63,7 +63,7 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	var shadow = complex.parse(latest);
 	// TODO: Doesn't support multiple shadows
 	if (shadow.length > 5) return original;
-	var template = complex.createTransformer(latest);
+	var template = complex.createTransformer!(latest as string);
 	var offset = typeof shadow[0] !== 'number' ? 1 : 0;
 	// Calculate the overall context scale
 	var xScale = delta.x.scale * treeScale.x;

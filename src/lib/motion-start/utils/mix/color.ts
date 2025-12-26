@@ -1,4 +1,4 @@
-import { hex, hsla, rgba } from 'style-value-types';
+import { hex, hsla, rgba } from '../../value-types/index.js';
 import type { HSLA, RGBA } from '../../value/types/types.js';
 import { hslaToRgba } from '../hsla-to-rgba.js';
 import { mixNumber } from './number.js';
