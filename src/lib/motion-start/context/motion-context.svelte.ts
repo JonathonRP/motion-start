@@ -16,6 +16,8 @@ export interface MotionContextValue {
     visualElement?: VisualElement;
     initial?: false | string | string[];
     animate?: string | string[];
+    /** @deprecated Legacy property for backwards compatibility */
+    forEach?: any;
 }
 
 /**
