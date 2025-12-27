@@ -133,6 +133,14 @@ export type {
 export { isValidMotionProp } from './motion/utils/valid-prop.js';
 /**
  * ========================================
+ * ATTACHMENTS
+ * ========================================
+ */
+export { motionRef, createMotionRef, type MotionRefOptions } from './motion/attachments/index.js';
+export { measurePop, createMeasurePop, type MeasurePopOptions } from './components/AnimatePresence/attachments/index.js';
+export { isMotionComponent, hasMotionAttributes, findMotionChildren } from './components/AnimatePresence/utils/isMotionComponent.js';
+/**
+ * ========================================
  * FEATURES
  * ========================================
  */
