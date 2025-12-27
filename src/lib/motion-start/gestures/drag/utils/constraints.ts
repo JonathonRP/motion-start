@@ -19,7 +19,7 @@ export type calcProgressWithinConstraints = (layoutBox: AxisBox2D, constraintsBo
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { mix } from 'popmotion';
+import { mix } from '../../../utils/mix/index.js';
 
 /**
  * Apply constraints to a point. These constraints are both physical along an

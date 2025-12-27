@@ -9,7 +9,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import sync, { flushSync } from 'framesync';
+import { frame, microtask } from '../../../frameloop/index.js';
 import { collectProjectingAncestors, updateLayoutMeasurement } from '../../../projection/utils/projection-utils.js';
 import { batchLayout, flushLayout } from '../../../render/dom/utils/batch-layout.js';
 import { compareByDepth } from '../../../render/utils/compare-by-depth.js';
@@ -67,8 +67,8 @@ function createBatcher(): SyncLayoutBatcher {
 					 * leaving a flash of incorrectly-projected content. By manually flushing these jobs
 					 * we ensure there's no flash.
 					 */
-					flushSync.preRender();
-					flushSync.render();
+					microtask.preRender();
+					microtask.render();
 				});
 				read(() => {
 					/**
@@ -80,7 +80,7 @@ function createBatcher(): SyncLayoutBatcher {
 					 * render.
 					 */
 					// @ts-expect-error
-					sync.postRender(() => order.forEach(assignProjectionToSnapshot));
+					frame.postRender(() => order.forEach(assignProjectionToSnapshot));
 					queue.clear();
 				});
 			});

@@ -3,7 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { clamp, distance, mix, progress } from 'popmotion';
+import { clamp } from '../clamp.js';
+import { distance } from '../distance.js';
+import { mix } from '../mix/index.js';
+import { progress } from '../progress.js';
 import type { ResolvedValues } from '../../render/types';
 import type { TargetProjection } from '../../render/utils/state';
 import type { Axis, AxisBox2D, AxisDelta, BoxDelta } from '../../types/geometry';

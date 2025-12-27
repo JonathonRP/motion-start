@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import sync from 'framesync';
+import { frame } from '../frameloop/index.js';
 import type { MotionValue } from '.';
 import { motionValue } from '.';
 

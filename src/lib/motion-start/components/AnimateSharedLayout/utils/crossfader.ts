@@ -2,7 +2,7 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { PlaybackControls } from 'popmotion';
+import type { AnimationPlaybackControls } from '../../../animation/animate/index.js';
 import type { ResolvedValues, VisualElement } from '../../../render/types';
 import type {
 	Inertia,
@@ -20,8 +20,8 @@ import type {
 export interface Crossfader {
 	isActive(): boolean;
 	getCrossfadeState(element: VisualElement): ResolvedValues | undefined;
-	toLead(transition?: Transition): PlaybackControls;
-	fromLead(transition?: Transition): PlaybackControls;
+	toLead(transition?: Transition): AnimationPlaybackControls;
+	fromLead(transition?: Transition): AnimationPlaybackControls;
 	setOptions(options: CrossfadeAnimationOptions): void;
 	reset(): void;
 	stop(): void;
@@ -35,8 +35,11 @@ export interface CrossfadeAnimationOptions {
 	preserveFollowOpacity?: boolean;
 }
 
-import sync, { getFrameData } from 'framesync';
-import { circOut, linear, mix, mixColor, progress } from 'popmotion';
+import { frame, frameData } from '../../../frameloop/index.js';
+import { circOut, linear } from '../../../easing/index.js';
+import { mix } from '../../../utils/mix/index.js';
+import { mixColor } from '../../../utils/mix/color.js';
+import { progress } from '../../../utils/progress.js';
 import type { Color } from '../../../value-types/index.js';
 import { animate } from '../../../animation/animate/index.js';
 import { getValueTransition } from '../../../animation/utils/transitions.js';
@@ -103,7 +106,7 @@ function createCrossfader(): Crossfader {
 			 * If the crossfade animation is no longer active, flag a frame
 			 * that we're still allowed to crossfade
 			 */
-			finalCrossfadeFrame = getFrameData().timestamp;
+			finalCrossfadeFrame = frameData.timestamp;
 		};
 		transition = transition && getValueTransition(transition, 'crossfade');
 		return animate(
@@ -120,7 +123,7 @@ function createCrossfader(): Crossfader {
 						 * If we never ran an update, for instance if this was an instant transition, fire a
 						 * simulated final frame to ensure the crossfade gets applied correctly.
 						 */
-						sync.read(onComplete);
+						frame.read(onComplete);
 					} else {
 						onComplete();
 					}
@@ -136,7 +139,7 @@ function createCrossfader(): Crossfader {
 		 * compare the previous update framestamp with the current frame
 		 * and early return if they're the same.
 		 */
-		var timestamp = getFrameData().timestamp;
+		var timestamp = frameData.timestamp;
 		var lead = options.lead,
 			follow = options.follow;
 		if (timestamp === prevUpdate || !lead) return;
@@ -181,7 +184,7 @@ function createCrossfader(): Crossfader {
 		mixValues(leadState, followState, latestLeadValues, latestFollowValues || {}, Boolean(follow), p);
 	}
 	return {
-		isActive: () => leadState && (isActive || getFrameData().timestamp === finalCrossfadeFrame),
+		isActive: () => leadState && (isActive || frameData.timestamp === finalCrossfadeFrame),
 		fromLead: (transition) => startCrossfadeAnimation(0, transition),
 		toLead: (transition) => {
 			var initialProgress = 0;// @ts-expect-error

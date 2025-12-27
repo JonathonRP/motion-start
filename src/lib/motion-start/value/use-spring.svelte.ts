@@ -5,8 +5,8 @@
  * Creates a MotionValue that animates to its target using spring physics
  */
 
-import type { SpringOptions } from 'popmotion';
-import { animate } from 'popmotion';
+import type { Spring } from '../types.js';
+import { animate } from '../animation/animate/index.js';
 import { onMount } from 'svelte';
 import { useMotionConfig } from '../context/motion-config-context.svelte.js';
 import { type MotionValue, motionValue } from './index.js';
@@ -34,7 +34,7 @@ import { isMotionValue } from './utils/is-motion-value.js';
  *
  * @public
  */
-export function useSpring<T>(source: MotionValue<T> | T, config: SpringOptions = {}): MotionValue<T> {
+export function useSpring<T>(source: MotionValue<T> | T, config: Partial<Spring> = {}): MotionValue<T> {
 	const motionConfig = useMotionConfig();
 
 	// In Svelte, component scripts run once, so we can directly create these
@@ -60,16 +60,19 @@ export function useSpring<T>(source: MotionValue<T> | T, config: SpringOptions =
 		const currentValue = value.get();
 
 		// Start new spring animation
-		activeAnimation = animate({
-			from: currentValue as number,
-			to: target as number,
-			velocity: value.getVelocity(),
-			...config,
-			onUpdate: (v: number) => value.set(v as T),
-			onComplete: () => {
-				activeAnimation = null;
-			},
-		});
+		activeAnimation = animate(
+			currentValue as number,
+			target as number,
+			{
+				type: 'spring',
+				velocity: value.getVelocity(),
+				...config,
+				onUpdate: (v: number) => value.set(v as T),
+				onComplete: () => {
+					activeAnimation = null;
+				},
+			}
+		);
 	}
 
 	/**

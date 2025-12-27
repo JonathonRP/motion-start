@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mix } from 'popmotion';
+import { mix } from '../mix/index.js';
 import type { ResolvedValues, VisualElement } from '../../render/types';
 import { isDraggable } from '../../render/utils/is-draggable.js';
 import type { Axis, AxisBox2D, BoxDelta, Point2D } from '../../types/geometry';

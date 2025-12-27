@@ -7,8 +7,9 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import sync, { cancelSync, getFrameData } from 'framesync';
-import { distance, pipe } from 'popmotion';
+import { frame, cancelFrame, frameData } from '../../frameloop/index.js';
+import { distance } from '../../utils/distance.js';
+import { pipe } from '../../utils/pipe.js';
 import { extractEventInfo } from '../../events/event-info.js';
 import type { EventInfo } from '../../events/types';
 import { addPointerEvent } from '../../events/use-pointer-event.js';
@@ -181,7 +182,7 @@ export class PanSession {
 		var info = extractEventInfo(event);
 		var initialInfo = transformPoint(info, this.transformPagePoint);
 		var point = initialInfo.point;
-		var timestamp = getFrameData().timestamp;
+		var timestamp = frameData.timestamp;
 		this.history = [{ ...point, timestamp }];
 		var onSessionStart = handlers.onSessionStart;
 		onSessionStart && onSessionStart(event, getPanInfo(initialInfo, this.history));
@@ -202,7 +203,7 @@ export class PanSession {
 		var isDistancePastThreshold = distance(info.offset, { x: 0, y: 0 }) >= 3;
 		if (!isPanStarted && !isDistancePastThreshold) return;
 		var point = info.point;
-		var timestamp = getFrameData().timestamp;
+		var timestamp = frameData.timestamp;
 		this.history.push(Object.assign(Object.assign({}, point), { timestamp: timestamp }));
 		var _a = this.handlers,
 			onStart = _a.onStart,
@@ -222,7 +223,7 @@ export class PanSession {
 			return;
 		}
 		// Throttle mouse move event to once per frame
-		sync.update(this.updatePoint, true);
+		frame.update(this.updatePoint, true);
 	};
 	private handlePointerUp = (event: PointerEvent, info: EventInfo) => {
 		this.end();
@@ -240,7 +241,7 @@ export class PanSession {
 	};
 	end = () => {
 		this.removeListeners?.();
-		cancelSync.update(this.updatePoint);
+		cancelFrame.update(this.updatePoint);
 	};
 }
 

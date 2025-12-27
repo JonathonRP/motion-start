@@ -27,8 +27,8 @@ export type expectsResolvedDragConstraints = ({ dragConstraints, onMeasureDragCo
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { flushSync } from 'framesync';
-import { progress } from 'popmotion';
+import { microtask } from '../../frameloop/microtask.js';
+import { progress } from '../../utils/progress.js';
 import { startAnimation } from '../../animation/utils/transitions.js';
 import { getViewportPointFromEvent } from '../../events/event-info.js';
 import { addDomEvent } from '../../events/use-dom-event.js';
@@ -221,10 +221,10 @@ class VisualElementDragControls {
 					});
 				});
 				write(() => {
-					flushSync.update();
-					flushSync.preRender();
-					flushSync.render();
-					flushSync.postRender();
+					microtask.update();
+					microtask.preRender();
+					microtask.render();
+					microtask.postRender();
 				});
 				read(() => _self.resolveDragConstraints());
 			});

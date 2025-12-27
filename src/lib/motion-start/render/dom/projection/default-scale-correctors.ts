@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mix } from 'popmotion';
+import { mix } from '../../../utils/mix/index.js';
 import { complex, px } from '../../../value-types/index.js';
 import type { Axis } from '../../../types/geometry';
 /** 

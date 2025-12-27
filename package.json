@@ -77,11 +77,7 @@
 		"test:types:ui": "vitest --ui",
 		"release": "bun --bun run build && bun --bun changeset publish"
 	},
-	"dependencies": {
-		"framesync": "^6.1.2",
-		"popmotion": "^11.0.5",
-		"style-value-types": "5.1.2"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.0",
 		"@changesets/cli": "^2.27.10",

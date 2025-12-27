@@ -9,7 +9,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import sync from 'framesync';
+import { frame } from '../../../frameloop/index.js';
 import { copyAxisBox } from '../../../utils/geometry/index.js';
 import { compareByDepth } from '../../utils/compare-by-depth.js';
 
@@ -47,7 +47,7 @@ function updateLayoutMeasurement(visualElement: VisualElement) {
 	layoutState.layout = visualElement.measureViewportBox();
 	layoutState.layoutCorrected = copyAxisBox(layoutState.layout);
 	visualElement.notifyLayoutMeasure(layoutState.layout, visualElement.prevViewportBox || layoutState.layout);
-	sync.update(() => visualElement.rebaseProjectionTarget());
+	frame.update(() => visualElement.rebaseProjectionTarget());
 }
 /**
  * Record the viewport box as it was before an expected mutation/re-render

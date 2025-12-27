@@ -2,12 +2,13 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { AnimationOptions } from 'popmotion';
+// Internal animation types
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { animate, inertia } from 'popmotion';
+import { MainThreadAnimation } from '../animators/MainThreadAnimation.js';
+import type { Spring, Tween, Inertia as InertiaType } from '../../types.js';
 import { getAnimatableNone } from '../../render/dom/value-types/animatable-none.js';
 import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } from '../../types';
 import { warning } from '../../utils/errors.js';

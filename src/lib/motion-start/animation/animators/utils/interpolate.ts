@@ -10,7 +10,7 @@
  */
 
 import type { Easing } from '../../../types.js';
-import { interpolate as popmotionInterpolate } from 'popmotion';
+import { interpolate as popmotionInterpolate } from '../../../utils/interpolate.js';
 import { easingDefinitionToFunction } from '../../utils/easing.js';
 
 /**

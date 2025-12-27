@@ -6,7 +6,7 @@
  * @module use-tap-gesture
  */
 
-import { pipe } from 'popmotion';
+import { pipe } from '../../utils/pipe.js';
 import type { EventInfo } from '../../events/event-info.js';
 import { addPointerEvent } from '../../events/use-pointer-event.js';
 import type { VisualElement } from '../../render/types.js';

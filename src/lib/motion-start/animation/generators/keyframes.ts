@@ -13,7 +13,7 @@
 import { easeInOut } from '../../easing/ease.js';
 import type { EasingFunction } from '../../easing/types.js';
 import { isEasingArray, easingDefinitionToFunction } from '../utils/easing.js';
-import { interpolate } from 'popmotion';
+import { interpolate } from '../../utils/interpolate.js';
 import { defaultOffset } from '../../utils/offsets/default.js';
 import { convertOffsetToTimes } from '../../utils/offsets/time.js';
 import type { Easing } from '../../types.js';

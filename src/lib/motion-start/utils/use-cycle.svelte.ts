@@ -53,7 +53,7 @@ Copyright (c) 2018 Framer B.V.
  *
  * @public
  */
-import { wrap } from 'popmotion';
+import { wrap } from './wrap.js';
 
 export const useCycle = <T>(...items: T[]): CycleState<T> => {
 	let index = 0;

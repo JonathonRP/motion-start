@@ -7,8 +7,8 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import sync, { cancelSync } from 'framesync';
-import { pipe } from 'popmotion';
+import { frame, cancelFrame } from '../frameloop/index.js';
+import { pipe } from '../utils/pipe.js';
 import { Presence, type SharedLayoutAnimationConfig } from '../components/AnimateSharedLayout/types.js';
 import type { MotionProps } from '../motion';
 import type { TargetAndTransition, Transition } from '../types';
@@ -210,7 +210,7 @@ var visualElement =
 		) {
 			var removeOnChange = value.onChange((latestValue: string | number) => {
 				latestValues[key] = latestValue;
-				props.onUpdate && sync.update(update, false, true);
+				props.onUpdate && frame.update(update, false, true);
 			});
 			var removeOnRenderRequest = value.onRenderRequest(element.scheduleRender);
 			valueSubscriptions.set(key, () => {
@@ -311,9 +311,9 @@ var visualElement =
 					 *
 					 */
 					unmount: () => {
-						cancelSync.update(update);
-						cancelSync.render(render);
-						cancelSync.preRender(element.updateLayoutProjection);
+						cancelFrame(update(update);
+						cancelFrame(render(render);
+						cancelFrame(preRender(element.updateLayoutProjection);
 						valueSubscriptions.forEach((remove) => remove());
 						element.stopLayoutAnimation();
 						element.layoutTree.remove(element);
@@ -355,7 +355,7 @@ var visualElement =
 					 */
 					scheduleUpdateLayoutProjection: parent
 						? parent.scheduleUpdateLayoutProjection
-						: () => sync.preRender(element.updateTreeLayoutProjection, false, true),
+						: () => frame.preRender(element.updateTreeLayoutProjection, false, true),
 					/**
 					 * Expose the latest layoutId prop.
 					 */
@@ -483,7 +483,7 @@ var visualElement =
 				 * Schedule a render on the next animation frame.
 				 */
 				scheduleRender: () => {
-					sync.render(render, false, true);
+					frame.render(render, false, true);
 				},
 				/**
 				 * Synchronously fire render. It's prefered that we batch renders but
@@ -695,8 +695,8 @@ var visualElement =
 					 * relative projection boxes into viewport boxes, and *then*
 					 * update projections.
 					 */
-					sync.preRender(updateTreeLayoutProjection, false, true);
-					// sync.postRender(() => element.scheduleUpdateLayoutProjection())
+					frame.preRender(updateTreeLayoutProjection, false, true);
+					// frame.postRender(() => element.scheduleUpdateLayoutProjection())
 				},
 				getProjectionParent: () => {
 					if (projectionParent === undefined) {

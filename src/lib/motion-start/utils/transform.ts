@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 // TODO: would love to use svelte Easing here instead.
-import type { Easing } from 'popmotion';
+import type { Easing } from '../easing/types.js';
 
 /**
  * @public
@@ -30,7 +30,7 @@ export interface TransformOptions<T> {
 	mixer?: (from: T, to: T) => (v: number) => any;
 }
 
-import { interpolate } from 'popmotion';
+import { interpolate } from './interpolate.js';
 import type { CustomValueType } from '../types';
 /** 
 based on framer-motion@11.11.11,

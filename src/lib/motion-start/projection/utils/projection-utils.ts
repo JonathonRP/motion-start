@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import sync from 'framesync';
+import { frame } from '../../frameloop/index.js';
 import type { VisualElement } from '../../render/types.js';
 import { compareByDepth } from '../../render/utils/compare-by-depth.js';
 import { copyBoxInto } from '../geometry/copy.js';

@@ -8,7 +8,7 @@ interface WithLayoutId {
 	getLayoutId: () => undefined | string;
 }
 
-import { mix } from 'popmotion';
+import { mix } from '../../../utils/mix/index.js';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.

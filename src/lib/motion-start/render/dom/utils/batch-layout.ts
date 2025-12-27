@@ -10,7 +10,7 @@ type ReadWrites = (read: JobSetter, write: JobSetter) => void;
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import sync from 'framesync';
+import { frame } from '../../../frameloop/index.js';
 
 var unresolvedJobs = new Set();
 var layoutState = {

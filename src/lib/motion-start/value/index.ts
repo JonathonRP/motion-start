@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import sync, { getFrameData } from 'framesync';
-import { velocityPerSecond } from 'popmotion';
+import { frame, frameData } from '../frameloop/index.js';
+import { velocityPerSecond } from '../utils/velocity-per-second.js';
 /** 
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
@@ -268,13 +268,13 @@ export class MotionValue<V = any> implements Writable<V> {
 		this.prev = this.current;
 		this.current = v;
 		// Update timestamp
-		var _a = getFrameData(),
+		var _a = frameData,
 			delta = _a.delta,
 			timestamp = _a.timestamp;
 		if (this.lastUpdated !== timestamp) {
 			this.timeDelta = delta;
 			this.lastUpdated = timestamp;
-			sync.postRender(this.scheduleVelocityCheck);
+			frame.postRender(this.scheduleVelocityCheck);
 		}
 		// Update update subscribers
 		if (this.prev !== this.current) {
@@ -337,7 +337,7 @@ export class MotionValue<V = any> implements Writable<V> {
 	 * @internal
 	 */
 	private scheduleVelocityCheck = () => {
-		return sync.postRender(this.velocityCheck);
+		return frame.postRender(this.velocityCheck);
 	};
 	/**
 	 * Updates `prev` with `current` if the value hasn't been updated this frame.
