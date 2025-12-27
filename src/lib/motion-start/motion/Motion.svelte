@@ -172,6 +172,9 @@ let Component = isSVG ? 'SVG' : 'DOM';
 let createVisualElement = createDomVisualElement;
 let visualStateConfig = isSVG ? svgMotionConfig : htmlMotionConfig;
 
+// Marker for component detection
+export const __motionComponent = true;
+
 /**
  * If a component is static, we only visually update it as a
  * result of a React re-render, rather than any interactions or animations.

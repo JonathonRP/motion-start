@@ -37,13 +37,31 @@ $effect(() => {
 });
 </script>
 
-<svelte:component
-  this={Component === "SVG" ? UseSVGProps : UseHTMLProps}
-  {visualState}
-  {isStatic}
-  {props}
->
-  {#snippet children(visualProps: any)}
-    <slot {motion} props={{ ...filteredProps, ...visualProps }} />
-  {/snippet}
-</svelte:component>
+{#if typeof Component === 'string'}
+  <!-- Direct element rendering for string components (more performant) -->
+  {#if Component === 'SVG'}
+    <UseSVGProps {visualState} {isStatic} {props}>
+      {#snippet children(visualProps: any)}
+        <slot {motion} props={{ ...filteredProps, ...visualProps }} />
+      {/snippet}
+    </UseSVGProps>
+  {:else}
+    <UseHTMLProps {visualState} {isStatic} {props}>
+      {#snippet children(visualProps: any)}
+        <slot {motion} props={{ ...filteredProps, ...visualProps }} />
+      {/snippet}
+    </UseHTMLProps>
+  {/if}
+{:else}
+  <!-- Component-based rendering for Svelte components -->
+  <svelte:component
+    this={Component}
+    {visualState}
+    {isStatic}
+    {props}
+  >
+    {#snippet children(visualProps: any)}
+      <slot {motion} props={{ ...filteredProps, ...visualProps }} />
+    {/snippet}
+  </svelte:component>
+{/if}
