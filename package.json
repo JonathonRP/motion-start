@@ -54,7 +54,8 @@
 	"files": [
 		"dist",
 		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
+		"!dist/**/*.spec.*",
+		"!dist/**/__tests__/**"
 	],
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
