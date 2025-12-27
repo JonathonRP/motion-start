@@ -23,7 +23,7 @@ type MixableObject = { [key: string]: number | string };
  */
 export function getMixer<T>(a: T): Mixer<any> | ((b: T) => Mixer<T>) {
 	if (typeof a === 'number') {
-		return (b: any) => mixNumber(a, b, undefined as any);
+		return (b: any) => (p: number) => mixNumber(a, b, p);
 	} else if (typeof a === 'string') {
 		return mixComplex(a as any);
 	} else if (Array.isArray(a)) {
