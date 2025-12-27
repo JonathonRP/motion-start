@@ -1,28 +1,19 @@
 /**
  * measurePop Attachment
  *
- * Measures element dimensions before removal and preserves layout space
- * during exit animations. Returns a cleanup function and an update function.
- *
- * This is an imperative attachment pattern for use in $effect blocks.
+ * Svelte 5 attachment for measuring and preserving layout space during exit animations.
+ * Use with {@attach} syntax in templates.
  *
  * @example
  * ```svelte
  * <script>
- *   import { measurePop } from 'motion-start/components/AnimatePresence/attachments';
+ *   import { measurePop } from 'motion-start';
  *
- *   let element = $state<HTMLElement>();
  *   let isPresent = $state(true);
- *
- *   $effect(() => {
- *     if (!element) return;
- *     const { cleanup, update } = measurePop(element, { isPresent });
- *
- *     return cleanup;
- *   });
+ *   const pop = measurePop(() => ({ isPresent }));
  * </script>
  *
- * <div bind:this={element}>
+ * <div {@attach pop}>
  *   <motion.div>
  *     Content that will be measured before exit
  *   </motion.div>
@@ -35,6 +26,10 @@ export interface MeasurePopOptions {
 	isPresent: boolean;
 	/** Optional CSP nonce for the injected style element */
 	nonce?: string;
+}
+
+export interface MeasurePopAttachment {
+	(node: HTMLElement): () => void;
 }
 
 interface Size {
@@ -52,97 +47,105 @@ interface MeasurePopAttachment {
 }
 
 /**
- * Attaches layout preservation behavior to an element containing a motion component
+ * Creates a measurePop attachment for use with {@attach} syntax
  *
- * @param element - The DOM element containing the motion component
- * @param options - Configuration options
- * @returns Object with update and cleanup functions
+ * @param getOptions - Function that returns current options (reactive)
+ * @returns Attachment function for {@attach} directive
+ *
+ * @example
+ * ```svelte
+ * <script>
+ *   import { measurePop } from 'motion-start';
+ *
+ *   let isPresent = $state(true);
+ *   const pop = measurePop(() => ({ isPresent }));
+ * </script>
+ *
+ * <div {@attach pop}>
+ *   <motion.div>Content</motion.div>
+ * </div>
+ * ```
  */
 export function measurePop(
-	element: HTMLElement,
-	options: MeasurePopOptions
+	getOptions: () => MeasurePopOptions
 ): MeasurePopAttachment {
-	let { isPresent, nonce } = options;
+	return (element: HTMLElement) => {
+		let { isPresent, nonce } = getOptions();
 
-	let size: Size = { width: 0, height: 0, top: 0, left: 0 };
-	let popId = `pop-${Math.random().toString(36).substr(2, 9)}`;
-	let prevIsPresent = isPresent;
-	let styleElement: HTMLStyleElement | null = null;
-	let childElement: HTMLElement | null = null;
+		let size: Size = { width: 0, height: 0, top: 0, left: 0 };
+		let popId = `pop-${Math.random().toString(36).substr(2, 9)}`;
+		let prevIsPresent = isPresent;
+		let styleElement: HTMLStyleElement | null = null;
+		let childElement: HTMLElement | null = null;
 
-	// Find the first child element (should be the motion component)
-	const findChildElement = (): HTMLElement | null => {
-		return element.firstElementChild as HTMLElement || null;
-	};
-
-	// Measure element before exit
-	const measureElement = () => {
-		childElement = findChildElement();
-
-		if (!childElement) return;
-
-		size = {
-			width: childElement.offsetWidth || 0,
-			height: childElement.offsetHeight || 0,
-			top: childElement.offsetTop,
-			left: childElement.offsetLeft,
+		// Find the first child element (should be the motion component)
+		const findChildElement = (): HTMLElement | null => {
+			return element.firstElementChild as HTMLElement || null;
 		};
-	};
 
-	// Apply absolute positioning during exit
-	const applyExitStyles = () => {
-		childElement = findChildElement();
+		// Measure element before exit
+		const measureElement = () => {
+			childElement = findChildElement();
 
-		if (!childElement || isPresent || !size.width || !size.height) {
-			cleanupStyles();
-			return;
-		}
+			if (!childElement) return;
 
-		// Mark element with unique ID
-		childElement.dataset.motionPopId = popId;
+			size = {
+				width: childElement.offsetWidth || 0,
+				height: childElement.offsetHeight || 0,
+				top: childElement.offsetTop,
+				left: childElement.offsetLeft,
+			};
+		};
 
-		// Create and inject style element
-		const style = document.createElement('style');
-		if (nonce) {
-			style.nonce = nonce;
-		}
-		document.head.appendChild(style);
-		styleElement = style;
+		// Apply absolute positioning during exit
+		const applyExitStyles = () => {
+			childElement = findChildElement();
 
-		// Insert positioning rules
-		if (style.sheet) {
-			style.sheet.insertRule(`
-				[data-motion-pop-id="${popId}"] {
-					position: absolute !important;
-					width: ${size.width}px !important;
-					height: ${size.height}px !important;
-					top: ${size.top}px !important;
-					left: ${size.left}px !important;
-				}
-			`);
-		}
-	};
+			if (!childElement || isPresent || !size.width || !size.height) {
+				cleanupStyles();
+				return;
+			}
 
-	// Clean up injected styles
-	const cleanupStyles = () => {
-		if (styleElement && styleElement.parentNode) {
-			document.head.removeChild(styleElement);
-			styleElement = null;
-		}
+			// Mark element with unique ID
+			childElement.dataset.motionPopId = popId;
 
-		if (childElement) {
-			delete childElement.dataset.motionPopId;
-		}
-	};
+			// Create and inject style element
+			const style = document.createElement('style');
+			if (nonce) {
+				style.nonce = nonce;
+			}
+			document.head.appendChild(style);
+			styleElement = style;
 
-	// Initial setup
-	if (prevIsPresent && !isPresent) {
-		measureElement();
-		applyExitStyles();
-	}
+			// Insert positioning rules
+			if (style.sheet) {
+				style.sheet.insertRule(`
+					[data-motion-pop-id="${popId}"] {
+						position: absolute !important;
+						width: ${size.width}px !important;
+						height: ${size.height}px !important;
+						top: ${size.top}px !important;
+						left: ${size.left}px !important;
+					}
+				`);
+			}
+		};
 
-	return {
-		update(newOptions: MeasurePopOptions) {
+		// Clean up injected styles
+		const cleanupStyles = () => {
+			if (styleElement && styleElement.parentNode) {
+				document.head.removeChild(styleElement);
+				styleElement = null;
+			}
+
+			if (childElement) {
+				delete childElement.dataset.motionPopId;
+			}
+		};
+
+		// Watch for changes to options
+		const updateFromOptions = () => {
+			const newOptions = getOptions();
 			const { isPresent: newIsPresent, nonce: newNonce } = newOptions;
 
 			// Detect transition from present to not present
@@ -161,36 +164,44 @@ export function measurePop(
 			} else {
 				applyExitStyles();
 			}
-		},
+		};
 
-		cleanup() {
+		// Initial setup
+		updateFromOptions();
+
+		// Set up reactive updates (Svelte will re-run when dependencies change)
+		const interval = setInterval(updateFromOptions, 16); // Check every frame
+
+		// Return cleanup function
+		return () => {
+			clearInterval(interval);
 			cleanupStyles();
-		}
+		};
 	};
 }
 
 /**
- * Creates a bound measurePop attachment with predefined nonce
+ * Creates a measurePop attachment factory with predefined nonce
  *
  * @param nonce - CSP nonce for injected styles
- * @returns Attachment function that accepts element and isPresent
+ * @returns Factory function that creates attachments
  *
  * @example
  * ```svelte
  * <script>
- *   const attachMeasurePop = createMeasurePop('my-csp-nonce');
- *
- *   $effect(() => {
- *     if (!element) return;
- *     const { cleanup } = attachMeasurePop(element, { isPresent });
- *     return cleanup;
- *   });
+ *   const createPop = createMeasurePop('my-csp-nonce');
+ *   let isPresent = $state(true);
+ *   const pop = createPop(() => ({ isPresent }));
  * </script>
+ *
+ * <div {@attach pop}>
+ *   <motion.div>Content</motion.div>
+ * </div>
  * ```
  */
 export function createMeasurePop(
 	nonce?: string
-): (element: HTMLElement, options: Omit<MeasurePopOptions, 'nonce'>) => MeasurePopAttachment {
-	return (element: HTMLElement, options: Omit<MeasurePopOptions, 'nonce'>) =>
-		measurePop(element, { ...options, nonce });
+): (getOptions: () => Omit<MeasurePopOptions, 'nonce'>) => MeasurePopAttachment {
+	return (getOptions: () => Omit<MeasurePopOptions, 'nonce'>) =>
+		measurePop(() => ({ ...getOptions(), nonce }));
 }

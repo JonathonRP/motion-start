@@ -1,5 +1,5 @@
 /**
- * Tests for motionRef attachment
+ * Tests for motionRef attachment (Svelte 5 {@attach} pattern)
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -7,14 +7,26 @@ import { motionRef, createMotionRef } from '../motionRef';
 import type { VisualElement } from '../../../render/types';
 
 describe('motionRef attachment', () => {
-	it('should mount visual element to DOM node', () => {
+	it('should return an attachment function', () => {
+		const visualElement = {
+			mount: vi.fn(),
+			unmount: vi.fn(),
+		} as unknown as VisualElement;
+
+		const attachment = motionRef(visualElement);
+
+		expect(typeof attachment).toBe('function');
+	});
+
+	it('should mount visual element when attachment is called', () => {
 		const element = document.createElement('div');
 		const visualElement = {
 			mount: vi.fn(),
 			unmount: vi.fn(),
 		} as unknown as VisualElement;
 
-		motionRef(element, visualElement);
+		const attachment = motionRef(visualElement);
+		attachment(element);
 
 		expect(visualElement.mount).toHaveBeenCalledWith(element);
 	});
@@ -26,8 +38,11 @@ describe('motionRef attachment', () => {
 			unmount: vi.fn(),
 		} as unknown as VisualElement;
 
-		const cleanup = motionRef(element, visualElement);
-		cleanup();
+		const attachment = motionRef(visualElement);
+		const cleanup = attachment(element);
+
+		expect(typeof cleanup).toBe('function');
+		cleanup?.();
 
 		expect(visualElement.unmount).toHaveBeenCalled();
 	});
@@ -40,7 +55,8 @@ describe('motionRef attachment', () => {
 		} as unknown as VisualElement;
 		const externalRef = vi.fn();
 
-		motionRef(element, visualElement, { externalRef });
+		const attachment = motionRef(visualElement, { externalRef });
+		attachment(element);
 
 		expect(externalRef).toHaveBeenCalledWith(element);
 	});
@@ -53,28 +69,36 @@ describe('motionRef attachment', () => {
 		} as unknown as VisualElement;
 
 		expect(() => {
-			motionRef(element, visualElement, { externalRef: null });
+			const attachment = motionRef(visualElement, { externalRef: null });
+			attachment(element);
 		}).not.toThrow();
 	});
 
 	describe('createMotionRef', () => {
-		it('should create a bound attachment function', () => {
+		it('should create a factory function', () => {
+			const createRef = createMotionRef();
+
+			expect(typeof createRef).toBe('function');
+		});
+
+		it('should create attachments with factory', () => {
 			const element = document.createElement('div');
 			const visualElement = {
 				mount: vi.fn(),
 				unmount: vi.fn(),
 			} as unknown as VisualElement;
 
-			const attachMotion = createMotionRef(visualElement);
-			const cleanup = attachMotion(element);
+			const createRef = createMotionRef();
+			const attachment = createRef(visualElement);
+			const cleanup = attachment(element);
 
 			expect(visualElement.mount).toHaveBeenCalledWith(element);
 
-			cleanup();
+			cleanup?.();
 			expect(visualElement.unmount).toHaveBeenCalled();
 		});
 
-		it('should create a bound attachment with options', () => {
+		it('should create attachments with shared options', () => {
 			const element = document.createElement('div');
 			const visualElement = {
 				mount: vi.fn(),
@@ -82,8 +106,9 @@ describe('motionRef attachment', () => {
 			} as unknown as VisualElement;
 			const externalRef = vi.fn();
 
-			const attachMotion = createMotionRef(visualElement, { externalRef });
-			attachMotion(element);
+			const createRef = createMotionRef({ externalRef });
+			const attachment = createRef(visualElement);
+			attachment(element);
 
 			expect(externalRef).toHaveBeenCalledWith(element);
 		});

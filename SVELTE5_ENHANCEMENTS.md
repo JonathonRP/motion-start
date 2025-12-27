@@ -7,8 +7,8 @@ This document describes the Svelte 5-specific enhancements and patterns implemen
 Motion-start now includes several Svelte 5-specific features that make it more idiomatic and performant:
 
 1. **motion[stringKey] Support** - Dynamic component access ✅
-2. **motionRef Attachment** - Imperative ref pattern for $effect blocks ✅
-3. **measurePop Attachment** - Imperative layout preservation ✅
+2. **motionRef Attachment** - {@attach} pattern for VisualElement refs ✅
+3. **measurePop Attachment** - {@attach} pattern for layout preservation ✅
 4. **Motion Component Detection** - Utilities to detect motion components ✅
 5. **Optimized UseRenderer** - Direct element rendering for string components ✅
 
@@ -52,7 +52,7 @@ Access motion components dynamically using string keys.
 
 ## 2. motionRef Attachment
 
-An imperative attachment function for connecting VisualElements to DOM nodes.
+A Svelte 5 attachment for connecting VisualElements to DOM nodes using `{@attach}` syntax.
 
 ### Import
 
@@ -69,42 +69,31 @@ An imperative attachment function for connecting VisualElements to DOM nodes.
   import { motionRef } from 'motion-start';
   import { createDomVisualElement } from 'motion-start/render/dom';
 
-  let element = $state<HTMLElement>();
-  let visualElement = createDomVisualElement();
-
-  $effect(() => {
-    if (!element || !visualElement) return;
-    return motionRef(element, visualElement);
-  });
+  let visualElement = $state(createDomVisualElement());
+  const ref = motionRef(visualElement);
 </script>
 
-<div bind:this={element}>
+<div {@attach ref}>
   Animated content
 </div>
 ```
 
-### With External Ref Callback
+### With External Ref
 
 ```svelte
 <script>
   import { motionRef } from 'motion-start';
 
-  let element = $state<HTMLElement>();
-  let anotherRef = $state<HTMLElement>();
+  let visualElement = $state(createDomVisualElement());
 
-  $effect(() => {
-    if (!element) return;
-
-    return motionRef(element, visualElement, {
-      externalRef: (node) => {
-        anotherRef = node;
-        console.log('Element mounted:', node);
-      }
-    });
+  const ref = motionRef(visualElement, {
+    externalRef: (node) => {
+      console.log('Element attached:', node);
+    }
   });
 </script>
 
-<div bind:this={element}>
+<div {@attach ref}>
   Content
 </div>
 ```
@@ -115,24 +104,26 @@ An imperative attachment function for connecting VisualElements to DOM nodes.
 <script>
   import { createMotionRef } from 'motion-start';
 
-  let element = $state<HTMLElement>();
-  const attachMotion = createMotionRef(visualElement);
-
-  $effect(() => {
-    if (!element) return;
-    return attachMotion(element);
+  // Create a ref factory with shared options
+  const createRef = createMotionRef({
+    externalRef: (node) => console.log('Attached:', node)
   });
+
+  let ve1 = $state(createDomVisualElement());
+  let ve2 = $state(createDomVisualElement());
+
+  const ref1 = createRef(ve1);
+  const ref2 = createRef(ve2);
 </script>
 
-<div bind:this={element}>
-  Content
-</div>
+<div {@attach ref1}>Content 1</div>
+<div {@attach ref2}>Content 2</div>
 ```
 
 ### Benefits
-- ✅ Imperative API for programmatic control
-- ✅ Works seamlessly in $effect blocks
-- ✅ Automatic cleanup via returned function
+- ✅ Native Svelte 5 `{@attach}` syntax
+- ✅ Automatic cleanup on element removal
+- ✅ Reactive to parameter changes
 - ✅ Supports external ref callbacks
 - ✅ Type-safe with full TypeScript support
 
@@ -140,7 +131,7 @@ An imperative attachment function for connecting VisualElements to DOM nodes.
 
 ## 3. measurePop Attachment
 
-Preserves layout space during exit animations (popLayout mode).
+Preserves layout space during exit animations using `{@attach}` syntax (popLayout mode).
 
 ### Import
 
@@ -157,24 +148,11 @@ Preserves layout space during exit animations (popLayout mode).
   import { measurePop } from 'motion-start';
   import { motion } from 'motion-start';
 
-  let element = $state<HTMLElement>();
   let isPresent = $state(true);
-
-  $effect(() => {
-    if (!element) return;
-
-    const { cleanup, update } = measurePop(element, { isPresent });
-
-    // Update when isPresent changes
-    $effect(() => {
-      update({ isPresent });
-    });
-
-    return cleanup;
-  });
+  const pop = measurePop(() => ({ isPresent }));
 </script>
 
-<div bind:this={element}>
+<div {@attach pop}>
   <motion.div
     exit={{ opacity: 0 }}
     transition={{ duration: 0.3 }}
@@ -182,27 +160,10 @@ Preserves layout space during exit animations (popLayout mode).
     Content that will be measured before exit
   </motion.div>
 </div>
-```
 
-### Simplified Pattern
-
-```svelte
-<script>
-  import { measurePop } from 'motion-start';
-
-  let element = $state<HTMLElement>();
-  let isPresent = $state(true);
-
-  $effect(() => {
-    if (!element) return;
-    const { cleanup } = measurePop(element, { isPresent });
-    return cleanup;
-  });
-</script>
-
-<div bind:this={element}>
-  <motion.div>Content</motion.div>
-</div>
+<button onclick={() => isPresent = !isPresent}>
+  Toggle
+</button>
 ```
 
 ### With CSP Nonce
@@ -211,17 +172,13 @@ Preserves layout space during exit animations (popLayout mode).
 <script>
   import { createMeasurePop } from 'motion-start';
 
-  let element = $state<HTMLElement>();
-  const attachMeasurePop = createMeasurePop('my-csp-nonce');
+  const createPop = createMeasurePop('my-csp-nonce');
 
-  $effect(() => {
-    if (!element) return;
-    const { cleanup } = attachMeasurePop(element, { isPresent });
-    return cleanup;
-  });
+  let isPresent = $state(true);
+  const pop = createPop(() => ({ isPresent }));
 </script>
 
-<div bind:this={element}>
+<div {@attach pop}>
   <motion.div>Content</motion.div>
 </div>
 ```
@@ -231,14 +188,14 @@ Preserves layout space during exit animations (popLayout mode).
 1. **Measures element** before it exits (width, height, position)
 2. **Applies absolute positioning** to preserve layout space
 3. **Injects styles** via a `<style>` element
-4. **Cleans up** automatically when cleanup function is called
+4. **Cleans up** automatically when element is removed
 
 ### Benefits
 - ✅ Prevents layout shift during exit animations
 - ✅ CSP-compliant with nonce support
-- ✅ Automatic cleanup via returned function
+- ✅ Automatic cleanup via `{@attach}` lifecycle
 - ✅ Works with AnimatePresence popLayout mode
-- ✅ Imperative API for programmatic control
+- ✅ Reactive to state changes
 
 ---
 
@@ -384,62 +341,93 @@ npm run build        # Production build
 
 ---
 
-## 📦 Migration Guide
+## 📦 {@attach} Syntax Guide
 
-### From Actions to Attachments
+The `{@attach}` syntax is Svelte 5's way of attaching imperative behaviors to DOM nodes.
 
-**Before (Action pattern):**
+### Basic Pattern
+
 ```svelte
 <script>
-  import { motionRef } from 'motion-start/motion/actions';
+  // 1. Create an attachment function
+  const myAttachment = (node: HTMLElement) => {
+    // Setup code
+    console.log('Attached to:', node);
+
+    // Return cleanup function (optional)
+    return () => {
+      console.log('Detached from:', node);
+    };
+  };
 </script>
 
-<div use:motionRef={{ visualElement }}>Content</div>
+<!-- 2. Use {@attach} in template -->
+<div {@attach myAttachment}>
+  Content
+</div>
 ```
 
-**After (Attachment pattern):**
+### With Parameters (Reactive)
+
 ```svelte
 <script>
-  import { motionRef } from 'motion-start';
+  let count = $state(0);
 
-  let element = $state<HTMLElement>();
+  // Use a getter function to capture reactive state
+  const counter = (getCount: () => number) => {
+    return (node: HTMLElement) => {
+      const interval = setInterval(() => {
+        node.textContent = `Count: ${getCount()}`;
+      }, 100);
 
-  $effect(() => {
-    if (!element || !visualElement) return;
-    return motionRef(element, visualElement);
-  });
+      return () => clearInterval(interval);
+    };
+  };
+
+  const attach = counter(() => count);
 </script>
 
-<div bind:this={element}>Content</div>
+<div {@attach attach}>Will update automatically</div>
+<button onclick={() => count++}>Increment</button>
 ```
 
-### Why Attachments?
+### Key Differences from Actions
 
-Attachments provide:
-- **More control** - Programmatic API for complex scenarios
-- **Better composition** - Easier to combine with other effects
-- **Explicit cleanup** - Clear lifetime management
-- **Type safety** - Better TypeScript inference in $effect blocks
+| Feature | Actions (`use:`) | Attachments (`{@attach}`) |
+|---------|------------------|---------------------------|
+| **Syntax** | `use:action` or `use:action={params}` | `{@attach fn}` |
+| **Parameters** | Object with reactive updates | Closures over reactive state |
+| **Update lifecycle** | `action.update(params)` called | Re-attach on reactive changes |
+| **Cleanup** | `action.destroy()` called | Cleanup function called |
+| **Type** | `Action<Element, Params>` | `(node: Element) => void \| (() => void)` |
 
 ---
 
 ## 🎨 Best Practices
 
-### 1. Use Attachments in $effect Blocks
+### 1. Use {@attach} for Imperative DOM Manipulation
 
-Attachments are designed for imperative DOM manipulation:
+Attachments are the Svelte 5 way to imperatively interact with DOM nodes:
 
 ```svelte
 <script>
-  let element = $state<HTMLElement>();
+  import { motionRef } from 'motion-start';
 
-  // ✅ Good: Use attachment in $effect
-  $effect(() => {
-    if (!element || !visualElement) return;
-    return motionRef(element, visualElement);
-  });
+  let visualElement = $state(createVisualElement());
+  const ref = motionRef(visualElement);
 </script>
 
+<!-- ✅ Good: Use {@attach} -->
+<div {@attach ref}>Content</div>
+
+<!-- ❌ Avoid: Manual $effect manipulation -->
+<script>
+  let element = $state<HTMLElement>();
+
+  $effect(() => {
+    if (element) visualElement.mount(element);
+  });
+</script>
 <div bind:this={element}>Content</div>
 ```
 
@@ -467,58 +455,52 @@ When using AnimatePresence with layout-affecting exits:
 
 ```svelte
 <script>
-  let element = $state<HTMLElement>();
+  let items = $state([1, 2, 3]);
+  const pop = measurePop(() => ({ isPresent: true }));
+</script>
+
+{#each items as item (item)}
+  <div {@attach pop}>
+    <motion.div exit={{ opacity: 0 }}>
+      Item {item}
+    </motion.div>
+  </div>
+{/each}
+```
+
+### 4. Use Getter Functions for Reactive State
+
+```svelte
+<script>
   let isPresent = $state(true);
 
-  $effect(() => {
-    if (!element) return;
-    const { cleanup } = measurePop(element, { isPresent });
-    return cleanup;
-  });
+  // ✅ Good: Getter function captures reactive state
+  const pop = measurePop(() => ({ isPresent }));
+
+  // ❌ Bad: Direct value won't update
+  const popBad = measurePop({ isPresent }); // Won't react to changes!
 </script>
 
-<div bind:this={element}>
-  <motion.div exit={{ opacity: 0 }}>
-    Content
-  </motion.div>
-</div>
+<div {@attach pop}>Content</div>
 ```
 
-### 4. Always Check Element Exists
+### 5. Factory Pattern for Shared Configuration
 
 ```svelte
 <script>
-  let element = $state<HTMLElement>();
-
-  // ✅ Good: Check element exists
-  $effect(() => {
-    if (!element) return;
-    return motionRef(element, visualElement);
+  const createRef = createMotionRef({
+    externalRef: (node) => console.log('Attached:', node)
   });
 
-  // ❌ Bad: No guard clause
-  $effect(() => {
-    return motionRef(element, visualElement); // May be undefined!
-  });
+  let ve1 = $state(createVisualElement());
+  let ve2 = $state(createVisualElement());
+
+  const ref1 = createRef(ve1);
+  const ref2 = createRef(ve2);
 </script>
-```
 
-### 5. Return Cleanup Functions
-
-```svelte
-<script>
-  // ✅ Good: Return cleanup
-  $effect(() => {
-    if (!element) return;
-    return motionRef(element, visualElement);
-  });
-
-  // ❌ Bad: No cleanup
-  $effect(() => {
-    if (!element) return;
-    motionRef(element, visualElement); // Cleanup not returned!
-  });
-</script>
+<div {@attach ref1}>Content 1</div>
+<div {@attach ref2}>Content 2</div>
 ```
 
 ---
@@ -528,19 +510,17 @@ When using AnimatePresence with layout-affecting exits:
 All enhancements include full TypeScript definitions:
 
 ```typescript
-import type { MotionRefOptions } from 'motion-start';
-import type { MeasurePopOptions } from 'motion-start';
+import type { MotionRefOptions, MotionRefAttachment } from 'motion-start';
+import type { MeasurePopOptions, MeasurePopAttachment } from 'motion-start';
 
-// Attachment functions are fully typed
-const cleanup: () => void = motionRef(element, visualElement);
+// Attachments are typed functions
+const ref: MotionRefAttachment = motionRef(visualElement);
+const pop: MeasurePopAttachment = measurePop(() => ({ isPresent: true }));
 
 // With options
-const cleanup2: () => void = motionRef(element, visualElement, {
+const refWithOptions: MotionRefAttachment = motionRef(visualElement, {
   externalRef: (node) => console.log(node)
 });
-
-// measurePop returns an object with cleanup and update
-const { cleanup: cleanupFn, update } = measurePop(element, { isPresent: true });
 ```
 
 ---
@@ -551,60 +531,89 @@ const { cleanup: cleanupFn, update } = measurePop(element, { isPresent: true });
 
 ```typescript
 function motionRef(
-  element: HTMLElement,
   visualElement: VisualElement,
   options?: MotionRefOptions
-): () => void
+): MotionRefAttachment
 
 interface MotionRefOptions {
   externalRef?: ((node: HTMLElement) => void) | null;
 }
+
+interface MotionRefAttachment {
+  (node: HTMLElement): void | (() => void);
+}
 ```
 
-**Returns:** Cleanup function that unmounts the visual element
+**Usage:**
+```svelte
+<script>
+  const ref = motionRef(visualElement);
+</script>
+<div {@attach ref}>Content</div>
+```
 
 ### createMotionRef
 
 ```typescript
 function createMotionRef(
-  visualElement: VisualElement,
   options?: MotionRefOptions
-): (element: HTMLElement) => () => void
+): (visualElement: VisualElement) => MotionRefAttachment
 ```
 
-**Returns:** Bound attachment function
+**Usage:**
+```svelte
+<script>
+  const createRef = createMotionRef({ externalRef: console.log });
+  const ref1 = createRef(ve1);
+  const ref2 = createRef(ve2);
+</script>
+<div {@attach ref1}>Content 1</div>
+<div {@attach ref2}>Content 2</div>
+```
 
 ### measurePop
 
 ```typescript
 function measurePop(
-  element: HTMLElement,
-  options: MeasurePopOptions
-): {
-  update: (options: MeasurePopOptions) => void;
-  cleanup: () => void;
-}
+  getOptions: () => MeasurePopOptions
+): MeasurePopAttachment
 
 interface MeasurePopOptions {
   isPresent: boolean;
   nonce?: string;
 }
+
+interface MeasurePopAttachment {
+  (node: HTMLElement): () => void;
+}
 ```
 
-**Returns:** Object with `update` and `cleanup` functions
+**Usage:**
+```svelte
+<script>
+  let isPresent = $state(true);
+  const pop = measurePop(() => ({ isPresent }));
+</script>
+<div {@attach pop}>Content</div>
+```
 
 ### createMeasurePop
 
 ```typescript
 function createMeasurePop(
   nonce?: string
-): (element: HTMLElement, options: Omit<MeasurePopOptions, 'nonce'>) => {
-  update: (options: MeasurePopOptions) => void;
-  cleanup: () => void;
-}
+): (getOptions: () => Omit<MeasurePopOptions, 'nonce'>) => MeasurePopAttachment
 ```
 
-**Returns:** Bound attachment function with nonce
+**Usage:**
+```svelte
+<script>
+  const createPop = createMeasurePop('my-nonce');
+  let isPresent = $state(true);
+  const pop = createPop(() => ({ isPresent }));
+</script>
+<div {@attach pop}>Content</div>
+```
 
 ### isMotionComponent
 
@@ -623,7 +632,7 @@ These enhancements provide measurable performance improvements:
 | Feature | Benefit | Impact |
 |---------|---------|--------|
 | Direct element rendering | Fewer component wrappers | ~10-15% faster initial render |
-| Attachment pattern | Explicit lifecycle control | Better memory management |
+| {@attach} pattern | Native Svelte 5 lifecycle | Better memory management |
 | measurePop attachment | Optimized DOM measurements | Better layout animation performance |
 | Component detection | Cached checks | Faster AnimatePresence logic |
 
@@ -631,8 +640,8 @@ These enhancements provide measurable performance improvements:
 
 ## 📝 Notes
 
-- Attachments are the **recommended pattern** for imperative DOM manipulation in Svelte 5
-- Actions (`use:` directive) were considered but attachments provide better control
+- **{@attach} is Svelte 5's native pattern** for imperative DOM manipulation
+- Replaces the `use:` action directive with a more flexible approach
 - All enhancements are **fully type-safe**
 - Production build size impact: < 2KB gzipped
 - Works seamlessly with Svelte 5 runes ($state, $effect, $derived)
@@ -642,4 +651,4 @@ These enhancements provide measurable performance improvements:
 **Last Updated:** 2025-12-27
 **Version:** motion-start@0.1.18+
 **Svelte:** 5.x runes mode
-**Pattern:** Attachment-based (imperative)
+**Pattern:** Svelte 5 {@attach} syntax
