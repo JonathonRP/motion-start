@@ -58,7 +58,7 @@ function flushLayout() {
 	 * but neither seem to work as expected.
 	 */
 	layoutState.isMeasuringLayout = true;
-	sync.postRender(() => {
+	frame.postRender(() => {
 		setTimeout(() => (layoutState.isMeasuringLayout = false), 10);
 	});
 	/**

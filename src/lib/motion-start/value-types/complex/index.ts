@@ -51,7 +51,7 @@ export const complex: ValueType = {
 			// Replace color placeholders
 			v.indexes?.forEach((index: number) => {
 				const value = values[index];
-				const colorString = color.transform!(value);
+				const colorString = String(color.transform!(value));
 				output = output.replace('${c}', colorString);
 			});
 

@@ -67,8 +67,6 @@ function createBatcher(): SyncLayoutBatcher {
 					 * leaving a flash of incorrectly-projected content. By manually flushing these jobs
 					 * we ensure there's no flash.
 					 */
-					microtask.preRender();
-					microtask.render();
 				});
 				read(() => {
 					/**

@@ -311,9 +311,9 @@ var visualElement =
 					 *
 					 */
 					unmount: () => {
-						cancelFrame(update(update);
-						cancelFrame(render(render);
-						cancelFrame(preRender(element.updateLayoutProjection);
+						cancelFrame(update);
+						cancelFrame(render);
+						cancelFrame(element.updateLayoutProjection);
 						valueSubscriptions.forEach((remove) => remove());
 						element.stopLayoutAnimation();
 						element.layoutTree.remove(element);

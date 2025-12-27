@@ -8,7 +8,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 import { frame, cancelFrame, frameData } from '../../frameloop/index.js';
-import { distance } from '../../utils/distance.js';
+import { distance, distance2D } from '../../utils/distance.js';
 import { pipe } from '../../utils/pipe.js';
 import { extractEventInfo } from '../../events/event-info.js';
 import type { EventInfo } from '../../events/types';
@@ -200,7 +200,7 @@ export class PanSession {
 		// Only start panning if the offset is larger than 3 pixels. If we make it
 		// any larger than this we'll want to reset the pointer history
 		// on the first update to avoid visual snapping to the cursoe.
-		var isDistancePastThreshold = distance(info.offset, { x: 0, y: 0 }) >= 3;
+		var isDistancePastThreshold = distance2D(info.offset, { x: 0, y: 0 }) >= 3;
 		if (!isPanStarted && !isDistancePastThreshold) return;
 		var point = info.point;
 		var timestamp = frameData.timestamp;
@@ -241,7 +241,7 @@ export class PanSession {
 	};
 	end = () => {
 		this.removeListeners?.();
-		cancelFrame.update(this.updatePoint);
+		cancelFrame(this.updatePoint);
 	};
 }
 

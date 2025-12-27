@@ -1,14 +1,10 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-// Internal animation types
-/** 
-based on framer-motion@11.11.11,
-Copyright (c) 2018 Framer B.V.
-*/
-import { MainThreadAnimation } from '../animators/MainThreadAnimation.js';
-import type { Spring, Tween, Inertia as InertiaType } from '../../types.js';
+
+// Internal animation - no external dependencies
+import { animate as internalAnimate } from '../animate/index.js';
 import { getAnimatableNone } from '../../render/dom/value-types/animatable-none.js';
 import type { PermissiveTransitionDefinition, ResolvedValueTarget, Transition } from '../../types';
 import { warning } from '../../utils/errors.js';
@@ -40,9 +36,9 @@ function isTransitionDefined(_a: Transition) {
 }
 var legacyRepeatWarning = false;
 /**
- * Convert Framer Motion's Transition type into Popmotion-compatible options.
+ * Convert Framer Motion's Transition type into animation options.
  */
-function convertTransitionToAnimationOptions<T>(_a: PermissiveTransitionDefinition): AnimationOptions<T> {
+function convertTransitionToAnimationOptions<T>(_a: PermissiveTransitionDefinition): any {
 	var { ease, times, yoyo, flip, loop, ...transition } = _a;
 	var options = Object.assign({}, transition);
 	if (times) options.offset = times;
@@ -52,7 +48,7 @@ function convertTransitionToAnimationOptions<T>(_a: PermissiveTransitionDefiniti
 	if (transition.duration) options.duration = secondsToMilliseconds(transition.duration);
 	if (transition.repeatDelay) options.repeatDelay = secondsToMilliseconds(transition.repeatDelay);
 	/**
-	 * Map easing names to Popmotion's easing functions
+	 * Map easing names to easing functions
 	 */
 	if (ease) {
 		options.ease = isEasingArray(ease) ? ease.map(easingDefinitionToFunction) : easingDefinitionToFunction(ease);
@@ -80,9 +76,7 @@ function convertTransitionToAnimationOptions<T>(_a: PermissiveTransitionDefiniti
 		options.repeat = loop || yoyo || flip || transition.repeat;
 	}
 	/**
-	 * TODO: Popmotion 9 has the ability to automatically detect whether to use
-	 * a keyframes or spring animation, but does so by detecting velocity and other spring options.
-	 * It'd be good to introduce a similar thing here.
+	 * Ensure type is set for animations
 	 */
 	if (transition.type !== 'spring') options.type = 'keyframes';
 	return options;
@@ -102,7 +96,7 @@ function hydrateKeyframes(options: PermissiveTransitionDefinition) {
 	}
 	return options;
 }
-function getPopmotionAnimationOptions(transition: PermissiveTransitionDefinition, options: any, key: string) {
+function getAnimationOptions(transition: PermissiveTransitionDefinition, options: any, key: string) {
 	var _a;
 	if (Array.isArray(options.to)) {
 		(_a = transition.duration) !== null && _a !== void 0 ? _a : (transition.duration = 0.8);
@@ -166,22 +160,28 @@ function getAnimation(
 			onComplete: onComplete,
 			onUpdate: (v: any) => value.set(v),
 		};
-		return valueTransition.type === 'inertia' || valueTransition.type === 'decay'
-			? inertia(Object.assign(Object.assign({}, options), valueTransition))
-			: animate(
-					Object.assign(Object.assign({}, getPopmotionAnimationOptions(valueTransition, options, key)), {
-						onUpdate: (v: any) => {
-							var _a;
-							options.onUpdate(v);
-							(_a = valueTransition.onUpdate) === null || _a === void 0 ? void 0 : _a.call(valueTransition, v);
-						},
-						onComplete: () => {
-							var _a;
-							options.onComplete();
-							(_a = valueTransition.onComplete) === null || _a === void 0 ? void 0 : _a.call(valueTransition);
-						},
-					})
-				);
+
+		// Use our internal animate function for all animation types
+		const animOptions = getAnimationOptions(valueTransition, options, key);
+
+		return internalAnimate(
+			origin,
+			target,
+			{
+				...animOptions,
+				type: valueTransition.type === 'inertia' || valueTransition.type === 'decay' ? 'inertia' : animOptions.type,
+				onUpdate: (v: any) => {
+					var _a;
+					options.onUpdate(v);
+					(_a = valueTransition.onUpdate) === null || _a === void 0 ? void 0 : _a.call(valueTransition, v);
+				},
+				onComplete: () => {
+					var _a;
+					options.onComplete();
+					(_a = valueTransition.onComplete) === null || _a === void 0 ? void 0 : _a.call(valueTransition);
+				},
+			}
+		);
 	}
 	function set() {
 		var _a;
@@ -207,7 +207,7 @@ function getValueTransition(transition: Transition, key: string) {
 }
 /**
  * Start animation on a MotionValue. This function is an interface between
- * Framer Motion and Popmotion
+ * Framer Motion and our internal animation system
  *
  * @internal
  */
@@ -236,7 +236,7 @@ function startAnimation(key: string, value: MotionValue, target: ResolvedValueTa
 export {
 	convertTransitionToAnimationOptions,
 	getDelayFromTransition,
-	getPopmotionAnimationOptions,
+	getAnimationOptions as getPopmotionAnimationOptions,
 	getValueTransition,
 	getZeroUnit,
 	hydrateKeyframes,

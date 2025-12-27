@@ -220,12 +220,6 @@ class VisualElementDragControls {
 						}
 					});
 				});
-				write(() => {
-					microtask.update();
-					microtask.preRender();
-					microtask.render();
-					microtask.postRender();
-				});
 				read(() => _self.resolveDragConstraints());
 			});
 		};

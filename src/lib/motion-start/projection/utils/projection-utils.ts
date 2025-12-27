@@ -54,7 +54,7 @@ export function updateLayoutMeasurement(visualElement: VisualElement): void {
 
 	visualElement.notifyLayoutMeasure(layoutState.layout, visualElement.prevViewportBox || layoutState.layout);
 
-	sync.update(() => visualElement.rebaseProjectionTarget());
+	frame.update(() => visualElement.rebaseProjectionTarget());
 }
 
 /**

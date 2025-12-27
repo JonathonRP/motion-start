@@ -68,7 +68,6 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	// Calculate the overall context scale
 	var xScale = delta.x.scale * treeScale.x;
 	var yScale = delta.y.scale * treeScale.y;
-	//@ts-expect-error
 	shadow[0 + offset] /= xScale; //@ts-ignore
 	shadow[1 + offset] /= yScale;
 	/**
@@ -80,11 +79,9 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	var averageScale = mix(xScale, yScale, 0.5);
 	// Blur
 	if (typeof shadow[2 + offset] === 'number')
-		//@ts-expect-error
 		shadow[2 + offset] /= averageScale;
 	// Spread
 	if (typeof shadow[3 + offset] === 'number')
-		//@ts-expect-error
 		shadow[3 + offset] /= averageScale;
 	var output = template(shadow);
 	if (containsCSSVariables) {

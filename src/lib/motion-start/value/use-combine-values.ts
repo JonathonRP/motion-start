@@ -35,7 +35,7 @@ export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], c
 	};
 
 	const handler = () => {
-		sync.update(updateValue, false, true);
+		frame.update(updateValue, false, true);
 	};
 
 	value.reset = (_values, _combineValues) => {

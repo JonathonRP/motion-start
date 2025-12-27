@@ -66,7 +66,7 @@ function correctBoxShadow(latest: string | number, { delta, treeScale }: LayoutS
 	// TODO: Doesn't support multiple shadows
 	if (shadow.length > 5) return original;
 
-	const template = complex.createTransformer(latest as string);
+	const template = complex.createTransformer!(latest as string);
 	const offset = typeof shadow[0] !== 'number' ? 1 : 0;
 
 	// Calculate the overall context scale

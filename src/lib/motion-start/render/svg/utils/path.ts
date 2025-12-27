@@ -13,7 +13,7 @@ import { fixed } from '../../../utils/fix-process-env';
 import type { ResolvedValues } from '../../types';
 
 // Convert a progress 0-1 to a pixels value based on the provided length
-var progressToPixels = (progress: number, length: number) => px.transform?.(progress * length);
+var progressToPixels = (progress: number, length: number) => px.transform!(progress * length);
 var dashKeys = {
 	offset: 'stroke-dashoffset',
 	array: 'stroke-dasharray',

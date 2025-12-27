@@ -11,3 +11,4 @@
  */
 
 export * from './frame.js';
+export { microtask, cancelMicrotask } from './microtask.js';
