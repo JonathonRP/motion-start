@@ -1,0 +1,120 @@
+/**
+ * Mirrored from framer-motion v11.11.11
+ * Source: https://github.com/motiondivision/motion/blob/v11.11.11/packages/framer-motion/src/utils/__tests__/use-in-view.test.tsx
+ */
+
+// TODO: Svelte 5 migration needed
+
+import { render } from "../../../jest.setup"
+import { act, useRef, useEffect } from "react"
+import { useInView } from "../use-in-view"
+import { getActiveObserver } from "./mock-intersection-observer"
+
+const target = document.createElement("div")
+
+const enter = () => getActiveObserver()?.([{ target, isIntersecting: true }])
+
+const leave = () => getActiveObserver()?.([{ target, isIntersecting: false }])
+
+describe("useInView", () => {
+    test("Returns false on mount", () => {
+        const results: boolean[] = []
+
+        const Component = () => {
+            const ref = useRef(null)
+            const isInView = useInView(ref)
+
+            useEffect(() => {
+                if (results[results.length - 1] !== isInView)
+                    results.push(isInView)
+            }, [isInView])
+
+            return <div ref={ref} />
+        }
+
+        const { rerender } = render(<Component />)
+        rerender(<Component />)
+        rerender(<Component />)
+        rerender(<Component />)
+        rerender(<Component />)
+
+        expect(results).toEqual([false])
+    })
+
+    test("Returns true when element enters the viewport", async () => {
+        const results: boolean[] = []
+
+        const Component = () => {
+            const ref = useRef(null)
+            const isInView = useInView(ref)
+
+            useEffect(() => {
+                if (results[results.length - 1] !== isInView)
+                    results.push(isInView)
+            }, [isInView])
+
+            return <div ref={ref} />
+        }
+
+        render(<Component />)
+        act(enter)
+        act(enter)
+        act(enter)
+        act(enter)
+        act(enter)
+
+        expect(results).toEqual([false, true])
+    })
+
+    test("Returns false when element leaves the viewport", async () => {
+        const results: boolean[] = []
+
+        const Component = () => {
+            const ref = useRef(null)
+            const isInView = useInView(ref)
+
+            useEffect(() => {
+                if (results[results.length - 1] !== isInView)
+                    results.push(isInView)
+            }, [isInView])
+
+            return <div ref={ref} />
+        }
+
+        render(<Component />)
+        act(leave)
+        act(enter)
+        act(leave)
+        act(leave)
+        act(enter)
+        act(leave)
+
+        expect(results).toEqual([false, true, false, true, false])
+    })
+
+    test("Only triggers true once, if once is set", async () => {
+        const results: boolean[] = []
+
+        const Component = () => {
+            const ref = useRef(null)
+            const isInView = useInView(ref, { once: true })
+
+            useEffect(() => {
+                if (results[results.length - 1] !== isInView)
+                    results.push(isInView)
+            }, [isInView])
+
+            return <div ref={ref} />
+        }
+
+        render(<Component />)
+        act(leave)
+        act(enter)
+        act(leave)
+        act(leave)
+        act(enter)
+        act(leave)
+
+        expect(results).toEqual([false, true])
+    })
+})

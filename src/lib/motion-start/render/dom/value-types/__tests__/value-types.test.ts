@@ -1,0 +1,64 @@
+/**
+ * Mirrored from framer-motion v11.11.11
+ * Source: https://github.com/motiondivision/motion/tree/v11.11.11/packages/framer-motion
+ * Original file: src/render/dom/value-types/__tests__/value-types.test.ts"
+ */
+
+import "../../../../../jest.setup"
+import { auto } from "../type-auto"
+import { findDimensionValueType } from "../dimensions"
+import { findValueType } from "../find"
+import { getValueAsType } from "../get-as-type"
+import { number } from "../../../../value/types/numbers"
+import {
+    degrees,
+    percent,
+    px,
+    vh,
+    vw,
+} from "../../../../value/types/numbers/units"
+import { color } from "../../../../value/types/color"
+import { complex } from "../../../../value/types/complex"
+
+describe("auto ValueType", () => {
+    it("Correctly tests for auto", () => {
+        expect(auto.test(0)).toBe(false)
+        expect(auto.test("10px")).toBe(false)
+        expect(auto.test("auto")).toBe(true)
+    })
+})
+
+describe("findDimensionValueType", () => {
+    it("Correctly finds ValueType for provided dimension", () => {
+        expect(findDimensionValueType(0)).toBe(number)
+        expect(findDimensionValueType("0px")).toBe(px)
+        expect(findDimensionValueType("0%")).toBe(percent)
+        expect(findDimensionValueType("50deg")).toBe(degrees)
+        expect(findDimensionValueType("4vw")).toBe(vw)
+        expect(findDimensionValueType("4vh")).toBe(vh)
+        expect(findDimensionValueType("g")).toBe(undefined)
+    })
+})
+
+describe("findValueType", () => {
+    it("Correctly finds ValueType for provided value", () => {
+        expect(findValueType(0)).toBe(number)
+        expect(findValueType("0px")).toBe(px)
+        expect(findValueType("0%")).toBe(percent)
+        expect(findValueType("50deg")).toBe(degrees)
+        expect(findValueType("4vw")).toBe(vw)
+        expect(findValueType("4vh")).toBe(vh)
+        expect(findValueType("#fff")).toBe(color)
+        expect(findValueType("rgba(0, 0, 0, 0)")).toBe(color)
+        expect(findValueType("hsla(0, 0, 0, 0)")).toBe(color)
+        expect(findValueType("#fff scale(1)")).toBe(complex)
+    })
+})
+
+describe("getValueAsType", () => {
+    it("Correctly returns only numbers as the provided ValueType", () => {
+        expect(getValueAsType(100, px)).toBe("100px")
+        expect(getValueAsType("100%", px)).toBe("100%")
+        expect(getValueAsType(100)).toBe(100)
+    })
+})
