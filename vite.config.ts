@@ -11,10 +11,17 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	test: {
-		/* for example, use global to avoid globals imports (describe, test, expect): */
 		globals: true,
 		typecheck: {
 			enabled: true,
+		},
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		environment: 'jsdom',
+		// Browser mode for UI/integration tests
+		browser: {
+			enabled: false, // Enable via CLI: vitest --browser
+			name: 'chromium',
+			provider: 'playwright',
 		},
 	},
 	server: {
