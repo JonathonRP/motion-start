@@ -6,21 +6,31 @@
  *
  * @example
  * ```svelte
- * <div
- *   {@attach layout()}
- *   class={expanded ? 'large' : 'small'}
- * >
- *   Content that animates when class changes
+ * <!-- Auto layout animation -->
+ * <div {@attach layout()} class={expanded ? 'large' : 'small'}>
+ *   Content animates when class changes
+ * </div>
+ *
+ * <!-- Shared element transition with layoutId -->
+ * <div {@attach layout({ layoutId: 'hero' })}>
+ *   This element transitions to another with same layoutId
  * </div>
  * ```
  */
 
 import type { TransitionOptions } from '../animation/types.js';
 import { animate } from '../animation/animate.js';
+import {
+	registerLayoutElement,
+	unregisterLayoutElement,
+	useLayoutGroupContext
+} from '../context/layout-group.svelte.js';
 
 export type LayoutProps = {
 	/** Enable layout animations: true | 'position' | 'size' */
 	layout?: boolean | 'position' | 'size';
+	/** Shared layout ID for cross-component transitions */
+	layoutId?: string;
 	/** Transition for layout animations */
 	transition?: TransitionOptions;
 	/** Callback when layout animation starts */
@@ -38,14 +48,37 @@ type BoundingBox = {
 
 /**
  * Create a layout attachment for FLIP animations
+ *
+ * Supports both:
+ * - Automatic layout animations (when element changes size/position)
+ * - Shared element transitions (via layoutId)
  */
 export function layout(props: LayoutProps = {}) {
-	const { layout: layoutMode = true, transition, onLayoutAnimationStart, onLayoutAnimationComplete } = props;
+	const {
+		layout: layoutMode = true,
+		layoutId,
+		transition,
+		onLayoutAnimationStart,
+		onLayoutAnimationComplete
+	} = props;
 
 	return (element: HTMLElement) => {
 		let lastBox: BoundingBox | null = null;
 		let isAnimating = false;
 		let activeAnimations: { stop: () => void }[] = [];
+
+		// Get context for transition defaults
+		const context = useLayoutGroupContext();
+		const defaultTransition: TransitionOptions = transition ?? context?.transition ?? {
+			type: 'spring',
+			stiffness: 400,
+			damping: 30
+		};
+
+		// Register with layout group if layoutId is provided
+		if (layoutId) {
+			registerLayoutElement(layoutId, element);
+		}
 
 		// Get current bounding box
 		function getBox(): BoundingBox {
@@ -64,7 +97,7 @@ export function layout(props: LayoutProps = {}) {
 		}
 
 		// Animate from snapshot to current position
-		function animate_() {
+		function animateLayout() {
 			if (!lastBox) return;
 
 			const currentBox = getBox();
@@ -72,8 +105,8 @@ export function layout(props: LayoutProps = {}) {
 			// Calculate deltas
 			const deltaX = lastBox.x - currentBox.x;
 			const deltaY = lastBox.y - currentBox.y;
-			const scaleX = lastBox.width / currentBox.width;
-			const scaleY = lastBox.height / currentBox.height;
+			const scaleX = lastBox.width / currentBox.width || 1;
+			const scaleY = lastBox.height / currentBox.height || 1;
 
 			// Check if there's actually a change
 			const hasPositionChange = Math.abs(deltaX) > 0.5 || Math.abs(deltaY) > 0.5;
@@ -105,6 +138,12 @@ export function layout(props: LayoutProps = {}) {
 			let currentScaleX = scaleX;
 			let currentScaleY = scaleY;
 
+			// Set transform origin for accurate scaling
+			const originalTransformOrigin = element.style.transformOrigin;
+			if (shouldAnimateSize && hasSizeChange) {
+				element.style.transformOrigin = '0 0';
+			}
+
 			function applyTransform() {
 				const transforms: string[] = [];
 
@@ -121,12 +160,6 @@ export function layout(props: LayoutProps = {}) {
 
 			// Apply initial inverted transform
 			applyTransform();
-
-			const defaultTransition: TransitionOptions = transition ?? {
-				type: 'spring',
-				stiffness: 500,
-				damping: 30
-			};
 
 			const animations: Promise<void>[] = [];
 
@@ -186,6 +219,7 @@ export function layout(props: LayoutProps = {}) {
 
 			Promise.all(animations).then(() => {
 				element.style.transform = '';
+				element.style.transformOrigin = originalTransformOrigin;
 				isAnimating = false;
 				activeAnimations = [];
 				lastBox = getBox();
@@ -199,7 +233,7 @@ export function layout(props: LayoutProps = {}) {
 		// Use ResizeObserver to detect size changes
 		const resizeObserver = new ResizeObserver(() => {
 			if (!isAnimating) {
-				animate_();
+				animateLayout();
 			}
 		});
 		resizeObserver.observe(element);
@@ -214,7 +248,7 @@ export function layout(props: LayoutProps = {}) {
 			if (relevant && !isAnimating) {
 				// Delay to let styles apply
 				requestAnimationFrame(() => {
-					animate_();
+					animateLayout();
 				});
 			}
 		});
@@ -227,7 +261,7 @@ export function layout(props: LayoutProps = {}) {
 		// Expose methods for manual triggering
 		(element as any).__motionLayout = {
 			snapshot,
-			animate: animate_
+			animate: animateLayout
 		};
 
 		return () => {
@@ -238,6 +272,11 @@ export function layout(props: LayoutProps = {}) {
 				anim.stop();
 			}
 
+			// Unregister from layout group
+			if (layoutId) {
+				unregisterLayoutElement(layoutId, element);
+			}
+
 			delete (element as any).__motionLayout;
 		};
 	};
@@ -246,7 +285,7 @@ export function layout(props: LayoutProps = {}) {
 /**
  * Manually trigger layout animation on element
  */
-export function animateLayout(element: HTMLElement) {
+export function animateLayoutElement(element: HTMLElement) {
 	const layoutApi = (element as any).__motionLayout;
 	if (layoutApi) {
 		layoutApi.animate();
@@ -270,17 +309,17 @@ export function snapshotLayout(element: HTMLElement) {
  * ```ts
  * // Snapshot all elements
  * const elements = document.querySelectorAll('.item');
- * const flip = layoutGroup(elements);
+ * const flip = createLayoutBatch(elements);
  *
  * // Make DOM changes
  * container.appendChild(newElement);
  * reorderElements();
  *
  * // Animate all changes
- * flip.animate();
+ * flip.play();
  * ```
  */
-export function layoutGroup(elements: HTMLElement[] | NodeListOf<HTMLElement>) {
+export function createLayoutBatch(elements: HTMLElement[] | NodeListOf<HTMLElement>) {
 	const snapshots = new Map<HTMLElement, BoundingBox>();
 
 	// Take snapshots of all elements
@@ -298,10 +337,10 @@ export function layoutGroup(elements: HTMLElement[] | NodeListOf<HTMLElement>) {
 	}
 
 	// Animate all elements from snapshots to current positions
-	function animate_(transition?: TransitionOptions) {
+	function play(transition?: TransitionOptions) {
 		const defaultTransition: TransitionOptions = transition ?? {
 			type: 'spring',
-			stiffness: 500,
+			stiffness: 400,
 			damping: 30
 		};
 
@@ -348,6 +387,9 @@ export function layoutGroup(elements: HTMLElement[] | NodeListOf<HTMLElement>) {
 
 	return {
 		snapshot,
-		animate: animate_
+		play
 	};
 }
+
+// Keep old name for backwards compatibility
+export { createLayoutBatch as layoutGroup };

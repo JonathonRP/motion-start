@@ -2,11 +2,12 @@
  * Motion for Svelte 5
  *
  * A runes-native animation library inspired by Framer Motion
+ * Uses Svelte 5's createContext API and attachments
  *
  * @example
  * ```svelte
  * <script>
- *   import { motion } from 'motion-start/motion';
+ *   import { motion, layout } from 'motion-start/motion';
  * </script>
  *
  * <div {@attach motion({
@@ -16,6 +17,11 @@
  *   transition: { type: 'spring' }
  * })}>
  *   Animated content
+ * </div>
+ *
+ * <!-- Shared element transition -->
+ * <div {@attach layout({ layoutId: 'hero' })}>
+ *   This transitions to another element with same layoutId
  * </div>
  * ```
  */
@@ -40,27 +46,62 @@ export type {
 // Attachments
 export { motion, createMotion } from './attachments/motion.svelte.js';
 export { presence, triggerExit, hasExitAnimation } from './attachments/presence.svelte.js';
-export { layout, layoutGroup, animateLayout, snapshotLayout } from './attachments/layout.svelte.js';
-export { sharedLayout } from './attachments/shared-layout.svelte.js';
+export {
+	layout,
+	layoutGroup,
+	createLayoutBatch,
+	animateLayoutElement,
+	snapshotLayout
+} from './attachments/layout.svelte.js';
 export type { PresenceProps } from './attachments/presence.svelte.js';
 export type { LayoutProps } from './attachments/layout.svelte.js';
-export type { SharedLayoutProps } from './attachments/shared-layout.svelte.js';
 
 // Gestures
 export { draggable, pan } from './gestures/drag.svelte.js';
 export type { DragState, PanInfo, PanHandlers } from './gestures/drag.svelte.js';
 
-// Context
-export { setMotionConfig, getMotionConfig, prefersReducedMotion, getEffectiveTransition } from './context/motion-config.svelte.js';
-export { createPresenceContext, getPresenceContext, usePresence, generatePresenceId } from './context/presence.svelte.js';
-export { createSharedLayoutContext, getSharedLayoutContext } from './context/shared-layout.svelte.js';
+// Hooks (modern API)
+export {
+	useAnimate,
+	useInView,
+	useReducedMotion,
+	useDragControls,
+	useMotionValue,
+	useTransform,
+	useSpring
+} from './hooks/index.svelte.js';
+
+// Context (using Svelte 5 createContext API)
+export {
+	setMotionConfig,
+	getMotionConfig,
+	prefersReducedMotion,
+	getEffectiveTransition
+} from './context/motion-config.svelte.js';
+export {
+	createPresenceState,
+	getPresenceContext,
+	setPresenceContext,
+	usePresenceContext,
+	usePresence,
+	generatePresenceId
+} from './context/presence.svelte.js';
+export {
+	createLayoutGroupState,
+	getLayoutGroupContext,
+	setLayoutGroupContext,
+	useLayoutGroupContext,
+	registerLayoutElement,
+	unregisterLayoutElement
+} from './context/layout-group.svelte.js';
 export type { MotionConfigValue } from './context/motion-config.svelte.js';
 export type { PresenceContextValue, PresenceState } from './context/presence.svelte.js';
+export type { LayoutGroupContextValue } from './context/layout-group.svelte.js';
 
 // Components
 export { default as MotionConfig } from './components/MotionConfig.svelte';
 export { default as AnimatePresence } from './components/AnimatePresence.svelte';
-export { default as SharedLayoutProvider } from './components/SharedLayoutProvider.svelte';
+export { default as LayoutGroup } from './components/LayoutGroup.svelte';
 export { default as Reorder } from './components/Reorder.svelte';
 export { default as ReorderItem } from './components/ReorderItem.svelte';
 

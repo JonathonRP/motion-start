@@ -2,13 +2,10 @@
  * Presence Context
  *
  * Manages element lifecycle for exit animations
- * Uses Svelte 5's context system with $state for reactivity
+ * Uses Svelte 5's type-safe createContext API
  */
 
-import { getContext, setContext, onMount } from 'svelte';
-import { untrack } from 'svelte';
-
-const PRESENCE_CONTEXT = Symbol('motion-presence');
+import { createContext } from 'svelte';
 
 export type PresenceContextValue = {
 	/** Register a child that needs exit animation */
@@ -24,9 +21,14 @@ export type PresenceContextValue = {
 };
 
 /**
+ * Type-safe context for presence/exit animations
+ */
+export const [getPresenceContext, setPresenceContext] = createContext<PresenceContextValue>();
+
+/**
  * Create a presence context for managing exit animations
  */
-export function createPresenceContext(options?: { custom?: any; initial?: boolean }) {
+export function createPresenceState(options?: { custom?: any; initial?: boolean }) {
 	const children = new Map<string, () => Promise<void>>();
 
 	const context: PresenceContextValue = {
@@ -43,7 +45,8 @@ export function createPresenceContext(options?: { custom?: any; initial?: boolea
 		initial: options?.initial ?? true
 	};
 
-	setContext(PRESENCE_CONTEXT, context);
+	// Set the context
+	setPresenceContext(context);
 
 	return {
 		/** Trigger exit animations for all children and wait */
@@ -54,15 +57,21 @@ export function createPresenceContext(options?: { custom?: any; initial?: boolea
 		/** Get number of registered children */
 		get count() {
 			return children.size;
-		}
+		},
+		/** The context value (for manual access) */
+		context
 	};
 }
 
 /**
- * Get the presence context
+ * Safely get presence context (returns undefined if not in context)
  */
-export function getPresenceContext(): PresenceContextValue | undefined {
-	return getContext<PresenceContextValue>(PRESENCE_CONTEXT);
+export function usePresenceContext(): PresenceContextValue | undefined {
+	try {
+		return getPresenceContext();
+	} catch {
+		return undefined;
+	}
 }
 
 /**
@@ -81,7 +90,7 @@ export type PresenceState = {
  * Hook to get presence state for exit animations
  */
 export function usePresence(): PresenceState {
-	const context = getPresenceContext();
+	const context = usePresenceContext();
 
 	// If no context, element is always present
 	if (!context) {

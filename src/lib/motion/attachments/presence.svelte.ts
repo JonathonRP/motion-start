@@ -17,7 +17,7 @@
 import type { AnimationTarget } from '../types/motion.js';
 import type { TransitionOptions } from '../animation/types.js';
 import { animate } from '../animation/animate.js';
-import { getPresenceContext, generatePresenceId } from '../context/presence.svelte.js';
+import { usePresenceContext, generatePresenceId } from '../context/presence.svelte.js';
 import {
 	buildTransform,
 	splitProperties,
@@ -48,7 +48,7 @@ export type PresenceProps = {
  */
 export function presence(props: PresenceProps) {
 	return (element: HTMLElement) => {
-		const context = getPresenceContext();
+		const context = usePresenceContext();
 		const id = generatePresenceId();
 		const transforms = new Map<string, number>();
 

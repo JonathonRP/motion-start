@@ -23,7 +23,7 @@
 	 */
 
 	import type { Snippet } from 'svelte';
-	import { createPresenceContext } from '../context/presence.svelte.js';
+	import { createPresenceState } from '../context/presence.svelte.js';
 
 	type Props = {
 		/** Only render one child at a time (wait for exit before enter) */
@@ -44,8 +44,8 @@
 	let exitingChildren = $state<Map<string, HTMLElement>>(new Map());
 	let isInitialRender = $state(true);
 
-	// Create presence context
-	const presence = createPresenceContext({
+	// Create presence state and context
+	const presence = createPresenceState({
 		custom,
 		initial: initial && !isInitialRender
 	});

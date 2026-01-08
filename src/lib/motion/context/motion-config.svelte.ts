@@ -2,12 +2,11 @@
  * Motion Config Context
  *
  * Provides global animation configuration to all motion attachments
+ * Uses Svelte 5's type-safe createContext API
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { TransitionOptions } from '../animation/types.js';
-
-const MOTION_CONFIG_CONTEXT = Symbol('motion-config');
 
 export type MotionConfigValue = {
 	/** Default transition for all animations */
@@ -26,26 +25,21 @@ const defaultConfig: MotionConfigValue = {
 };
 
 /**
- * Set motion configuration context
+ * Type-safe context for motion configuration
+ * Returns [get, set] tuple
  */
-export function setMotionConfig(config: MotionConfigValue) {
-	const merged = { ...defaultConfig, ...config };
-	setContext(MOTION_CONFIG_CONTEXT, merged);
-	return merged;
-}
-
-/**
- * Get motion configuration from context
- */
-export function getMotionConfig(): MotionConfigValue {
-	return getContext<MotionConfigValue>(MOTION_CONFIG_CONTEXT) ?? defaultConfig;
-}
+export const [getMotionConfig, setMotionConfig] = createContext<MotionConfigValue>(defaultConfig);
 
 /**
  * Check if reduced motion is preferred
  */
 export function prefersReducedMotion(): boolean {
-	const config = getMotionConfig();
+	let config: MotionConfigValue;
+	try {
+		config = getMotionConfig();
+	} catch {
+		config = defaultConfig;
+	}
 
 	if (config.reducedMotion === 'always') return true;
 	if (config.reducedMotion === 'never') return false;
@@ -66,6 +60,12 @@ export function getEffectiveTransition(transition?: TransitionOptions): Transiti
 		return { duration: 0 };
 	}
 
-	const config = getMotionConfig();
+	let config: MotionConfigValue;
+	try {
+		config = getMotionConfig();
+	} catch {
+		config = defaultConfig;
+	}
+
 	return transition ?? config.transition ?? { type: 'spring', stiffness: 500, damping: 25 };
 }
