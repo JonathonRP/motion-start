@@ -69,26 +69,26 @@ describe('getEasingFunction', () => {
 		it('should return backIn easing', () => {
 			const ease = getEasingFunction('backIn');
 
-			expect(ease(0)).toBe(0);
+			expect(ease(0)).toBeCloseTo(0, 10);
 			// backIn goes negative initially
 			expect(ease(0.2)).toBeLessThan(0);
-			expect(ease(1)).toBe(1);
+			expect(ease(1)).toBeCloseTo(1, 10);
 		});
 
 		it('should return backOut easing', () => {
 			const ease = getEasingFunction('backOut');
 
-			expect(ease(0)).toBe(0);
+			expect(ease(0)).toBeCloseTo(0, 10);
 			// backOut overshoots
 			expect(ease(0.8)).toBeGreaterThan(1);
-			expect(ease(1)).toBe(1);
+			expect(ease(1)).toBeCloseTo(1, 10);
 		});
 
 		it('should return backInOut easing', () => {
 			const ease = getEasingFunction('backInOut');
 
-			expect(ease(0)).toBe(0);
-			expect(ease(1)).toBe(1);
+			expect(ease(0)).toBeCloseTo(0, 10);
+			expect(ease(1)).toBeCloseTo(1, 10);
 		});
 
 		it('should return anticipate easing', () => {

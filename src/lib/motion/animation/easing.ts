@@ -1,10 +1,26 @@
 /**
  * Easing Functions
+ *
+ * Uses Svelte's built-in easing functions where possible,
+ * with custom cubic-bezier support for arbitrary curves.
  */
 
+import {
+	linear,
+	circIn,
+	circOut,
+	circInOut,
+	backIn,
+	backOut,
+	backInOut
+} from 'svelte/easing';
 import type { Easing } from './types.js';
 
-// Cubic bezier implementation
+/**
+ * Cubic bezier implementation for custom easing curves.
+ * Required for arbitrary [x1, y1, x2, y2] bezier definitions
+ * that Svelte's built-in easing doesn't support.
+ */
 function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
 	const NEWTON_ITERATIONS = 4;
 	const NEWTON_MIN_SLOPE = 0.001;
@@ -76,7 +92,8 @@ function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
 		}
 		--currentSample;
 
-		const dist = (x - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
+		const dist =
+			(x - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
 		const guessForT = intervalStart + dist * kSampleStepSize;
 
 		const initialSlope = getSlope(guessForT, p1x, p2x);
@@ -100,19 +117,21 @@ function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
 	};
 }
 
-// Pre-built easing functions
+// Easing functions map - uses Svelte built-ins where available
 const easingFunctions = {
-	linear: (t: number) => t,
+	// From svelte/easing
+	linear,
+	circIn,
+	circOut,
+	circInOut,
+	backIn,
+	backOut,
+	backInOut,
+	// Custom cubic-bezier curves (CSS easing standard values)
 	easeIn: cubicBezier(0.4, 0, 1, 1),
 	easeOut: cubicBezier(0, 0, 0.2, 1),
 	easeInOut: cubicBezier(0.4, 0, 0.2, 1),
-	circIn: (t: number) => 1 - Math.sqrt(1 - t * t),
-	circOut: (t: number) => Math.sqrt(1 - --t * t),
-	circInOut: (t: number) =>
-		t < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * t, 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * t + 2, 2)) + 1) / 2,
-	backIn: cubicBezier(0.36, 0, 0.66, -0.56),
-	backOut: cubicBezier(0.34, 1.56, 0.64, 1),
-	backInOut: cubicBezier(0.68, -0.6, 0.32, 1.6),
+	// Motion-specific easing
 	anticipate: (t: number) => {
 		const s = 1.70158 * 1.525;
 		return (t *= 2) < 1 ? 0.5 * (t * t * ((s + 1) * t - s)) : 0.5 * ((t -= 2) * t * ((s + 1) * t + s) + 2);
