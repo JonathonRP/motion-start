@@ -25,11 +25,8 @@ jobs:
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
-      - name: Check (svelte-check)
+      - name: Check, Lint & Format
         run: bun --bun run check
 
-      - name: Lint & Format (biome)
-        run: bun --bun run lint
-
-      - name: Test (vitest)
+      - name: Test
         run: bun --bun run test --run
