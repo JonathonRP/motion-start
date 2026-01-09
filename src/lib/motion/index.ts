@@ -30,15 +30,27 @@
 export { motionValue, motionTransform, motionCombine } from './core/motion-value.svelte.js';
 export type { MotionValueState, MotionValueOptions } from './core/motion-value.svelte.js';
 
-// Spring animation (built on Svelte's Spring)
+// Spring animation (built on Svelte's Spring + physics-based)
 export {
+	// Svelte-based (normalized 0-1 params)
 	spring,
 	springFrom,
 	springObject,
-	springWithMomentum,
-	SvelteSpring
+	SvelteSpring,
+	// Physics-based (stiffness ~100-500, damping ~10-30)
+	physicsSpring,
+	physicsSpringFrom,
+	momentumSpring,
+	springWithMomentum // alias for momentumSpring
 } from './core/spring.svelte.js';
-export type { SpringOptions as SpringAnimationOptions, SpringValue } from './core/spring.svelte.js';
+export type {
+	SpringOptions as SpringAnimationOptions,
+	SpringValue,
+	PhysicsSpringOptions,
+	PhysicsSpringValue,
+	MomentumSpringOptions,
+	MomentumSpringValue
+} from './core/spring.svelte.js';
 
 // Tween animation (built on Svelte's Tween)
 export {
@@ -132,7 +144,8 @@ export {
 	useDragControls,
 	useMotionValue,
 	useTransform,
-	useSpring,
+	useSpring, // Svelte-based (0-1 params)
+	usePhysicsSpring, // Physics-based (stiffness ~100-500)
 	useTween
 } from './hooks/index.svelte.js';
 

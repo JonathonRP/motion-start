@@ -479,6 +479,84 @@ export function useSpring(
 }
 
 /**
+ * usePhysicsSpring - Create a physics-based spring-animated value
+ *
+ * Uses traditional spring physics: F = -kx - cv, a = F/m
+ * Parameters are in real physics units, not normalized 0-1.
+ *
+ * @example
+ * ```svelte
+ * <script>
+ *   const x = useMotionValue(0);
+ *   const springX = usePhysicsSpring(x, {
+ *     stiffness: 300, // Spring constant (higher = snappier)
+ *     damping: 20,    // Damping (higher = less bounce)
+ *     mass: 1         // Mass (higher = more momentum)
+ *   });
+ * </script>
+ * ```
+ */
+export function usePhysicsSpring(
+	source: { current: number },
+	config: { stiffness?: number; damping?: number; mass?: number } = {}
+) {
+	const { stiffness = 100, damping = 10, mass = 1 } = config;
+
+	let current = $state(source.current);
+	let velocity = $state(0);
+	let target = source.current;
+	let animationFrame: number | null = null;
+
+	function step() {
+		const displacement = current - target;
+		const springForce = -stiffness * displacement;
+		const dampingForce = -damping * velocity;
+		const acceleration = (springForce + dampingForce) / mass;
+
+		const dt = 1 / 60;
+		velocity += acceleration * dt;
+		current += velocity * dt;
+
+		const isSettled = Math.abs(velocity) < 0.01 && Math.abs(target - current) < 0.01;
+
+		if (isSettled) {
+			current = target;
+			velocity = 0;
+			animationFrame = null;
+		} else {
+			animationFrame = requestAnimationFrame(step);
+		}
+	}
+
+	$effect(() => {
+		const newTarget = source.current;
+
+		if (newTarget !== target) {
+			target = newTarget;
+
+			if (animationFrame === null) {
+				animationFrame = requestAnimationFrame(step);
+			}
+		}
+
+		return () => {
+			if (animationFrame !== null) {
+				cancelAnimationFrame(animationFrame);
+			}
+		};
+	});
+
+	return {
+		get current() {
+			return current;
+		},
+		get velocity() {
+			return velocity;
+		}
+	};
+}
+
+/**
  * useTween - Create a time-based animated value
  *
  * Built on Svelte's Tween primitive for smooth time-based animations.
