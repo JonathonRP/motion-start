@@ -2,18 +2,49 @@
  * Animation Types
  */
 
-export type Easing =
+// All easing names available from svelte/easing + our custom ones
+export type EasingName =
+	// Svelte built-ins
 	| 'linear'
-	| 'easeIn'
-	| 'easeOut'
-	| 'easeInOut'
+	| 'sineIn'
+	| 'sineOut'
+	| 'sineInOut'
+	| 'quadIn'
+	| 'quadOut'
+	| 'quadInOut'
+	| 'cubicIn'
+	| 'cubicOut'
+	| 'cubicInOut'
+	| 'quartIn'
+	| 'quartOut'
+	| 'quartInOut'
+	| 'quintIn'
+	| 'quintOut'
+	| 'quintInOut'
+	| 'expoIn'
+	| 'expoOut'
+	| 'expoInOut'
 	| 'circIn'
 	| 'circOut'
 	| 'circInOut'
 	| 'backIn'
 	| 'backOut'
 	| 'backInOut'
-	| 'anticipate'
+	| 'elasticIn'
+	| 'elasticOut'
+	| 'elasticInOut'
+	| 'bounceIn'
+	| 'bounceOut'
+	| 'bounceInOut'
+	// CSS standard cubic-bezier presets
+	| 'easeIn'
+	| 'easeOut'
+	| 'easeInOut'
+	// Aliases
+	| 'anticipate'; // alias for backInOut
+
+export type Easing =
+	| EasingName
 	| [number, number, number, number]; // cubic-bezier
 
 export type SpringOptions = {
