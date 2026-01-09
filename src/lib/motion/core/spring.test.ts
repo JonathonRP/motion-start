@@ -226,7 +226,7 @@ describe('spring physics behavior', () => {
 
 		// Critical damping: c = 2 * sqrt(k * m)
 		// For k=100, m=1: c = 20 (critically damped)
-		const spring = physicsSpring(0, {
+		const spring = physicsSpring(0 as number, {
 			stiffness: 100,
 			damping: 20,
 			mass: 1
@@ -242,7 +242,7 @@ describe('spring physics behavior', () => {
 	it('should overshoot with low damping (underdamped)', async () => {
 		const { physicsSpring } = await import('./spring.svelte.js');
 
-		const spring = physicsSpring(0, {
+		const spring = physicsSpring(0 as number, {
 			stiffness: 100,
 			damping: 5, // Low damping = bouncy
 			mass: 1
@@ -263,8 +263,8 @@ describe('spring physics behavior', () => {
 	it('should move slower with higher mass', async () => {
 		const { physicsSpring } = await import('./spring.svelte.js');
 
-		const lightSpring = physicsSpring(0, { mass: 1, stiffness: 100, damping: 10 });
-		const heavySpring = physicsSpring(0, { mass: 5, stiffness: 100, damping: 10 });
+		const lightSpring = physicsSpring(0 as number, { mass: 1, stiffness: 100, damping: 10 });
+		const heavySpring = physicsSpring(0 as number, { mass: 5, stiffness: 100, damping: 10 });
 
 		lightSpring.target = 100;
 		heavySpring.target = 100;

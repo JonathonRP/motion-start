@@ -7,9 +7,9 @@
 
 import { untrack } from 'svelte';
 import { Spring as SvelteSpring, Tween as SvelteTween } from 'svelte/motion';
-import type { TransitionOptions } from '../animation/types.js';
+import type { TransitionOptions, AnimationPlaybackControls } from '../animation/types.js';
 import type { AnimationTarget } from '../types/motion.js';
-import { animate as animateFn, type AnimationPlaybackControls } from '../animation/animate.js';
+import { animate as animateFn } from '../animation/animate.js';
 import {
 	buildTransform,
 	splitProperties,
@@ -58,7 +58,7 @@ export function useAnimate(getScope: () => HTMLElement | null | undefined) {
 			return {
 				stop: () => {},
 				finished: Promise.resolve(),
-				then: (resolve) => Promise.resolve().then(resolve)
+				then: (resolve: (() => void) | undefined) => Promise.resolve().then(resolve)
 			};
 		}
 
@@ -76,7 +76,7 @@ export function useAnimate(getScope: () => HTMLElement | null | undefined) {
 			return {
 				stop: () => {},
 				finished: Promise.resolve(),
-				then: (resolve) => Promise.resolve().then(resolve)
+				then: (resolve: (() => void) | undefined) => Promise.resolve().then(resolve)
 			};
 		}
 
@@ -142,7 +142,8 @@ export function useAnimate(getScope: () => HTMLElement | null | undefined) {
 		return {
 			stop: () => allAnimations.forEach((a) => a.stop()),
 			finished,
-			then: (resolve, reject) => finished.then(resolve, reject)
+			then: (resolve: (() => void) | undefined, reject?: (reason?: unknown) => void) =>
+				finished.then(resolve, reject)
 		};
 	}
 
