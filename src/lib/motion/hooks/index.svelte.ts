@@ -1,10 +1,12 @@
 /**
  * Motion Hooks
  *
- * Modern runes-based hooks for imperative animation control
+ * Modern runes-based hooks for imperative animation control.
+ * Leverages Svelte's Spring and Tween primitives where appropriate.
  */
 
 import { untrack } from 'svelte';
+import { Spring as SvelteSpring, Tween as SvelteTween } from 'svelte/motion';
 import type { TransitionOptions } from '../animation/types.js';
 import type { AnimationTarget } from '../types/motion.js';
 import { animate as animateFn, type AnimationPlaybackControls } from '../animation/animate.js';
@@ -16,6 +18,7 @@ import {
 	parseValue,
 	getDefaultUnit
 } from '../utils/transforms.js';
+import { getEasingFunction } from '../animation/easing.js';
 
 /**
  * useAnimate - Imperative animation control
@@ -437,66 +440,79 @@ export function useTransform<T extends number>(
 /**
  * useSpring - Create a spring-animated motion value
  *
+ * Built on Svelte's Spring primitive for efficient spring physics.
+ *
  * @example
  * ```svelte
  * <script>
  *   const x = useMotionValue(0);
- *   const springX = useSpring(x, { stiffness: 300, damping: 20 });
+ *   const springX = useSpring(x, { stiffness: 0.3, damping: 0.8 });
  * </script>
  * ```
  */
 export function useSpring(
 	source: { current: number },
-	config: { stiffness?: number; damping?: number; mass?: number } = {}
+	config: { stiffness?: number; damping?: number; precision?: number } = {}
 ) {
-	const { stiffness = 100, damping = 10, mass = 1 } = config;
+	// Note: Svelte's Spring uses different scale (0-1) than physics-based (100s)
+	const { stiffness = 0.15, damping = 0.8, precision = 0.01 } = config;
 
-	let current = $state(source.current);
-	let velocity = 0;
-	let target = source.current;
-	let animationFrame: number | null = null;
-
-	function step() {
-		const displacement = current - target;
-		const springForce = -stiffness * displacement;
-		const dampingForce = -damping * velocity;
-		const acceleration = (springForce + dampingForce) / mass;
-
-		velocity += acceleration * (1 / 60); // Assuming 60fps
-		current += velocity * (1 / 60);
-
-		const isSettled = Math.abs(velocity) < 0.01 && Math.abs(target - current) < 0.01;
-
-		if (isSettled) {
-			current = target;
-			velocity = 0;
-			animationFrame = null;
-		} else {
-			animationFrame = requestAnimationFrame(step);
-		}
-	}
-
-	$effect(() => {
-		const newTarget = source.current;
-
-		if (newTarget !== target) {
-			target = newTarget;
-
-			if (animationFrame === null) {
-				animationFrame = requestAnimationFrame(step);
-			}
-		}
-
-		return () => {
-			if (animationFrame !== null) {
-				cancelAnimationFrame(animationFrame);
-			}
-		};
-	});
+	// Use Svelte's Spring.of() to automatically follow the source
+	const spring = SvelteSpring.of(() => source.current, { stiffness, damping, precision });
 
 	return {
 		get current() {
-			return current;
+			return spring.current;
+		},
+		/** Set spring parameters dynamically */
+		set stiffness(value: number) {
+			spring.stiffness = value;
+		},
+		set damping(value: number) {
+			spring.damping = value;
+		},
+		/** Immediately snap to a value */
+		snap(value: number) {
+			spring.set(value, { instant: true });
+		}
+	};
+}
+
+/**
+ * useTween - Create a time-based animated value
+ *
+ * Built on Svelte's Tween primitive for smooth time-based animations.
+ *
+ * @example
+ * ```svelte
+ * <script>
+ *   const x = useMotionValue(0);
+ *   const tweenX = useTween(x, { duration: 300, easing: 'easeOut' });
+ * </script>
+ * ```
+ */
+export function useTween(
+	source: { current: number },
+	config: {
+		duration?: number;
+		delay?: number;
+		easing?: import('../animation/types.js').Easing | ((t: number) => number);
+	} = {}
+) {
+	const { duration = 400, delay = 0, easing = 'linear' } = config;
+
+	const easingFn = typeof easing === 'function' ? easing : getEasingFunction(easing);
+
+	// Use Svelte's Tween.of() to automatically follow the source
+	const tween = SvelteTween.of(() => source.current, { duration, delay, easing: easingFn });
+
+	return {
+		get current() {
+			return tween.current;
+		},
+		/** Immediately snap to a value */
+		snap(value: number) {
+			tween.set(value, { duration: 0 });
 		}
 	};
 }

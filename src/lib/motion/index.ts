@@ -30,9 +30,73 @@
 export { motionValue, motionTransform, motionCombine } from './core/motion-value.svelte.js';
 export type { MotionValueState, MotionValueOptions } from './core/motion-value.svelte.js';
 
+// Spring animation (built on Svelte's Spring)
+export {
+	spring,
+	springFrom,
+	springObject,
+	springWithMomentum,
+	SvelteSpring
+} from './core/spring.svelte.js';
+export type { SpringOptions as SpringAnimationOptions, SpringValue } from './core/spring.svelte.js';
+
+// Tween animation (built on Svelte's Tween)
+export {
+	tween,
+	tweenFrom,
+	tweenObject,
+	tweenColor,
+	SvelteTween
+} from './core/tween.svelte.js';
+export type { TweenOptions as TweenAnimationOptions, TweenValue } from './core/tween.svelte.js';
+
+// Easing functions (re-exported from svelte/easing with extensions)
+export {
+	// All Svelte easings
+	linear,
+	sineIn,
+	sineOut,
+	sineInOut,
+	quadIn,
+	quadOut,
+	quadInOut,
+	cubicIn,
+	cubicOut,
+	cubicInOut,
+	quartIn,
+	quartOut,
+	quartInOut,
+	quintIn,
+	quintOut,
+	quintInOut,
+	expoIn,
+	expoOut,
+	expoInOut,
+	circIn,
+	circOut,
+	circInOut,
+	backIn,
+	backOut,
+	backInOut,
+	elasticIn,
+	elasticOut,
+	elasticInOut,
+	bounceIn,
+	bounceOut,
+	bounceInOut,
+	// Composition utilities
+	getEasingFunction,
+	mirrorEasing,
+	reverseEasing,
+	sequenceEasing,
+	blendEasing,
+	clampEasing,
+	scaleEasing
+} from './animation/easing.js';
+export type { EasingFunction } from './animation/easing.js';
+
 // Animation engine
 export { animate, animateValues, createAnimationGenerator } from './animation/animate.js';
-export { getEasingFunction, mirrorEasing, reverseEasing } from './animation/easing.js';
 export type {
 	TransitionOptions,
 	SpringOptions,
@@ -60,7 +124,7 @@ export type { LayoutProps } from './attachments/layout.svelte.js';
 export { draggable, pan } from './gestures/drag.svelte.js';
 export type { DragState, PanInfo, PanHandlers } from './gestures/drag.svelte.js';
 
-// Hooks (modern API)
+// Hooks (modern API, leveraging Svelte's Spring/Tween)
 export {
 	useAnimate,
 	useInView,
@@ -68,7 +132,8 @@ export {
 	useDragControls,
 	useMotionValue,
 	useTransform,
-	useSpring
+	useSpring,
+	useTween
 } from './hooks/index.svelte.js';
 
 // Context (using Svelte 5 createContext API)
