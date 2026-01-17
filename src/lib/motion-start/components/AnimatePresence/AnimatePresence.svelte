@@ -3,42 +3,48 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts" generics="T">
-	import { untrack } from "svelte";
+	import { untrack, type Snippet } from "svelte";
 	import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
 	import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-	import { LayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
-	import { invariant } from "../../utils/errors.js";
+	import { useLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
+	import { warning } from "../../utils/errors.js";
 	import { getChildKey, type ComponentKey } from "./utils.js";
 
 	type Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
-	const {
+	let {
 		values: list,
-		mode = "sync",
 		custom,
 		initial = true,
 		onExitComplete,
-		exitBeforeEnter,
+		exitBeforeEnter = undefined,
+		mode = exitBeforeEnter ? "wait" : "sync",
 		presenceAffectsLayout = true,
 		show,
-	}: Props = $props();
+		children,
+	}: Props & {
+		children?: Snippet<[{ item: ConditionalGeneric<T> }]>;
+	} = $props();
 
-	invariant(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
+	$effect(() => {
+		warning(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
+	});
 
-	const layoutContext = $derived(LayoutGroupContext.getOr({} as any));
+	const layoutContext = $derived(useLayoutGroupContext().current);
 	const forceRender = () => {
-		layoutContext?.forceRender?.();
+		layoutContext.forceRender?.();
 		renderedChildren = [...renderedChildren];
 	};
 
 	let isInitialRender = $state(true);
 	let diffedChildren = $state(new Map<string | number, { key: number }>());
 	let exiting = $state(new Set<ComponentKey>());
+	let debugIdCounter = 0;
 
 	let renderedChildren = $state<
 		{
 			present: boolean;
-			item: any;
+			data: any;
 			key: any;
 			onExit: undefined | (() => void);
 		}[]
@@ -57,43 +63,95 @@ Copyright (c) 2018 Framer B.V. -->
 	$effect(() => {
 		// Compute target list
 		const targetList = list !== undefined ? list : show ? [{ key: 1 }] : [];
+		console.log(
+			"[AnimatePresence] $effect, targetList:",
+			targetList.map((t) => t.key),
+			"isInitialRender:",
+			isInitialRender,
+		);
 
 		if (isInitialRender) {
 			// On initial render, just show all children
 			untrack(() => {
-				renderedChildren = targetList.map((v) => ({
-					present: true,
-					item: v,
-					key: v.key,
-					onExit: undefined,
-				}));
+				renderedChildren = targetList.map(
+					(v) =>
+						({
+							present: true,
+							data: v,
+							key: v.key,
+							onExit: undefined,
+							_debugId: ++debugIdCounter,
+						}) as any,
+				);
 				updateChildLookup(targetList, diffedChildren);
 			});
 			isInitialRender = false;
 		} else {
 			// After initial render, handle enter/exit animations
-			let newRenderedChildren: typeof renderedChildren;
+			let newRenderedChildren: typeof renderedChildren = [];
 
 			untrack(() => {
 				// IMPORTANT: First preserve existing rendered children in diffedChildren
 				// so they can be used for exit animations
 				renderedChildren.forEach((c) => {
 					if (c.present) {
-						diffedChildren.set(getChildKey(c), c.item);
+						diffedChildren.set(getChildKey(c), c.data);
 					}
 				});
 				// Then add any new target children
 				updateChildLookup(targetList, diffedChildren);
 
 				// Create list of entering children (present = true)
-				newRenderedChildren = [
-					...targetList.map((v) => ({
+				// IMPORTANT: Reuse existing rendered child objects where possible
+				// to prevent Svelte from recreating components
+				console.log(
+					"[AnimatePresence] targetList keys:",
+					targetList.map(getChildKey),
+				);
+				console.log(
+					"[AnimatePresence] renderedChildren before map:",
+					renderedChildren.map((c) => ({
+						key: getChildKey(c),
+						present: c.present,
+						debugId: (c as any)._debugId,
+					})),
+				);
+				newRenderedChildren = targetList.map((v) => {
+					const key = getChildKey(v);
+					const existing = renderedChildren.find(
+						(c) => getChildKey(c) === key && c.present,
+					);
+					console.log(
+						"[AnimatePresence] Looking for key:",
+						key,
+						"found existing:",
+						existing ? (existing as any)._debugId : "none",
+					);
+					if (existing) {
+						// Reuse existing object to maintain component instance
+						console.log(
+							"[AnimatePresence] Reusing existing child for key:",
+							key,
+							"debugId:",
+							(existing as any)._debugId,
+						);
+						return existing;
+					}
+					const newChild = {
 						present: true,
-						item: v,
+						data: v,
 						key: v.key,
 						onExit: undefined,
-					})),
-				];
+						_debugId: ++debugIdCounter,
+					} as any;
+					console.log(
+						"[AnimatePresence] Creating new child for key:",
+						key,
+						"debugId:",
+						newChild._debugId,
+					);
+					return newChild;
+				});
 
 				// Get keys for diffing
 				const targetKeys = targetList.map(getChildKey);
@@ -109,66 +167,116 @@ Copyright (c) 2018 Framer B.V. -->
 						targetKeys.indexOf(key as any) === -1 &&
 						!exiting.has(key)
 					) {
+						console.log(
+							"[AnimatePresence] Marking key as exiting:",
+							key,
+						);
 						exiting.add(key);
 					}
 				}
 
-				// Handle exiting children
-				if (exiting.size) {
-					// If mode is wait and we have exiting children, don't render entering ones yet
-					if (mode === "wait") {
-						newRenderedChildren.length = 0;
+				// If mode is wait and we have exiting children, don't render entering ones yet
+				if (mode === "wait" && exiting.size) {
+					newRenderedChildren.length = 0;
+				}
+
+				// Add exiting children to render with exit animations
+				exiting.forEach((key) => {
+					// If this key has re-entered, skip
+					if (targetKeys.indexOf(key) !== -1) {
+						exiting.delete(key);
+						return;
 					}
 
-					// Add exiting children to render with exit animations
-					exiting.forEach((key) => {
-						// If this key has re-entered, skip
-						if (targetKeys.indexOf(key) !== -1) {
-							return;
-						}
+					const child = diffedChildren.get(key);
+					if (!child) {
+						return;
+					}
 
-						const child = diffedChildren.get(key);
-						if (!child) {
-							return;
-						}
+					const insertionIndex = presentKeys.indexOf(key);
 
-						const insertionIndex = presentKeys.indexOf(key);
+					const onExit = () => {
+						untrack(() => {
+							// Guard: If item re-entered (present=true), don't remove it
+							const currentChild = renderedChildren.find(
+								(c) => getChildKey(c) === key,
+							);
+							if (currentChild?.present) {
+								exiting.delete(key); // Just clean up
+								return;
+							}
+							diffedChildren.delete(key);
+							exiting.delete(key);
 
-						const onExit = () => {
-							untrack(() => {
-								diffedChildren.delete(key);
-								exiting.delete(key);
+							// Remove from rendered children
+							const removeIndex = renderedChildren.findIndex(
+								(c) => getChildKey(c) === key,
+							);
+							if (removeIndex >= 0) {
+								renderedChildren.splice(removeIndex, 1);
+							}
 
-								// Remove from rendered children
-								const removeIndex = renderedChildren.findIndex(
-									(c) => getChildKey(c) === key,
-								);
-								if (removeIndex >= 0) {
-									renderedChildren.splice(removeIndex, 1);
-								}
+							// If all exiting animations complete
+							if (!exiting.size) {
+								// Reuse existing objects where possible
+								renderedChildren = targetList.map((v) => {
+									const key = getChildKey(v);
+									const existing = renderedChildren.find(
+										(c) =>
+											getChildKey(c) === key && c.present,
+									);
+									return (
+										existing ||
+										({
+											present: true,
+											data: v,
+											key: v.key,
+											onExit: undefined,
+											_debugId: ++debugIdCounter,
+										} as any)
+									);
+								});
+								forceRender();
+								onExitComplete?.();
+							}
+						});
+					};
 
-								// If all exiting animations complete
-								if (!exiting.size) {
-									renderedChildren = targetList.map((v) => ({
-										present: true,
-										item: v,
-										key: v.key,
-										onExit: undefined,
-									}));
-									forceRender();
-									onExitComplete?.();
-								}
-							});
-						};
-
+					// CRITICAL: Find the ORIGINAL child object and MUTATE it
+					// This keeps the same object reference so Svelte doesn't recreate the component
+					const existingChild = renderedChildren.find(
+						(c) => getChildKey(c) === key,
+					);
+					if (existingChild) {
+						// Mutate the existing object - same reference, component stays alive
+						existingChild.present = false;
+						existingChild.onExit = onExit;
+						console.log(
+							"[AnimatePresence] Mutating existing child for exit, key:",
+							key,
+							"debugId:",
+							(existingChild as any)._debugId,
+						);
+						newRenderedChildren.splice(
+							insertionIndex,
+							0,
+							existingChild,
+						);
+					} else {
+						// Fallback: create new object (shouldn't happen normally)
+						console.log(
+							"[AnimatePresence] Creating new exiting child for key:",
+							key,
+						);
 						newRenderedChildren.splice(insertionIndex, 0, {
 							present: false,
-							item: child,
+							data: child,
 							key: getChildKey(child),
 							onExit,
-						});
-					});
-				}
+							_debugId: ++debugIdCounter,
+						} as any);
+					}
+				});
 			});
 
 			// CRITICAL: Assign OUTSIDE untrack so Svelte sees it as reactive update
@@ -187,19 +295,29 @@ Copyright (c) 2018 Framer B.V. -->
 			);
 		}
 	});
+
+	// DEBUG: Track renderedChildren changes
+	$effect(() => {
+		console.log(
+			"[AnimatePresence] renderedChildren updated:",
+			renderedChildren.map((c) => ({
+				key: c.key,
+				present: c.present,
+				id: (c as any)._debugId,
+			})),
+		);
+	});
 </script>
 
 {#each renderedChildren as child (getChildKey(child))}
 	<PresenceChild
-		mode={mode ?? "sync"}
+		{mode}
 		isPresent={child.present}
 		initial={!isInitialRender && initial ? undefined : false}
 		custom={child.onExit ? custom : undefined}
 		{presenceAffectsLayout}
 		onExitComplete={child.onExit}
 	>
-		{#snippet children()}
-			<slot item={child.item} />
-		{/snippet}
+		{@render children?.({ item: child.data })}
 	</PresenceChild>
 {/each}
