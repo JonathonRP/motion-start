@@ -112,5 +112,5 @@
 		"types": ["vitest/globals", "node", "cypress", "cypress-real-events"]
 	},
 	"include": ["src", "src/**/*.{test,spec}-d.ts"],
-	"exclude": ["node_modules", ".svelte-kit"]
+	"exclude": ["node_modules", ".svelte-kit", "cypress"]
 }

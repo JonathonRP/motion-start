@@ -1,0 +1,9 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": false,
+        "inlineSourceMap": false,
+        "types": ["cypress", "cypress-real-events", "node"]
+    },
+    "include": ["**/*.ts", "../node_modules/cypress/types"]
+}
