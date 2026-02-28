@@ -31,7 +31,7 @@ function asRGBA(color: string | Color) {
 
 	if (!Boolean(type)) return false;
 
-	let model = type!.parse(color.toString());
+	let model = type!.parse(color as string);
 
 	if (type === hsla) {
 		// TODO Remove this cast - needed since Framer Motion's stricter typing
