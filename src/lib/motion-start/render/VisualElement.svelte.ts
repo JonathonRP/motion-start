@@ -581,18 +581,6 @@ export abstract class VisualElement<
 			this.handleChildMotionValue();
 		}
 
-		/**
-		 * If this element is transitioning from present to not-present, call
-		 * measurePop now — we are inside $effect.pre (before DOM patch) so the
-		 * element is still in normal flow and getBoundingClientRect/offsetTop
-		 * return the correct laid-out position.
-		 */
-		const prevIsPresent = this.prevPresenceContext?.isPresent;
-		const isPresent = this.presenceContext?.isPresent;
-		if (prevIsPresent && !isPresent && this.presenceContext?.measurePop && this.current) {
-			this.presenceContext.measurePop(this.current as HTMLElement | SVGElement);
-		}
-
 		// this.#update?.();
 	}
 

@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
-import { MotionContext } from '../../context/MotionContext';
+import { type MotionContext, useMotionContext } from '../../context/MotionContext';
 import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.svelte';
 import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
 import {
@@ -28,9 +28,9 @@ export interface UseVisualStateConfig<Instance, RenderState> {
 export type makeUseVisualState = <I, RS>(config: UseVisualStateConfig<I, RS>) => UseVisualState<I, RS>;
 
 export type UseVisualState<Instance, RenderState> = (
-	props: MotionProps,
+	props: () => MotionProps,
 	isStatic: boolean
-) => VisualState<Instance, RenderState>;
+) => () => VisualState<Instance, RenderState>;
 
 function makeState<I, RS>(
 	{ scrapeMotionValuesFromProps, createRenderState, onMount }: UseVisualStateConfig<I, RS>,
@@ -52,14 +52,14 @@ function makeState<I, RS>(
 
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
-	(props: MotionProps, isStatic: boolean): VisualState<I, RS> => {
-		const context = MotionContext.getOr({});
+	(props: () => MotionProps, isStatic: boolean): () => VisualState<I, RS> => {
+		const context = $derived(useMotionContext().current);
 		const presenceContext = $derived(usePresenceContext().current);
-		const make = () => makeState(config, props, context, presenceContext);
+		const make = () => makeState(config, props(), context, presenceContext);
 
 		const state = $derived.by(make);
 
-		return isStatic ? make() : state;
+		return () => isStatic ? make() : state;
 	};
 
 function makeLatestValues(

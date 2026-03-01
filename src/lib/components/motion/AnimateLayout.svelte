@@ -1,6 +1,6 @@
 <svelte:options runes={false} />
 
-<script>
+<script lang="ts">
   import { motion } from "$lib/motion-start";
   import Box from "../Box.svelte";
 

@@ -1,9 +1,14 @@
 {
-    "extends": "../tsconfig.json",
     "compilerOptions": {
+        "strict": true,
+        "baseUrl": ".",
+        "target": "ES6",
+        "lib": ["ES6", "dom"],
+        "types": ["cypress", "cypress-real-events", "node"],
         "sourceMap": false,
         "inlineSourceMap": false,
-        "types": ["cypress", "cypress-real-events", "node"]
+        "moduleResolution": "node",
+        "esModuleInterop": true
     },
-    "include": ["**/*.ts", "../node_modules/cypress/types"]
+    "include": ["**/*.ts"]
 }

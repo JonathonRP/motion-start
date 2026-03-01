@@ -68,7 +68,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { Ref } from "../../utils/safe-react-types";
 
 	import type { PropsWithChildren } from "../../utils/types";
-	import { type ItemData } from "./types";
+	import { type ReorderContext, type ItemData } from "./types";
 	import { checkReorder } from "./utils/check-reorder.svelte";
 	import { watch } from "runed";
 
@@ -116,8 +116,7 @@ Copyright (c) 2018 Framer B.V. -->
 	);
 
 	// $inspect(values);
-
-	setReorderContext({
+	const context = $state<ReorderContext<V>>({
 		get axis() {
 			return axis;
 		},
@@ -144,6 +143,9 @@ Copyright (c) 2018 Framer B.V. -->
 				);
 			}
 		},
+	});
+	setReorderContext({
+		current: context,
 	});
 </script>
 

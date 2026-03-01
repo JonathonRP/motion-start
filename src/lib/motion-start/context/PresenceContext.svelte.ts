@@ -7,6 +7,7 @@ import { createContext } from 'svelte';
 import type { VariantLabels } from '../motion/types';
 import type { MutableRefObject } from '../utils/safe-react-types';
 import type { Attachment } from 'svelte/attachments';
+import { ref } from '../utils/ref.svelte';
 
 /**
  * @public
@@ -89,13 +90,13 @@ export const PRESENCE_CONTEXT_KEY = Symbol('PresenceContext');
 /**
  * @public
  */
-const [getPresenceContext, setPresenceContext] = createContext<MutableRefObject<PresenceContext | null>>();
+const [getPresenceContext, setPresenceContext] = createContext<MutableRefObject<PresenceContext>>();
 
 function usePresenceContext() {
 	try {
 		return getPresenceContext();
 	} catch {
-		return setPresenceContext({ current: null });
+		return ref(null);
 	}
 }
 

@@ -114,16 +114,18 @@
             </button>
         </div>
         <div id="layout-list" class="flex flex-col gap-2">
-            <AnimatePresence values={layoutItems} let:item>
-                <motion.div
-                    class="layout-item border px-3 py-2 bg-blue-100"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    layout
-                >
-                    Layout Item {item.key}
-                </motion.div>
+            <AnimatePresence values={layoutItems}>
+                {#snippet children({ item })}
+                    <motion.div
+                        class="layout-item border px-3 py-2 bg-blue-100"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        layout
+                    >
+                        Layout Item {item.key}
+                    </motion.div>
+                {/snippet}
             </AnimatePresence>
         </div>
     </div>
@@ -153,17 +155,18 @@
             <AnimatePresence
                 presenceAffectsLayout={false}
                 values={noLayoutItems}
-                let:item
             >
-                <motion.div
-                    class="no-layout-item border px-3 py-2 bg-red-100"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    layout
-                >
-                    No-Layout Item {item.key}
-                </motion.div>
+                {#snippet children({ item })}
+                    <motion.div
+                        class="no-layout-item border px-3 py-2 bg-red-100"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        layout
+                    >
+                        No-Layout Item {item.key}
+                    </motion.div>
+                {/snippet}
             </AnimatePresence>
         </div>
     </div>
@@ -179,16 +182,18 @@
             Add Default Item
         </button>
         <div id="default-presence-list" class="flex flex-col gap-2">
-            <AnimatePresence values={defaultItems} let:item>
-                <motion.div
-                    class="default-item border px-3 py-2 bg-green-100"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    layout
-                >
-                    Default Item {item.key}
-                </motion.div>
+            <AnimatePresence values={defaultItems}>
+                {#snippet children({ item })}
+                    <motion.div
+                        class="default-item border px-3 py-2 bg-green-100"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        layout
+                    >
+                        Default Item {item.key}
+                    </motion.div>
+                {/snippet}
             </AnimatePresence>
         </div>
     </div>

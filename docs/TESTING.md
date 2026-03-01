@@ -3,15 +3,15 @@
 ## Overview
 
 Motion-start uses a three-tier testing approach:
-1. **Unit Tests**: Individual functions and utilities (88 tests)
-2. **Integration Tests**: Component workflows and feature interactions (30 tests)
+1. **Unit Tests**: Individual functions and utilities (Vitest)
+2. **Integration Tests**: Component workflows and feature interactions (Vitest)
 3. **E2E Tests**: User interactions and visual verification (Cypress)
 
-**Total**: 240+ passing tests across 15+ test files
+**Naming convention**:
+- Unit/integration tests: colocate with source using `.spec.ts` (or `__tests__/` folder)
+- E2E tests: `cypress/integration/*.ts`
 
-**Naming convention**: colocate tests with source using `.spec.ts`. Use `-integration.spec.ts` for integration tests; use `.cy.ts` for E2E tests.
-
-Context: motion-start is a Svelte port of the GitHub project `motiondivision/motion` at version 11.11.11. It is not part of the upstream motion package. Where practical, reuse or adapt the upstream motion tests instead of rebuilding them from scratch.
+**Context**: motion-start is a Svelte 5 port of `motiondivision/motion` v11.11.11. The Cypress E2E tests are ported directly from upstream to maintain test parity.
 
 ## Philosophy: Hybrid Testing Strategy
 
@@ -298,122 +298,224 @@ describe('Integration: <System>', () => {
 });
 ```
 
-## E2E Testing
+## E2E Testing (Cypress)
 
-### Purpose
-Verify user interactions and complete user flows.
+### Overview
 
-### Status
-✅ **50+ E2E tests implemented** across 3 test files
-- Gesture interactions (drag, hover, tap): 15+ tests
-- Animation execution (tweened, spring, keyframes): 20+ tests
-- Presence and layout animations: 15+ tests
+E2E tests are ported from upstream `motiondivision/motion` v11.11.11 to maintain test parity. The test structure mirrors the upstream repository exactly.
 
-### Location
-`cypress/e2e/`
+### Upstream Reference
 
-### Test Files
+- **Source**: `motiondivision/motion/packages/framer-motion/cypress/integration/`
+- **React fixtures**: `motiondivision/motion/dev/react/src/tests/`
+- **Version**: v11.11.11
 
-#### 1. Gesture Tests - `gestures.cy.ts` (15+ tests)
-Tests drag, hover, and tap gesture interactions.
+### Directory Structure
 
-**Test Coverage**:
-- **Drag gestures**: Position updates, whileDrag styles, constraints, direction locking
-- **Hover gestures**: Scale, rotation, color changes, opacity
-- **Tap gestures**: Scale on tap, box-shadow, multiple properties
-- **Gesture combinations**: Hover + drag, tap + release
+```
+cypress/
+├── integration/           # Cypress test files (mirrors upstream)
+│   ├── animate-cancel.ts
+│   ├── animate-layout-timing.ts
+│   ├── animate-presence-layout.ts
+│   ├── animate-presence-pop.ts
+│   ├── animate-presence-pop-ref.ts
+│   ├── animate-presence-pop-shadow-root.ts
+│   ├── animate-presence-radix-dialog.ts
+│   ├── animate-presence-remove.ts
+│   ├── animate-presence-reorder.ts
+│   ├── animate-presence-switch-waapi.ts
+│   ├── animate-read-transform.ts
+│   ├── animate-reverse.ts
+│   ├── animate-style.ts
+│   ├── animate-unit-types.ts
+│   ├── css-vars.ts
+│   ├── drag.ts
+│   ├── drag-framer-page.ts
+│   ├── drag-input-propagation.ts
+│   ├── drag-nested.ts
+│   ├── drag-scroll-while-drag.ts
+│   ├── drag-svg.ts
+│   ├── drag-tabs.ts
+│   ├── drag-to-reorder.ts
+│   ├── layout.ts
+│   ├── layout-cancelled-finishes.ts
+│   ├── layout-exit.ts
+│   ├── layout-group.ts
+│   ├── layout-instant-undo.ts
+│   ├── layout-read-transform.ts
+│   ├── layout-relative-delay.ts
+│   ├── layout-relative-drag.ts
+│   ├── layout-resize.ts
+│   ├── layout-shared.ts
+│   ├── layout-shared-lightbox-crossfade.ts
+│   ├── layout-viewport-jump.ts
+│   ├── motion-ref-forwarding.ts
+│   ├── reorder-auto-scroll.ts
+│   ├── scroll.ts
+│   ├── svg.ts
+│   ├── unit-conversion.ts
+│   ├── waapi.ts
+│   └── while-in-view.ts
+├── fixtures/              # Test data
+└── support/
+    ├── commands.js        # Custom commands (template, matches upstream)
+    └── index.js           # Support file imports
+```
 
-**Example**:
+### Svelte Test Fixtures
+
+Test fixtures are Svelte 5 components that mirror upstream React fixtures.
+
+**Location**: `src/routes/tests/`
+
+```
+src/routes/tests/
+├── +page.svelte                    # Router: handles ?test=<fixture-name> param
+├── animate-cancel.svelte
+├── animate-presence-pop.svelte
+├── animate-presence-pop-ref.svelte
+├── drag.svelte
+├── drag-nested.svelte
+├── layout.svelte
+├── layout-shared.svelte
+├── scroll.svelte
+├── svg.svelte
+├── ... (97 fixture components total)
+```
+
+### URL Pattern
+
+Tests access fixtures via URL parameter: `http://localhost:5000/tests?test=<fixture-name>`
+
+Example:
+- `?test=drag` → Loads `drag.svelte`
+- `?test=animate-presence-pop` → Loads `animate-presence-pop.svelte`
+- `?test=layout-shared` → Loads `layout-shared.svelte`
+
+### Test Categories (42 Tests)
+
+| Category | Count | Files |
+|----------|-------|-------|
+| AnimatePresence | 8 | `animate-presence-*.ts` |
+| Layout | 13 | `layout*.ts`, `animate-layout-timing.ts` |
+| Drag/Gestures | 9 | `drag*.ts`, `reorder-auto-scroll.ts` |
+| Animation Core | 8 | `animate-*.ts`, `waapi.ts`, `css-vars.ts`, `unit-conversion.ts` |
+| Scroll/Viewport | 2 | `scroll.ts`, `while-in-view.ts` |
+| SVG/Misc | 2 | `svg.ts`, `motion-ref-forwarding.ts` |
+
+### Configuration
+
+**File**: `cypress.config.ts`
+
 ```typescript
-describe('Gesture Interactions - Drag', () => {
-  it('should drag element and update position', () => {
-    cy.visit('/tests');
-    cy.get('#drageffect')
-      .should('exist')
-      .trigger('mousedown', { buttons: 1, force: true })
-      .trigger('mousemove', { clientX: 100, clientY: 100, force: true })
-      .trigger('mouseup', { force: true });
+import { defineConfig } from 'cypress';
 
-    cy.get('#drageffect')
-      .should('have.css', 'transform')
-      .and('include', 'translate');
-  });
+export default defineConfig({
+  e2e: {
+    baseUrl: 'http://localhost:5000/tests',
+    specPattern: 'cypress/integration/**/*.ts',
+    supportFile: 'cypress/support/index.js',
+    video: true,
+    screenshotOnRunFailure: false,
+    retries: 2,
+  },
 });
 ```
 
-#### 2. Animation Tests - `animations.cy.ts` (20+ tests)
-Tests animation execution and sequences.
+### Running E2E Tests
 
-**Test Coverage**:
-- **Tweened animations**: Duration, easing, completion
-- **Spring animations**: Physics, stiffness, damping, custom config
-- **Keyframe animations**: Position transitions, interpolation, sequences
-- **Animation sequences**: Execution order, timing, chaining
-- **Repeat animations**: Cycling, delays
-- **Duration-based animations**: Timing verification
+```bash
+# Start dev server first (in separate terminal)
+bun dev
 
-**Example**:
-```typescript
-describe('Animation Execution', () => {
-  it('should animate with spring physics', () => {
-    cy.visit('/tests');
-    cy.contains('Spring').parent().parent().within(() => {
-      const element = cy.get('[class*="box"]').first();
-      cy.get('button').first().click();
-      cy.wait(100);
-      element.should('have.css', 'transform');
-    });
-  });
-});
+# Run all E2E tests
+npx cypress run
+
+# Run specific test file
+npx cypress run --spec "cypress/integration/drag.ts"
+
+# Run by category
+npx cypress run --spec "cypress/integration/animate-presence-*.ts"
+npx cypress run --spec "cypress/integration/layout*.ts"
+npx cypress run --spec "cypress/integration/drag*.ts"
+
+# Open Cypress UI
+npx cypress open
 ```
 
-#### 3. Presence and Layout Tests - `presence.cy.ts` (15+ tests)
-Tests AnimatePresence and layout animations.
+### Porting Pattern: React → Svelte
 
-**Test Coverage**:
-- **AnimatePresence**: Mode handling, visibility toggling, exit animations
-- **Presence stacks**: Item removal, exit animation application
-- **Layout animations**: Layout changes, smooth transitions, shared layouts
-- **AnimateLayout**: Dynamic changes
-- **Reorder lists**: Item reordering, smooth layout
-- **Color interpolation**: Animated color transitions
-- **SVG morphing**: SVG animation support
+When porting fixtures from upstream React to Svelte 5:
 
-**Example**:
+| React Pattern | Svelte 5 Equivalent |
+|--------------|---------------------|
+| `useState()` | `$state()` |
+| `useRef()` | `let ref = $state()` |
+| `onClick={() => {}}` | `onclick={() => {}}` |
+| `{condition && <Component>}` | `{#if condition}<Component>{/if}` |
+| `{items.map(item => <Item key={item.id} />)}` | `{#each items as item (item.id)}<Item />{/each}` |
+| `<motion.div>` | `<motion.div>` (same API) |
+
+**Critical**: Keep element IDs identical to upstream for Cypress selectors to work.
+
+### Adding New Tests
+
+1. **Fetch upstream test** from:
+   `https://github.com/motiondivision/motion/blob/v11.11.11/packages/framer-motion/cypress/integration/<test>.ts`
+
+2. **Fetch upstream fixture(s)** from:
+   `https://github.com/motiondivision/motion/blob/v11.11.11/dev/react/src/tests/<fixture>.tsx`
+
+3. **Create Svelte fixture** at `src/routes/tests/<fixture-name>.svelte`
+
+4. **Copy Cypress test** to `cypress/integration/<test>.ts`
+
+5. **Verify**: `npx cypress run --spec "cypress/integration/<test>.ts"`
+
+### Support Files
+
+**`cypress/support/commands.js`**: Template file matching upstream structure. Add custom commands here as needed.
+
+**`cypress/support/index.js`**: Imports commands file.
+
+### Inline Test Helpers
+
+Tests define helpers inline (matching upstream pattern):
+
 ```typescript
-describe('AnimatePresence', () => {
-  it('should animate stacked items', () => {
-    cy.visit('/tests');
-    cy.contains('Stack').parent().parent().within(() => {
-      cy.get('[class*="box"]').should('have.length.greaterThan', 0);
-      cy.get('button').first().click();
-      cy.wait(300);
-      cy.get('[class*="box"]').should('exist');
-    });
-  });
-});
+// Example from layout tests
+const expectBbox = (
+  element: HTMLElement,
+  expected: { top: number; left: number; width: number; height: number }
+) => {
+  const bbox = element.getBoundingClientRect();
+  expect(bbox.top).to.equal(expected.top);
+  expect(bbox.left).to.equal(expected.left);
+  expect(bbox.width).to.equal(expected.width);
+  expect(bbox.height).to.equal(expected.height);
+};
 ```
-
-### Custom Cypress Commands
-
-**Location**: `cypress/support/commands.ts`
 
 ## TDD Checklist
 
 Use Test-Driven Development for new tasks, features, and bug fixes to keep scope tight and ensure regressions are caught.
 
-- Red: write a failing test first. Prefer the most specific level (unit/integration/E2E) that expresses the behavior.
-- Green: implement the smallest change needed to pass. Avoid broad refactors while red.
-- Refactor: improve code structure and readability while tests stay green. Keep changes incremental.
+- **Red**: Write a failing test first. Prefer the most specific level (unit/integration/E2E) that expresses the behavior.
+- **Green**: Implement the smallest change needed to pass. Avoid broad refactors while red.
+- **Refactor**: Improve code structure and readability while tests stay green. Keep changes incremental.
 
-Quick commands
+### Quick Commands
 
 ```bash
 # Type checks
 npx sv check
 
-# Run a single E2E spec (scoped changes)
-npx cypress run --spec cypress/e2e/animate-presence.cy.ts
+# Run unit tests
+bun test
+
+# Run a single E2E spec
+npx cypress run --spec "cypress/integration/drag.ts"
 
 # Run all E2E specs
 npx cypress run
@@ -421,164 +523,56 @@ npx cypress run
 # Format the codebase
 npx @biomejs/biome format --write .
 
-# Track work with bd (always use --json)
-bd ready --json
-bd update <id> --status in_progress --json
-bd close <id> --reason "Done" --json
+# Track work with bd
+bd ready
+bd update <id> --status in_progress
+bd close <id> --reason "Done"
 ```
 
-Notes
-- Keep tests colocated where practical (`.spec.ts` for unit/integration, `.cy.ts` for E2E).
-- Update docs when behavior changes (architecture or testing sections as appropriate).
-- Commit code changes together with `.beads/issues.jsonl` so issue state stays in sync.
- - For structured agent usage, see `.github/agents/README.md` for the Red→Green→Refactor flow.
+### Notes
+- Keep tests colocated where practical (`.spec.ts` for unit/integration)
+- E2E tests go in `cypress/integration/` to match upstream structure
+- Update docs when behavior changes
 
-### TDD Agents
+## Test Execution Summary
 
-For structured, repeatable TDD, use the project’s agents under `.github/agents/`:
+### Unit/Integration Tests (Vitest)
 
-- `tdd-red.agent.md`: RED phase — write failing tests first (no implementation edits).
-- `tdd-green.agent.md`: GREEN phase — implement the minimum code to pass the new tests.
-- `tdd-refactor.agent.md`: REFACTOR phase — improve code quality while keeping tests green.
-
-Recommended flow:
-1. Start with Red agent to create failing tests that represent the requirement (happy path + edges).
-2. Handoff to Green agent to implement only what’s needed to pass.
-3. Handoff to Refactor agent to clean up while maintaining passing tests.
-4. Land the plane: run `npx sv check`, `npx cypress run`, update/close bd issues, format, and commit with `.beads/issues.jsonl`.
-
-Agents help enforce small, incremental changes and disciplined test-backed development.
-
-Available commands for animation testing:
-
-```typescript
-// Drag element to target coordinates
-cy.get('.element').dragElement(x, y, { duration, steps })
-
-// Wait for animation to complete (stable transform)
-cy.get('.element').waitForAnimation(timeout)
-
-// Verify animation exists
-cy.get('.element').shouldAnimate()
-
-// Get translate transform values
-cy.get('.element').getTranslate().then(({x, y}) => {...})
-
-// Wait for specific CSS value
-cy.get('.element').waitForCss(property, value, timeout)
-
-// Hover interactions
-cy.get('.element').hoverOn().hoverOff()
-
-// Tap interaction
-cy.get('.element').tapOn()
-
-// Verify animation property
-cy.get('.element').shouldHaveAnimation(property)
-
-// Get opacity value
-cy.get('.element').getOpacity().then(opacity => {...})
-```
-
-### Test Structure
-
-```typescript
-describe('Feature', () => {
-  beforeEach(() => {
-    cy.visit('/tests'); // Visit test page with components
-  });
-
-  describe('Sub-feature', () => {
-    it('should perform expected behavior', () => {
-      // Arrange: Select element
-      cy.get('#element').should('exist');
-
-      // Act: Trigger interaction
-      cy.get('#element').trigger('mouseenter', { force: true });
-
-      // Assert: Verify animation
-      cy.wait(100);
-      cy.get('#element').should('have.css', 'transform');
-    });
-  });
-});
-```
-
-## Test Data and Fixtures
-
-### Mock Data
-**Location**: `cypress/fixtures/`
-
-```json
-{
-  "animationOptions": {
-    "duration": 500,
-    "delay": 0,
-    "ease": "easeInOut"
-  },
-  "dragOptions": {
-    "constraints": { "left": 0, "right": 100 }
-  }
-}
-```
-
-### Test Utilities
-**Location**: `cypress/support/`
-
-```typescript
-// Custom commands
-cy.animateTo(element, target, duration);
-cy.dragElement(element, x, y);
-cy.waitForAnimation(element);
-```
-
-## Test Execution
-
-### Unit Tests
 ```bash
-npm run test:unit
-# or
-vitest
+# Run all unit tests
+bun test
+
+# Run specific test file
+bun test src/lib/motion-start/utils/mix/color.spec.ts
+
+# Run with UI
+bun run test:ui
+
+# Run with watch mode
+bun test --watch
 ```
 
-### Integration Tests
-```bash
-npm run test:integration
-# or
-vitest --include='**/*-integration.spec.ts'
-```
+### E2E Tests (Cypress)
 
-### E2E Tests
-
-**Headless mode**:
 ```bash
-npm run test:e2e
-# or
+# Start dev server first
+bun dev
+
+# Run all E2E tests (headless)
 npx cypress run
-```
 
-**Interactive mode**:
-```bash
+# Run specific test
+npx cypress run --spec "cypress/integration/drag.ts"
+
+# Open Cypress UI
 npx cypress open
 ```
 
-**Run specific test file**:
+### Type Checking
+
 ```bash
-npx cypress run --spec "cypress/e2e/gestures.cy.ts"
+npx sv check
 ```
-
-### All Tests
-```bash
-npm run test
-```
-
-## Coverage Goals
-
-| Category | Target | Current |
-|----------|--------|---------|
-| Unit | 80%+ | TBD |
-| Integration | 70%+ | TBD |
-| Critical Paths E2E | 100% | TBD |
 
 ## Best Practices
 
@@ -601,29 +595,6 @@ npm run test
 - Follow AAA pattern (Arrange, Act, Assert)
 - Use descriptive test names
 - Document complex test scenarios
-
-## Continuous Integration
-
-### GitHub Actions Workflow
-
-```yaml
-name: Tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install
-      - run: pnpm run test
-      - run: pnpm run test:e2e
-      - uses: codecov/codecov-action@v3
-```
 
 ## See Also
 

@@ -3,6 +3,18 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Context } from 'runed';
+import { createContext } from 'svelte';
+import type { MutableRefObject } from '../utils/safe-react-types';
+import { ref } from '../utils/ref.svelte';
 
-export const DeprecatedLayoutGroupContext = new Context<string | null>('DeprecatedLayoutGroup');
+const [getDeprecatedLayoutGroupContext, setDeprecatedLayoutGroupContext] = createContext<MutableRefObject<string>>();
+
+function useDeprecatedLayoutGroupContext() {
+    try {
+        return getDeprecatedLayoutGroupContext();
+    } catch {
+        return ref(null);
+    }
+}
+
+export { useDeprecatedLayoutGroupContext, setDeprecatedLayoutGroupContext };

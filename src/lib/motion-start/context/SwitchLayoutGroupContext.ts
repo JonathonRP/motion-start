@@ -3,9 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Context } from 'runed';
+import { createContext } from 'svelte';
 import type { IProjectionNode } from '../projection/node/types';
 import type { Transition } from '../types';
+import type { MutableRefObject } from '../utils/safe-react-types';
+import { ref } from '../utils/ref.svelte';
 
 export interface SwitchLayoutGroup {
 	register?: <I>(member: IProjectionNode<I>) => void;
@@ -29,4 +31,12 @@ export type InitialPromotionConfig = {
 /**
  * Internal, exported only for usage in Framer
  */
-export const SwitchLayoutGroupContext = new Context<SwitchLayoutGroupContext>('SwitchLayoutGroup');
+const [getSwitchLayoutGroupContext, setSwitchLayoutGroupContext] = createContext<MutableRefObject<SwitchLayoutGroupContext>>();
+
+export function useSwitchLayoutGroupContext() {
+	try {
+		return getSwitchLayoutGroupContext();
+	} catch {
+		return ref({});
+	}
+}

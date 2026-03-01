@@ -3,8 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Context } from 'runed';
+import { createContext } from 'svelte'
 import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { MutableRefObject } from '$lib/motion-start/utils/safe-react-types';
+import { ref } from '$lib/motion-start/utils/ref.svelte';
 
 export interface MotionContext<Instance = unknown> {
 	visualElement?: VisualElement<Instance> | null;
@@ -12,4 +14,14 @@ export interface MotionContext<Instance = unknown> {
 	animate?: string | string[];
 }
 
-export const MotionContext = new Context<MotionContext>('MotionContext');
+const [getMotionContext, setMotionContext] = createContext<MutableRefObject<MotionContext>>();
+
+function useMotionContext() {
+	try {
+		return getMotionContext();
+	} catch {
+		return ref({});// Return empty context if none is found
+	}
+}
+
+export { useMotionContext, setMotionContext };

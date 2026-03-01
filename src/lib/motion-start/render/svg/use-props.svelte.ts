@@ -16,7 +16,7 @@ export function useSvgProps(
 	_isStatic: boolean,
 	Component: string
 ) {
-	const visualProps = $derived.by(() => {
+	const visualProps = () => {
 		const state = createSvgRenderState();
 
 		buildSVGAttrs(state, visualState(), isSVGTag(Component), props().transformTemplate);
@@ -25,12 +25,12 @@ export function useSvgProps(
 			...state.attrs,
 			style: { ...state.style },
 		};
-	});
+	};
 
 	if (props().style) {
 		const rawStyles = {};
 		copyRawValuesOnly(rawStyles, props().style as any, props());
-		visualProps.style = { ...rawStyles, ...visualProps.style };
+		visualProps().style = { ...rawStyles, ...visualProps().style };
 	}
 
 	return visualProps;

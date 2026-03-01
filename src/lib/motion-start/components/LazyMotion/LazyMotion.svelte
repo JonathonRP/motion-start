@@ -3,15 +3,17 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is LazyFeatureBundle {
-	return typeof features === 'function';
-}
+  function isLazyBundle(
+    features: FeatureBundle | LazyFeatureBundle,
+  ): features is LazyFeatureBundle {
+    return typeof features === "function";
+  }
 </script>
 
 <script lang="ts">
   import { untrack, type Snippet } from "svelte";
 
-  import { LazyContext } from "../../context/LazyContext";
+  import { setLazyContext } from "../../context/LazyContext";
   import { loadFeatures } from "../../motion/features/load-features";
   import type {
     FeatureBundle,
@@ -19,8 +21,6 @@ function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is 
   } from "../../motion/features/types";
   import type { CreateVisualElement } from "../../render/types";
   import type { LazyProps } from "./types";
-  import type { MutableRefObject, Ref } from "../../utils/safe-react-types";
-  import { ref } from "../../utils/ref.svelte";
 
   interface Props extends LazyProps {
     children: Snippet;
@@ -61,20 +61,23 @@ function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is 
    *
    * @public
    */
-  let { features: featuresProp, strict = false, children }: Props = $props();
+  let { features, strict = false, children }: Props = $props();
 
-  const features = ref<FeatureBundle | LazyFeatureBundle>(featuresProp);
   let loadedRenderer: CreateVisualElement<any> | undefined = undefined;
 
-  if (!isLazyBundle(features.current!)) {
-    const { renderer, ...loadedFeatures } = features.current!;
+  if (!isLazyBundle(features)) {
+    const { renderer, ...loadedFeatures } = features;
     loadedRenderer = renderer;
     loadFeatures(loadedFeatures);
   }
 
-  LazyContext.set({
-    renderer: loadedRenderer,
-    strict: strict!,
+  setLazyContext({
+    get current() {
+      return {
+        renderer: loadedRenderer,
+        strict: strict!,
+      };
+    },
   });
 </script>
 

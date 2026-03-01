@@ -15,6 +15,7 @@ export function animateVisualElement(
 	definition: AnimationDefinition,
 	options: VisualElementAnimationOptions = {}
 ) {
+
 	visualElement.notify('AnimationStart', definition);
 	let animation: Promise<any>;
 

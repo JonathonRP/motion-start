@@ -111,11 +111,11 @@ export { startOptimizedAppearAnimation } from './animation/optimized-appear/star
 /**
  * Contexts
  */
-export { LayoutGroupContext } from './context/LayoutGroupContext.svelte';
+export { type LayoutGroupContext } from './context/LayoutGroupContext.svelte';
 // export { MotionConfigContext } from './context/MotionConfigContext';
-export { MotionContext } from './context/MotionContext';
+export type { MotionContext } from './context/MotionContext';
 // export { PresenceContext } from './context/PresenceContext';
-export { SwitchLayoutGroupContext } from './context/SwitchLayoutGroupContext';
+export type { SwitchLayoutGroupContext } from './context/SwitchLayoutGroupContext';
 
 /**
  * Types
@@ -178,7 +178,7 @@ export type { ScrollMotionValues } from './value/scroll/utils';
  * Deprecated
  */
 export { useAnimatedState as useDeprecatedAnimatedState } from './animation/hooks/use-animated-state.svelte';
-export { DeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
+export { useDeprecatedLayoutGroupContext } from './context/DeprecatedLayoutGroupContext';
 export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inverted-scale';
 
 // Keep explict delay in milliseconds export for BC with Framer

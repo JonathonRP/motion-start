@@ -9,8 +9,8 @@ import type { RenderComponent, FeatureBundle } from './features/types';
 // import { MotionConfigContext } from '../context/MotionConfigContext';
 import type { UseVisualState } from './utils/use-visual-state.svelte';
 import { loadFeatures } from './features/load-features';
-import { LayoutGroupContext } from '../context/LayoutGroupContext.svelte';
-import { LazyContext } from '../context/LazyContext';
+import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte';
+import { useLazyContext } from '../context/LazyContext';
 import { motionComponentSymbol } from './utils/symbol';
 import type { CreateVisualElement } from '../render/types';
 import { invariant, warning } from '../utils/errors';
@@ -319,13 +319,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 export function useLayoutId(props: () => MotionProps) {
 	const { layoutId } = props();
-	const { id: layoutGroupId } = LayoutGroupContext.getOr(null) || {};
+	const { id: layoutGroupId } = useLayoutGroupContext().current;
 
 	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
-	const { strict: isStrict } = LazyContext.getOr({ strict: false });
+	const { strict: isStrict } = useLazyContext().current;
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { SpringOptions } from '../animation/types';
 import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
-import { useMotionConfig } from '../context/MotionConfigContext.svelte';
+import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
 import { frame } from '../frameloop';
 import type { MotionValue } from '.';
 import { useMotionValue } from './use-motion-value.svelte';
@@ -38,7 +38,7 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: MaybeGetter<SpringOptions> = {}) => {
-	const { isStatic } = useMotionConfig();
+	const { isStatic } = useMotionConfigContext().current;
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 

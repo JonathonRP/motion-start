@@ -14,8 +14,7 @@
 			"version": "22.12.0"
 		},
 		"ghcr.io/lumenpink/devcontainer-features/bun:0": {},
-		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/devcontainers/features/go:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -24,7 +23,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "corepack enable && corepack install && pnpm install",
-	"postCreateCommand": "bun install && go install github.com/steveyegge/beads/cmd/bd@latest",
+	"postCreateCommand": "bun install && bun install -g @beads/bd && bun pm trust -g @beads/bd",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -68,7 +67,10 @@
 				"MylesMurphy.prettify-ts",
 				"YoavBls.pretty-ts-errors",
 				"mattpocock.ts-error-translator",
-				"Orta.vscode-twoslash-queries"
+				"Orta.vscode-twoslash-queries",
+				"planet57.vscode-beads",
+				"4UtopiaInc.beads-vscode",
+				"Anthropic.claude-code"
 			]
 		}
 	},

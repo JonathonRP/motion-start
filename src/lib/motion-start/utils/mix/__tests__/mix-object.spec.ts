@@ -1,0 +1,34 @@
+/**
+ * Based on framer-motion@11.11.11
+ * https://github.com/motiondivision/motion
+ * Copyright (c) 2018 Framer B.V.
+ */
+
+import { describe, test, expect } from 'vitest';
+import { mixObject } from '../complex';
+
+describe('mixObject', () => {
+	test('mixObject', () => {
+		expect(
+			mixObject(
+				{
+					x: 0,
+					y: '0px',
+					color: '#fff',
+					shadow: '#000 0px 20px 0px',
+				},
+				{
+					x: 100,
+					y: '100px',
+					color: '#000',
+					shadow: '0px 10px #fff',
+				}
+			)(0.5)
+		).toEqual({
+			x: 50,
+			y: '50px',
+			color: 'rgba(180, 180, 180, 1)',
+			shadow: '0px 15px rgba(180, 180, 180, 1)',
+		});
+	});
+});

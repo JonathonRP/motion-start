@@ -25,3 +25,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 *.vitest-temp.*
 bun.lockb
+
+# bv (beads viewer) local config and caches
+.bv/

@@ -59,28 +59,30 @@
             Toggle Wait Mode
         </button>
 
-        <AnimatePresence mode="wait" values={waitItems} let:item>
-            {#if item.key === "wait1"}
-                <motion.div
-                    id="wait-item-1"
-                    class="animated-box"
-                    initial={{ x: -100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: 100, opacity: 0 }}
-                >
-                    Wait Item 1
-                </motion.div>
-            {:else}
-                <motion.div
-                    id="wait-item-2"
-                    class="animated-box"
-                    initial={{ x: -100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: 100, opacity: 0 }}
-                >
-                    Wait Item 2
-                </motion.div>
-            {/if}
+        <AnimatePresence mode="wait" values={waitItems}>
+            {#snippet children({ item })}
+                {#if item.key === "wait1"}
+                    <motion.div
+                        id="wait-item-1"
+                        class="animated-box"
+                        initial={{ x: -100, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 100, opacity: 0 }}
+                    >
+                        Wait Item 1
+                    </motion.div>
+                {:else}
+                    <motion.div
+                        id="wait-item-2"
+                        class="animated-box"
+                        initial={{ x: -100, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 100, opacity: 0 }}
+                    >
+                        Wait Item 2
+                    </motion.div>
+                {/if}
+            {/snippet}
         </AnimatePresence>
     </section>
 
@@ -95,16 +97,18 @@
             Toggle Conditional
         </button>
 
-        <AnimatePresence values={conditionalItems} let:item>
-            <motion.div
-                id="conditional-item"
-                class="animated-box"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-            >
-                Conditional Item
-            </motion.div>
+        <AnimatePresence values={conditionalItems}>
+            {#snippet children({ item })}
+                <motion.div
+                    id="conditional-item"
+                    class="animated-box"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                >
+                    Conditional Item
+                </motion.div>
+            {/snippet}
         </AnimatePresence>
     </section>
 </div>

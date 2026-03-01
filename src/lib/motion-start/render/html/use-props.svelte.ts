@@ -25,13 +25,13 @@ export function copyRawValuesOnly(
 }
 
 function useInitialMotionValues({ transformTemplate }: MotionProps, visualState: ResolvedValues) {
-	const visualProps = $derived.by(() => {
+	const visualProps = () => {
 		const state = createHtmlRenderState();
 
 		buildHTMLStyles(state, visualState, transformTemplate);
 
 		return Object.assign({}, state.vars, state.style);
-	});
+	};
 
 	return visualProps;
 }
@@ -45,7 +45,7 @@ function useStyle(props: MotionProps, visualState: ResolvedValues): ResolvedValu
 	 */
 	copyRawValuesOnly(style, styleProp as any, props);
 
-	Object.assign(style, useInitialMotionValues(props, visualState));
+	Object.assign(style, useInitialMotionValues(props, visualState)());
 
 	return style;
 }
@@ -55,25 +55,27 @@ export function useHTMLProps(
 	visualState: () => ResolvedValues
 ) {
 	// The `any` isn't ideal but it is the type of createElement props argument
-	const htmlProps: any = {};
-	const style = $derived.by(() => useStyle(props(), visualState()));
+	return () => {
+		const htmlProps: { draggable?: boolean; tabIndex?: number; style?: ResolvedValues } = {};
+		const style = useStyle(props(), visualState());
 
-	if (props().drag && props().dragListener !== false) {
-		// Disable the ghost element when a user drags
-		htmlProps.draggable = false;
+		if (props().drag && props().dragListener !== false) {
+			// Disable the ghost element when a user drags
+			htmlProps.draggable = false;
 
-		// Disable text selection
-		style.userSelect = style.WebkitUserSelect = style.WebkitTouchCallout = 'none';
+			// Disable text selection
+			style.userSelect = style.WebkitUserSelect = style.WebkitTouchCallout = 'none';
 
-		// Disable scrolling on the draggable direction
-		style.touchAction = props().drag === true ? 'none' : `pan-${props().drag === 'x' ? 'y' : 'x'}`;
-	}
+			// Disable scrolling on the draggable direction
+			style.touchAction = props().drag === true ? 'none' : `pan-${props().drag === 'x' ? 'y' : 'x'}`;
+		}
 
-	if (props().tabindex === undefined && (props().onTap || props().onTapStart || props().whileTap)) {
-		htmlProps.tabIndex = 0;
-	}
+		if (props().tabindex === undefined && (props().onTap || props().onTapStart || props().whileTap)) {
+			htmlProps.tabIndex = 0;
+		}
 
-	htmlProps.style = style;
+		htmlProps.style = style;
 
-	return htmlProps;
+		return htmlProps;
+	};
 }

@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun install && bun install -g @beads/bd"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "beads@beads-marketplace": true,
+    "asana@claude-plugins-official": false,
+    "svelte@svelte": true,
+    "agentic-jumpstart-skills@agentic-jumpstart-marketplace": true
+  },
+  "env": {
+    "ENABLE_TOOL_SEARCH": "auto"
+  }
+}

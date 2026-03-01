@@ -21,6 +21,8 @@ export default defineConfig({
 		globals: true,
 		environment: 'happy-dom', // Provides DOM APIs including DOMRect for tests
 		typecheck: { enabled: true },
+		include: ['src/**/*.{test,spec}.{js,ts}', 'src/**/*.svelte.{test,spec}.ts'],
+		exclude: ['**/node_modules/**', '**/dist/**', '**/.svelte-kit/**'],
 	},
 
 	server: {

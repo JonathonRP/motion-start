@@ -4,11 +4,15 @@
 
 	let showWithLayout = true;
 	let showWithoutLayout = true;
-	let count1 = 0;
-	let count2 = 0;
+	let count1 = $state(0);
+	let count2 = $state(0);
 
-	const items1 = () => Array.from({ length: count1 }, (_, i) => i);
-	const items2 = () => Array.from({ length: count2 }, (_, i) => i);
+	const items1 = $derived(
+		Array.from({ length: count1 }, (_, i) => ({ key: i })),
+	);
+	const items2 = $derived(
+		Array.from({ length: count2 }, (_, i) => ({ key: i })),
+	);
 </script>
 
 <Box>
@@ -28,14 +32,14 @@
 			<div class="flex gap-2 mb-4">
 				<button
 					id="add-with-layout"
-					on:click={() => (count1 += 1)}
+					onclick={() => (count1 += 1)}
 					class="px-3 py-1 bg-blue-500 text-white rounded"
 				>
 					Add Item
 				</button>
 				<button
 					id="remove-with-layout"
-					on:click={() => (count1 = Math.max(0, count1 - 1))}
+					onclick={() => (count1 = Math.max(0, count1 - 1))}
 					class="px-3 py-1 bg-red-500 text-white rounded"
 				>
 					Remove Item
@@ -43,8 +47,8 @@
 			</div>
 
 			<div id="list-with-layout" class="flex flex-col gap-2 min-h-12">
-				<AnimatePresence>
-					{#each items1() as item (item)}
+				<AnimatePresence values={items1}>
+					{#snippet children({ item })}
 						<motion.div
 							id="item-with-layout-{item}"
 							class="item-with-layout border px-3 py-2 bg-blue-100 rounded"
@@ -54,9 +58,9 @@
 							transition={{ duration: 0.3 }}
 							layout
 						>
-							Item {item}
+							Item {item.key}
 						</motion.div>
-					{/each}
+					{/snippet}
 				</AnimatePresence>
 			</div>
 		</div>
@@ -73,14 +77,14 @@
 			<div class="flex gap-2 mb-4">
 				<button
 					id="add-without-layout"
-					on:click={() => (count2 += 1)}
+					onclick={() => (count2 += 1)}
 					class="px-3 py-1 bg-red-500 text-white rounded"
 				>
 					Add Item
 				</button>
 				<button
 					id="remove-without-layout"
-					on:click={() => (count2 = Math.max(0, count2 - 1))}
+					onclick={() => (count2 = Math.max(0, count2 - 1))}
 					class="px-3 py-1 bg-orange-500 text-white rounded"
 				>
 					Remove Item
@@ -88,8 +92,8 @@
 			</div>
 
 			<div id="list-without-layout" class="flex flex-col gap-2 min-h-12">
-				<AnimatePresence presenceAffectsLayout={false}>
-					{#each items2() as item (item)}
+				<AnimatePresence presenceAffectsLayout={false} values={items2}>
+					{#snippet children({ item })}
 						<motion.div
 							id="item-without-layout-{item}"
 							class="item-without-layout border px-3 py-2 bg-red-100 rounded"
@@ -99,9 +103,9 @@
 							transition={{ duration: 0.3 }}
 							layout
 						>
-							Item {item}
+							Item {item.key}
 						</motion.div>
-					{/each}
+					{/snippet}
 				</AnimatePresence>
 			</div>
 		</div>
@@ -114,9 +118,3 @@
 		</p>
 	</div>
 </Box>
-
-<style>
-	:global(body) {
-		background: #f5f5f5;
-	}
-</style>

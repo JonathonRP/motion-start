@@ -1,11 +1,11 @@
 <!-- https://codesandbox.io/p/sandbox/gm9n3c?file=/src/index.js -->
 
 <script lang="ts">
-import Card from '$lib/components/Card.svelte';
-import { AnimatePresence } from '$lib/motion-start';
-import Box from '../Box.svelte';
-let index = $state(0);
-let mint = $derived(index + 1);
+    import Card from "$lib/components/Card.svelte";
+    import { AnimatePresence } from "$lib/motion-start";
+    import Box from "../Box.svelte";
+    let index = $state(0);
+    let mint = $derived(index + 1);
 </script>
 
 <Box>

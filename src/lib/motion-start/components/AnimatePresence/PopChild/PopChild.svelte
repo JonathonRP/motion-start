@@ -23,23 +23,25 @@ Copyright (c) 2018 Framer B.V. -->
         }
     }
 
-    // measurePop is called from VisualElement.update() inside $effect.pre —
-    // before the DOM is patched — so the element is still in normal flow.
-    // We apply the absolute-position styles directly and imperatively here,
-    // avoiding $state mutations inside $effect.pre which cause timing issues.
+    // measurePop is called by ExitAnimationFeature.update() when isPresent
+    // transitions to false. At that point the element is still in normal flow
+    // (position:absolute hasn't been applied yet), so offsetTop/offsetLeft give
+    // the correct parent-relative coordinates for the absolute positioning.
     $effect(() => {
         const context = presenceRef.current;
         if (!context) return;
         context.measurePop = (node) => {
             const child = node as HTMLElement;
 
-            // Measure while element is still in normal flow.
+            // offsetTop/offsetLeft are already relative to offsetParent (nearest
+            // positioned ancestor), so they work directly with position:absolute
+            // regardless of page scroll position.
             const width = child.offsetWidth;
             const height = child.offsetHeight;
             const top = child.offsetTop;
             const left = child.offsetLeft;
 
-            // Remove any previously injected style.
+            // Remove any previously injected style before creating a new one.
             removeStyle();
 
             child.dataset.motionPopId = id;
@@ -50,15 +52,7 @@ Copyright (c) 2018 Framer B.V. -->
             injectedStyle = style;
 
             if (style.sheet) {
-                style.sheet.insertRule(
-                    '[data-motion-pop-id="' + id + '"] {' +
-                    ' position: absolute !important;' +
-                    ' width: ' + width + 'px !important;' +
-                    ' height: ' + height + 'px !important;' +
-                    ' top: ' + top + 'px !important;' +
-                    ' left: ' + left + 'px !important;' +
-                    '}'
-                );
+                style.sheet.insertRule(`[data-motion-pop-id="${id}"] { position: absolute !important; width: ${width}px !important; height: ${height}px !important; top: ${top}px !important; left: ${left}px !important; }`);
             }
         };
         return () => {

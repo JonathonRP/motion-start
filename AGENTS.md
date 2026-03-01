@@ -256,3 +256,90 @@ When the user says "land the plane", complete these steps before handing off:
 - docs/PROJECT_STRUCTURE.md - Project structure
 - docs/TESTING.md - Project testing
 - README.md - Main documentation
+
+<!-- bv-agent-instructions-v1 -->
+
+---
+
+## Beads Workflow Integration
+
+This project uses [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer) for issue tracking. Issues are stored in `.beads/` and tracked in git.
+
+### Essential Commands
+
+```bash
+# View issues (launches TUI - avoid in automated sessions)
+bv
+
+# CLI commands for agents (use these instead)
+bd ready              # Show issues ready to work (no blockers)
+bd list --status=open # All open issues
+bd show <id>          # Full issue details with dependencies
+bd create --title="..." --type=task --priority=2
+bd update <id> --status=in_progress
+bd close <id> --reason="Completed"
+bd close <id1> <id2>  # Close multiple issues at once
+bd sync               # Commit and push changes
+```
+
+### Workflow Pattern
+
+1. **Start**: Run `bd ready` to find actionable work
+2. **Claim**: Use `bd update <id> --status=in_progress`
+3. **Work**: Implement the task
+4. **Complete**: Use `bd close <id>`
+5. **Sync**: Always run `bd sync` at session end
+
+### Key Concepts
+
+- **Dependencies**: Issues can block other issues. `bd ready` shows only unblocked work.
+- **Priority**: P0=critical, P1=high, P2=medium, P3=low, P4=backlog (use numbers, not words)
+- **Types**: task, bug, feature, epic, question, docs
+- **Blocking**: `bd dep add <issue> <depends-on>` to add dependencies
+
+### Session Protocol
+
+**Before ending any session, run this checklist:**
+
+```bash
+git status              # Check what changed
+git add <files>         # Stage code changes
+bd sync                 # Commit beads changes
+git commit -m "..."     # Commit code
+bd sync                 # Commit any new beads changes
+git push                # Push to remote
+```
+
+### Best Practices
+
+- Check `bd ready` at session start to find available work
+- Update status as you work (in_progress → closed)
+- Create new issues with `bd create` when you discover tasks
+- Use descriptive titles and set appropriate priority/type
+- Always `bd sync` before ending session
+
+<!-- end-bv-agent-instructions -->
+
+You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
+
+## Available MCP Tools:
+
+### 1. list-sections
+
+Use this FIRST to discover all available documentation sections. Returns a structured list with titles, use_cases, and paths.
+When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
+
+### 2. get-documentation
+
+Retrieves full documentation content for specific sections. Accepts single or multiple sections.
+After calling the list-sections tool, you MUST analyze the returned documentation sections (especially the use_cases field) and then use the get-documentation tool to fetch ALL documentation sections that are relevant for the user's task.
+
+### 3. svelte-autofixer
+
+Analyzes Svelte code and returns issues and suggestions.
+You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
+
+### 4. playground-link
+
+Generates a Svelte Playground link with the provided code.
+After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.

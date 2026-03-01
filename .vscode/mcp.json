@@ -1,11 +1,7 @@
 {
 	"servers": {
 		"svelte": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"@sveltejs/mcp"
-			]
+			"url": "https://mcp.svelte.dev/mcp"
 		}
 	}
 }

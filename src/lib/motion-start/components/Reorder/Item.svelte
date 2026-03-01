@@ -72,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 
-	const context = useReorderContext();
+	const context = $derived(useReorderContext().current);
 	const point: Record<"x" | "y", ReturnType<typeof useDefaultMotionValue>> = {
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),
@@ -84,8 +84,8 @@ Copyright (c) 2018 Framer B.V. -->
 
 	// Access context properties directly to preserve getter reactivity
 	const axis = $derived(context?.axis);
-	const registerItem = context?.registerItem;
-	const updateOrder = context?.updateOrder;
+	const registerItem = $derived(context?.registerItem);
+	const updateOrder = $derived(context?.updateOrder);
 </script>
 
 <ReorderItem

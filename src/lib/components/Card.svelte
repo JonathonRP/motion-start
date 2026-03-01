@@ -12,7 +12,15 @@
     const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
         clamp: false,
     });
-    let { drag = false, frontCard = false, index = 0 } = $props();
+    let {
+        drag = false,
+        frontCard = false,
+        index = $bindable(0),
+    }: {
+        drag?: boolean | "x" | "y";
+        frontCard?: boolean;
+        index?: number;
+    } = $props();
 
     const variantsFrontCard: Variants = {
         animate: { scale: 1, y: 0, opacity: 1 },
@@ -41,7 +49,7 @@
 
 <motion.div
     key={index}
-    id="presswipe"
+    id="presswipe-{index}"
     style={{
         x,
         rotate,

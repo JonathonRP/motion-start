@@ -52,6 +52,12 @@ Copyright (c) 2018 Framer B.V. -->
 	// Plain Map (not $state) — mutated imperatively, read inside onExit closures.
 	const exitComplete = new Map<ComponentKey, boolean>();
 
+	// exitGeneration guards against stale onExit callbacks firing after a key
+	// has re-entered and exited again. Each new onExit closure for a key captures
+	// the current generation; if it no longer matches when the promise resolves,
+	// the callback is discarded.
+	const exitGeneration = new Map<ComponentKey, number>();
+
 	// pendingPresentChildren holds the latest target list so onExit closures
 	// always restore to the most recent snapshot, not a stale closure value.
 	let pendingPresentChildren: typeof renderedChildren = [];
@@ -91,6 +97,10 @@ Copyright (c) 2018 Framer B.V. -->
 					}
 				} else {
 					exitComplete.delete(key);
+					// Invalidate any in-flight onExit for this key by bumping the generation.
+					// Do NOT delete — we keep the counter so the next exit gets gen+1,
+					// ensuring stale callbacks from before re-entry can never match.
+					exitGeneration.set(key, (exitGeneration.get(key) ?? 0) + 1);
 				}
 			}
 
@@ -115,8 +125,14 @@ Copyright (c) 2018 Framer B.V. -->
 					continue;
 				}
 
+				const gen = (exitGeneration.get(key) ?? 0) + 1;
+				exitGeneration.set(key, gen);
+
 				const onExit = () => {
 					if (!exitComplete.has(key)) return;
+					// Guard against stale callbacks: if a key re-entered and exited again
+					// before this promise resolved, our generation will be outdated.
+					if (exitGeneration.get(key) !== gen) return;
 					exitComplete.set(key, true);
 
 					let allComplete = true;

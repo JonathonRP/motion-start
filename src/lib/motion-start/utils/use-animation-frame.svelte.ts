@@ -4,14 +4,14 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { frame, cancelFrame } from '../frameloop';
-import { useMotionConfig } from '../context/MotionConfigContext.svelte';
+import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
 import type { FrameData } from '../frameloop/types';
 
 export type FrameCallback = (timestamp: number, delta: number) => void;
 
 export function useAnimationFrame(callback: FrameCallback) {
 	let initialTimestamp = 0;
-	const { isStatic } = useMotionConfig();
+	const { isStatic } = useMotionConfigContext().current;
 
 	if (isStatic) return;
 

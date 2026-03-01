@@ -38,23 +38,21 @@
         <ul
             class="flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 list-none"
         >
-            <AnimatePresence
-                {mode}
-                values={items.map((id) => ({ key: id }))}
-                let:item
-            >
-                <motion.li
-                    key={item.key}
-                    id={item.key}
-                    class="block bg-accent-500 h-[80px] w-full shrink-0 grow-0 basis-[80px] rounded-[20px] m-0 p-0"
-                    layout
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    transition={{ type: "spring" }}
-                    onclick={() => {
-                        items = items.filter((value) => value !== item.key);
-                    }}
-                />
+            <AnimatePresence {mode} values={items.map((id) => ({ key: id }))}>
+                {#snippet children({ item })}
+                    <motion.li
+                        key={item.key}
+                        id={item.key}
+                        class="block bg-accent-500 h-[80px] w-full shrink-0 grow-0 basis-[80px] rounded-[20px] m-0 p-0"
+                        layout
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ type: "spring" }}
+                        onclick={() => {
+                            items = items.filter((value) => value !== item.key);
+                        }}
+                    />
+                {/snippet}
             </AnimatePresence>
         </ul>
     </div>

@@ -3,7 +3,8 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" generics="TProps, Instance, RenderState">
-	import { useMotionConfig } from "../context/MotionConfigContext.svelte";
+	import { tick, untrack } from "svelte";
+	import { useMotionConfigContext } from "../context/MotionConfigContext.svelte";
 	import { useCreateMotionContext } from "../context/MotionContext/create.svelte";
 	import { isBrowser } from "../utils/is-browser";
 	import type { Ref } from "../utils/safe-react-types";
@@ -43,7 +44,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 	const configAndProps = $derived({
 		...props,
-		...useMotionConfig(),
+		...useMotionConfigContext().current,
 		layoutId: useLayoutId(() => props),
 	});
 
@@ -52,17 +53,22 @@ Copyright (c) 2018 Framer B.V. -->
 	// svelte-ignore state_referenced_locally: onpurpose - isStatic shouldn't change
 	const { isStatic } = configAndProps;
 
-	const context = useCreateMotionContext<Instance>(props);
+	const context = $derived.by(useCreateMotionContext<Instance>(() => props));
 
-	const visualState = useVisualState(props, isStatic);
+	const visualState = $derived.by(() =>
+		useVisualState(() => props, isStatic)(),
+	);
 
 	if (!isStatic && isBrowser) {
 		// useStrictMode(configAndProps, preloadedFeatures);
-		const layoutProjection = getProjectionFunctionality(
-			() => configAndProps,
+		const layoutProjection = $derived.by(() =>
+			getProjectionFunctionality(() => configAndProps),
 		);
 
-		MeasureLayout = layoutProjection.MeasureLayout;
+		$effect.pre(() => {
+			// Ensure the layout projection is prepared before the visual element
+			MeasureLayout = layoutProjection.MeasureLayout;
+		});
 
 		/**
 		 * Create a VisualElement for this component. A VisualElement provides a common
@@ -70,15 +76,20 @@ Copyright (c) 2018 Framer B.V. -->
 		 * providing a way of rendering to these APIs outside of the React render loop
 		 * for more performant animations and interactions
 		 */
-		const visualElement = useVisualElement<Instance, RenderState>(
-			Component,
-			() => visualState,
-			() => configAndProps,
-			createVisualElement,
-			layoutProjection.ProjectionNode,
+		const visualElement = $derived.by(
+			useVisualElement<Instance, RenderState>(
+				(() => Component)(),
+				() => visualState,
+				() => configAndProps,
+				(() => createVisualElement)(),
+				() => layoutProjection.ProjectionNode,
+			),
 		);
 
-		context.visualElement = visualElement;
+		$effect.pre(() => {
+			// Update the motion context with the latest visual element
+			context.visualElement = visualElement;
+		});
 
 		// TODO: is unmounting with context causing other tests motion visual elemnents to unmount??
 		// MotionContext.update(() => {

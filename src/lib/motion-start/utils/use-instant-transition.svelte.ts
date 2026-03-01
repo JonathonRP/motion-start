@@ -4,7 +4,7 @@ import { useForceUpdate } from './use-force-update.svelte';
 import { instantAnimationState } from './use-instant-transition-state';
 
 export function useInstantTransition() {
-	const [forceUpdate, forcedRenderCount] = $derived(useForceUpdate());
+	const [forceUpdate, forcedRenderCount] = $derived.by(useForceUpdate);
 	const startInstantLayoutTransition = useInstantLayoutTransition();
 	let unlockOnFrameRef = -1;
 
@@ -21,7 +21,7 @@ export function useInstantTransition() {
 				 * instant transition too soon. This becomes more likely when
 				 * used in conjunction with React.startTransition().
 				 */
-				if (unlockOnFrameRef !== forcedRenderCount.current) return;
+				if (unlockOnFrameRef !== forcedRenderCount()) return;
 				instantAnimationState.current = false;
 			})
 		);
@@ -32,7 +32,7 @@ export function useInstantTransition() {
 			instantAnimationState.current = true;
 			forceUpdate();
 			callback();
-			unlockOnFrameRef = forcedRenderCount.current + 1;
+			unlockOnFrameRef = forcedRenderCount() + 1;
 		});
 	};
 }

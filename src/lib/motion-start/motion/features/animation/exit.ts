@@ -26,7 +26,7 @@ export class ExitAnimationFeature extends Feature<unknown> {
 			}
 		}
 
-		const { isPresent, onExitComplete } = this.node.presenceContext;
+		const { isPresent, onExitComplete, measurePop } = this.node.presenceContext;
 		const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
 
 		if (!this.node.animationState || isPresent === prevIsPresent) {
@@ -36,11 +36,8 @@ export class ExitAnimationFeature extends Feature<unknown> {
 		const exitAnimation = this.node.animationState.setActive('exit', !isPresent);
 
 		if (onExitComplete && !isPresent) {
-			// measurePop is called earlier in VisualElement.update() ($effect.pre,
-			// before DOM patch) so the element is still in normal flow at that point.
-			exitAnimation.then(() => {
-				onExitComplete(this.id);
-			});
+			measurePop?.(this.node.current as HTMLElement | SVGElement);
+			exitAnimation.then(() => onExitComplete(this.id));
 		}
 	}
 

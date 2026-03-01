@@ -15,6 +15,6 @@ export interface Props {
 }
 
 export interface MeasureProps extends Props {
-	childRef: MutableRefObject<HTMLElement>;
-	sizeRef: MutableRefObject<Size>;
+	child: HTMLElement | SVGElement;
+	size: Size;
 }

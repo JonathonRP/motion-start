@@ -1,4 +1,4 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
@@ -16,7 +16,7 @@ export type NotPresent = [false, SafeToRemove];
 
 export function isPresent(context: () => PresenceContext | null) {
 	const contextMemo = $derived.by(context);
-	return contextMemo === null ? true : contextMemo.isPresent;
+	return () => contextMemo === null ? true : contextMemo.isPresent;
 }
 
 /**
@@ -40,8 +40,7 @@ export function isPresent(context: () => PresenceContext | null) {
  * @public
  */
 export const useIsPresent = (): (() => boolean) => {
-	const context = $derived(usePresenceContext().current);
-	return () => isPresent(() => context);
+	return isPresent(() => usePresenceContext().current);
 };
 
 /**
@@ -67,20 +66,37 @@ export const useIsPresent = (): (() => boolean) => {
  * @public
  */
 export const usePresence = (): (() => AlwaysPresent | Present | NotPresent) => {
-	const context = $derived(usePresenceContext().current);
+	const contextRef = usePresenceContext();
+	const context = $derived(contextRef.current);
 
-	if (context === null) {
-		return () => [true, null] satisfies AlwaysPresent;
-	}
-
-	const { isPresent, onExitComplete, register } = $derived(context);
+	// Early return for no context - but check reactively
+	const isContextNull = $derived(context === null);
 
 	const id = incrementId();
+
+	// Register with the presence context
 	$effect(() => {
-		untrack(() => register(id));
+		const ctx = context;
+		if (ctx?.register) {
+			untrack(() => ctx.register(id));
+		}
 	});
 
-	const safeToRemove = $derived(() => onExitComplete && onExitComplete(id));
+	// Return a function that reads current values reactively
+	return () => {
+		if (isContextNull) {
+			return [true, null] satisfies AlwaysPresent;
+		}
 
-	return () => (!isPresent && onExitComplete ? [false, safeToRemove] : [true]);
+		const ctx = context;
+		if (!ctx) {
+			return [true, null] satisfies AlwaysPresent;
+		}
+
+		const { isPresent, onExitComplete } = ctx;
+		const safeToRemove = () => onExitComplete?.(id);
+
+		console.log('[usePresence] returning isPresent:', isPresent, 'id:', id);
+		return !isPresent && onExitComplete ? [false, safeToRemove] : [true];
+	};
 };

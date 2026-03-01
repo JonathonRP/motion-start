@@ -3,32 +3,38 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-import { setMotionConfigContext, useMotionConfig } from '../../context/MotionConfigContext.svelte';
-import type { MotionConfigProps } from './index.js';
-import { loadExternalIsValidProp } from '../../render/dom/utils/filter-props.js';
-import type { Snippet } from 'svelte';
+	import {
+		setMotionConfigContext,
+		useMotionConfigContext,
+	} from "../../context/MotionConfigContext.svelte";
+	import type { MotionConfigProps } from "./index.js";
+	import { loadExternalIsValidProp } from "../../render/dom/utils/filter-props.js";
+	import type { Snippet } from "svelte";
 
-interface Props extends MotionConfigProps {
-	children: Snippet;
-}
+	interface Props extends MotionConfigProps {
+		children: Snippet;
+	}
 
-let { isValidProp, children, transition, reducedMotion, nonce, isStatic, transformPagePoint }: Props = $props();
+	let { isValidProp, children, ...config }: Props = $props();
 
-isValidProp && loadExternalIsValidProp(isValidProp);
+	isValidProp && loadExternalIsValidProp(isValidProp);
 
-const parentConfig = useMotionConfig();
-/**
- * Inherit props from any parent MotionConfig components
- */
-const config = $state({
-	transition: transition ?? parentConfig.transition,
-	reducedMotion: reducedMotion ?? parentConfig.reducedMotion,
-	nonce: nonce ?? parentConfig.nonce,
-	isStatic: isStatic ?? parentConfig.isStatic,
-	transformPagePoint: transformPagePoint ?? parentConfig.transformPagePoint,
-});
+	/**
+	 * Inherit props from any parent MotionConfig components
+	 */
+	config = {
+		...useMotionConfigContext().current,
+		...config,
+	};
 
-setMotionConfigContext(config);
+	config.isStatic = config.isStatic ?? false;
+
+	const context = {
+		get current() {
+			return config;
+		},
+	};
+	setMotionConfigContext(context);
 </script>
 
 {@render children?.()}

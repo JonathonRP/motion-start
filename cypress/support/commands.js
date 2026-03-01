@@ -22,4 +22,11 @@
 //
 //
 // -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.overwrite("visit", (originalFn, url, options) => {
+    return originalFn(url, options).then(() => {
+        // SvelteKit has SSR disabled so the page starts blank.
+        // Wait for JS to render #loading, then wait for it to finish loading.
+        cy.get('#loading', { timeout: 10000 }).should('exist')
+        cy.get('#loading', { timeout: 10000 }).should('not.exist')
+    })
+})
