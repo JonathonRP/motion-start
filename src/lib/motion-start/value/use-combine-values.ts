@@ -2,14 +2,14 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionValue } from '.';
+import type { MotionValue } from './index.js';
 
-/** 
+/**
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
 import sync from 'framesync';
-import { motionValue } from '.';
+import { motionValue } from './index.js';
 
 export const useCombineMotionValues = <R>(values: (MotionValue | (() => R))[], combineValues: () => R) => {
 	let subscriptions: (() => void)[] = [];

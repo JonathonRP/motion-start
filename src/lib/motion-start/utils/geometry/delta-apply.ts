@@ -9,7 +9,7 @@ import type { ResolvedValues, VisualElement } from '../../render/types';
 based on framer-motion@4.1.15,
 Copyright (c) 2018 Framer B.V.
 */
-import { fixed } from '../fix-process-env.js';
+import '../fix-process-env.js';
 import { mix } from 'popmotion';
 import { isDraggable } from '../../render/utils/is-draggable.js';
 

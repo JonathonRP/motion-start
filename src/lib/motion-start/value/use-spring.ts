@@ -3,19 +3,19 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { SpringOptions } from 'popmotion';
-import type { MotionValue } from '.';
+import type { MotionValue } from './index.js';
 
-/** 
+/**
 based on framer-motion@4.1.16,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fixed } from '../utils/fix-process-env';
+import '../utils/fix-process-env.js';
 import { getContext } from 'svelte';
-import { MotionConfigContext, type MotionConfigContextObject } from '../context/MotionConfigContext';
+import { MotionConfigContext, type MotionConfigContextObject } from '../context/MotionConfigContext.js';
 import { get, type Writable } from 'svelte/store';
-import { useMotionValue } from './use-motion-value';
-import { isMotionValue } from './utils/is-motion-value';
+import { useMotionValue } from './use-motion-value.js';
+import { isMotionValue } from './utils/is-motion-value.js';
 import { animate } from 'popmotion';
 
 /**

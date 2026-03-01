@@ -39,7 +39,7 @@ export interface CrossfadeAnimationOptions {
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { fixed } from '../../../utils/fix-process-env.js';
+import '../../../utils/fix-process-env.js';
 import sync, { getFrameData } from 'framesync';
 import { mix, progress, linear, mixColor, circOut } from 'popmotion';
 import { animate } from '../../../animation/animate.js';

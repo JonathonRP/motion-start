@@ -2,18 +2,18 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import type { ScrollMotionValues } from "./utils";
+import type { ScrollMotionValues } from './utils.js';
 
 
-/** 
+/**
 based on framer-motion@4.1.16,
 Copyright (c) 2018 Framer B.V.
 */
 import {
     createScrollMotionValues,
     createScrollUpdater,
-} from "./utils"
-import { addDomEvent } from "../../events/use-dom-event"
+} from "./utils.js"
+import { addDomEvent } from "../../events/use-dom-event.js"
 import { tick } from "svelte"
 
 let viewportScrollValues: ScrollMotionValues

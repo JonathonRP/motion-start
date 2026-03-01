@@ -34,7 +34,7 @@ export interface TransformOptions<T> {
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { fixed } from './fix-process-env';
+import './fix-process-env';
 import { interpolate } from 'popmotion';
 import type { CustomValueType } from '../types';
 
