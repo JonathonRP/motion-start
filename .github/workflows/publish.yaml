@@ -30,7 +30,7 @@ jobs:
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
-      # Mint a short-lived (24 h) granular token scoped to this package only.
+      # Mint an ephemeral automation token using the npm CLI.
       # NPM_PUBLISH_TOKEN is a never-expiring automation token stored once as a
       # repo secret; it is never used to publish directly — only to create and
       # revoke ephemeral tokens, so its blast radius is minimal.
@@ -39,19 +39,8 @@ jobs:
         env:
           NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
         run: |
-          RESPONSE=$(curl -fsSL -X POST \
-            -H "Authorization: Bearer ${NPM_PUBLISH_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "type": "granular-access-token",
-              "expiration": 86400,
-              "allowedPackages": [
-                { "name": "motion-start", "scope": "", "permission": "read-write" }
-              ],
-              "allowedOrgs": [],
-              "cidrRanges": []
-            }' \
-            https://registry.npmjs.org/-/npm/v1/tokens/granular)
+          npm config set //registry.npmjs.org/:_authToken "${NPM_PUBLISH_TOKEN}"
+          RESPONSE=$(npm token create --automation --json)
 
           TOKEN=$(echo "$RESPONSE" | jq -r '.token // empty')
           KEY=$(echo "$RESPONSE"   | jq -r '.key   // empty')
@@ -81,7 +70,5 @@ jobs:
         env:
           NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
         run: |
-          curl -fsSL -X DELETE \
-            -H "Authorization: Bearer ${NPM_PUBLISH_TOKEN}" \
-            https://registry.npmjs.org/-/npm/v1/tokens/${{ steps.npm-token.outputs.key }} \
-            || true # non-fatal; token expires in 24 h regardless
+          npm config set //registry.npmjs.org/:_authToken "${NPM_PUBLISH_TOKEN}"
+          npm token revoke "${{ steps.npm-token.outputs.key }}" || true
