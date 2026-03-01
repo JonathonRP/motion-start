@@ -1,147 +1,142 @@
 {
-  "name": "motion-start",
-  "version": "0.1.18",
-  "description": "Svelte animation library inspired by the React library framer-motion.",
-  "license": "MIT",
-  "author": {
-    "name": "JonathonRP",
-    "url": "https://github.com/JonathonRP"
-  },
-  "repository": "github:JonathonRP/motion-start",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "svelte": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./package.json": "./package.json",
-    "./src/context/MotionContext": {
-      "types": "./dist/context/MotionContext/index.d.ts",
-      "svelte": "./dist/context/MotionContext/index.js",
-      "import": "./dist/context/MotionContext/index.js",
-      "default": "./dist/context/MotionContext/index.js"
-    },
-    "./src/motion": {
-      "types": "./dist/motion/index.d.ts",
-      "svelte": "./dist/motion/index.js",
-      "import": "./dist/motion/index.js",
-      "default": "./dist/motion/index.js"
-    },
-    "./src/render": {
-      "types": "./dist/render/index.d.ts",
-      "svelte": "./dist/render/index.js",
-      "import": "./dist/render/index.js",
-      "default": "./dist/render/index.js"
-    },
-    "./src/value": {
-      "types": "./dist/value/index.d.ts",
-      "svelte": "./dist/value/index.js",
-      "import": "./dist/value/index.js",
-      "default": "./dist/value/index.js"
-    },
-    "./src/*.js": {
-      "types": "./dist/*.d.ts",
-      "svelte": "./dist/*.js",
-      "import": "./dist/*.js",
-      "default": "./dist/*.js"
-    },
-    "./src/*.svelte": {
-      "types": "./dist/*.d.ts",
-      "svelte": "./dist/*.svelte",
-      "default": "./dist/*.svelte"
-    }
-  },
-  "files": [
-    "dist",
-    "!dist/**/*.test.*",
-    "!dist/**/*.spec.*"
-  ],
-  "svelte": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "type": "module",
-  "scripts": {
-    "sv": "bunx sv",
-    "dev": "vite dev",
-    "build docs": "vite build",
-    "build": "bun --bun package",
-    "package": "svelte-kit sync && svelte-package --input ./src/lib/motion-start && publint --strict",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json",
-    "lint": "biome check",
-    "cypress": "cypress open",
-    "test": "vitest --typecheck=false",
-    "test:types": "vitest --typecheck.only",
-    "test:ui": "vitest --ui",
-    "test:types:ui": "vitest --ui",
-    "release": "bun --bun run build && bun --bun changeset publish"
-  },
-  "dependencies": {
-    "csstype": "^3.2.3"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.4.4",
-    "@changesets/cli": "^2.29.8",
-    "@emotion/is-prop-valid": "^1.4.0",
-    "@lucide/svelte": "^0.544.0",
-    "@sveltejs/adapter-auto": "^6.1.1",
-    "@sveltejs/kit": "^2.53.4",
-    "@sveltejs/package": "^2.5.7",
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
-    "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.1",
-    "@tsconfig/svelte": "^5.0.8",
-    "@types/bun": "latest",
-    "@types/cypress": "^1.1.6",
-    "@types/node": "^20.19.35",
-    "@vitest/ui": "latest",
-    "bits-ui": "^2.16.2",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "cypress": "latest",
-    "cypress-real-events": "^1.15.0",
-    "happy-dom": "^20.7.0",
-    "lucide-svelte": "^0.542.0",
-    "mode-watcher": "^1.1.0",
-    "publint": "^0.3.17",
-    "runed": "^0.37.1",
-    "sv": "^0.11.4",
-    "svelte-check": "^4.4.4",
-    "svelte-render-scan": "^1.1.0",
-    "tailwind-merge": "^3.5.0",
-    "tailwind-variants": "^3.2.2",
-    "tailwindcss": "^4.2.1",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vite-plugin-devtools-json": "^1.0.0",
-    "vitest": "latest"
-  },
-  "peerDependencies": {
-    "svelte": "^5.53.6"
-  },
-  "engines": {
-    "bun": ">=1.0.0",
-    "node": ">=20"
-  },
-  "keywords": [
-    "svelte animation",
-    "svelte",
-    "animation",
-    "gestures",
-    "drag",
-    "spring",
-    "popmotion",
-    "framer-motion"
-  ],
-  "trustedDependencies": [
-    "@biomejs/biome",
-    "@sveltejs/kit",
-    "@swc/core",
-    "@tailwindcss/oxide",
-    "cypress",
-    "esbuild",
-    "sharp",
-    "svelte-preprocess",
-    "workerd"
-  ],
-  "private": true
+	"name": "motion-start",
+	"version": "0.1.18",
+	"description": "Svelte animation library inspired by the React library framer-motion.",
+	"license": "MIT",
+	"author": {
+		"name": "JonathonRP",
+		"url": "https://github.com/JonathonRP"
+	},
+	"repository": "github:JonathonRP/motion-start",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./package.json": "./package.json",
+		"./src/context/MotionContext": {
+			"types": "./dist/context/MotionContext/index.d.ts",
+			"svelte": "./dist/context/MotionContext/index.js",
+			"import": "./dist/context/MotionContext/index.js",
+			"default": "./dist/context/MotionContext/index.js"
+		},
+		"./src/motion": {
+			"types": "./dist/motion/index.svelte.d.ts",
+			"svelte": "./dist/motion/index.svelte.js",
+			"import": "./dist/motion/index.svelte.js",
+			"default": "./dist/motion/index.svelte.js"
+		},
+		"./src/value": {
+			"types": "./dist/value/index.d.ts",
+			"svelte": "./dist/value/index.js",
+			"import": "./dist/value/index.js",
+			"default": "./dist/value/index.js"
+		},
+		"./src/*.js": {
+			"types": "./dist/*.d.ts",
+			"svelte": "./dist/*.js",
+			"import": "./dist/*.js",
+			"default": "./dist/*.js"
+		},
+		"./src/*.svelte": {
+			"types": "./dist/*.d.ts",
+			"svelte": "./dist/*.svelte",
+			"default": "./dist/*.svelte"
+		}
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"sv": "bunx sv",
+		"dev": "vite dev",
+		"build docs": "vite build",
+		"build": "bun --bun package",
+		"package": "svelte-kit sync && svelte-package --input ./src/lib/motion-start && publint --strict",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json",
+		"lint": "biome check",
+		"cypress": "cypress open",
+		"test": "vitest --typecheck=false",
+		"test:types": "vitest --typecheck.only",
+		"test:ui": "vitest --ui",
+		"test:types:ui": "vitest --ui",
+		"release": "bun --bun run build && bun --bun changeset publish"
+	},
+	"dependencies": {
+		"csstype": "^3.2.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.4",
+		"@changesets/cli": "^2.29.8",
+		"@emotion/is-prop-valid": "^1.4.0",
+		"@lucide/svelte": "^0.544.0",
+		"@sveltejs/adapter-auto": "^6.1.1",
+		"@sveltejs/kit": "^2.53.4",
+		"@sveltejs/package": "^2.5.7",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tailwindcss/typography": "^0.5.19",
+		"@tailwindcss/vite": "^4.2.1",
+		"@tsconfig/svelte": "^5.0.8",
+		"@types/bun": "latest",
+		"@types/cypress": "^1.1.6",
+		"@types/node": "^20.19.35",
+		"@vitest/ui": "latest",
+		"bits-ui": "^2.16.2",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"cypress": "latest",
+		"cypress-real-events": "^1.15.0",
+		"happy-dom": "^20.7.0",
+		"lucide-svelte": "^0.542.0",
+		"mode-watcher": "^1.1.0",
+		"publint": "^0.3.17",
+		"runed": "^0.37.1",
+		"sv": "^0.11.4",
+		"svelte-check": "^4.4.4",
+		"svelte-render-scan": "^1.1.0",
+		"tailwind-merge": "^3.5.0",
+		"tailwind-variants": "^3.2.2",
+		"tailwindcss": "^4.2.1",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.1",
+		"vite-plugin-devtools-json": "^1.0.0",
+		"vitest": "latest"
+	},
+	"peerDependencies": {
+		"svelte": "^5.53.6"
+	},
+	"engines": {
+		"bun": ">=1.0.0",
+		"node": ">=20"
+	},
+	"keywords": [
+		"svelte animation",
+		"svelte",
+		"animation",
+		"gestures",
+		"drag",
+		"spring",
+		"popmotion",
+		"framer-motion"
+	],
+	"trustedDependencies": [
+		"@biomejs/biome",
+		"@sveltejs/kit",
+		"@swc/core",
+		"@tailwindcss/oxide",
+		"cypress",
+		"esbuild",
+		"sharp",
+		"svelte-preprocess",
+		"workerd"
+	],
+	"private": true
 }

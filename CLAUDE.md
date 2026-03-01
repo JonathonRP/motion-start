@@ -40,9 +40,9 @@ bun run package            # Sync and package the library
 bun test                   # Run Vitest unit tests
 bun test <pattern>         # Run specific tests matching pattern
 bun run test:ui            # Open Vitest UI
-bun run cypress            # Open Cypress for E2E tests
-npx cypress run            # Run Cypress headless
-npx cypress run --spec "cypress/e2e/<name>.cy.ts"  # Run single E2E test
+bun run cypress            # Open Cypress GUI
+bun run cypress run        # Run Cypress headless
+bun run cypress run --spec "cypress/integration/<name>.ts"  # Run single E2E test
 
 # Type checking and linting
 npx sv check               # Svelte type checking (run before commits)
