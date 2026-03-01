@@ -12,45 +12,32 @@ Copyright (c) 2018 Framer B.V. -->
     const id = $props.id();
     let child = $state<HTMLElement | null>(null);
     let size = $state<Size>({ width: 0, height: 0, top: 0, left: 0 });
-    // snapshot holds the last measurement taken while isPresent=true
-    let snapshot: Size | null = null;
 
     const { nonce } = $derived(useMotionConfigContext().current);
     const presenceRef = usePresenceContext();
 
-    // measurePop is called by ExitAnimationFeature.mount() to register the element ref.
+    // measurePop is called by ExitAnimationFeature:
+    //   - mount(): element is freshly mounted and in normal flow
+    //   - update(): called when isPresent transitions false, BEFORE exit animation
+    // Both calls happen while the element is still in normal flow, so
+    // getBoundingClientRect() gives the correct laid-out position.
     $effect(() => {
         const context = presenceRef.current;
         if (!context) return;
         context.measurePop = (node) => {
             child = node as HTMLElement;
+            // Use offsetTop/offsetLeft — already relative to offsetParent (the
+            // nearest positioned ancestor), so they work directly with position:absolute
+            // regardless of page scroll or viewport position.
+            size.width = child.offsetWidth;
+            size.height = child.offsetHeight;
+            size.top = child.offsetTop;
+            size.left = child.offsetLeft;
         };
         return () => {
             context.measurePop = undefined;
             child = null;
-            snapshot = null;
         };
-    });
-
-    // $effect.pre runs BEFORE DOM is patched — equivalent to getSnapshotBeforeUpdate.
-    // When isPresent=true, keep refreshing the snapshot so it's always current.
-    // When isPresent transitions to false, apply the last snapshot to size.
-    $effect.pre(() => {
-        isPresent; // track reactively
-        if (child) {
-            if (isPresent) {
-                // Still in flow — update snapshot with current position
-                const rect = child.getBoundingClientRect();
-                snapshot = { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
-            } else if (snapshot) {
-                // Just became not-present, before DOM patches — apply snapshot
-                size.width = snapshot.width;
-                size.height = snapshot.height;
-                size.top = snapshot.top;
-                size.left = snapshot.left;
-                snapshot = null;
-            }
-        }
     });
 
     // Inject a style block with captured dimensions so position:absolute
