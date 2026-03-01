@@ -11,7 +11,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions:
   contents: write # to create release (changesets/action)
   pull-requests: write # to create pull request (changesets/action)
-  id-token: write # to sign packages with npm provenance
+  id-token: write # for npm OIDC trusted publishing (no token required)
 
 jobs:
   publish:
@@ -23,36 +23,29 @@ jobs:
         with:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
+      # Configures .npmrc for OIDC token exchange with the npm registry.
+      # No NPM_TOKEN or NODE_AUTH_TOKEN required — npm exchanges the GitHub
+      # OIDC JWT for a short-lived publish token automatically at publish time.
+      #
+      # One-time setup on npmjs.com:
+      #   Package Settings → Trusted Publishers → GitHub Actions
+      #   Set the org/user, repo, and this workflow filename.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
+
+      # npm >=11.5.1 (or Node >=24) is required for OIDC token exchange.
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
-
-      # Mint an ephemeral automation token using the npm CLI.
-      # NPM_PUBLISH_TOKEN is a never-expiring automation token stored once as a
-      # repo secret; it is never used to publish directly — only to create and
-      # revoke ephemeral tokens, so its blast radius is minimal.
-      - name: Create ephemeral npm publish token
-        id: npm-token
-        env:
-          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        run: |
-          npm config set //registry.npmjs.org/:_authToken "${NPM_PUBLISH_TOKEN}"
-          RESPONSE=$(npm token create --automation --json)
-
-          TOKEN=$(echo "$RESPONSE" | jq -r '.token // empty')
-          KEY=$(echo "$RESPONSE"   | jq -r '.key   // empty')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Failed to create npm token. Response: $RESPONSE"
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
-          echo "key=$KEY"     >> "$GITHUB_OUTPUT"
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -61,14 +54,6 @@ jobs:
           publish: bun --bun release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ steps.npm-token.outputs.token }}
           NPM_CONFIG_PROVENANCE: true
-
-      # Always revoke the ephemeral token after use (even if publishing failed).
-      - name: Revoke ephemeral npm publish token
-        if: always() && steps.npm-token.outputs.key != ''
-        env:
-          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        run: |
-          npm config set //registry.npmjs.org/:_authToken "${NPM_PUBLISH_TOKEN}"
-          npm token revoke "${{ steps.npm-token.outputs.key }}" || true
+          # NODE_AUTH_TOKEN must remain unset — npm falls back to OIDC only
+          # when it is completely absent from the environment.
