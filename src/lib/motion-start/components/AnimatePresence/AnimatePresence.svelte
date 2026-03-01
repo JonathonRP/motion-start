@@ -37,9 +37,8 @@ Copyright (c) 2018 Framer B.V. -->
 	};
 
 	let isInitialRender = $state(true);
-	let diffedChildren = $state(new Map<string | number, { key: number }>());
-	let exiting = $state(new Set<ComponentKey>());
 
+	// renderedChildren is the authoritative render list (present + exiting).
 	let renderedChildren = $state<
 		{
 			present: boolean;
@@ -49,131 +48,108 @@ Copyright (c) 2018 Framer B.V. -->
 		}[]
 	>([]);
 
-	const updateChildLookup = (
-		children: { key: number }[],
-		allChild: Map<string | number, { key: number }>,
-	) => {
-		children.forEach((child) => {
-			const key = getChildKey(child);
-			allChild.set(key, child);
-		});
-	};
+	// exitComplete tracks which exiting keys have finished their animation.
+	// Plain Map (not $state) — mutated imperatively, read inside onExit closures.
+	const exitComplete = new Map<ComponentKey, boolean>();
+
+	// pendingPresentChildren holds the latest target list so onExit closures
+	// always restore to the most recent snapshot, not a stale closure value.
+	let pendingPresentChildren: typeof renderedChildren = [];
 
 	$effect(() => {
-		// Compute target list
-		const targetList = list !== undefined ? list : show ? [{ key: 1 }] : [];
+		// Compute target list from reactive props
+		const presentChildren: typeof renderedChildren =
+			list !== undefined
+				? list.map((v) => ({ present: true, data: v, key: v.key, onExit: undefined }))
+				: show
+					? [{ present: true, data: { key: 1 }, key: 1, onExit: undefined }]
+					: [];
+
+		const presentKeys = presentChildren.map((c) => getChildKey(c));
 
 		if (isInitialRender) {
-			// On initial render, just show all children
 			untrack(() => {
-				renderedChildren = targetList.map((v) => ({
-					present: true,
-					data: v,
-					key: v.key,
-					onExit: undefined,
-				}));
-				updateChildLookup(targetList, diffedChildren);
+				renderedChildren = presentChildren;
+				pendingPresentChildren = presentChildren;
 			});
 			isInitialRender = false;
-		} else {
-			// After initial render, handle enter/exit animations
-			let newRenderedChildren: typeof renderedChildren = [];
+			return;
+		}
 
-			untrack(() => {
-				// IMPORTANT: First preserve existing rendered children in diffedChildren
-				// so they can be used for exit animations
-				renderedChildren.forEach((c) => {
-					if (c.present) {
-						diffedChildren.set(getChildKey(c), c.data);
+		// Always update the pending snapshot to the latest present children.
+		// onExit closures read this so they use the current target, not a stale one.
+		pendingPresentChildren = presentChildren;
+
+		untrack(() => {
+			// Update exitComplete: initialise newly exiting keys to false,
+			// delete keys that have re-entered.
+			for (let i = 0; i < renderedChildren.length; i++) {
+				const key = getChildKey(renderedChildren[i]);
+				if (!presentKeys.includes(key)) {
+					if (exitComplete.get(key) !== true) {
+						exitComplete.set(key, false);
 					}
-				});
-				// Then add any new target children
-				updateChildLookup(targetList, diffedChildren);
+				} else {
+					exitComplete.delete(key);
+				}
+			}
 
-				// Create list of entering children (present = true)
-				newRenderedChildren = [
-					...targetList.map((v) => ({
-						present: true,
-						data: v,
-						key: v.key,
-						onExit: undefined,
-					})),
-				];
+			// Build next render list starting from presentChildren.
+			let nextChildren = [...presentChildren];
 
-				// Get keys for diffing
-				const targetKeys = targetList.map(getChildKey);
-				const presentKeys = untrack(() =>
-					renderedChildren.filter((c) => c.present).map(getChildKey),
+			// Re-insert exiting children at their original positions.
+			const exitingChildren: typeof renderedChildren = [];
+			for (let i = 0; i < renderedChildren.length; i++) {
+				const child = renderedChildren[i];
+				const key = getChildKey(child);
+				if (presentKeys.includes(key)) continue;
+
+				// Already has an onExit callback — preserve it to avoid creating
+				// duplicate callbacks for the same key when the effect re-runs.
+				const existingExiting = renderedChildren.find(
+					(c) => getChildKey(c) === key && !c.present,
 				);
-
-				// Mark children that are exiting (were present but not in target)
-				const numPresent = presentKeys.length;
-				for (let i = 0; i < numPresent; i++) {
-					const key = presentKeys[i] as string | number;
-					if (
-						targetKeys.indexOf(key as any) === -1 &&
-						!exiting.has(key)
-					) {
-						exiting.add(key);
-					}
+				if (existingExiting) {
+					nextChildren.splice(i, 0, existingExiting);
+					exitingChildren.push(existingExiting);
+					continue;
 				}
 
-				// If mode is wait and we have exiting children, don't render entering ones yet
-				if (mode === "wait" && exiting.size) {
-					newRenderedChildren.length = 0;
-				}
+				const onExit = () => {
+					if (!exitComplete.has(key)) return;
+					exitComplete.set(key, true);
 
-				// Add exiting children to render with exit animations
-				exiting.forEach((key) => {
-					// If this key has re-entered, skip
-					if (targetKeys.indexOf(key) !== -1) {
-						exiting.delete(key);
-						return;
-					}
+					let allComplete = true;
+					exitComplete.forEach((done) => {
+						if (!done) allComplete = false;
+					});
 
-					const child = diffedChildren.get(key);
-					if (!child) {
-						return;
-					}
-
-					const insertionIndex = presentKeys.indexOf(key);
-
-					const onExit = () => {
-						// Guard: If item re-entered (present=true), don't remove it
-						const currentChild = renderedChildren.find(
-							(c) => getChildKey(c) === key,
-						);
-						if (currentChild?.present) {
-							exiting.delete(key); // Just clean up
-							return;
-						}
-						diffedChildren.delete(key);
-						exiting.delete(key);
-
-						// Remove the exiting child from rendered children
+					if (allComplete) {
+						exitComplete.clear();
+						// Use pendingPresentChildren — always the latest target list.
+						renderedChildren = pendingPresentChildren;
+						forceRender();
+						onExitComplete?.();
+					} else {
+						// Remove just this child from the rendered list.
 						renderedChildren = renderedChildren.filter(
 							(c) => getChildKey(c) !== key,
 						);
+					}
+				};
 
-						// If all exiting animations complete, clean up
-						if (!exiting.size) {
-							forceRender();
-							onExitComplete?.();
-						}
-					};
+				const exitChild = { ...child, present: false, onExit };
+				nextChildren.splice(i, 0, exitChild);
+				exitingChildren.push(exitChild);
+			}
 
-					newRenderedChildren.splice(insertionIndex, 0, {
-						present: false,
-						data: child,
-						key: getChildKey(child),
-						onExit,
-					});
-				});
-			});
+			// In "wait" mode, only render exiting children until they're done.
+			if (mode === "wait" && exitingChildren.length) {
+				nextChildren = exitingChildren;
+			}
 
-			// CRITICAL: Assign OUTSIDE untrack so Svelte sees it as reactive update
-			renderedChildren = newRenderedChildren;
-		}
+			renderedChildren = nextChildren;
+		});
 	});
 
 	$effect(() => {
