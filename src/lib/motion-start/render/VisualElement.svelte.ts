@@ -241,10 +241,10 @@ export abstract class VisualElement<
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
 	props: MotionProps = $state()!;
-	prevProps?: MotionProps = $derived(new Previous(() => this.props).current);
+	prevProps?: MotionProps;
 
 	presenceContext: PresenceContext | null = $state(null);
-	prevPresenceContext?: PresenceContext | null = $derived(new Previous(() => this.presenceContext).current);
+	prevPresenceContext?: PresenceContext | null;
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -392,7 +392,10 @@ export abstract class VisualElement<
 
 		if (this.parent) this.parent.children.add(this as VisualElement<unknown>);
 		this.update(
-			() => this.props,
+			// if i make this {} exit and layout animations play, but if i pass this.props they dont - why?
+			// also if {} svelte doesn't clean up properly on unmount
+			// while if this.props are passed they do - why? and by cleanup i mean actually unmounting and removing element from dom.
+			this.props,
 			this.presenceContext
 		);
 	}
@@ -539,13 +542,16 @@ export abstract class VisualElement<
 	 * Update the provided props. Ensure any newly-added motion values are
 	 * added to our map, old ones removed, and listeners updated.
 	 */
-	update(props: () => MotionProps, presenceContext: PresenceContext | null) {
-		if (props().transformTemplate || this.props.transformTemplate) {
+	update(props: MotionProps, presenceContext: PresenceContext | null) {
+		if (props.transformTemplate || this.props.transformTemplate) {
 			this.scheduleRender();
 		}
 
-		this.props = props();
-
+		this.prevProps = this.props;
+		this.props = props;
+		this.prevPresenceContext = this.presenceContext
+			? { ...this.presenceContext }
+			: null;
 		this.presenceContext = presenceContext;
 
 		/**
@@ -559,7 +565,7 @@ export abstract class VisualElement<
 			}
 
 			const listenerName = ('on' + key) as keyof typeof props;
-			const listener = props()[listenerName];
+			const listener = props[listenerName];
 			if (listener) {
 				this.propEventSubscriptions[key] = this.on(key as any, listener);
 			}
@@ -567,12 +573,24 @@ export abstract class VisualElement<
 
 		this.prevMotionValues = updateMotionValuesFromProps(
 			this as VisualElement<unknown>,
-			this.scrapeMotionValuesFromProps(props(), this.prevProps!, this as VisualElement<unknown>),
+			this.scrapeMotionValuesFromProps(props, this.prevProps!, this as VisualElement<unknown>),
 			this.prevMotionValues
 		);
 
 		if (this.handleChildMotionValue) {
 			this.handleChildMotionValue();
+		}
+
+		/**
+		 * If this element is transitioning from present to not-present, call
+		 * measurePop now — we are inside $effect.pre (before DOM patch) so the
+		 * element is still in normal flow and getBoundingClientRect/offsetTop
+		 * return the correct laid-out position.
+		 */
+		const prevIsPresent = this.prevPresenceContext?.isPresent;
+		const isPresent = this.presenceContext?.isPresent;
+		if (prevIsPresent && !isPresent && this.presenceContext?.measurePop && this.current) {
+			this.presenceContext.measurePop(this.current as HTMLElement | SVGElement);
 		}
 
 		// this.#update?.();
