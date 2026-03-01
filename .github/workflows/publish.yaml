@@ -42,7 +42,7 @@ jobs:
 
       # npm >=11.5.1 (or Node >=24) is required for OIDC token exchange.
       - name: Update npm
-        run: npm install -g npm@latest
+        run: npm install -g npm@^11.5.1
 
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
