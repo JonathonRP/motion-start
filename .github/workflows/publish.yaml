@@ -30,6 +30,41 @@ jobs:
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
+      # Mint a short-lived (24 h) granular token scoped to this package only.
+      # NPM_PUBLISH_TOKEN is a never-expiring automation token stored once as a
+      # repo secret; it is never used to publish directly — only to create and
+      # revoke ephemeral tokens, so its blast radius is minimal.
+      - name: Create ephemeral npm publish token
+        id: npm-token
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: |
+          RESPONSE=$(curl -fsSL -X POST \
+            -H "Authorization: Bearer ${NPM_PUBLISH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "type": "granular-access-token",
+              "expiration": 86400,
+              "allowedPackages": [
+                { "name": "motion-start", "scope": "", "permission": "read-write" }
+              ],
+              "allowedOrgs": [],
+              "cidrRanges": []
+            }' \
+            https://registry.npmjs.org/-/npm/v1/tokens/granular)
+
+          TOKEN=$(echo "$RESPONSE" | jq -r '.token // empty')
+          KEY=$(echo "$RESPONSE"   | jq -r '.key   // empty')
+
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Failed to create npm token. Response: $RESPONSE"
+            exit 1
+          fi
+
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          echo "key=$KEY"     >> "$GITHUB_OUTPUT"
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
@@ -37,5 +72,16 @@ jobs:
           publish: bun --bun release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ steps.npm-token.outputs.token }}
           NPM_CONFIG_PROVENANCE: true
+
+      # Always revoke the ephemeral token after use (even if publishing failed).
+      - name: Revoke ephemeral npm publish token
+        if: always() && steps.npm-token.outputs.key != ''
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: |
+          curl -fsSL -X DELETE \
+            -H "Authorization: Bearer ${NPM_PUBLISH_TOKEN}" \
+            https://registry.npmjs.org/-/npm/v1/tokens/${{ steps.npm-token.outputs.key }} \
+            || true # non-fatal; token expires in 24 h regardless
