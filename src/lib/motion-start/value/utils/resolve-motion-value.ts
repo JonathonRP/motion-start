@@ -2,8 +2,8 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from "../index.js";
-import type { CustomValueType } from "../../types.js";
+import type { MotionValue } from '../index.js';
+import type { CustomValueType } from '../../types.js';
 
 /** 
 based on framer-motion@4.0.3,
