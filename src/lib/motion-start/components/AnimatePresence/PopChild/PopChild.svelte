@@ -12,14 +12,13 @@ Copyright (c) 2018 Framer B.V. -->
     const id = $props.id();
     let child = $state<HTMLElement | null>(null);
     let size = $state<Size>({ width: 0, height: 0, top: 0, left: 0 });
-    // Snapshot captured while element is still in normal flow
+    // snapshot holds the last measurement taken while isPresent=true
     let snapshot: Size | null = null;
 
     const { nonce } = $derived(useMotionConfigContext().current);
     const presenceRef = usePresenceContext();
 
-    // measurePop is called by ExitAnimationFeature.mount() with the DOM element.
-    // We store the element reference here so we can snapshot its position.
+    // measurePop is called by ExitAnimationFeature.mount() to register the element ref.
     $effect(() => {
         const context = presenceRef.current;
         if (!context) return;
@@ -29,33 +28,28 @@ Copyright (c) 2018 Framer B.V. -->
         return () => {
             context.measurePop = undefined;
             child = null;
+            snapshot = null;
         };
     });
 
-    // $effect.pre: runs BEFORE DOM is patched — equivalent to getSnapshotBeforeUpdate.
-    // Capture position while element is still in normal flow (isPresent = true).
+    // $effect.pre runs BEFORE DOM is patched — equivalent to getSnapshotBeforeUpdate.
+    // When isPresent=true, keep refreshing the snapshot so it's always current.
+    // When isPresent transitions to false, apply the last snapshot to size.
     $effect.pre(() => {
-        // Track isPresent reactively so this re-runs when it changes
-        if (isPresent && child) {
-            const rect = child.getBoundingClientRect();
-            snapshot = {
-                width: rect.width,
-                height: rect.height,
-                top: rect.top,
-                left: rect.left,
-            };
-        }
-    });
-
-    // $effect: runs AFTER DOM is patched.
-    // Apply snapshot to size when element becomes not-present.
-    $effect(() => {
-        if (!isPresent && snapshot && child) {
-            size.width = snapshot.width;
-            size.height = snapshot.height;
-            size.top = snapshot.top;
-            size.left = snapshot.left;
-            snapshot = null;
+        isPresent; // track reactively
+        if (child) {
+            if (isPresent) {
+                // Still in flow — update snapshot with current position
+                const rect = child.getBoundingClientRect();
+                snapshot = { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
+            } else if (snapshot) {
+                // Just became not-present, before DOM patches — apply snapshot
+                size.width = snapshot.width;
+                size.height = snapshot.height;
+                size.top = snapshot.top;
+                size.left = snapshot.left;
+                snapshot = null;
+            }
         }
     });
 
