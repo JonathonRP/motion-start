@@ -11,7 +11,7 @@ import type { TargetProjection } from "../../render/utils/state";
 based on framer-motion@4.1.15,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../fix-process-env';
+import '../fix-process-env';
 import { mix, distance, clamp, progress } from 'popmotion';
 
 var clampProgress = function (v: number) { return clamp(0, 1, v); };

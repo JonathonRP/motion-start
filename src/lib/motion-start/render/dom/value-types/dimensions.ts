@@ -8,7 +8,7 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../../utils/fix-process-env.js';
+import '../../../utils/fix-process-env.js';
 import { number, px, percent, degrees, vw, vh } from 'style-value-types';
 import { testValueType } from './test.js';
 import { auto } from './type-auto.js';

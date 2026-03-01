@@ -10,7 +10,7 @@ based on framer-motion@4.1.16,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { fixed } from '../utils/fix-process-env.js';
+import '../utils/fix-process-env.js';
 import { getContext } from 'svelte';
 import { MotionConfigContext, type MotionConfigContextObject } from '../context/MotionConfigContext.js';
 import { get, type Writable } from 'svelte/store';

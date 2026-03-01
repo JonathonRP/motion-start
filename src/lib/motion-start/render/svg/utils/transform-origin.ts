@@ -9,7 +9,7 @@ import type { SVGDimensions } from "../types";
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import {fixed} from '../../../utils/fix-process-env';
+import '../../../utils/fix-process-env';
 import { px } from 'style-value-types';
 
 function calcOrigin(origin: number, offset: number, size: number) {

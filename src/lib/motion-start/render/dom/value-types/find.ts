@@ -7,7 +7,7 @@ Copyright (c) 2018 Framer B.V.
 based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V.
 */
-import { fixed } from '../../../utils/fix-process-env.js';
+import '../../../utils/fix-process-env.js';
 import { color, complex } from 'style-value-types';
 import { dimensionValueTypes } from './dimensions.js';
 import { testValueType } from './test.js';
