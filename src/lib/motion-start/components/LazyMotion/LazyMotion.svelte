@@ -1,18 +1,30 @@
-<!-- based on framer-motion@4.0.3,
+<!--based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes />
+
+<script lang="ts" module>
+  function isLazyBundle(
+    features: FeatureBundle | LazyFeatureBundle,
+  ): features is LazyFeatureBundle {
+    return typeof features === "function";
+  }
+</script>
 
 <script lang="ts">
-  import { onMount, setContext } from "svelte";
-  import { writable } from "svelte/store";
-  import { setDomContext } from "../../context/DOMcontext";
-  import type { LazyProps } from "./index.js";
+  import { untrack, type Snippet } from "svelte";
 
-  import { LazyContext } from "../../context/LazyContext";
-  import { loadFeatures } from "../../motion/features/definitions";
-  import type { FeatureBundle } from "../../motion/features/types";
-  import type { LazyFeatureBundle } from "./types";
+  import { setLazyContext } from "../../context/LazyContext";
+  import { loadFeatures } from "../../motion/features/load-features";
+  import type {
+    FeatureBundle,
+    LazyFeatureBundle,
+  } from "../../motion/features/types";
+  import type { CreateVisualElement } from "../../render/types";
+  import type { LazyProps } from "./types";
 
-  type $$Props = LazyProps;
+  interface Props extends LazyProps {
+    children: Snippet;
+  }
 
   /**
    * Used in conjunction with the `m` component to reduce bundle size.
@@ -49,40 +61,24 @@ Copyright (c) 2018 Framer B.V. -->
    *
    * @public
    */
-  export let features: $$Props["features"],
-    strict: $$Props["strict"] = false,
-    isCustom = false;
+  let { features, strict = false, children }: Props = $props();
 
-  let _ = !isLazyBundle(features);
-  let loadedRenderer = undefined as any;
-  /**
-   * If this is a synchronous load, load features immediately
-   */
-  $: if (!isLazyBundle(features) && _) {
+  let loadedRenderer: CreateVisualElement<any> | undefined = undefined;
+
+  if (!isLazyBundle(features)) {
     const { renderer, ...loadedFeatures } = features;
-    loadedRenderer.current = renderer;
+    loadedRenderer = renderer;
     loadFeatures(loadedFeatures);
   }
-  function isLazyBundle(
-    features: FeatureBundle | LazyFeatureBundle,
-  ): features is LazyFeatureBundle {
-    return typeof features === "function";
-  }
-  onMount(() => {
-    if (isLazyBundle(features)) {
-      features().then(({ renderer, ...loadedFeatures }) => {
-        loadFeatures(loadedFeatures);
-        loadedRenderer.current = renderer;
 
-        // @ts-expect-error
-        setIsLoaded(true);
-      });
-    }
+  setLazyContext({
+    get current() {
+      return {
+        renderer: loadedRenderer,
+        strict: strict!,
+      };
+    },
   });
-  let context = writable({ renderer: loadedRenderer.current, strict });
-  setContext(LazyContext, context);
-  setDomContext("Lazy", isCustom, context);
-  $: context.set({ renderer: loadedRenderer.current, strict });
 </script>
 
-<slot />
+{@render children()}

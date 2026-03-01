@@ -1,6 +1,13 @@
+<svelte:options runes={false} />
+
 <script>
   // Lucide Svelte
-  import { Home, PencilLine, TvMinimalPlay } from "lucide-svelte";
+  import {
+    Home,
+    PencilLine,
+    TvMinimalPlay,
+    GalleryVerticalEnd,
+  } from "lucide-svelte";
   //    Shadcn Components
   import * as Tooltip from "$lib/components/ui/tooltip";
   //   Major Components
@@ -8,8 +15,8 @@
 
   let navs = {
     navbar: [
-      { label: "Docs", icon: Home, href: "/" },
-      { label: "Test", icon: PencilLine, href: "/tests" },
+      { label: "Docs", icon: Home, href: "/", id: "home" },
+      { label: "Test", icon: GalleryVerticalEnd, href: "/demo", id: "demo" },
     ],
   };
 </script>
@@ -23,7 +30,7 @@
     let:magnification
   >
     {#each navs.navbar as item}
-      <a href={item.href}>
+      <a href={item.href} id={item.id}>
         <DockIcon {mouseX} {magnification} {distance}>
           <Tooltip.Provider>
             <Tooltip.Root>

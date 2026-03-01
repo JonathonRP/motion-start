@@ -1,45 +1,55 @@
 <script lang="ts">
-    import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
-    let exitX = 0;
+    import {
+        motion,
+        useMotionValue,
+        useTransform,
+        type PanInfo,
+        type Variants,
+    } from "$lib/motion-start";
+    let exitX = $state(0);
     const x = useMotionValue(0);
     const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
     const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
         clamp: false,
     });
-    export let drag: any = false;
-    export let frontCard = false;
-    export let index: any = 0;
-    const variantsFrontCard = {
+    let {
+        drag = false,
+        frontCard = false,
+        index = $bindable(0),
+    }: {
+        drag?: boolean | "x" | "y";
+        frontCard?: boolean;
+        index?: number;
+    } = $props();
+
+    const variantsFrontCard: Variants = {
         animate: { scale: 1, y: 0, opacity: 1 },
         exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
     };
-    const variantsBackCard = {
+    const variantsBackCard: Variants = {
         initial: { scale: 0.3, y: 105, opacity: 0 },
         animate: { scale: 0.75, y: 30, opacity: 0.5 },
     };
-    $: isFront = frontCard ? variantsFrontCard : variantsBackCard;
 
-    function handleDragEnd(_: any, info: { offset: { x: number } }) {
-        // console.log("info", info);
+    const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
+
+    function handleDragEnd(_: PointerEvent, info: PanInfo) {
         if (info.offset.x < -100) {
-            // setExitX(-250);
             exitX = -250;
-            //   props.setIndex(index + 1);
             index = index + 1;
         }
         if (info.offset.x > 100) {
             exitX = 250;
-            //   props.setIndex(index + 1);
             index = index + 1;
-            //   console.log("trigger");
         }
     }
-    let i = 0;
 </script>
 
 <!-- Animate Presence Stack -->
 
-<Motion.div
+<motion.div
+    key={index}
+    id="presswipe-{index}"
     style={{
         x,
         rotate,
@@ -55,7 +65,7 @@
     transition={frontCard
         ? { type: "spring", stiffness: 300, damping: 20 }
         : { scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
-    class="w-32 h-32 top-10 bg-white rouned-xl absolute rounded-xl text-black flex justify-center items-center select-none"
+    class="w-32 h-32 top-10 bg-white rounded-xl absolute text-black flex justify-center items-center select-none"
 >
     {index}
-</Motion.div>
+</motion.div>

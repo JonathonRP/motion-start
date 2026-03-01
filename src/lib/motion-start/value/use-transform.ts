@@ -1,12 +1,12 @@
-import type { TransformOptions } from '../utils/transform';
 /** 
- based on framer-motion@4.1.17,
- Copyright (c) 2018 Framer B.V.
- */
-import type { MotionValue } from '.';
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
 
-import { transform } from '../utils/transform';
-import { useCombineMotionValues } from './use-combine-values';
+import type { MotionValue } from '.';
+import { transform, type TransformOptions } from '../utils/transform';
+import { useCombineMotionValues } from './use-combine-values.svelte';
+import { useComputed } from './use-computed.svelte';
 
 export type InputRange = number[];
 type SingleTransformer<I, O> = (input: I) => O;
@@ -63,19 +63,16 @@ type Transformer<I, O> =
  *  - clamp: boolean. Clamp values to within the given range. Defaults to `true`
  *  - ease: EasingFunction[]. Easing functions to use on the interpolations between each value in the input and output ranges. If provided as an array, the array must be one item shorter than the input and output ranges, as the easings apply to the transition between each.
  *
- * @returns `MotionValue & { reset: (value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>) => void }`
+ * @returns `MotionValue`
  *
  * @public
  */
-// @ts-expect-error
 export function useTransform<I, O>(
 	value: MotionValue<number>,
 	inputRange: InputRange,
 	outputRange: O[],
 	options?: TransformOptions<O>
-): MotionValue<O> & {
-	reset: (value: MotionValue<number>, inputRange: InputRange, outputRange: O[], options?: TransformOptions<O>) => void;
-};
+): MotionValue<O>;
 /**
  * Create a `MotionValue` that transforms the output of another `MotionValue` through a function.
  * In this example, `y` will always be double `x`.
@@ -99,40 +96,8 @@ export function useTransform<I, O>(
  *
  * @public
  */
-export function useTransform<I, O>(
-	input: MotionValue<I>,
-	transformer: SingleTransformer<I, O>
-): MotionValue<O> & { reset: (input: MotionValue<I>, transformer: SingleTransformer<I, O>) => void };
-/**
- * Pass an array of `MotionValue`s and a function to combine them. In this example, `z` will be the `x` multiplied by `y`.
- *
- * @motion
- *
- * ```jsx
- * <script>
- *   const x = useMotionValue(0)
- *   const y = useMotionValue(0)
- *   const z = useTransform([x, y], [latestX, latestY] => latestX * latestY)
- * </script>
- *
- * <Motion let:motion style={{ x, y, z }}>
- *   return <div use:motion/>
- * </Motion>
- * ```
- *
- * @param input - An array of `MotionValue`s that will pass their latest values through `transform` to update the returned `MotionValue`.
- * @param transform - A function that accepts the latest values from `input` and returns a new value.
- * @returns `MotionValue`
- *
- * @public
- */
-// export function useTransform<I, O>(input: MotionValue<string | number>[], transformer: MultiTransformer<I, O>):
-//     MotionValue<O> & { reset: (input: MotionValue<string | number>[], transformer: MultiTransformer<I, O>) => void };
-// export function useTransform<I, O>(
-// 	input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[],
-// 	transformer: MultiTransformer<I, O>
-// ): MotionValue<O> & { reset: (input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[], transformer: MultiTransformer<I, O>) => void };
-// export function useTransform<I, O>(transformer: () => O): MotionValue<O>;
+export function useTransform<I, O>(input: MotionValue<I>, transformer: SingleTransformer<I, O>): MotionValue<O>;
+
 /**
  * Pass an array of `MotionValue`s and a function to combine them. In this example, `z` will be the `x` multiplied by `y`.
  *
@@ -153,48 +118,43 @@ export function useTransform<I, O>(
  * @public
  */
 export function useTransform<I, O>(
+	input: MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[],
+	transformer: MultiTransformer<I, O>
+): MotionValue<O>;
+export function useTransform<I, O>(transformer: () => O): MotionValue<O>;
+export function useTransform<I, O>(
 	input: MotionValue<I> | MotionValue<string>[] | MotionValue<number>[] | MotionValue<string | number>[] | (() => O),
 	inputRangeOrTransformer?: InputRange | Transformer<I, O>,
 	outputRange?: O[],
 	options?: TransformOptions<O>
 ) {
-	type Input = typeof input;
-	type inputRangeOrTransformer = typeof inputRangeOrTransformer;
-	type OutputRange = typeof outputRange;
-	type Options = typeof options;// @ts-expect-error
-	const latest: I & (string | number)[] & number & any[{}] = [] as any;
+	if (typeof input === 'function') {
+		return useComputed(input);
+	}
+	const transformer =
+		typeof inputRangeOrTransformer === 'function'
+			? inputRangeOrTransformer
+			: transform(inputRangeOrTransformer!, outputRange!, options);
 
-	const update = (
-		input: Input,
-		inputRangeOrTransformer?: inputRangeOrTransformer,
-		outputRange?: OutputRange,
-		options?: Options
-	) => {
-		const transformer =
-			typeof inputRangeOrTransformer === 'function'
-				? inputRangeOrTransformer
-				: transform(inputRangeOrTransformer!, outputRange!, options);
-		const values = Array.isArray(input) ? input : [input];
-		const _transformer = Array.isArray(input) ? transformer : ([latest]: any[]) => transformer(latest);
-		return [
-			values,
-			() => {
-				latest.length = 0;
-				const numValues = values.length;
-				for (let i = 0; i < numValues; i++) {
-					// @ts-expect-error
-					latest[i] = values[i].get();
-				}
-				return _transformer(latest);
-			},
-		] as const;
-	};
-	const comb = useCombineMotionValues(...update(input, inputRangeOrTransformer, outputRange, options));
-
-	(comb as any).updateInner = comb.reset;
-
-	comb.reset = (input, inputRangeOrTransformer?, outputRange?: OutputRange, options?: Options) =>
-		(comb as any).updateInner(...update(input, inputRangeOrTransformer, outputRange, options));
-	return comb;
+	return Array.isArray(input)
+		? useListTransform(input, transformer as MultiTransformer<string | number, O>)
+		: useListTransform([input], ([latest]) => (transformer as SingleTransformer<I, O>)(latest));
 }
-// export { default as UseTransform } from './UseTransform.svelte';
+
+type MotionValueInstance<TValue> = TValue extends MotionValue<infer V>[] ? V : never;
+function useListTransform<I extends MotionValue[], O, V = MotionValueInstance<I>>(
+	values: I,
+	transformer: MultiTransformer<V, O>
+) {
+	const latest: V[] = [];
+
+	return useCombineMotionValues(values, () => {
+		latest.length = 0;
+		const numValues = values.length;
+		for (let i = 0; i < numValues; i++) {
+			latest[i] = values[i].get();
+		}
+
+		return transformer(latest);
+	});
+}

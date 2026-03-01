@@ -1,24 +1,25 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { FeatureComponents } from "./types";
-
-/** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { UseFocusGesture } from '../../gestures/use-focus-gesture.js';
-import { UseHoverGesture } from '../../gestures/use-hover-gesture.js';
-import { UseTapGesture } from '../../gestures/use-tap-gesture.js';
-/**
- * @public
- */
-const gestureAnimations: FeatureComponents = {
-    tap: UseTapGesture,
-    focus: UseFocusGesture,
-    hover: UseHoverGesture,
+import { HoverGesture } from '../../gestures/hover';
+import { FocusGesture } from '../../gestures/focus';
+import { PressGesture } from '../../gestures/press';
+import { InViewFeature } from './viewport';
+import type { FeaturePackages } from './types';
+
+export const gestureAnimations: FeaturePackages = {
+	inView: {
+		Feature: InViewFeature,
+	},
+	tap: {
+		Feature: PressGesture,
+	},
+	focus: {
+		Feature: FocusGesture,
+	},
+	hover: {
+		Feature: HoverGesture,
+	},
 };
-
-export { gestureAnimations };

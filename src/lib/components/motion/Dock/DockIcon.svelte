@@ -1,49 +1,39 @@
+<svelte:options runes={false} />
+
 <script lang="ts">
-    import { cn } from "$lib/utils";
-    import {
-        Motion,
-        useMotionValue,
-        useSpring,
-        useTransform,
-    } from "$lib/motion-start";
+import { cn } from '$lib/utils';
+import { motion, useMotionValue, useSpring, useTransform } from '$lib/motion-start';
 
-    export let magnification = 60;
-    export let distance = 160;
-    export let mouseX = 0;
-    let mint = useMotionValue(mouseX);
-    $: mint.set(mouseX);
+export let magnification = 60;
+export let distance = 160;
+export let mouseX = 0;
+let mint = useMotionValue(mouseX);
+$: mint.set(mouseX);
 
-    let className: string | undefined = "";
-    export { className as class };
+let className: string | undefined = '';
+export { className as class };
 
-    let iconElement: HTMLDivElement;
+let iconElement: { current: HTMLDivElement | null } = { current: null };
 
-    let distanceCalc = useTransform(mint, (val: number) => {
-        const bounds = iconElement?.getBoundingClientRect() ?? {
-            x: 0,
-            width: 0,
-        };
-        return val - bounds.x - bounds.width / 2;
-    });
+let distanceCalc = useTransform(mint, (val: number) => {
+	const bounds = iconElement.current?.getBoundingClientRect() ?? {
+		x: 0,
+		width: 0,
+	};
+	return val - bounds.x - bounds.width / 2;
+});
 
-    let widthSync = useTransform(
-        distanceCalc,
-        [-distance, 0, distance],
-        [38, magnification, 38],
-    );
+let widthSync = useTransform(distanceCalc, [-distance, 0, distance], [38, magnification, 38]);
 
-    let width = useSpring(widthSync, {
-        mass: 0.1,
-        stiffness: 150,
-        damping: 12,
-    });
+let width = useSpring(widthSync, {
+	mass: 0.1,
+	stiffness: 150,
+	damping: 12,
+});
 
-    let iconClass = cn(
-        "flex aspect-square cursor-pointer items-center justify-center rounded-full",
-        className,
-    );
+let iconClass = cn('flex aspect-square cursor-pointer items-center justify-center rounded-full', className);
 </script>
 
-<Motion.div style={{ width: width }} bind:el={iconElement} class={iconClass}>
+<motion.div style={{ width }} ref={iconElement} class={iconClass}>
     <slot></slot>
-</Motion.div>
+</motion.div>

@@ -1,13 +1,15 @@
+<svelte:options runes={false} />
+
 <script>
-  import Box from "../Box.svelte";
-  import { Button } from "../ui/button";
-  import { Motion } from "$lib/motion-start";
-  let i = 0;
+import Box from '../Box.svelte';
+import { Button } from '../ui/button';
+import { motion } from '$lib/motion-start';
+let i = 0;
 </script>
 
-<Box cls="bg-slate-800 flex-col gap-20" minHeight={350}>
+<Box cls="flex-col gap-20">
   {#key i}
-    <Motion.div
+    <motion.div
       animate={{
         rotate: 360,
       }}
@@ -17,11 +19,13 @@
         bounce: 0.6,
       }}
       class="box"
-    ></Motion.div>
+    ></motion.div>
   {/key}
   <div>
     <Button
-      onclick={() => (i += 1)}
+      onclick={() => {
+        i++;
+      }}
       variant="outline"
       class="bg-gray-700/30 border-white/30 text-white"
       size="sm"

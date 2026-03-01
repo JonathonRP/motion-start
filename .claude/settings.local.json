@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "mcp__plugin_svelte_svelte__list-sections",
+      "mcp__plugin_svelte_svelte__get-documentation",
+      "mcp__plugin_svelte_svelte__svelte-autofixer",
+      "Bash(curl:*)",
+      "Bash(bash:*)",
+      "Bash(find /workspaces/motion-start/src/lib/motion-start -name \"__tests__\" -type d -exec sh -c 'echo \"\"\"\"; echo \"\"{}:\"\"; ls \"\"{}\"\"' ;)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "svelte"
+  ]
+}

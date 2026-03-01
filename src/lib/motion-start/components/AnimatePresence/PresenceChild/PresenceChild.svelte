@@ -1,84 +1,112 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
-
-<script lang="ts" module>
-    let presenceId = 0;
-    function getPresenceId() {
-        const id = presenceId;
-        presenceId++;
-        return id;
-    }
-    function newChildrenMap(): Map<number, boolean> {
-        return new Map<number, boolean>();
-    }
+<script module lang="ts">
+function newChildrenMap(): Map<string | number, boolean> {
+	return new Map<string | number, boolean>();
+}
 </script>
 
 <script lang="ts">
-    import { setContext, tick } from "svelte";
-    import { setDomContext } from "../../../context/DOMcontext.js";
-    import { PresenceContext } from "../../../context/PresenceContext.js";
+    import { tick } from "svelte";
+    import {
+        type PresenceContext,
+        setPresenceContext,
+    } from "../../../context/PresenceContext.svelte";
+    import PopChild from "../PopChild/PopChild.svelte";
     import type { PresenceChildProps } from "./index.js";
+    import { ref } from "../../../utils/ref.svelte";
 
     interface Props extends PresenceChildProps {}
 
     let {
         isPresent,
         onExitComplete = undefined,
-        initial = undefined,
+        initial,
         custom = undefined,
         presenceAffectsLayout,
-        isCustom,
-        children,
+        mode,
+        children: desendants,
     }: Props = $props();
 
-    const presenceChildren = newChildrenMap();
-    const id = getPresenceId();
+    const presenceChildren = $state(newChildrenMap());
+    const id = $props.id();
 
-    const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
+    // Use $state so external mutations (e.g. measurePop from PopChildMeasure) persist.
+    // $derived would create a new object every render, discarding any mutations.
+    let context = $state<PresenceContext>({
+        id,
+        initial,
+        isPresent,
+        custom,
+        onExitComplete: (childId: string | number) => {
+            presenceChildren.set(childId, true);
+            for (const [, isComplete] of presenceChildren) {
+                if (!isComplete) return;
+            }
+            onExitComplete?.();
+        },
+        register: (childId: string | number) => {
+            presenceChildren.set(childId, false);
+            return () => {
+                presenceChildren.delete(childId);
+            };
+        },
+        measurePop: undefined,
+    });
 
-    const memoContext = (flag?: boolean) => {
-        return {
-            id,
-            initial,
-            isPresent,
-            custom,
-            onExitComplete: (childId: number) => {
-                presenceChildren.set(childId, true);
-                let allComplete = true;
-                presenceChildren.forEach((isComplete) => {
-                    if (!isComplete) allComplete = false;
-                });
-
-                allComplete && onExitComplete?.();
-            },
-            register: (childId: number) => {
-                presenceChildren.set(childId, false);
-                return () => presenceChildren.delete(childId);
-            },
-        };
-    };
-    let context = PresenceContext();
-
+    // Keep reactive props in sync with the stable $state object
+    $effect(() => { context.isPresent = isPresent; });
+    $effect(() => { context.initial = initial; });
+    $effect(() => { context.custom = custom; });
+    // onExitComplete prop can change between renders — keep context in sync
     $effect(() => {
-        if (presenceAffectsLayout) {
-            context.set(memoContext());
+        context.onExitComplete = (childId: string | number) => {
+            presenceChildren.set(childId, true);
+            for (const [, isComplete] of presenceChildren) {
+                if (!isComplete) return;
+            }
+            onExitComplete?.();
+        };
+    });
+
+    // Reset children completion status when transitioning to not-present
+    $effect(() => {
+        if (!isPresent) {
+            presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
         }
     });
 
-    $effect(() => context.set(memoContext(refresh)));
-
-    const keyset = (flag?: boolean) => {
-        presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
-    };
+    // Handle case where no children registered
     $effect(() => {
-        keyset(isPresent);
         tick().then(() => {
-            !isPresent && !presenceChildren.size && onExitComplete?.();
+            if (!isPresent && !presenceChildren.size) {
+                onExitComplete?.();
+            }
         });
     });
-    setContext(PresenceContext, context);
-    setDomContext("Presence", isCustom, context);
+
+    // Set context with stable reference - same object every time
+    setPresenceContext({
+        get current() {
+            return context;
+        },
+    });
+
+    const pop = $derived(
+        mode === "popLayout"
+            ? { component: PopChild, props: { isPresent } }
+            : undefined,
+    );
 </script>
 
-{@render children?.()}
+{#snippet children()}
+    {#if pop}
+        <pop.component {...pop.props}>
+            {@render desendants?.()}
+        </pop.component>
+    {:else}
+        {@render desendants?.()}
+    {/if}
+{/snippet}
+
+{@render children()}

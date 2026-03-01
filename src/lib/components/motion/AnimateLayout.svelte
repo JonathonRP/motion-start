@@ -1,6 +1,8 @@
-<script>
-  import { motion, layoutAnimation } from "$lib/motion-start";
-  // import Motion from "$lib/motion-start/motion/MotionSSR.svelte";
+<svelte:options runes={false} />
+
+<script lang="ts">
+  import { motion } from "$lib/motion-start";
+  import Box from "../Box.svelte";
 
   const spring = {
     type: "spring",
@@ -13,28 +15,17 @@
   function toggleSwitch() {
     active = !active;
   }
-
-  $: layout = layoutAnimation.track(() => active);
 </script>
 
-<div
-  class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
->
-  <svelte:boundary onerror={console.log}>
+<Box>
+  <div
+    class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
+  >
     <button class="switch" data-active={active} onclick={toggleSwitch}>
-      <motion.div
-        {layout}
-        transition={spring}
-        onLayoutUpdate={(...args) => console.log("change", args)}
-        class="handle"
-      />
+      <motion.div layout class="handle" transition={spring} custom={active} />
     </button>
-
-    {#snippet failed(error, reset)}
-      <p>broken, check console</p>
-    {/snippet}
-  </svelte:boundary>
-</div>
+  </div>
+</Box>
 
 <style>
   .switch {

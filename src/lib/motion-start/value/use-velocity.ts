@@ -1,9 +1,13 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { MotionValue } from './index.js';
-import { useMotionValue } from './use-motion-value.js';
+
+import type { MotionValue } from '.';
+import { frame } from '../frameloop';
+import { useMotionValueEvent } from '../utils/use-motion-value-event.svelte';
+import { useMotionValue } from './use-motion-value.svelte';
+
 /**
  * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.
  *
@@ -16,28 +20,23 @@ import { useMotionValue } from './use-motion-value.js';
  * @public
  */
 export const useVelocity = (value: MotionValue<number>) => {
-	let val = value;
-	let cleanup: () => void;
+	const velocity = useMotionValue(value.getVelocity());
 
-	const reset = (value: MotionValue<number>) => {
-		cleanup?.();
-		val = value;
-		cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
-			velocity.set(newVelocity);
-		});
+	const updateVelocity = () => {
+		const latest = value.getVelocity();
+		velocity.set(latest);
+
+		/**
+		 * If we still have velocity, schedule an update for the next frame
+		 * to keep checking until it is zero.
+		 */
+		if (latest) frame.update(updateVelocity);
 	};
 
-	const velocity = useMotionValue(value.getVelocity(), () => {
-		cleanup?.();
-		cleanup = val.velocityUpdateSubscribers.add((newVelocity) => {
-			velocity.set(newVelocity);
-		});
-		return () => {
-			cleanup?.();
-		};
-	}) as MotionValue<number> & { reset: typeof reset };
-
-	velocity.reset = reset;
+	useMotionValueEvent(value, 'change', () => {
+		// Schedule an update to this value at the end of the current frame.
+		frame.update(updateVelocity, false, true);
+	});
 
 	return velocity;
 };

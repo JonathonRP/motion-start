@@ -1,51 +1,40 @@
 /** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-import type { FeatureComponents, FeatureDefinitions } from "./types";
-
-
-/** 
-based on framer-motion@4.0.3,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-var createDefinition = function (propNames: string[]) {
-    return ({
-        isEnabled: function (props: any) { return propNames.some(function (name) { return !!props[name]; }); },
-    });
+import type { MotionProps } from '../types';
+import type { FeatureDefinitions, Expand } from './types';
+
+const featureProps = {
+	animation: ['animate', 'variants', 'whileHover', 'whileTap', 'exit', 'whileInView', 'whileFocus', 'whileDrag'],
+	exit: ['exit'],
+	drag: ['drag', 'dragControls'],
+	focus: ['whileFocus'],
+	hover: ['whileHover', 'onHoverStart', 'onHoverEnd'],
+	tap: ['whileTap', 'onTap', 'onTapStart', 'onTapCancel'],
+	pan: ['onPan', 'onPanStart', 'onPanSessionStart', 'onPanEnd'],
+	inView: ['whileInView', 'onViewportEnter', 'onViewportLeave'],
+	layout: ['layout', 'layoutId'],
 };
-var featureDefinitions = {
-    measureLayout: createDefinition(["layout", "layoutId", "drag"]),
-    animation: createDefinition([
-        "animate",
-        "exit",
-        "variants",
-        "whileHover",
-        "whileTap",
-        "whileFocus",
-        "whileDrag",
-    ]),
-    exit: createDefinition(["exit"]),
-    drag: createDefinition(["drag", "dragControls"]),
-    focus: createDefinition(["whileFocus"]),
-    hover: createDefinition(["whileHover", "onHoverStart", "onHoverEnd"]),
-    tap: createDefinition(["whileTap", "onTap", "onTapStart", "onTapCancel"]),
-    pan: createDefinition([
-        "onPan",
-        "onPanStart",
-        "onPanSessionStart",
-        "onPanEnd",
-    ]),
-    layoutAnimation: createDefinition(["layout", "layoutId"]),
-} satisfies FeatureDefinitions;
-function loadFeatures(features: FeatureComponents): void {
-    for (var key in features) {
-        var Component = (features as any)[key];
-        if (Component !== null) {
-            (featureDefinitions as any)[key].Component = Component;
-        }
-    }
-}
 
-export { featureDefinitions, loadFeatures };
+type KeysOf<T> = T extends T ? keyof T : never;
+
+type RequiredProp<T, U extends KeysOf<T>> = {
+	[K in keyof T]?: T[K] | undefined;
+} & {
+	[K in keyof T as Extract<K, U>]: T[K];
+};
+
+export const featureDefinitions: {
+	[K in keyof FeatureDefinitions]: Expand<
+		RequiredProp<FeatureDefinitions[K], Extract<KeysOf<FeatureDefinitions[K]>, 'isEnabled'>>
+	>;
+} = {};
+
+for (const key in featureProps) {
+	featureDefinitions[key as keyof typeof featureDefinitions] = {
+		isEnabled: (props: MotionProps) =>
+			featureProps[key as keyof typeof featureProps].some((name: string) => !!props[name as keyof typeof props]),
+	};
+}

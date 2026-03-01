@@ -11,7 +11,7 @@
 		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": false,
-			"version": "20.12.0"
+			"version": "22.12.0"
 		},
 		"ghcr.io/lumenpink/devcontainer-features/bun:0": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {}
@@ -23,7 +23,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "corepack enable && corepack install && pnpm install",
-	"postCreateCommand": "bun install",
+	"postCreateCommand": "bun install && bun install -g @beads/bd && bun pm trust -g @beads/bd",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -41,7 +41,10 @@
 				"svelte.plugin.svelte.defaultScriptLanguage": "ts",
 
 				"explorer.sortOrder": "filesFirst",
-				"workbench.editor.labelFormat": "short",
+				"workbench.editor.labelFormat": "default",
+				"workbench.editor.customLabels.patterns": {
+					"**/+*": "${dirname} - ${filename}"
+				},
 
 				"html.format.enable": false,
 				"json.format.enable": false,
@@ -64,11 +67,17 @@
 				"MylesMurphy.prettify-ts",
 				"YoavBls.pretty-ts-errors",
 				"mattpocock.ts-error-translator",
-				"Orta.vscode-twoslash-queries"
+				"Orta.vscode-twoslash-queries",
+				"planet57.vscode-beads",
+				"4UtopiaInc.beads-vscode",
+				"Anthropic.claude-code"
 			]
 		}
 	},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "root"
+	"remoteUser": "root",
+	"mounts": [
+		"source=${localEnv:HOME}/.local/share/pnpm,target=/home/node/.local/share/pnpm,type=bind,consistency=cached"
+	]
 }

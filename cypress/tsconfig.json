@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "baseUrl": ".",
+        "target": "ES6",
+        "lib": ["ES6", "dom"],
+        "types": ["cypress", "cypress-real-events", "node"],
+        "sourceMap": false,
+        "inlineSourceMap": false,
+        "moduleResolution": "node",
+        "esModuleInterop": true
+    },
+    "include": ["**/*.ts"]
+}

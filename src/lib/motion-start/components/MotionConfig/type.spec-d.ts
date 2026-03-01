@@ -3,7 +3,8 @@ import type { MotionConfigProps } from './index.js';
 import MotionConfig from './MotionConfig.svelte';
 
 describe('test components type - svelte 5', () => {
-    it('should have Svelte component type for MotionConfig', () => {
-        assertType<Component<MotionConfigProps>>(MotionConfig);
-    });
+	it('should have Svelte component type for MotionConfig', () => {
+		// @ts-ignore - Svelte automatically adds children to component Props
+		assertType<Component<MotionConfigProps>>(MotionConfig);
+	});
 });

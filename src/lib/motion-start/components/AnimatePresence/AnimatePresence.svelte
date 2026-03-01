@@ -1,188 +1,195 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
+<svelte:options runes={true} />
 
-<script lang="ts" generics="T extends {key:any}">
-    import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
-    import {
-        SharedLayoutContext,
-        isSharedLayout,
-    } from "../../context/SharedLayoutContext.js";
-    import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-    import type { Writable } from "svelte/store";
-    import {
-        type SharedLayoutSyncMethods,
-        type SyncLayoutBatcher,
-    } from "../AnimateSharedLayout/types.js";
+<script lang="ts" generics="T">
+	import { untrack, type Snippet } from "svelte";
+	import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
+	import PresenceChild from "./PresenceChild/PresenceChild.svelte";
+	import { useLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
+	import { warning } from "../../utils/errors.js";
+	import { getChildKey, type ComponentKey } from "./utils.js";
 
-    type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
+	type Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
-    export let list: $$Props["list"] = undefined,
-        custom: $$Props["custom"] = undefined,
-        initial: $$Props["initial"] = true,
-        onExitComplete: $$Props["onExitComplete"] = undefined,
-        exitBeforeEnter: $$Props["exitBeforeEnter"] = undefined,
-        presenceAffectsLayout = true,
-        show: $$Props["show"] = undefined,
-        isCustom = false;
+	let {
+		values: list,
+		custom,
+		initial = true,
+		onExitComplete,
+		exitBeforeEnter = undefined,
+		mode = exitBeforeEnter ? "wait" : "sync",
+		presenceAffectsLayout = true,
+		show,
+		children,
+	}: Props & {
+		children?: Snippet<[{ item: ConditionalGeneric<T> }]>;
+	} = $props();
 
-    let _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
-    $: _list = list !== undefined ? list : show ? [{ key: 1 }] : [];
+	$effect(() => {
+		warning(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
+	});
 
-    const layoutContext =
-        getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
-            SharedLayoutContext,
-        ) || SharedLayoutContext(isCustom);
+	const layoutContext = $derived(useLayoutGroupContext().current);
+	const forceRender = () => {
+		layoutContext.forceRender?.();
+		renderedChildren = [...renderedChildren];
+	};
 
-    $: forceRender = () => {
-        if (isSharedLayout($layoutContext)) {
-            $layoutContext.forceUpdate();
-        }
-        _list = [..._list];
-    };
+	let isInitialRender = $state(true);
 
-    function getChildKey(child: { key: number }) {
-        return child.key || "";
-    }
+	// renderedChildren is the authoritative render list (present + exiting).
+	let renderedChildren = $state<
+		{
+			present: boolean;
+			data: any;
+			key: any;
+			onExit: undefined | (() => void);
+		}[]
+	>([]);
 
-    let isInitialRender = true;
-    let filteredChildren = _list;
-    $: filteredChildren = _list;
+	// exitComplete tracks which exiting keys have finished their animation.
+	// Plain Map (not $state) — mutated imperatively, read inside onExit closures.
+	const exitComplete = new Map<ComponentKey, boolean>();
 
-    let presentChildren = filteredChildren;
-    let allChildren = new Map<string | number, { key: number }>();
-    let exiting = new Set<"" | number>();
-    const updateChildLookup = (
-        children: { key: number }[],
-        allChild: Map<string | number, { key: number }>,
-    ) => {
-        children.forEach((child) => {
-            const key = getChildKey(child);
-            allChild.set(key, child);
-        });
-    };
-    $: updateChildLookup(filteredChildren, allChildren);
+	// exitGeneration guards against stale onExit callbacks firing after a key
+	// has re-entered and exited again. Each new onExit closure for a key captures
+	// the current generation; if it no longer matches when the promise resolves,
+	// the callback is discarded.
+	const exitGeneration = new Map<ComponentKey, number>();
 
-    let childrenToRender: {
-        present: boolean;
-        item: any;
-        key: any;
-        onExit: undefined | (() => void);
-    }[] = [
-        ...filteredChildren.map((v) => ({
-            present: true,
-            item: v,
-            key: v.key,
-            onExit: undefined,
-        })),
-    ];
+	// pendingPresentChildren holds the latest target list so onExit closures
+	// always restore to the most recent snapshot, not a stale closure value.
+	let pendingPresentChildren: typeof renderedChildren = [];
 
-    $: if (!isInitialRender) {
-        // If this is a subsequent render, deal with entering and exiting children
-        childrenToRender = [
-            ...filteredChildren.map((v) => ({
-                present: true,
-                item: v,
-                key: v.key,
-                onExit: undefined,
-            })),
-        ];
+	$effect(() => {
+		// Compute target list from reactive props
+		const presentChildren: typeof renderedChildren =
+			list !== undefined
+				? list.map((v) => ({ present: true, data: v, key: v.key, onExit: undefined }))
+				: show
+					? [{ present: true, data: { key: 1 }, key: 1, onExit: undefined }]
+					: [];
 
-        // Diff the keys of the currently-present and target children to update our
-        // exiting list.
-        const presentKeys = presentChildren.map(getChildKey);
-        const targetKeys = filteredChildren.map(getChildKey);
-        // Diff the present children with our target children and mark those that are exiting
-        const numPresent = presentKeys.length;
-        for (let i = 0; i < numPresent; i++) {
-            const key = presentKeys[i];
-            if (targetKeys.indexOf(key) === -1) {
-                exiting.add(key);
-            } else {
-                // In case this key has re-entered, remove from the exiting list
-                exiting.delete(key);
-            }
-        }
+		const presentKeys = presentChildren.map((c) => getChildKey(c));
 
-        // If we currently have exiting children, and we're deferring rendering incoming children
-        // until after all current children have exiting, empty the childrenToRender array
-        if (exitBeforeEnter && exiting.size) {
-            childrenToRender = [];
-        }
-        // Loop through all currently exiting components and clone them to overwrite `animate`
-        // with any `exit` prop they might have defined.
-        exiting.forEach((key) => {
-            // If this component is actually entering again, early return
-            if (targetKeys.indexOf(key) !== -1) return;
+		if (isInitialRender) {
+			untrack(() => {
+				renderedChildren = presentChildren;
+				pendingPresentChildren = presentChildren;
+			});
+			isInitialRender = false;
+			return;
+		}
 
-            const child = allChildren.get(key);
-            if (!child) return;
+		// Always update the pending snapshot to the latest present children.
+		// onExit closures read this so they use the current target, not a stale one.
+		pendingPresentChildren = presentChildren;
 
-            const insertionIndex = presentKeys.indexOf(key);
+		untrack(() => {
+			// Update exitComplete: initialise newly exiting keys to false,
+			// delete keys that have re-entered.
+			for (let i = 0; i < renderedChildren.length; i++) {
+				const key = getChildKey(renderedChildren[i]);
+				if (!presentKeys.includes(key)) {
+					if (exitComplete.get(key) !== true) {
+						exitComplete.set(key, false);
+					}
+				} else {
+					exitComplete.delete(key);
+					// Invalidate any in-flight onExit for this key by bumping the generation.
+					// Do NOT delete — we keep the counter so the next exit gets gen+1,
+					// ensuring stale callbacks from before re-entry can never match.
+					exitGeneration.set(key, (exitGeneration.get(key) ?? 0) + 1);
+				}
+			}
 
-            const onExit = () => {
-                allChildren.delete(key);
-                exiting.delete(key);
+			// Build next render list starting from presentChildren.
+			let nextChildren = [...presentChildren];
 
-                // Remove this child from the present children
-                const removeIndex = presentChildren.findIndex(
-                    (presentChild) => presentChild.key === key,
-                );
+			// Re-insert exiting children at their original positions.
+			const exitingChildren: typeof renderedChildren = [];
+			for (let i = 0; i < renderedChildren.length; i++) {
+				const child = renderedChildren[i];
+				const key = getChildKey(child);
+				if (presentKeys.includes(key)) continue;
 
-                if (removeIndex < 0) {
-                    return;
-                }
-                presentChildren.splice(removeIndex, 1);
+				// Already has an onExit callback — preserve it to avoid creating
+				// duplicate callbacks for the same key when the effect re-runs.
+				const existingExiting = renderedChildren.find(
+					(c) => getChildKey(c) === key && !c.present,
+				);
+				if (existingExiting) {
+					nextChildren.splice(i, 0, existingExiting);
+					exitingChildren.push(existingExiting);
+					continue;
+				}
 
-                // Defer re-rendering until all exiting children have indeed left
-                if (!exiting.size) {
-                    presentChildren = [...filteredChildren];
-                    forceRender();
-                    onExitComplete && onExitComplete();
-                }
-            };
+				const gen = (exitGeneration.get(key) ?? 0) + 1;
+				exitGeneration.set(key, gen);
 
-            childrenToRender.splice(insertionIndex, 0, {
-                present: false,
-                item: child,
-                key: getChildKey(child),
-                onExit,
-            });
-        });
-        // Add `MotionContext` even to children that don't need it to ensure we're rendering
-        // the same tree between renders
+				const onExit = () => {
+					if (!exitComplete.has(key)) return;
+					// Guard against stale callbacks: if a key re-entered and exited again
+					// before this promise resolved, our generation will be outdated.
+					if (exitGeneration.get(key) !== gen) return;
+					exitComplete.set(key, true);
 
-        /*
-        childrenToRender = childrenToRender.map((child) => {
-            const key = child.key as string | number;
-            return exiting.has(key) ? (
-                child
-            ) : (
-                <PresenceChild
-                    key={getChildKey(child)}
-                    isPresent
-                    presenceAffectsLayout={presenceAffectsLayout}
-                >
-                    {child}
-                </PresenceChild>
-            );
-        });
-        */
-        presentChildren = childrenToRender;
-    } else {
-        isInitialRender = false;
-    }
+					let allComplete = true;
+					exitComplete.forEach((done) => {
+						if (!done) allComplete = false;
+					});
+
+					if (allComplete) {
+						exitComplete.clear();
+						// Use pendingPresentChildren — always the latest target list.
+						renderedChildren = pendingPresentChildren;
+						forceRender();
+						onExitComplete?.();
+					} else {
+						// Remove just this child from the rendered list.
+						renderedChildren = renderedChildren.filter(
+							(c) => getChildKey(c) !== key,
+						);
+					}
+				};
+
+				const exitChild = { ...child, present: false, onExit };
+				nextChildren.splice(i, 0, exitChild);
+				exitingChildren.push(exitChild);
+			}
+
+			// In "wait" mode, only render exiting children until they're done.
+			if (mode === "wait" && exitingChildren.length) {
+				nextChildren = exitingChildren;
+			}
+
+			renderedChildren = nextChildren;
+		});
+	});
+
+	$effect(() => {
+		if (
+			process.env.NODE_ENV !== "production" &&
+			mode === "wait" &&
+			untrack(() => renderedChildren.filter((c) => c.present).length > 1)
+		) {
+			console.warn(
+				`You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
+			);
+		}
+	});
 </script>
 
-{#each childrenToRender as child (getChildKey(child))}
-    <PresenceChild
-        isPresent={child.present}
-        initial={initial ? undefined : false}
-        custom={child.onExit ? custom : undefined}
-        {presenceAffectsLayout}
-        onExitComplete={child.onExit}
-        {isCustom}
-    >
-        <slot item={child.item} />
-    </PresenceChild>
+{#each renderedChildren as child (getChildKey(child))}
+	<PresenceChild
+		{mode}
+		isPresent={child.present}
+		initial={!isInitialRender && initial ? undefined : false}
+		custom={child.onExit ? custom : undefined}
+		{presenceAffectsLayout}
+		onExitComplete={child.onExit}
+	>
+		{@render children?.({ item: child.data })}
+	</PresenceChild>
 {/each}

@@ -1,10 +1,13 @@
+<svelte:options runes={false} />
+
 <script>
-    import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
+import Box from '../Box.svelte';
+import { motion } from '$lib/motion-start';
 </script>
 
-<Box cls="bg-slate-800 flex text-black" minHeight={350}>
-    <Motion.div
+<Box>
+    <motion.div
+        id="dragdirlock"
         drag={true}
         dragDirectionLock
         dragConstraints={{
@@ -84,5 +87,5 @@
             >
         </div>
         Drag
-    </Motion.div>
+    </motion.div>
 </Box>

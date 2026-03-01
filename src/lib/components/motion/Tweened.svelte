@@ -1,14 +1,17 @@
+<svelte:options runes={false} />
+
 <script>
-  import Box from "../Box.svelte";
-  import { Button } from "../ui/button";
-  // import { Motion } from "svelte-motion"
-  import { Motion } from "$lib/motion-start";
-  let i = 0;
+import Box from '../Box.svelte';
+import { Button } from '../ui/button';
+// import { Motion } from "svelte-motion"
+import { motion } from '$lib/motion-start';
+let i = 0;
 </script>
 
-<Box cls="flex flex-col gap-10 bg-slate-900">
+<Box cls="flex-col gap-10">
   {#key i}
-    <Motion.div
+    <motion.div
+      id="tweenedbox"
       animate={{
         rotate: 360,
       }}
@@ -16,13 +19,16 @@
         duration: 2,
       }}
       class="box"
-    ></Motion.div>
+    ></motion.div>
   {/key}
   <div>
     <Button
-      onclick={() => (i += 1)}
+      id="tweenbtn"
+      onclick={() => {
+        i++;
+      }}
       variant="outline"
-      class="bg-gray-700/30 border-white/30 text-white"
+      class="bg-gray-700/30 border-white/30 text-white "
       size="sm"
     >
       <svg

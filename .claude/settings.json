@@ -1,0 +1,21 @@
+{
+  "env": {
+    "ENABLE_TOOL_SEARCH": "auto"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun install && bun install -g @beads/bd"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "svelte@svelte": true
+  }
+}

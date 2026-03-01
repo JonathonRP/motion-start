@@ -1,16 +1,26 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
+import { createContext } from 'svelte';
 import type { CreateVisualElement } from '../render/types';
-export interface LazyContextProps {
+import type { MutableRefObject } from '../utils/safe-react-types';
+import { ref } from '../utils/ref.svelte';
+
+export interface LazyContext {
 	renderer?: CreateVisualElement<any>;
 	strict: boolean;
 }
 
-import { writable, type Writable } from 'svelte/store';
-import { getDomContext } from './DOMcontext';
-// @ts-expect-error
-const LazyContext = (c?: any): Writable<LazyContextProps> => getDomContext('Lazy', c) || writable({ strict: false });
+const [getLazyContext, setLazyContext] = createContext<MutableRefObject<LazyContext>>();
 
-export { LazyContext };
+function useLazyContext() {
+	try {
+		return getLazyContext();
+	} catch {
+		return ref({ strict: true });
+	}
+}
+
+export { useLazyContext, setLazyContext };

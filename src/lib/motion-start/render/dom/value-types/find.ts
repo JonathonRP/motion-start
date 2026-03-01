@@ -1,33 +1,19 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { fixed } from '../../../utils/fix-process-env.js';
-import { color, complex } from 'style-value-types';
-import { dimensionValueTypes } from './dimensions.js';
-import { testValueType } from './test.js';
+import { color } from '../../../value/types/color';
+import { complex } from '../../../value/types/complex';
+import { dimensionValueTypes } from './dimensions';
+import { testValueType } from './test';
 
 /**
  * A list of all ValueTypes
  */
-var valueTypes = [...dimensionValueTypes, ...[color, complex]];
+const valueTypes = [...dimensionValueTypes, color, complex];
+
 /**
  * Tests a value against the list of ValueTypes
  */
-var findValueType = (v: any) =>
-	valueTypes.find(testValueType(v)) as
-		| import('style-value-types').ValueType
-		| {
-				test: (v: any) => boolean;
-				parse: (v: string) => (number | import('style-value-types').RGBA | import('style-value-types').HSLA)[];
-				createTransformer: (v: string) => (v: (string | number | import('style-value-types').Color)[]) => string;
-				getAnimatableNone: (v: string) => string;
-		  }
-		| undefined;
-
-export { findValueType };
+export const findValueType = (v: unknown) => valueTypes.find(testValueType(v));

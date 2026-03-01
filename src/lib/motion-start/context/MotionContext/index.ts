@@ -1,27 +1,27 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { VisualElement } from "../../render/types";
-import { getContext } from "svelte";
-import { getDomContext } from "../DOMcontext";
-import { writable } from "svelte/store";
 
-export interface MotionContextProps {
-	forEach?: any;
-    visualElement?: VisualElement;
-    initial?: false | string | string[];
-    animate?: string | string[];
+import { createContext } from 'svelte'
+import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { MutableRefObject } from '$lib/motion-start/utils/safe-react-types';
+import { ref } from '$lib/motion-start/utils/ref.svelte';
+
+export interface MotionContext<Instance = unknown> {
+	visualElement?: VisualElement<Instance> | null;
+	initial?: false | string | string[];
+	animate?: string | string[];
 }
 
-export const MotionContext = (c?: any) =>
-    getDomContext("Motion", c) || writable<MotionContextProps>({});
+const [getMotionContext, setMotionContext] = createContext<MutableRefObject<MotionContext>>();
 
-  export const useVisualElementContext = (c?: any) => {
-    return (getContext(MotionContext) || MotionContext(c)) as
-      | VisualElement<any, any>
-      | undefined;
-  };
+function useMotionContext() {
+	try {
+		return getMotionContext();
+	} catch {
+		return ref({});// Return empty context if none is found
+	}
+}
 
-export { default as UseVisualElementContext } from "./MotionContext.svelte";
-
+export { useMotionContext, setMotionContext };

@@ -1,14 +1,16 @@
+<svelte:options runes={false} />
+
 <script>
-    import Box from "../Box.svelte";
-    import { Motion, useAnimation } from "$lib/motion-start";
-    let controls = useAnimation();
+import Box from '../Box.svelte';
+import { motion } from '$lib/motion-start';
 </script>
 
-<Box cls="bg-slate-800 text-black" minHeight={350}>
+<Box>
     <div
         class="bg-gray-500/10 h-72 w-72 flex justify-center items-center rounded-xl shadow-md"
     >
-        <Motion.div
+        <motion.div
+            id="dragconstraint"
             drag={true}
             dragConstraints={{
                 top: -100,
@@ -24,7 +26,7 @@
             whileTap={{
                 cursor: "grabbing",
             }}
-            class="box">Smooth Drag</Motion.div
+            class="box">Smooth Drag</motion.div
         >
     </div>
 </Box>
