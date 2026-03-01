@@ -2,9 +2,9 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-import { MotionValue } from ".";
+import { MotionValue } from "./index.js";
 
-import { useCombineMotionValues } from "./use-combine-values"
+import { useCombineMotionValues } from "./use-combine-values.js"
 
 /**
  * Combine multiple motion values into a new one using a string template literal.
