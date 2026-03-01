@@ -58,10 +58,22 @@ function newChildrenMap(): Map<string | number, boolean> {
     $effect(() => { context.isPresent = isPresent; });
     $effect(() => { context.initial = initial; });
     $effect(() => { context.custom = custom; });
-
-    // Reset children completion status when exiting
+    // onExitComplete prop can change between renders — keep context in sync
     $effect(() => {
-        presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+        context.onExitComplete = (childId: string | number) => {
+            presenceChildren.set(childId, true);
+            for (const [, isComplete] of presenceChildren) {
+                if (!isComplete) return;
+            }
+            onExitComplete?.();
+        };
+    });
+
+    // Reset children completion status when transitioning to not-present
+    $effect(() => {
+        if (!isPresent) {
+            presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+        }
     });
 
     // Handle case where no children registered

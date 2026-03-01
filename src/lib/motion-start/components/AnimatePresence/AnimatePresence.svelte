@@ -39,7 +39,6 @@ Copyright (c) 2018 Framer B.V. -->
 	let isInitialRender = $state(true);
 	let diffedChildren = $state(new Map<string | number, { key: number }>());
 	let exiting = $state(new Set<ComponentKey>());
-	let debugIdCounter = 0;
 
 	let renderedChildren = $state<
 		{
@@ -63,26 +62,16 @@ Copyright (c) 2018 Framer B.V. -->
 	$effect(() => {
 		// Compute target list
 		const targetList = list !== undefined ? list : show ? [{ key: 1 }] : [];
-		console.log(
-			"[AnimatePresence] $effect, targetList:",
-			targetList.map((t) => t.key),
-			"isInitialRender:",
-			isInitialRender,
-		);
 
 		if (isInitialRender) {
 			// On initial render, just show all children
 			untrack(() => {
-				renderedChildren = targetList.map(
-					(v) =>
-						({
-							present: true,
-							data: v,
-							key: v.key,
-							onExit: undefined,
-							_debugId: ++debugIdCounter,
-						}) as any,
-				);
+				renderedChildren = targetList.map((v) => ({
+					present: true,
+					data: v,
+					key: v.key,
+					onExit: undefined,
+				}));
 				updateChildLookup(targetList, diffedChildren);
 			});
 			isInitialRender = false;
@@ -102,56 +91,14 @@ Copyright (c) 2018 Framer B.V. -->
 				updateChildLookup(targetList, diffedChildren);
 
 				// Create list of entering children (present = true)
-				// IMPORTANT: Reuse existing rendered child objects where possible
-				// to prevent Svelte from recreating components
-				console.log(
-					"[AnimatePresence] targetList keys:",
-					targetList.map(getChildKey),
-				);
-				console.log(
-					"[AnimatePresence] renderedChildren before map:",
-					renderedChildren.map((c) => ({
-						key: getChildKey(c),
-						present: c.present,
-						debugId: (c as any)._debugId,
-					})),
-				);
-				newRenderedChildren = targetList.map((v) => {
-					const key = getChildKey(v);
-					const existing = renderedChildren.find(
-						(c) => getChildKey(c) === key && c.present,
-					);
-					console.log(
-						"[AnimatePresence] Looking for key:",
-						key,
-						"found existing:",
-						existing ? (existing as any)._debugId : "none",
-					);
-					if (existing) {
-						// Reuse existing object to maintain component instance
-						console.log(
-							"[AnimatePresence] Reusing existing child for key:",
-							key,
-							"debugId:",
-							(existing as any)._debugId,
-						);
-						return existing;
-					}
-					const newChild = {
+				newRenderedChildren = [
+					...targetList.map((v) => ({
 						present: true,
 						data: v,
 						key: v.key,
 						onExit: undefined,
-						_debugId: ++debugIdCounter,
-					} as any;
-					console.log(
-						"[AnimatePresence] Creating new child for key:",
-						key,
-						"debugId:",
-						newChild._debugId,
-					);
-					return newChild;
-				});
+					})),
+				];
 
 				// Get keys for diffing
 				const targetKeys = targetList.map(getChildKey);
@@ -167,10 +114,6 @@ Copyright (c) 2018 Framer B.V. -->
 						targetKeys.indexOf(key as any) === -1 &&
 						!exiting.has(key)
 					) {
-						console.log(
-							"[AnimatePresence] Marking key as exiting:",
-							key,
-						);
 						exiting.add(key);
 					}
 				}
@@ -196,86 +139,35 @@ Copyright (c) 2018 Framer B.V. -->
 					const insertionIndex = presentKeys.indexOf(key);
 
 					const onExit = () => {
-						untrack(() => {
-							// Guard: If item re-entered (present=true), don't remove it
-							const currentChild = renderedChildren.find(
-								(c) => getChildKey(c) === key,
-							);
-							if (currentChild?.present) {
-								exiting.delete(key); // Just clean up
-								return;
-							}
-							diffedChildren.delete(key);
-							exiting.delete(key);
+						// Guard: If item re-entered (present=true), don't remove it
+						const currentChild = renderedChildren.find(
+							(c) => getChildKey(c) === key,
+						);
+						if (currentChild?.present) {
+							exiting.delete(key); // Just clean up
+							return;
+						}
+						diffedChildren.delete(key);
+						exiting.delete(key);
 
-							// Remove from rendered children
-							const removeIndex = renderedChildren.findIndex(
-								(c) => getChildKey(c) === key,
-							);
-							if (removeIndex >= 0) {
-								renderedChildren.splice(removeIndex, 1);
-							}
+						// Remove the exiting child from rendered children
+						renderedChildren = renderedChildren.filter(
+							(c) => getChildKey(c) !== key,
+						);
 
-							// If all exiting animations complete
-							if (!exiting.size) {
-								// Reuse existing objects where possible
-								renderedChildren = targetList.map((v) => {
-									const key = getChildKey(v);
-									const existing = renderedChildren.find(
-										(c) =>
-											getChildKey(c) === key && c.present,
-									);
-									return (
-										existing ||
-										({
-											present: true,
-											data: v,
-											key: v.key,
-											onExit: undefined,
-											_debugId: ++debugIdCounter,
-										} as any)
-									);
-								});
-								forceRender();
-								onExitComplete?.();
-							}
-						});
+						// If all exiting animations complete, clean up
+						if (!exiting.size) {
+							forceRender();
+							onExitComplete?.();
+						}
 					};
 
-					// CRITICAL: Find the ORIGINAL child object and MUTATE it
-					// This keeps the same object reference so Svelte doesn't recreate the component
-					const existingChild = renderedChildren.find(
-						(c) => getChildKey(c) === key,
-					);
-					if (existingChild) {
-						// Mutate the existing object - same reference, component stays alive
-						existingChild.present = false;
-						existingChild.onExit = onExit;
-						console.log(
-							"[AnimatePresence] Mutating existing child for exit, key:",
-							key,
-							"debugId:",
-							(existingChild as any)._debugId,
-						);
-						newRenderedChildren.splice(
-							insertionIndex,
-							0,
-							existingChild,
-						);
-					} else {
-						// Fallback: create new object (shouldn't happen normally)
-						console.log(
-							"[AnimatePresence] Creating new exiting child for key:",
-							key,
-						);
-						newRenderedChildren.splice(insertionIndex, 0, {
-							present: false,
-							data: child,
-							key: getChildKey(child),
-							onExit,
-							_debugId: ++debugIdCounter,
-						} as any);
-					}
+					newRenderedChildren.splice(insertionIndex, 0, {
+						present: false,
+						data: child,
+						key: getChildKey(child),
+						onExit,
+					});
 				});
 			});
 
@@ -294,18 +186,6 @@ Copyright (c) 2018 Framer B.V. -->
 				`You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.`,
 			);
 		}
-	});
-
-	// DEBUG: Track renderedChildren changes
-	$effect(() => {
-		console.log(
-			"[AnimatePresence] renderedChildren updated:",
-			renderedChildren.map((c) => ({
-				key: c.key,
-				present: c.present,
-				id: (c as any)._debugId,
-			})),
-		);
 	});
 </script>
 
