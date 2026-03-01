@@ -1,14 +1,11 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
 
 <script lang="ts">
-  import { copyRawValuesOnly } from "./use-props.js";
-  import { buildHTMLStyles } from "./utils/build-styles.js";
-  import { createHtmlRenderState } from "./utils/create-render-state.js";
+  import UseStyle from "./UseStyle.svelte";
   import type { HTMLProps } from "./types";
 
-  let { visualState, props, isStatic, children } = $props();
+  export let props, visualState, isStatic;
 
   const getHTMLProps = (
     style: HTMLProps["style"],
@@ -41,36 +38,8 @@ Copyright (c) 2018 Framer B.V. -->
     htmlProps.style = style;
     return htmlProps;
   };
-
-  const memo = (variantLabelsAsDependency?: string | boolean | undefined) => {
-    let state = createHtmlRenderState();
-
-    buildHTMLStyles(
-      state,
-      visualState,
-      undefined,
-      undefined,
-      { enableHardwareAcceleration: !isStatic },
-      props.transformTemplate,
-    );
-
-    const { vars, style } = state;
-    const mergedStyle: Record<string, any> = { ...vars, ...style };
-
-    if (props.style) {
-      const rawStyles: Record<string, any> = {};
-      copyRawValuesOnly(rawStyles, props.style, props);
-      Object.assign(mergedStyle, rawStyles);
-    }
-
-    if (props.transformValues) {
-      return getHTMLProps(props.transformValues(mergedStyle), props);
-    }
-
-    return getHTMLProps(mergedStyle, props);
-  };
-
-  const visualProps = $derived(memo(visualState));
 </script>
 
-{@render children?.(visualProps)}
+<UseStyle let:styles {visualState} {props} {isStatic}>
+  <slot visualProps={getHTMLProps(styles, props)} />
+</UseStyle>

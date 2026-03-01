@@ -1,4 +1,3 @@
-import { fixed } from "./fix-process-env.js"
 import { noop } from "./noop"
 
 export type DevMessage = (check: boolean, message: string) => void
@@ -6,7 +5,7 @@ export type DevMessage = (check: boolean, message: string) => void
 let warning: DevMessage = noop
 let invariant: DevMessage = noop
 
-if (fixed !== false && process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production") {
     warning = (check, message) => {
         if (!check && typeof console !== "undefined") {
             console.warn(message)
