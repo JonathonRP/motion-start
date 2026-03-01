@@ -1,59 +1,49 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
-    function newChildrenMap(): Map<string | number, boolean> {
-        return new Map<string | number, boolean>();
-    }
+function newChildrenMap(): Map<string | number, boolean> {
+	return new Map<string | number, boolean>();
+}
 </script>
 
 <script lang="ts">
-    import { tick, untrack } from "svelte";
+    import { tick } from "svelte";
     import {
-        usePresenceContext,
-        setPresenceContext,
         type PresenceContext,
+        setPresenceContext,
     } from "../../../context/PresenceContext.svelte";
     import PopChild from "../PopChild/PopChild.svelte";
     import type { PresenceChildProps } from "./index.js";
-    import type { Attachment } from "svelte/attachments";
+    import { ref } from "../../../utils/ref.svelte";
 
     interface Props extends PresenceChildProps {}
 
     let {
         isPresent,
-        onExitComplete,
+        onExitComplete = undefined,
         initial,
         custom = undefined,
         presenceAffectsLayout,
         mode,
-        children,
+        children: desendants,
     }: Props = $props();
 
     const presenceChildren = $state(newChildrenMap());
     const id = $props.id();
 
-    let isReusedContext = true;
-
-    const refresh = $derived(
-        presenceAffectsLayout ? presenceAffectsLayout : isPresent,
-    );
-
-    // Initialize context with correct values immediately (not in $effect)
-    // This is critical because child motion components need access to register() during mount
-    let contextMemo: PresenceContext = $derived.by(() => ({
-        mode,
+    // Use $state so external mutations (e.g. measurePop from PopChildMeasure) persist.
+    // $derived would create a new object every render, discarding any mutations.
+    let context = $state<PresenceContext>({
         id,
         initial,
         isPresent,
-        get custom() {
-            return custom;
-        },
+        custom,
         onExitComplete: (childId: string | number) => {
             presenceChildren.set(childId, true);
             for (const [, isComplete] of presenceChildren) {
                 if (!isComplete) return;
             }
-            onExitComplete && onExitComplete();
+            onExitComplete?.();
         },
         register: (childId: string | number) => {
             presenceChildren.set(childId, false);
@@ -61,48 +51,50 @@ Copyright (c) 2018 Framer B.V. -->
                 presenceChildren.delete(childId);
             };
         },
-    }));
-
-    let context = $state(usePresenceContext().current);
-
-    // afterUpdate
-    $effect(() => {
-        if (presenceAffectsLayout) {
-            tick().then(() => {
-                context = contextMemo;
-            });
-        }
-    });
-    $effect(() => {
-        refresh;
-        context = contextMemo;
+        measurePop: undefined,
     });
 
-    const setExit = (_isPresent: boolean) => {
+    // Keep reactive props in sync with the stable $state object
+    $effect(() => { context.isPresent = isPresent; });
+    $effect(() => { context.initial = initial; });
+    $effect(() => { context.custom = custom; });
+
+    // Reset children completion status when exiting
+    $effect(() => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
-    };
-    $effect(() => {
-        setExit(isPresent);
     });
+
+    // Handle case where no children registered
     $effect(() => {
         tick().then(() => {
-            !isPresent &&
-                !presenceChildren.size &&
-                untrack(() => onExitComplete?.());
+            if (!isPresent && !presenceChildren.size) {
+                onExitComplete?.();
+            }
         });
     });
 
+    // Set context with stable reference - same object every time
     setPresenceContext({
         get current() {
             return context;
         },
     });
+
+    const pop = $derived(
+        mode === "popLayout"
+            ? { component: PopChild, props: { isPresent } }
+            : undefined,
+    );
 </script>
 
-{#if mode === "popLayout"}
-    <PopChild {isPresent}>
-        {@render children()}
-    </PopChild>
-{:else}
-    {@render children()}
-{/if}
+{#snippet children()}
+    {#if pop}
+        <pop.component {...pop.props}>
+            {@render desendants?.()}
+        </pop.component>
+    {:else}
+        {@render desendants?.()}
+    {/if}
+{/snippet}
+
+{@render children()}

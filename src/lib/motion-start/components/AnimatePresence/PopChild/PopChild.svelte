@@ -3,42 +3,69 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-    import { useMotionConfig } from "../../../context/MotionConfigContext.svelte";
+    import { useMotionConfigContext } from "../../../context/MotionConfigContext.svelte";
     import type { Props, Size } from "./types";
-    import type { MutableRefObject } from "../../../utils/safe-react-types";
-    import PopChildMeasure from "./PopChildMeasure.svelte";
+    import { usePresenceContext } from "../../../context/PresenceContext.svelte";
 
     let { isPresent, children }: Props = $props();
 
     const id = $props.id();
-    let ref: MutableRefObject<HTMLElement> = $state({
-        current: null!,
-    });
-    let size: MutableRefObject<Size> = $state({
-        current: {
-            width: 0,
-            height: 0,
-            top: 0,
-            left: 0,
-        },
-    });
+    let child = $state<HTMLElement | null>(null);
+    let size = $state<Size>({ width: 0, height: 0, top: 0, left: 0 });
+    // Snapshot captured while element is still in normal flow
+    let snapshot: Size | null = null;
 
-    const { nonce } = $derived(useMotionConfig());
+    const { nonce } = $derived(useMotionConfigContext().current);
+    const presenceRef = usePresenceContext();
 
-    /**
-     * We create and inject a style block so we can apply this explicit
-     * sizing in a non-destructive manner by just deleting the style block.
-     *
-     * We can't apply size via render as the measurement happens
-     * in getSnapshotBeforeUpdate (post-render), likewise if we apply the
-     * styles directly on the DOM node, we might be overwriting
-     * styles set via the style prop.
-     */
+    // measurePop is called by ExitAnimationFeature.mount() with the DOM element.
+    // We store the element reference here so we can snapshot its position.
     $effect(() => {
-        const { width, height, top, left } = size.current;
-        if (isPresent || !ref.current || !width || !height) return;
+        const context = presenceRef.current;
+        if (!context) return;
+        context.measurePop = (node) => {
+            child = node as HTMLElement;
+        };
+        return () => {
+            context.measurePop = undefined;
+            child = null;
+        };
+    });
 
-        ref.current.dataset.motionPopId = id;
+    // $effect.pre: runs BEFORE DOM is patched — equivalent to getSnapshotBeforeUpdate.
+    // Capture position while element is still in normal flow (isPresent = true).
+    $effect.pre(() => {
+        // Track isPresent reactively so this re-runs when it changes
+        if (isPresent && child) {
+            const rect = child.getBoundingClientRect();
+            snapshot = {
+                width: rect.width,
+                height: rect.height,
+                top: rect.top,
+                left: rect.left,
+            };
+        }
+    });
+
+    // $effect: runs AFTER DOM is patched.
+    // Apply snapshot to size when element becomes not-present.
+    $effect(() => {
+        if (!isPresent && snapshot && child) {
+            size.width = snapshot.width;
+            size.height = snapshot.height;
+            size.top = snapshot.top;
+            size.left = snapshot.left;
+            snapshot = null;
+        }
+    });
+
+    // Inject a style block with captured dimensions so position:absolute
+    // can be applied without overwriting the element's own style prop.
+    $effect(() => {
+        const { width, height, top, left } = size;
+        if (isPresent || !child || !width || !height) return;
+
+        child.dataset.motionPopId = id;
 
         const style = document.createElement("style");
         if (nonce) style.nonce = nonce;
@@ -62,9 +89,7 @@ Copyright (c) 2018 Framer B.V. -->
     });
 </script>
 
-<PopChildMeasure {isPresent} bind:childRef={ref} bind:sizeRef={size}>
-    {@render children()}
-</PopChildMeasure>
+{@render children()}
 
 <style>
     :global([data-motion-pop-id]) {
