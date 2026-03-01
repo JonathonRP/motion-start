@@ -67,7 +67,7 @@
 		"test:types": "vitest --typecheck.only",
 		"test:ui": "vitest --ui",
 		"test:types:ui": "vitest --ui",
-		"release": "bun --bun run build && bun --bun changeset publish"
+		"release": "bun --bun run build && npm publish --access public && npx changeset tag"
 	},
 	"dependencies": {
 		"framesync": "^6.1.2",
