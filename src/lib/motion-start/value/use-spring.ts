@@ -7,7 +7,7 @@ import type { SpringOptions } from '../animation/types';
 import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
 import { frame } from '../frameloop';
-import type { MotionValue } from '.';
+import type { MotionValue } from './index.js';
 import { useMotionValue } from './use-motion-value.svelte';
 import { isMotionValue } from './utils/is-motion-value';
 import { noop } from '../utils/noop';

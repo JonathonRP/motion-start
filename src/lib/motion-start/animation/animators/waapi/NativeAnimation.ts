@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { startWaapiAnimation } from '.';
+import { startWaapiAnimation } from './index.js';
 import { createGeneratorEasing } from '../../../easing/utils/create-generator-easing';
 import type { ProgressTimeline } from '../../../render/dom/scroll/observe';
 import { browserNumberValueTypes } from '../../../render/dom/value-types/number-browser';

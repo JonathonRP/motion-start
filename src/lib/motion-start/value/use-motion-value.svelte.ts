@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { motionValue, type MotionValue } from '.';
+import { motionValue, type MotionValue } from './index.js';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
 
 /**

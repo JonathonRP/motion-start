@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { type MotionContext, useMotionContext } from '.';
+import { type MotionContext, useMotionContext } from './index.js';
 import type { MotionProps } from '../../motion/types';
 import { getCurrentTreeVariants } from './utils.svelte';
 

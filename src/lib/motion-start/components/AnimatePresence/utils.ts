@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { Snippet } from 'svelte';
 import { writable } from 'svelte/store';
-import type { ConditionalGeneric } from '.';
+import type { ConditionalGeneric } from './index.js';
 
 export const Children$ = writable<{ key: string }[]>();
 

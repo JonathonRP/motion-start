@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { useTransform } from './use-transform';
-import type { MotionValue } from '.';
+import type { MotionValue } from './index.js';
 import { invariant, warning } from '../utils/errors';
 import { useMotionValue } from './use-motion-value.svelte';
 import { useMotionContext } from '../context/MotionContext';

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionContext } from '.';
+import type { MotionContext } from './index.js';
 import type { MotionProps } from '../../motion/types';
 import { isVariantLabel } from '../../render/utils/is-variant-label';
 import { isControllingVariants } from '../../render/utils/is-controlling-variants';

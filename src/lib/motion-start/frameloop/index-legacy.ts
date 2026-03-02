@@ -1,4 +1,4 @@
-import { frame, cancelFrame } from '.';
+import { frame, cancelFrame } from './index.js';
 import { stepsOrder } from './batcher';
 import type { Process } from './types';
 
