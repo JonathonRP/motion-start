@@ -3,9 +3,8 @@
 
      HOW TO GET THE IMPORT URL:
        1. Wait for the "Preview" CI job to complete on this PR
-       2. Find the pkg.pr.new comment — it contains a URL like:
-            https://pkg.pr.new/JonathonRP/motion-start@{sha}
-       3. Replace the import URL below with that URL
+       2. Find the pkg.pr.new comment — it contains a SHA like: {sha}
+       3. Replace {sha} in the import below with that SHA
 
      Demonstrates three fixes on branch: claude/fix-animate-presence-bug-rpmhw
 
@@ -26,7 +25,7 @@
 -->
 <script>
   // Replace {sha} with the commit SHA from the pkg.pr.new PR comment
-  import { Motion, AnimatePresence } from 'https://pkg.pr.new/JonathonRP/motion-start@{sha}/dist/cdn/index.js';
+  import { Motion, AnimatePresence } from 'https://pkg.pr.new/motion-start@{sha}';
 
   let isVisible = true;
   let presenceAffectsLayout = true;
