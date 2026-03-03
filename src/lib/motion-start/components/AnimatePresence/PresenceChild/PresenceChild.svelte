@@ -15,7 +15,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts">
-    import { setContext, tick } from "svelte";
+    import { setContext, tick, untrack } from "svelte";
     import { setDomContext } from "../../../context/DOMcontext.js";
     import { PresenceContext } from "../../../context/PresenceContext.js";
     import type { PresenceChildProps } from "./index.js";
@@ -44,6 +44,7 @@ Copyright (c) 2018 Framer B.V. -->
             isPresent,
             custom,
             onExitComplete: (childId: number) => {
+                if (presenceChildren.get(childId) === true) return;
                 presenceChildren.set(childId, true);
                 let allComplete = true;
                 presenceChildren.forEach((isComplete) => {
@@ -66,7 +67,7 @@ Copyright (c) 2018 Framer B.V. -->
         }
     });
 
-    $effect(() => context.set(memoContext(refresh)));
+    $effect(() => { refresh; untrack(() => context.set(memoContext())); });
 
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
