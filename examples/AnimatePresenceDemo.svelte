@@ -2,9 +2,9 @@
      Paste this into svelte.dev/playground to test the fixes from this PR.
 
      HOW TO GET THE IMPORT URL:
-       1. Wait for the "Preview" CI job to complete on this PR
-       2. Find the pkg.pr.new comment — it contains a SHA like: {sha}
-       3. Replace {sha} in the import below with that SHA
+       1. Find the latest commit SHA on this PR (first 7+ chars shown in GitHub)
+       2. Replace {sha} in the import below with that SHA
+       (served via jsDelivr from GitHub — no CI wait needed)
 
      Demonstrates three fixes on branch: claude/fix-animate-presence-bug-rpmhw
 
@@ -24,8 +24,8 @@
              → "onExitComplete called" counter increments by exactly 1 per hide.
 -->
 <script>
-  // Replace {sha} with the commit SHA from the pkg.pr.new PR comment
-  import { Motion, AnimatePresence } from 'https://pkg.pr.new/motion-start@{sha}';
+  // Replace {sha} with the latest commit SHA on this PR (from GitHub)
+  import { Motion, AnimatePresence } from 'https://cdn.jsdelivr.net/gh/JonathonRP/motion-start@{sha}/dist/cdn/index.js';
 
   let isVisible = true;
   let presenceAffectsLayout = true;
