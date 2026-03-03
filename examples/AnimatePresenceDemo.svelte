@@ -1,5 +1,11 @@
 <!-- AnimatePresence bug-fix playground demo
-     Paste this into svelte.dev/playground (with motion-start available)
+     Paste this into svelte.dev/playground to test the fixes from this PR.
+
+     HOW TO GET THE IMPORT URL:
+       1. Wait for the "Preview" CI job to complete on this PR
+       2. Find the pkg.pr.new comment — it contains a URL like:
+            https://pkg.pr.new/JonathonRP/motion-start@{sha}
+       3. Replace the import URL below with that URL
 
      Demonstrates three fixes on branch: claude/fix-animate-presence-bug-rpmhw
 
@@ -19,7 +25,8 @@
              → "onExitComplete called" counter increments by exactly 1 per hide.
 -->
 <script>
-  import { Motion, AnimatePresence } from 'motion-start';
+  // Replace {sha} with the commit SHA from the pkg.pr.new PR comment
+  import { Motion, AnimatePresence } from 'https://pkg.pr.new/JonathonRP/motion-start@{sha}';
 
   let isVisible = true;
   let presenceAffectsLayout = true;
