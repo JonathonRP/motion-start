@@ -16,10 +16,8 @@ export default defineConfig({
 			fileName: 'index',
 		},
 		outDir: 'dist/cdn',
-		rollupOptions: {
-			external: (id) =>
-				id === 'svelte' ||
-				(id.startsWith('svelte/') && id !== 'svelte/internal/flags/legacy'),
-		},
+		// No external — bundle everything (including svelte runtime) so the
+		// playground loads the file as a fully self-contained ES module with
+		// zero bare specifiers that the playground's resolver can't reach.
 	},
 });
