@@ -26,7 +26,7 @@
 -->
 <script>
   // Replace {sha} with the commit SHA from the pkg.pr.new PR comment
-  import { Motion, AnimatePresence } from 'https://pkg.pr.new/JonathonRP/motion-start@{sha}';
+  import { Motion, AnimatePresence } from 'https://pkg.pr.new/JonathonRP/motion-start@{sha}/dist/cdn/index.js';
 
   let isVisible = true;
   let presenceAffectsLayout = true;
