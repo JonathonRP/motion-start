@@ -31,6 +31,10 @@ jobs:
         run: |
             bun --bun run build
             cp package.json dist/
+            # Fix export paths for publishing from dist folder
+            cd dist
+            sed -i 's|"./dist/|"./|g' package.json
+            cd ..
 
       - name: Publish preview
         run: npx pkg-pr-new publish ./dist
