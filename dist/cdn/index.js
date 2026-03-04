@@ -1,6 +1,6 @@
 import { writable as re, get as Y, readable as Zo, derived as hr, fromStore as Jo } from "svelte/store";
 import * as r from "svelte/internal/client";
-import { onDestroy as Ne, getContext as I, afterUpdate as yr, onMount as _e, tick as we, setContext as Ee, beforeUpdate as Qo, untrack as $o } from "svelte";
+import { onDestroy as Ne, getContext as I, afterUpdate as yr, onMount as be, tick as he, setContext as Ee, beforeUpdate as Qo, untrack as $o } from "svelte";
 const ea = 1 / 60 * 1e3, es = typeof performance < "u" ? () => performance.now() : () => Date.now(), ta = typeof window < "u" ? (e) => window.requestAnimationFrame(e) : (e) => setTimeout(() => e(es()), ea);
 function ts(e) {
   let t = [], n = [], a = 0, o = !1, i = !1;
@@ -46,7 +46,7 @@ const Re = {
   Xe = !1, Re.delta = Yt ? ea : Math.max(Math.min(e - Re.timestamp, rs), 1), Re.timestamp = e, Wt = !0, at.forEach(ns), Wt = !1, Xe && (Yt = !1, ta(ra));
 }, as = () => {
   Xe = !0, Yt = !0, Wt || ta(ra);
-}, Te = () => Re;
+}, we = () => Re;
 function _r(e) {
   return e;
 }
@@ -74,7 +74,7 @@ function ss({ top: e, left: t, bottom: n, right: a }, o) {
     right: s.x
   };
 }
-function Se() {
+function Pe() {
   return { x: { min: 0, max: 1 }, y: { min: 0, max: 1 } };
 }
 function is(e) {
@@ -199,7 +199,7 @@ function Ze(e) {
   return Me("SharedLayout", e) || re(xr());
 }
 var Jr = (e) => re(xr());
-function Ce(e) {
+function Ve(e) {
   return "forceUpdate" in e;
 }
 function Jt(e, t) {
@@ -587,7 +587,7 @@ const Le = {
   test: (t) => ot(t) && t.endsWith(e) && t.split(" ").length === 1,
   parse: parseFloat,
   transform: (t) => `${t}${e}`
-}), be = st("deg"), Be = st("%"), A = st("px"), Os = st("vh"), Ds = st("vw"), an = Object.assign(Object.assign({}, Be), { parse: (e) => Be.parse(e) / 100, transform: (e) => Be.transform(e * 100) }), Tr = (e, t) => (n) => !!(ot(n) && Ls.test(n) && n.startsWith(e) || t && Object.prototype.hasOwnProperty.call(n, t)), va = (e, t, n) => (a) => {
+}), xe = st("deg"), Be = st("%"), A = st("px"), Os = st("vh"), Ds = st("vw"), an = Object.assign(Object.assign({}, Be), { parse: (e) => Be.parse(e) / 100, transform: (e) => Be.transform(e * 100) }), Tr = (e, t) => (n) => !!(ot(n) && Ls.test(n) && n.startsWith(e) || t && Object.prototype.hasOwnProperty.call(n, t)), va = (e, t, n) => (a) => {
   if (!ot(a))
     return a;
   const [o, i, s, u] = a.match(Qe);
@@ -597,11 +597,11 @@ const Le = {
     [n]: parseFloat(s),
     alpha: u !== void 0 ? parseFloat(u) : 1
   };
-}, Ve = {
+}, Te = {
   test: Tr("hsl", "hue"),
   parse: va("hue", "saturation", "lightness"),
   transform: ({ hue: e, saturation: t, lightness: n, alpha: a = 1 }) => "hsla(" + Math.round(e) + ", " + Be.transform(Ke(t)) + ", " + Be.transform(Ke(n)) + ", " + Ke(ke.transform(a)) + ")"
-}, js = ga(0, 255), Nt = Object.assign(Object.assign({}, Le), { transform: (e) => Math.round(js(e)) }), xe = {
+}, js = ga(0, 255), Nt = Object.assign(Object.assign({}, Le), { transform: (e) => Math.round(js(e)) }), Se = {
   test: Tr("rgb", "red"),
   parse: va("red", "green", "blue"),
   transform: ({ red: e, green: t, blue: n, alpha: a = 1 }) => "rgba(" + Nt.transform(e) + ", " + Nt.transform(t) + ", " + Nt.transform(n) + ", " + Ke(ke.transform(a)) + ")"
@@ -618,11 +618,11 @@ function Rs(e) {
 const rr = {
   test: Tr("#"),
   parse: Rs,
-  transform: xe.transform
+  transform: Se.transform
 }, Z = {
-  test: (e) => xe.test(e) || rr.test(e) || Ve.test(e),
-  parse: (e) => xe.test(e) ? xe.parse(e) : Ve.test(e) ? Ve.parse(e) : rr.parse(e),
-  transform: (e) => ot(e) ? e : e.hasOwnProperty("red") ? xe.transform(e) : Ve.transform(e)
+  test: (e) => Se.test(e) || rr.test(e) || Te.test(e),
+  parse: (e) => Se.test(e) ? Se.parse(e) : Te.test(e) ? Te.parse(e) : rr.parse(e),
+  transform: (e) => ot(e) ? e : e.hasOwnProperty("red") ? Se.transform(e) : Te.transform(e)
 }, ma = "${c}", ha = "${n}";
 function Is(e) {
   var t, n, a, o;
@@ -654,7 +654,7 @@ function Fs(e) {
   const t = _a(e);
   return ba(e)(t.map(Bs));
 }
-const he = { test: Is, parse: _a, createTransformer: ba, getAnimatableNone: Fs }, Us = /* @__PURE__ */ new Set(["brightness", "contrast", "saturate", "opacity"]);
+const ye = { test: Is, parse: _a, createTransformer: ba, getAnimatableNone: Fs }, Us = /* @__PURE__ */ new Set(["brightness", "contrast", "saturate", "opacity"]);
 function Ns(e) {
   let [t, n] = e.slice(0, -1).split("(");
   if (t === "drop-shadow")
@@ -666,7 +666,7 @@ function Ns(e) {
   let i = Us.has(t) ? 1 : 0;
   return a !== n && (i *= 100), t + "(" + i + o + ")";
 }
-const Hs = /([a-z-]*)\(.*?\)/g, nr = Object.assign(Object.assign({}, he), { getAnimatableNone: (e) => {
+const Hs = /([a-z-]*)\(.*?\)/g, nr = Object.assign(Object.assign({}, ye), { getAnimatableNone: (e) => {
   const t = e.match(Hs);
   return t ? t.map(Ns).join(" ") : e;
 } });
@@ -692,11 +692,11 @@ function on({ hue: e, saturation: t, lightness: n, alpha: a }) {
 const zs = (e, t, n) => {
   const a = e * e, o = t * t;
   return Math.sqrt(Math.max(0, n * (o - a) + a));
-}, qs = [rr, xe, Ve], sn = (e) => qs.find((t) => t.test(e)), un = (e) => `'${e}' is not an animatable color. Use the equivalent color code instead.`, wr = (e, t) => {
+}, qs = [rr, Se, Te], sn = (e) => qs.find((t) => t.test(e)), un = (e) => `'${e}' is not an animatable color. Use the equivalent color code instead.`, wr = (e, t) => {
   let n = sn(e), a = sn(t);
   Je(!!n, un(e)), Je(!!a, un(t));
   let o = n.parse(e), i = a.parse(t);
-  n === Ve && (o = on(o), n = xe), a === Ve && (i = on(i), a = xe);
+  n === Te && (o = on(o), n = Se), a === Te && (i = on(i), a = Se);
   const s = Object.assign({}, o);
   return (u) => {
     for (const c in s)
@@ -725,14 +725,14 @@ const Sa = (e, t) => {
   };
 };
 function ln(e) {
-  const t = he.parse(e), n = t.length;
+  const t = ye.parse(e), n = t.length;
   let a = 0, o = 0, i = 0;
   for (let s = 0; s < n; s++)
     a || typeof t[s] == "number" ? a++ : t[s].hue !== void 0 ? i++ : o++;
   return { parsed: t, numNumbers: a, numRGB: o, numHSL: i };
 }
 const Pa = (e, t) => {
-  const n = he.createTransformer(t), a = ln(e), o = ln(t);
+  const n = ye.createTransformer(t), a = ln(e), o = ln(t);
   return a.numHSL === o.numHSL && a.numRGB === o.numRGB && a.numNumbers >= o.numNumbers ? it(Sa(a.parsed, o.parsed), n) : (Cr(!0, `Complex values '${e}' and '${t}' too different to mix. Ensure all colors are of the same type, and that each contains the same quantity of number and color values. Falling back to instant transition.`), (s) => `${s > 0 ? t : e}`);
 }, ks = (e, t) => (n) => z(e, t, n);
 function Ys(e) {
@@ -915,7 +915,7 @@ function bi({ from: e = 0, velocity: t = 0, min: n, max: a, power: o = 0.8, time
     const S = y(C), T = S === n ? -1 : 1;
     let P, x;
     const E = (O) => {
-      P = x, x = O, t = Aa(O - P, Te().delta), (T === 1 && O > S || T === -1 && O < S) && _({ from: O, to: S, velocity: t });
+      P = x, x = O, t = Aa(O - P, we().delta), (T === 1 && O > S || T === -1 && O < S) && _({ from: O, to: S, velocity: t });
     };
     m({
       type: "decay",
@@ -1027,7 +1027,7 @@ class Ra {
   constructor(t, n, { transformPagePoint: a } = {}) {
     if (!(fa(t) && t.touches.length > 1)) {
       this.handlers = n, this.transformPagePoint = a;
-      var o = Sr(t), i = zt(o, this.transformPagePoint), s = i.point, u = Te().timestamp;
+      var o = Sr(t), i = zt(o, this.transformPagePoint), s = i.point, u = we().timestamp;
       this.history = [{ ...s, timestamp: u }];
       var c = n.onSessionStart;
       c && c(t, qt(i, this.history)), this.removeListeners = it(
@@ -1041,7 +1041,7 @@ class Ra {
     if (this.lastMoveEvent && this.lastMoveEventInfo) {
       var t = qt(this.lastMoveEventInfo, this.history), n = this.startEvent !== null, a = Ma(t.offset, { x: 0, y: 0 }) >= 3;
       if (!(!n && !a)) {
-        var o = t.point, i = Te().timestamp;
+        var o = t.point, i = we().timestamp;
         this.history.push(Object.assign(Object.assign({}, o), { timestamp: i }));
         var s = this.handlers, u = s.onStart, c = s.onMove;
         n || (u && u(this.lastMoveEvent, t), this.startEvent = this.lastMoveEvent), c && c(this.lastMoveEvent, t);
@@ -1281,25 +1281,25 @@ const xc = (e = !1) => {
   return hr(t, (n) => n === null ? !0 : n.isPresent);
 }, Na = (e = !1) => {
   const t = I(le) || le(e), n = Y(t) === null ? void 0 : Di();
-  return _e(() => {
+  return be(() => {
     Y(t) !== null && Y(t).register(n);
   }), Y(t) === null ? Zo([!0, null]) : hr(
     t,
     (a) => !a.isPresent && a.onExitComplete ? [!1, () => a.onExitComplete?.(n)] : [!0]
   );
-}, gn = (e) => Me("LayoutGroup", e) || re(null), sr = (e) => Me("Lazy", e) || re({ strict: !1 }), ye = (e) => Me("Motion", e) || re({});
+}, gn = (e) => Me("LayoutGroup", e) || re(null), sr = (e) => Me("Lazy", e) || re({ strict: !1 }), _e = (e) => Me("Motion", e) || re({});
 function Ha(e, t) {
   r.push(t, !1);
   const n = () => r.store_get(m, "$mc", u), a = () => r.store_get(C, "$layoutGroupId", u), o = () => r.store_get(y, "$lazyContext", u), i = () => r.store_get(h, "$presenceContext", u), s = () => r.store_get(v, "$config", u), [u, c] = r.setup_stores();
   let l = r.prop(t, "createVisualElement", 12, void 0), f = r.prop(t, "props", 8), d = r.prop(t, "Component", 8), p = r.prop(t, "visualState", 8), g = r.prop(t, "isCustom", 8);
-  const v = I(Q) || Q(g()), h = I(le) || le(g()), y = I(sr) || sr(g()), m = I(ye) || ye(g());
+  const v = I(Q) || Q(g()), h = I(le) || le(g()), y = I(sr) || sr(g()), m = I(_e) || _e(g());
   let _ = r.mutable_source(Y(m).visualElement);
   const C = I(gn) || gn(g());
   let S = r.mutable_source(a() && f().layoutId !== void 0 ? a() + "-" + f().layoutId : f().layoutId), T = r.mutable_source(), P = r.mutable_source(void 0);
   l() || l(o().renderer);
   let x = r.mutable_source(r.get(P));
   yr(() => {
-    we().then(() => {
+    he().then(() => {
       r.get(x)?.animationState?.animateChanges();
     });
   }), Ne(() => {
@@ -1424,7 +1424,7 @@ function za(e, t) {
 function qa(e, t) {
   r.push(t, !1);
   let n = r.prop(t, "value", 8), a = r.prop(t, "isCustom", 8), o = re(n());
-  Ee(ye, o), He("Motion", a(), o), Ne(() => {
+  Ee(_e, o), He("Motion", a(), o), Ne(() => {
     n()?.visualElement?.unmount();
   }), r.legacy_pre_effect(() => r.deep_read_state(n()), () => {
     o.set(n());
@@ -1492,9 +1492,9 @@ var mn = "_$css";
 function Fi(e, { delta: t, treeScale: n }) {
   var a = e, o = e.includes("var("), i = [];
   o && (e = e.replace(Ga, (v) => (i.push(v), mn)));
-  var s = he.parse(e);
+  var s = ye.parse(e);
   if (s.length > 5) return a;
-  var u = he.createTransformer(e), c = typeof s[0] != "number" ? 1 : 0, l = t.x.scale * n.x, f = t.y.scale * n.y;
+  var u = ye.createTransformer(e), c = typeof s[0] != "number" ? 1 : 0, l = t.x.scale * n.x, f = t.y.scale * n.y;
   s[0 + c] /= l, s[1 + c] /= f;
   var d = z(l, f, 0.5);
   typeof s[2 + c] == "number" && (s[2 + c] /= d), typeof s[3 + c] == "number" && (s[3 + c] /= d);
@@ -1607,17 +1607,17 @@ var Yi = function(e, t) {
   marginBottom: A,
   marginLeft: A,
   // Transform props
-  rotate: be,
-  rotateX: be,
-  rotateY: be,
-  rotateZ: be,
+  rotate: xe,
+  rotateX: xe,
+  rotateY: xe,
+  rotateZ: xe,
   scale: ft,
   scaleX: ft,
   scaleY: ft,
   scaleZ: ft,
-  skew: be,
-  skewX: be,
-  skewY: be,
+  skew: xe,
+  skewX: xe,
+  skewY: xe,
   distance: A,
   translateX: A,
   translateY: A,
@@ -1976,7 +1976,7 @@ var to = function(e) {
   parse: function(e) {
     return e;
   }
-}, ro = [Le, A, Be, be, Ds, Os, ou], Kt = function(e) {
+}, ro = [Le, A, Be, xe, Ds, Os, ou], Kt = function(e) {
   return ro.find(to(e));
 }, su = /* @__PURE__ */ new Set(["width", "height", "top", "left", "right", "bottom", "x", "y"]), no = (e) => su.has(e), iu = (e) => Object.keys(e).some(no), ao = (e, t) => {
   e.set(t, !1), e.set(t);
@@ -2397,7 +2397,7 @@ class Pu {
   };
   updateAndNotify = (t, n) => {
     n === void 0 && (n = !0), this.prev = this.current, this.current = t;
-    var a = Te(), o = a.delta, i = a.timestamp;
+    var a = we(), o = a.delta, i = a.timestamp;
     this.lastUpdated !== i && (this.timeDelta = o, this.lastUpdated = i, oe.postRender(this.scheduleVelocityCheck)), this.prev !== this.current && this.updateSubscribers.notify(this.current), this.velocityUpdateSubscribers.getSize() && this.velocityUpdateSubscribers.notify(this.getVelocity()), n && this.renderSubscribers.notify(this.current);
   };
   /**
@@ -2539,15 +2539,15 @@ var wu = function() {
   return {
     isEnabled: !1,
     isTargetLocked: !1,
-    target: Se(),
-    targetFinal: Se()
+    target: Pe(),
+    targetFinal: Pe()
   };
 };
 function po() {
   return {
     isHydrated: !1,
-    layout: Se(),
-    layoutCorrected: Se(),
+    layout: Pe(),
+    layoutCorrected: Pe(),
     treeScale: { x: 1, y: 1 },
     delta: Wr(),
     deltaFinal: Wr(),
@@ -2581,7 +2581,7 @@ function vo(e, t) {
 }
 function Nr(e, t) {
   var n, a = Fr(e);
-  return a !== nr && (a = he), (n = a.getAnimatableNone) === null || n === void 0 ? void 0 : n.call(a, t);
+  return a !== nr && (a = ye), (n = a.getAnimatableNone) === null || n === void 0 ? void 0 : n.call(a, t);
 }
 let Hr = _r, mo = _r;
 process.env.NODE_ENV !== "production" && (Hr = (e, t) => {
@@ -2590,7 +2590,7 @@ process.env.NODE_ENV !== "production" && (Hr = (e, t) => {
   if (!e)
     throw new Error(t);
 });
-var Pe = () => ({
+var Ce = () => ({
   type: "spring",
   stiffness: 500,
   damping: 25,
@@ -2611,13 +2611,13 @@ var Pe = () => ({
   duration: 0.8,
   values: e
 }), jn = {
-  x: Pe,
-  y: Pe,
-  z: Pe,
-  rotate: Pe,
-  rotateX: Pe,
-  rotateY: Pe,
-  rotateZ: Pe,
+  x: Ce,
+  y: Ce,
+  z: Ce,
+  rotate: Ce,
+  rotateX: Ce,
+  rotateY: Ce,
+  rotateZ: Ce,
   scaleX: gt,
   scaleY: gt,
   scale: gt,
@@ -2654,7 +2654,7 @@ var Pe = () => ({
 const Ou = (e) => Array.isArray(e) && typeof e[0] != "number";
 var In = function(e, t) {
   return e === "zIndex" ? !1 : !!(typeof t == "number" || Array.isArray(t) || typeof t == "string" && // It's animatable if we have a string
-  he.test(t) && // And it contains numbers and/or colors
+  ye.test(t) && // And it contains numbers and/or colors
   !t.startsWith("url("));
 };
 function Du(e) {
@@ -2751,7 +2751,7 @@ var Uu = function(e) {
   return !!(e && typeof e == "object" && e.mix && e.toValue);
 }, Hu = function(e) {
   return et(e) ? e[e.length - 1] || 0 : e;
-}, zu = [...ro, Z, he], qu = (e) => zu.find(to(e));
+}, zu = [...ro, Z, ye], qu = (e) => zu.find(to(e));
 function ho(e) {
   return Array.isArray(e);
 }
@@ -2817,7 +2817,7 @@ function Wu(e, t, n) {
   if (c)
     for (var l = 0; l < c; l++) {
       var f = u[l], d = t[f], p = null;
-      Array.isArray(d) && (p = d[0]), p === null && (p = (o = (a = n[f]) !== null && a !== void 0 ? a : e.readValue(f)) !== null && o !== void 0 ? o : t[f]), p != null && (typeof p == "string" && Uu(p) ? p = Number.parseFloat(p) : !qu(p) && he.test(d) && (p = Nr(f, d)), e.addValue(f, W(p)), (i = (s = n)[f]) !== null && i !== void 0 || (s[f] = p), e.setBaseTarget(f, p));
+      Array.isArray(d) && (p = d[0]), p === null && (p = (o = (a = n[f]) !== null && a !== void 0 ? a : e.readValue(f)) !== null && o !== void 0 ? o : t[f]), p != null && (typeof p == "string" && Uu(p) ? p = Number.parseFloat(p) : !qu(p) && ye.test(d) && (p = Nr(f, d)), e.addValue(f, W(p)), (i = (s = n)[f]) !== null && i !== void 0 || (s[f] = p), e.setBaseTarget(f, p));
     }
 }
 function Xu(e, t) {
@@ -3468,7 +3468,7 @@ var So = function({
         setProjectionTargetAxis: function(b, V, j, F) {
           F === void 0 && (F = !1);
           var H;
-          F ? (P.relativeTarget || (P.relativeTarget = Se()), H = P.relativeTarget[b]) : (P.relativeTarget = void 0, H = P.target[b]), P.isHydrated = !0, H.min = V, H.max = j, D = !0, T.notifySetAxisTarget();
+          F ? (P.relativeTarget || (P.relativeTarget = Pe()), H = P.relativeTarget[b]) : (P.relativeTarget = void 0, H = P.target[b]), P.isHydrated = !0, H.min = V, H.max = j, D = !0, T.notifySetAxisTarget();
         },
         /**
          * Rebase the projection target on top of the provided viewport box
@@ -3741,7 +3741,7 @@ function Hn(e, t) {
 function Oo(e, t) {
   r.push(t, !1);
   const n = () => r.store_get(c, "$mc", a), [a, o] = r.setup_stores();
-  let i = r.prop(t, "props", 8), s = r.prop(t, "isStatic", 8), u = r.prop(t, "isCustom", 8, void 0), c = I(ye) || ye(u()), l = Hn(i(), Y(c)), f = r.mutable_source(l.initial), d = r.mutable_source(l.animate);
+  let i = r.prop(t, "props", 8), s = r.prop(t, "isStatic", 8), u = r.prop(t, "isCustom", 8, void 0), c = I(_e) || _e(u()), l = Hn(i(), Y(c)), f = r.mutable_source(l.initial), d = r.mutable_source(l.animate);
   const p = (m) => Array.isArray(m) ? m.join(" ") : m, g = (m, _) => ({ initial: r.get(f), animate: r.get(d) });
   let v = r.mutable_source(g());
   r.legacy_pre_effect(
@@ -3801,7 +3801,7 @@ function xl(e, t) {
   r.push(t, !1);
   const n = () => r.store_get(f, "$context", o), a = () => r.store_get(d, "$presenceContext", o), [o, i] = r.setup_stores();
   let s = r.prop(t, "config", 8, void 0), u = r.prop(t, "props", 8), c = r.prop(t, "isStatic", 8), l = r.prop(t, "isCustom", 8, void 0);
-  const f = I(ye) || ye(l()), d = I(le) || le(l());
+  const f = I(_e) || _e(l()), d = I(le) || le(l());
   let p = r.mutable_source(zn(s(), u(), Y(f), Y(d)));
   const g = zn;
   r.legacy_pre_effect(
@@ -3856,7 +3856,7 @@ function Sl(e, t) {
   }), r.legacy_pre_effect(
     () => (r.get(i), r.deep_read_state(n())),
     () => {
-      Ur(r.get(i)) && we().then(() => r.get(
+      Ur(r.get(i)) && he().then(() => r.get(
         i
         /*, [animate]*/
       ).subscribe(n()));
@@ -3969,7 +3969,7 @@ class Ll {
    *
    * @internal
    */
-  elastic = Se();
+  elastic = Pe();
   /**
    * A reference to the host component's latest props.
    *
@@ -4311,7 +4311,7 @@ function Dl(e, t) {
     transformPagePoint: r.get(c)
   })), r.user_effect(() => i(a)), Ne(() => {
     o && o();
-  }), _e(() => a.mount(t.visualElement));
+  }), be(() => a.mount(t.visualElement));
   var l = r.comment(), f = r.first_child(l);
   r.snippet(f, () => t.children ?? r.noop), r.append(e, l), r.pop();
 }
@@ -4336,7 +4336,7 @@ function nt(e, t) {
 const Bl = { duration: 0.45, ease: [0.4, 0, 0.1, 1] };
 function Fl(e, t) {
   r.push(t, !1);
-  let n = r.prop(t, "visualElement", 12), a = r.prop(t, "layout", 8, void 0), o = r.prop(t, "safeToRemove", 8), i = Se(), s = Se(), u = { x: !1, y: !1 }, c = { x: void 0, y: void 0 }, l = !1;
+  let n = r.prop(t, "visualElement", 12), a = r.prop(t, "layout", 8, void 0), o = r.prop(t, "safeToRemove", 8), i = Pe(), s = Pe(), u = { x: !1, y: !1 }, c = { x: void 0, y: void 0 }, l = !1;
   const f = (g, v, {
     originBox: h,
     targetBox: y,
@@ -4381,7 +4381,7 @@ function Fl(e, t) {
     const T = y || n().getDefaultTransition() || Bl;
     return rt(g === "x" ? "layoutX" : "layoutY", _, Wn, T && It(T, "layout")).then(c[g]);
   };
-  _e(() => {
+  be(() => {
     n(n().animateMotionValue = rt, !0), n().enableLayoutProjection();
     const g = n().onLayoutUpdate(f);
     return n(
@@ -4419,20 +4419,20 @@ function Nl(e, t) {
   r.push(t, !1);
   let n = r.prop(t, "visualElement", 8), a = r.prop(t, "syncLayout", 8), o = r.prop(t, "framerSyncLayout", 8), i = r.prop(t, "update", 8);
   const s = I(je), u = I(kr);
-  _e(() => {
-    Ce(a()) && a().register(n()), Ce(o()) && o().register(n()), n().onUnmount(() => {
-      Ce(a()) && a().remove(n()), Ce(o()) && o().remove(n());
+  be(() => {
+    Ve(a()) && a().register(n()), Ve(o()) && o().register(n()), n().onUnmount(() => {
+      Ve(a()) && a().remove(n()), Ve(o()) && o().remove(n());
     });
   });
   let c = !1;
   const l = (d = !1) => (c || (c = !0, Y(s).forEach((p) => {
     p.updater?.(!0);
-  }), Ce(a()) ? a().syncUpdate() : (oa(n(), d), a().add(n()))), null);
+  }), Ve(a()) ? a().syncUpdate() : (oa(n(), d), a().add(n()))), null);
   i() === void 0 && Qo(l);
   const f = (d = !1) => {
     c = !1, Y(s).forEach((g, v) => {
       g.afterU?.(!0);
-    }), Ce(a()) || a().flush();
+    }), Ve(a()) || a().flush();
   };
   u.update((d) => d.concat([{ updater: l, afterU: f }])), yr(f), r.legacy_pre_effect(() => r.deep_read_state(i()), () => {
     i() !== void 0 && l(i());
@@ -4558,7 +4558,7 @@ function Gl(e, t) {
   const m = I(Q) || Q(v);
   let _ = r.mutable_source(!1);
   const C = (S, T) => (S.visualElement = T, T);
-  _e(() => {
+  be(() => {
     r.set(_, !0);
   }), r.legacy_pre_effect(() => r.deep_read_state(a), () => {
     r.set(u, a);
@@ -4777,7 +4777,7 @@ function Ho(e) {
 function Pc(e, t) {
   r.push(t, !1);
   let n = Ho();
-  _e(n.mount), r.init();
+  be(n.mount), r.init();
   var a = r.comment(), o = r.first_child(a);
   r.slot(
     o,
@@ -4794,7 +4794,7 @@ function Pc(e, t) {
 const Cc = () => {
   const e = Ho(() => {
     const t = {};
-    return we().then((n) => t.clean = e.mount()), () => {
+    return he().then((n) => t.clean = e.mount()), () => {
       t.clean?.();
     };
   });
@@ -4845,15 +4845,20 @@ function Wl(e, t) {
   });
   let l = le();
   r.user_effect(() => {
-    t.presenceAffectsLayout && l.set(c());
+    if (t.presenceAffectsLayout) {
+      const g = c();
+      he().then(() => l.set(g));
+    }
   }), r.user_effect(() => {
-    r.get(u), $o(() => l.set(c()));
+    r.get(u);
+    const g = $o(c);
+    he().then(() => l.set(g));
   });
   const f = (g) => {
     i.forEach((v, h) => i.set(h, !1));
   };
   r.user_effect(() => {
-    f(t.isPresent), we().then(() => {
+    f(t.isPresent), he().then(() => {
       !t.isPresent && !i.size && n()?.();
     });
   }), Ee(le, l), He("Presence", t.isCustom, l);
@@ -4882,7 +4887,7 @@ function Tc(e, t) {
     r.set(v, s() !== void 0 ? s() : p() ? [{ key: 1 }] : []);
   }), r.legacy_pre_effect(() => (n(), r.get(v)), () => {
     r.set(i, () => {
-      Ce(n()) && n().forceUpdate(), r.set(v, [...r.get(v)]);
+      Ve(n()) && n().forceUpdate(), r.set(v, [...r.get(v)]);
     });
   }), r.legacy_pre_effect(() => r.get(v), () => {
     r.set(_, r.get(v));
@@ -4990,7 +4995,7 @@ function Jl() {
     var v = !1, h = () => {
       v = !0, p && p.scheduleRender(), g && g.scheduleRender();
     }, y = () => {
-      i = !1, s = Te().timestamp;
+      i = !1, s = we().timestamp;
     };
     return d = d && It(d, "crossfade"), Zl(
       e,
@@ -5005,7 +5010,7 @@ function Jl() {
     );
   }
   function l() {
-    var f, d, p = Te().timestamp, g = t.lead, v = t.follow;
+    var f, d, p = we().timestamp, g = t.lead, v = t.follow;
     if (!(p === u || !g)) {
       u = p;
       var h = g.getLatestValues();
@@ -5026,7 +5031,7 @@ function Jl() {
     }
   }
   return {
-    isActive: () => a && (i || Te().timestamp === s),
+    isActive: () => a && (i || we().timestamp === s),
     fromLead: (f) => c(0, f),
     toLead: (f) => {
       var d = 0;
@@ -5137,7 +5142,7 @@ function rc() {
 function wc(e, t) {
   r.push(t, !1);
   let n = r.prop(t, "type", 8, void 0), a = r.prop(t, "isCustom", 8, !1);
-  const o = I(ye) || ye(a());
+  const o = I(_e) || _e(a());
   let i = !1, s = /* @__PURE__ */ new Set(), u = /* @__PURE__ */ new Map(), c = !1, l = r.mutable_source(!1), f = {
     ...xr(),
     syncUpdate: (P) => g(P),
@@ -5179,10 +5184,10 @@ function wc(e, t) {
       return !u.has(x) && u.set(x, rc()), u.get(x);
   };
   let C = re(f);
-  Ee(Ze, C), He("SharedLayout", a(), C), _e(() => {
+  Ee(Ze, C), He("SharedLayout", a(), C), be(() => {
     i = !0;
-  }), r.legacy_pre_effect(() => (r.get(l), we), () => {
-    r.get(l) && we().then(() => {
+  }), r.legacy_pre_effect(() => (r.get(l), he), () => {
+    r.get(l) && he().then(() => {
       d();
     });
   }), r.legacy_pre_effect_reset(), r.init();
@@ -5195,7 +5200,7 @@ function Ec(e, t) {
   function u(d) {
     return typeof d == "function";
   }
-  _e(() => {
+  be(() => {
     u(n()) && n()().then(({ renderer: d, ...p }) => {
       Fe(p), r.mutate(s, r.get(s).current = d), setIsLoaded(!0);
     });
@@ -5350,7 +5355,7 @@ function mr(e, t) {
   const m = I(Q) || Q(g);
   let _ = r.mutable_source(!1);
   const C = (S, T) => (S.visualElement = T, T);
-  _e(() => r.set(_, !0)), r.legacy_pre_effect(() => r.deep_read_state(a), () => {
+  be(() => r.set(_, !0)), r.legacy_pre_effect(() => r.deep_read_state(a), () => {
     r.set(u, a);
   }), r.legacy_pre_effect(() => (r.get(c), o()), () => {
     ((S) => {
@@ -5748,7 +5753,7 @@ function fc() {
   Ae(window, "scroll", e, { passive: !0 }), Ae(window, "resize", e);
 }
 function Rc() {
-  return xt || (xt = Ko()), we().then((e) => {
+  return xt || (xt = Ko()), he().then((e) => {
     !Yo && fc();
   }), xt;
 }

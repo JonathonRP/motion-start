@@ -63,11 +63,16 @@ Copyright (c) 2018 Framer B.V. -->
 
     $effect(() => {
         if (presenceAffectsLayout) {
-            context.set(memoContext());
+            const ctx = memoContext();
+            // Defer store.set() past the current effect execution — calling it
+            // synchronously causes $.mutate → $.internal_set to fire while the
+            // effect is still on the call stack, which Svelte 5 treats as an
+            // unsafe mutation and throws.
+            tick().then(() => context.set(ctx));
         }
     });
 
-    $effect(() => { refresh; untrack(() => context.set(memoContext())); });
+    $effect(() => { refresh; const ctx = untrack(memoContext); tick().then(() => context.set(ctx)); });
 
     const keyset = (flag?: boolean) => {
         presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
