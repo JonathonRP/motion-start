@@ -1,5 +1,5 @@
 <script>
-  import { Motion, AnimatePresence } from 'motion-start';
+  import { Motion, AnimatePresence } from "motion-start";
 
   let isVisible = true;
   let presenceAffectsLayout = true;
@@ -10,9 +10,68 @@
   }
 </script>
 
+<div class="demo">
+  <h2>AnimatePresence — bug-fix demo</h2>
+
+  <div class="controls">
+    <button on:click={toggle}>
+      {isVisible ? "Hide" : "Show"}
+    </button>
+    <label>
+      <input type="checkbox" bind:checked={presenceAffectsLayout} />
+      presenceAffectsLayout
+    </label>
+  </div>
+
+  <div class="stage">
+    <div class="box">A</div>
+
+    <AnimatePresence
+      {presenceAffectsLayout}
+      list={isVisible ? [{ key: "item" }] : []}
+      let:item
+      onExitComplete={() => exitCount++}
+    >
+      <Motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.5 }}
+        transition={{ duration: 0.35 }}
+        class="box present"
+      >
+        ✓
+      </Motion.div>
+    </AnimatePresence>
+
+    <div class="box">B</div>
+  </div>
+
+  <div class="hints">
+    <p class="hint">
+      <strong>Bug 1 — presenceAffectsLayout:</strong>
+      checkbox ON → A & B slide together when hiding. checkbox OFF → A & B stay put.
+    </p>
+    <p class="hint">
+      <strong>Bug 2 — race condition:</strong>
+      rapid-click Hide/Show — exit animation should always fire.
+    </p>
+    <p class="hint">
+      <strong>Bug 3 — double safeToRemove:</strong>
+      onExitComplete called <strong>{exitCount}</strong> time{exitCount !== 1
+        ? "s"
+        : ""}. Should equal the number of times you clicked Hide (never double).
+    </p>
+  </div>
+</div>
+
 <style>
-  :global(*) { box-sizing: border-box; margin: 0; }
-  :global(body) { background: #f8fafc; }
+  :global(*) {
+    box-sizing: border-box;
+    margin: 0;
+  }
+  :global(body) {
+    background: #f8fafc;
+  }
 
   .demo {
     font-family: sans-serif;
@@ -24,7 +83,11 @@
     margin: 0 auto;
   }
 
-  h2 { font-size: 1.1rem; font-weight: 600; color: #1e293b; }
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
 
   .controls {
     display: flex;
@@ -44,7 +107,9 @@
     font-weight: 500;
   }
 
-  button:hover { background: #4f46e5; }
+  button:hover {
+    background: #4f46e5;
+  }
 
   label {
     display: flex;
@@ -95,59 +160,7 @@
     line-height: 1.4;
   }
 
-  .hint strong { color: #1e293b; }
+  .hint strong {
+    color: #1e293b;
+  }
 </style>
-
-<div class="demo">
-  <h2>AnimatePresence — bug-fix demo</h2>
-
-  <div class="controls">
-    <button on:click={toggle}>
-      {isVisible ? 'Hide' : 'Show'}
-    </button>
-    <label>
-      <input type="checkbox" bind:checked={presenceAffectsLayout} />
-      presenceAffectsLayout
-    </label>
-  </div>
-
-  <div class="stage">
-    <div class="box">A</div>
-
-    <AnimatePresence
-      {presenceAffectsLayout}
-      list={isVisible ? [{ key: 'item' }] : []}
-      let:item
-      onExitComplete={() => exitCount++}
-    >
-      <Motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.5 }}
-        transition={{ duration: 0.35 }}
-        class="box present"
-      >
-        ✓
-      </Motion.div>
-    </AnimatePresence>
-
-    <div class="box">B</div>
-  </div>
-
-  <div class="hints">
-    <p class="hint">
-      <strong>Bug 1 — presenceAffectsLayout:</strong>
-      checkbox ON → A & B slide together when hiding.
-      checkbox OFF → A & B stay put.
-    </p>
-    <p class="hint">
-      <strong>Bug 2 — race condition:</strong>
-      rapid-click Hide/Show — exit animation should always fire.
-    </p>
-    <p class="hint">
-      <strong>Bug 3 — double safeToRemove:</strong>
-      onExitComplete called <strong>{exitCount}</strong> time{exitCount !== 1 ? 's' : ''}.
-      Should equal the number of times you clicked Hide (never double).
-    </p>
-  </div>
-</div>
