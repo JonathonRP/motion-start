@@ -1,12 +1,12 @@
 name: Preview
 
 on:
+  pull_request:
   push:
     branches:
       - "**"
-  pull_request:
-    branches:
-      - main
+    tags:
+      - "!**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
