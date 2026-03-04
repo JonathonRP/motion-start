@@ -25,7 +25,7 @@
 -->
 <script>
   // Replace {sha} with the latest commit SHA on this PR (from GitHub)
-  import { Motion, AnimatePresence } from 'https://cdn.jsdelivr.net/gh/JonathonRP/motion-start@{sha}/dist/cdn/index.js';
+  import { Motion, AnimatePresence } from 'motion-start';
 
   let isVisible = true;
   let presenceAffectsLayout = true;
