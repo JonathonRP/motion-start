@@ -8,7 +8,7 @@ import type { PresenceContextProps } from "../../context/PresenceContext";
 import { derived, get, readable } from 'svelte/store';
 import { PresenceContext } from '../../context/PresenceContext.js';
 
-import { getContext, onMount } from "svelte";
+import { getContext, onDestroy } from "svelte";
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -72,19 +72,20 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
 
     const context = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
-    const id = get(context) === null ? undefined : incrementId();
-    onMount(() => {
-        if (get(context) !== null) {
-            get(context).register(id!);
-        }
-    })
+    const contextValue = get(context);
 
-    if (get(context) === null) {
-        return readable([true, null]) satisfies Readable<AlwaysPresent>;
-    }
-    return derived<typeof context, Present | NotPresent>(context, $v =>
-        (!$v.isPresent && $v.onExitComplete) ?
-            [false, () => $v.onExitComplete?.(id!)] satisfies NotPresent :
-            [true] satisfies Present
-    );
+    // PresenceChild sets context synchronously before children initialize,
+    // so get() always returns the real value here — no subscription needed.
+    if (contextValue === null) return readable([true, null]);
+
+    const id = incrementId();
+    const unregister = contextValue.register(id);
+    onDestroy(unregister);
+
+    return derived(context, $v => {
+        if ($v === null) return [true, null] satisfies AlwaysPresent;
+        return (!$v.isPresent && $v.onExitComplete) ?
+            [false, () => $v.onExitComplete?.(id)] satisfies NotPresent :
+            [true] satisfies Present;
+    });
 }

@@ -12,43 +12,34 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js",
+			"import": "./dist/index.js",
+			"module": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
 		"./package.json": "./package.json",
-		"./src/context/MotionContext": {
+		"./context/MotionContext": {
 			"types": "./dist/context/MotionContext/index.d.ts",
 			"svelte": "./dist/context/MotionContext/index.js",
 			"import": "./dist/context/MotionContext/index.js",
 			"default": "./dist/context/MotionContext/index.js"
 		},
-		"./src/motion": {
+		"./motion": {
 			"types": "./dist/motion/index.d.ts",
 			"svelte": "./dist/motion/index.js",
 			"import": "./dist/motion/index.js",
 			"default": "./dist/motion/index.js"
 		},
-		"./src/render": {
+		"./render": {
 			"types": "./dist/render/index.d.ts",
 			"svelte": "./dist/render/index.js",
 			"import": "./dist/render/index.js",
 			"default": "./dist/render/index.js"
 		},
-		"./src/value": {
+		"./value": {
 			"types": "./dist/value/index.d.ts",
 			"svelte": "./dist/value/index.js",
 			"import": "./dist/value/index.js",
 			"default": "./dist/value/index.js"
-		},
-		"./src/*.js": {
-			"types": "./dist/*.d.ts",
-			"svelte": "./dist/*.js",
-			"import": "./dist/*.js",
-			"default": "./dist/*.js"
-		},
-		"./src/*.svelte": {
-			"types": "./dist/*.d.ts",
-			"svelte": "./dist/*.svelte",
-			"default": "./dist/*.svelte"
 		}
 	},
 	"files": [
@@ -56,8 +47,11 @@
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"browser": "./dist/index.js",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",

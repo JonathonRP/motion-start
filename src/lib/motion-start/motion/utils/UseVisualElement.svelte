@@ -62,6 +62,7 @@ Copyright (c) 2018 Framer B.V. -->
       ? $layoutGroupId + "-" + props.layoutId
       : props.layoutId;
 
+  let presenceUnsub: (() => void) | undefined;
   let visualElementRef: VisualElement | undefined = undefined;
   /**
    * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
@@ -97,6 +98,14 @@ Copyright (c) 2018 Framer B.V. -->
      * Fire a render to ensure the latest state is reflected on-screen.
      */
     visualElement.syncRender();
+    if (!presenceUnsub) {
+      presenceUnsub = presenceContext.subscribe(($ctx) => {
+        if (visualElement) {
+          visualElement.isPresent = isPresent($ctx);
+          visualElement.isPresenceRoot = !parent || parent.presenceId !== $ctx?.id;
+        }
+      });
+    }
   }
 
   afterUpdate(() => {
@@ -106,6 +115,7 @@ Copyright (c) 2018 Framer B.V. -->
   });
 
   onDestroy(() => {
+    presenceUnsub?.();
     visualElement?.notifyUnmount();
   });
 </script>

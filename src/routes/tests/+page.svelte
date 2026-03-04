@@ -13,6 +13,7 @@
         DurBasedSpring,
         KeyFramesPosition,
         MorphSvg,
+        PresenceAffectsLayout,
         Repeat,
         ReverseEffect,
         ScrollProgress,
@@ -387,6 +388,25 @@
             </Card.Header>
             <Card.Content>
                 <AnimateLayout />
+            </Card.Content>
+            <Card.Footer>
+                <Card.Footer class="grid gap-1">
+                    <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-green-500">Passed test</p>
+                </Card.Footer>
+            </Card.Footer>
+        </Card.Root>
+        <!-- End -->
+        <!-- Start -->
+        <Card.Root class="lg:col-span-2">
+            <Card.Header>
+                <Card.Title>Presence Affects Layout</Card.Title>
+                <Card.Description>
+                    Toggle presenceAffectsLayout and remove items to see the difference
+                </Card.Description>
+            </Card.Header>
+            <Card.Content>
+                <PresenceAffectsLayout />
             </Card.Content>
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
