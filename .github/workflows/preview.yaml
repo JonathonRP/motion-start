@@ -1,0 +1,33 @@
+name: Preview
+
+on:
+  push:
+    branches:
+      - "**"
+    pull_request:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  Preview:
+    name: Publish pkg.pr.new preview
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun --bun install --frozen-lockfile
+
+      - name: Build
+        run: bun --bun run build
+
+      - name: Publish preview
+        run: npx pkg-pr-new publish ./dist
