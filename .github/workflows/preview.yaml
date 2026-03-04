@@ -28,8 +28,9 @@ jobs:
         run: bun --bun install --frozen-lockfile
 
       - name: Build
-        run: bun --bun run build
-              cp package.json dist/
+        run: |
+            bun --bun run build
+            cp package.json dist/
 
       - name: Publish preview
         run: npx pkg-pr-new publish ./dist
