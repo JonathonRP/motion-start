@@ -44,6 +44,7 @@ Copyright (c) 2018 Framer B.V. -->
       isPresent,
       custom,
       onExitComplete: (childId: number) => {
+        if (!presenceChildren.has(childId)) return;
         if (presenceChildren.get(childId) === true) return;
         presenceChildren.set(childId, true);
         let allComplete = true;
@@ -63,13 +64,17 @@ Copyright (c) 2018 Framer B.V. -->
   // Set synchronously so children's usePresence() sees a non-null value via get()
   context.set(memoContext());
 
-  // Consolidated effect to update context when relevant props change
+  // Update context when relevant props change
   $effect(() => {
     if (presenceAffectsLayout) {
-      // When presenceAffectsLayout is true, update on any prop change
-      context.set(memoContext());
+      // Track all relevant props
+      isPresent;
+      initial;
+      custom;
+      // But set context without tracking to avoid loops
+      untrack(() => context.set(memoContext()));
     } else {
-      // When presenceAffectsLayout is false, only update when isPresent changes
+      // When presenceAffectsLayout is false, only track isPresent via refresh
       refresh;
       untrack(() => context.set(memoContext()));
     }
