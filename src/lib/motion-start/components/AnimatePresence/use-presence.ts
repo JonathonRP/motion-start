@@ -8,7 +8,7 @@ import type { PresenceContextProps } from "../../context/PresenceContext";
 import { derived, get, readable } from 'svelte/store';
 import { PresenceContext } from '../../context/PresenceContext.js';
 
-import { getContext, onDestroy, untrack } from "svelte";
+import { getContext, onDestroy } from "svelte";
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -72,30 +72,20 @@ export const useIsPresent = (isCustom = false): Readable<boolean> => {
 export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present | NotPresent> => {
 
     const context = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+    const contextValue = get(context);
 
-    // PresenceChild sets context via $effect (after children mount), so the store
-    // is null during child initialization. Subscribe to register as soon as the real
-    // context arrives instead of doing a one-shot get() that always sees null.
-    //
-    // untrack() is critical: without it, calling context.subscribe() inside
-    // $derived(usePresence(...)) in Exit.svelte would make the $derived track the
-    // context store, re-running usePresence() on every context change, creating a
-    // new subscription + new store on each run → effect_update_depth_exceeded.
-    let id: number | undefined;
-    const unsubRegister = untrack(() =>
-        context.subscribe(($v) => {
-            if ($v !== null && id === undefined) {
-                id = incrementId();
-                $v.register(id);
-            }
-        })
-    );
-    onDestroy(unsubRegister);
+    // PresenceChild sets context synchronously before children initialize,
+    // so get() always returns the real value here — no subscription needed.
+    if (contextValue === null) return readable([true, null]);
 
-    return derived<typeof context, AlwaysPresent | Present | NotPresent>(context, $v => {
+    const id = incrementId();
+    const unregister = contextValue.register(id);
+    onDestroy(unregister);
+
+    return derived(context, $v => {
         if ($v === null) return [true, null] satisfies AlwaysPresent;
         return (!$v.isPresent && $v.onExitComplete) ?
-            [false, () => $v.onExitComplete?.(id!)] satisfies NotPresent :
+            [false, () => $v.onExitComplete?.(id)] satisfies NotPresent :
             [true] satisfies Present;
     });
 }

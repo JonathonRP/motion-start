@@ -60,6 +60,8 @@ Copyright (c) 2018 Framer B.V. -->
     };
   };
   let context = PresenceContext();
+  // Set synchronously so children's usePresence() sees a non-null value via get()
+  context.set(memoContext());
 
   $effect(() => {
     if (presenceAffectsLayout) {
