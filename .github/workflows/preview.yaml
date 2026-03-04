@@ -9,7 +9,7 @@ on:
       - "!**"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -17,7 +17,6 @@ jobs:
     name: Publish pkg.pr.new preview
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
