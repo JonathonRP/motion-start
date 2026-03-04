@@ -1,10 +1,5 @@
-<!-- AnimatePresence bug-fix playground demo
-     Paste this into svelte.dev/playground to test the fixes from this PR.
-
-     HOW TO GET THE IMPORT URL:
-       1. Find the latest commit SHA on this PR (first 7+ chars shown in GitHub)
-       2. Replace {sha} in the import below with that SHA
-       (served via jsDelivr from GitHub — no CI wait needed)
+<!-- AnimatePresence bug-fix demo
+     Copy this into a Svelte project that has motion-start installed.
 
      Demonstrates three fixes on branch: claude/fix-animate-presence-bug-rpmhw
 
@@ -18,13 +13,14 @@
              Fixed with a synchronous presenceContext.subscribe() call.
              → Rapid-click Hide/Show: exit animation always fires correctly.
 
-     Bug 3 — Double safeToRemove: layout-animation path and exit-animation path
-             could both call onExitComplete for the same element.
-             Fixed with an early-return guard in memoContext.onExitComplete.
+     Bug 3 — Double safeToRemove: context store was null at child-init time
+             (deferred via tick), so children couldn't register → presenceChildren
+             empty → onExitComplete fired immediately on every hide instead of
+             waiting for the exit animation to finish.
+             Fixed by setting context synchronously at PresenceChild init.
              → "onExitComplete called" counter increments by exactly 1 per hide.
 -->
 <script>
-  // Replace {sha} with the latest commit SHA on this PR (from GitHub)
   import { Motion, AnimatePresence } from 'motion-start';
 
   let isVisible = true;

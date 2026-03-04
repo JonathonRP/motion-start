@@ -60,6 +60,11 @@ Copyright (c) 2018 Framer B.V. -->
         };
     };
     let context = PresenceContext();
+    // Set synchronously so children see a non-null context when they call
+    // usePresence() during their own initialization. Deferring via tick() caused
+    // the store to still be null at child-init time → id=undefined, no registration,
+    // AlwaysPresent returned, exit animations never fired, presenceChildren empty.
+    context.set(memoContext());
 
     $effect(() => {
         if (presenceAffectsLayout) {
