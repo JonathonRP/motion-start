@@ -8,7 +8,7 @@ import type { PresenceContextProps } from "../../context/PresenceContext";
 import { derived, get, readable } from 'svelte/store';
 import { PresenceContext } from '../../context/PresenceContext.js';
 
-import { getContext, onDestroy } from "svelte";
+import { getContext, onDestroy, untrack } from "svelte";
 
 export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
@@ -73,16 +73,23 @@ export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present 
 
     const context = getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
 
-    // PresenceChild defers context.set() via tick(), so the store is null during
-    // child initialization. Subscribe to register as soon as the real context arrives
-    // instead of doing a one-shot get() that would always see null and return AlwaysPresent.
+    // PresenceChild sets context via $effect (after children mount), so the store
+    // is null during child initialization. Subscribe to register as soon as the real
+    // context arrives instead of doing a one-shot get() that always sees null.
+    //
+    // untrack() is critical: without it, calling context.subscribe() inside
+    // $derived(usePresence(...)) in Exit.svelte would make the $derived track the
+    // context store, re-running usePresence() on every context change, creating a
+    // new subscription + new store on each run → effect_update_depth_exceeded.
     let id: number | undefined;
-    const unsubRegister = context.subscribe(($v) => {
-        if ($v !== null && id === undefined) {
-            id = incrementId();
-            $v.register(id);
-        }
-    });
+    const unsubRegister = untrack(() =>
+        context.subscribe(($v) => {
+            if ($v !== null && id === undefined) {
+                id = incrementId();
+                $v.register(id);
+            }
+        })
+    );
     onDestroy(unsubRegister);
 
     return derived<typeof context, AlwaysPresent | Present | NotPresent>(context, $v => {
