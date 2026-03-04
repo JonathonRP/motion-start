@@ -63,15 +63,16 @@ Copyright (c) 2018 Framer B.V. -->
   // Set synchronously so children's usePresence() sees a non-null value via get()
   context.set(memoContext());
 
+  // Consolidated effect to update context when relevant props change
   $effect(() => {
     if (presenceAffectsLayout) {
+      // When presenceAffectsLayout is true, update on any prop change
       context.set(memoContext());
+    } else {
+      // When presenceAffectsLayout is false, only update when isPresent changes
+      refresh;
+      untrack(() => context.set(memoContext()));
     }
-  });
-
-  $effect(() => {
-    refresh;
-    untrack(() => context.set(memoContext()));
   });
 
   const keyset = (flag?: boolean) => {
