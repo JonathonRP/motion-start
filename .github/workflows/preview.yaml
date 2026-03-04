@@ -29,6 +29,7 @@ jobs:
 
       - name: Build
         run: bun --bun run build
+              cp package.json dist/
 
       - name: Publish preview
-        run: npx pkg-pr-new publish
+        run: npx pkg-pr-new publish ./dist
