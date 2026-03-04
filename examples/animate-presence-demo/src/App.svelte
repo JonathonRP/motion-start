@@ -14,7 +14,7 @@
   <h2>AnimatePresence — bug-fix demo</h2>
 
   <div class="controls">
-    <button on:click={toggle}>
+    <button onclick={toggle}>
       {isVisible ? "Hide" : "Show"}
     </button>
     <label>
