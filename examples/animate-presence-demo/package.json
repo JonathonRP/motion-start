@@ -12,8 +12,7 @@
     "motion-start": "latest",
     "framesync": "^6.1.2",
     "popmotion": "^11.0.5",
-    "style-value-types": "5.1.2",
-    "tslib": "^2.6.0"
+    "style-value-types": "5.1.2"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
