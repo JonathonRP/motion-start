@@ -15,32 +15,32 @@
 			"default": "./dist/index.js"
 		},
 		"./package.json": "./package.json",
-		"./src/context/MotionContext": {
+		"./context/MotionContext": {
 			"types": "./dist/context/MotionContext/index.d.ts",
 			"svelte": "./dist/context/MotionContext/index.js",
 			"import": "./dist/context/MotionContext/index.js",
 			"default": "./dist/context/MotionContext/index.js"
 		},
-		"./src/motion": {
+		"./motion": {
 			"types": "./dist/motion/index.svelte.d.ts",
 			"svelte": "./dist/motion/index.svelte.js",
 			"import": "./dist/motion/index.svelte.js",
 			"default": "./dist/motion/index.svelte.js"
 		},
-		"./src/value": {
+		"./value": {
 			"types": "./dist/value/index.d.ts",
 			"svelte": "./dist/value/index.js",
 			"import": "./dist/value/index.js",
 			"default": "./dist/value/index.js"
 		},
-		"./src/*.js": {
+		"./*.js": {
 			"types": "./dist/*.d.ts",
 			"svelte": "./dist/*.js",
 			"import": "./dist/*.js",
 			"default": "./dist/*.js"
 		},
-		"./src/*.svelte": {
-			"types": "./dist/*.d.ts",
+		"./*.svelte": {
+			"types": "./dist/*.svelte.d.ts",
 			"svelte": "./dist/*.svelte",
 			"default": "./dist/*.svelte"
 		}
@@ -73,8 +73,8 @@
 		"csstype": "^3.2.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.4",
-		"@changesets/cli": "^2.29.8",
+		"@biomejs/biome": "^2.4.5",
+		"@changesets/cli": "^2.30.0",
 		"@emotion/is-prop-valid": "^1.4.0",
 		"@lucide/svelte": "^0.544.0",
 		"@sveltejs/adapter-auto": "^6.1.1",
@@ -93,10 +93,10 @@
 		"clsx": "^2.1.1",
 		"cypress": "latest",
 		"cypress-real-events": "^1.15.0",
-		"happy-dom": "^20.7.0",
+		"happy-dom": "^20.8.3",
 		"lucide-svelte": "^0.542.0",
 		"mode-watcher": "^1.1.0",
-		"publint": "^0.3.17",
+		"publint": "^0.3.18",
 		"runed": "^0.37.1",
 		"sv": "^0.11.4",
 		"svelte-check": "^4.4.4",
