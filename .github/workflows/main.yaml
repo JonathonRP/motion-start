@@ -75,4 +75,4 @@ jobs:
         run: bun --bun run build
 
       - name: Publish preview
-        run: npx pkg-pr-new publish
+        run: npx pkg-pr-new publish './dist'
