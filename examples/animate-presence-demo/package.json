@@ -12,10 +12,12 @@
     "motion-start": "latest",
     "framesync": "^6.1.2",
     "popmotion": "^11.0.5",
-    "style-value-types": "5.1.2"
+    "style-value-types": "5.1.2",
+    "tslib": "^2.6.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tsconfig/svelte": "^5.0.4",
     "svelte": "^5.0.0",
     "vite": "^6.0.0"
   }
