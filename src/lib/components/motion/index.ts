@@ -12,6 +12,7 @@ export { default as DurBasedSpring } from './DurBasedSpring.svelte';
 export { default as KeyFramesPosition } from './KeyFramesPosition.svelte';
 export { default as MorphSvg } from './MorphSVG.svelte';
 export { default as Navbar } from './Navbar.svelte';
+export { default as PresenceAffectsLayout } from './PresenceAffectsLayout.svelte';
 export { default as Repeat } from './Repeat.svelte';
 export { default as ReverseEffect } from './ReverseEffect.svelte';
 export { default as ScrollProgress } from './ScrollProgress.svelte';
