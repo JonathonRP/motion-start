@@ -91,17 +91,6 @@ Example pages demonstrating features: `animate-presence-basics`, `layout-basics`
 Active investigations and documentation are in `.claude/docs/`:
 - `presence-layout-investigation.md` - PresenceChild context reactivity issue (exit + layout animations conflict)
 
-## Issue Tracking
-
-Uses **bd (beads)** for issue tracking. Key commands:
-```bash
-bd ready --json              # Find unblocked issues
-bd create "Title" -t bug|feature|task -p 0-4 --json
-bd update <id> --status in_progress --json
-bd close <id> --reason "Done" --json
-```
-Always commit `.beads/issues.jsonl` with code changes.
-
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
 
 ## Available MCP Tools:

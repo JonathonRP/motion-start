@@ -523,10 +523,6 @@ npx cypress run
 # Format the codebase
 npx @biomejs/biome format --write .
 
-# Track work with bd
-bd ready
-bd update <id> --status in_progress
-bd close <id> --reason "Done"
 ```
 
 ### Notes

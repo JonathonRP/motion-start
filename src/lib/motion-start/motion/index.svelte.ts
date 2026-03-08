@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { type Component } from 'svelte';
+import type { Component } from 'svelte';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
-// import { MotionConfigContext } from '../context/MotionConfigContext';
+import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
 import type { UseVisualState } from './utils/use-visual-state.svelte';
 import { loadFeatures } from './features/load-features';
 import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte';
@@ -15,8 +15,10 @@ import { motionComponentSymbol } from './utils/symbol';
 import type { CreateVisualElement } from '../render/types';
 import { invariant, warning } from '../utils/errors';
 import { featureDefinitions } from './features/definitions';
-import Motion from './Motion.svelte';
 import type { Ref } from '../utils/safe-react-types';
+import { useVisualElement } from './utils/use-visual-element.svelte';
+import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
+import { useMotionRef } from './utils/use-motion-ref.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -55,48 +57,41 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		 * If we need to measure the element we load this functionality in a
 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
 		 */
-		// let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
+		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
 
-		// const configAndProps = $derived({
-		// 	...useContext(MotionConfigContext),
-		// 	...props,
-		// 	layoutId: useLayoutId(props),
-		// });
+		const configAndProps = $derived({
+			...useMotionConfigContext().current,
+			...props,
+			layoutId: useLayoutId(() => props),
+		});
 
-		// const { isStatic } = $derived(configAndProps);
+		const { isStatic } = $derived(configAndProps);
 
-		// const context = useCreateMotionContext<Instance>(props);
+		const context = $derived.by(useCreateMotionContext<Instance>(() => props));
 
-		// const visualState = useVisualState(props, isStatic);
+		const visualState = $derived.by(() => useVisualState(() => props, isStatic)());
 
-		// $effect(() => {
-		// 	if (!isStatic && isBrowser) {
-		// 		useStrictMode(configAndProps, preloadedFeatures);
+		const layoutProjection = $derived.by(() => getProjectionFunctionality(() => configAndProps));
 
-		// 		const layoutProjection = getProjectionFunctionality(configAndProps);
-		// 		/**
-		// 		 * If we need to measure the element we load this functionality in a
-		// 		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
-		// 		 */
-		// 		MeasureLayout = layoutProjection.MeasureLayout;
+		const visualElement = $derived.by(
+			useVisualElement<Instance, RenderState>(
+				Component,
+				() => visualState,
+				() => configAndProps,
+				createVisualElement,
+				() => layoutProjection.ProjectionNode
+			)
+		);
 
-		// 		/**
-		// 		 * Create a VisualElement for this component. A VisualElement provides a common
-		// 		 * interface to renderer-specific APIs (ie DOM/Three.js etc) as well as
-		// 		 * providing a way of rendering to these APIs outside of the React render loop
-		// 		 * for more performant animations and interactions
-		// 		 */
-		// 		context.visualElement = untrack(() =>
-		// 			useVisualElement<Instance, RenderState>(
-		// 				Component,
-		// 				visualState,
-		// 				configAndProps,
-		// 				createVisualElement,
-		// 				layoutProjection.ProjectionNode
-		// 			)
-		// 		);
-		// 	}
-		// });
+		useStrictMode(configAndProps, preloadedFeatures);
+
+		// Keep context and MeasureLayout in sync with derived values
+		$effect.pre(() => {
+			MeasureLayout = layoutProjection.MeasureLayout;
+		});
+		$effect.pre(() => {
+			context.visualElement = visualElement;
+		});
 
 		// $effect(() => {
 		// 	// MotionContext.Provider
@@ -107,210 +102,43 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		// 	};
 		// });
 
-		// const measure =
-		// 	MeasureLayout && context.visualElement
-		// 		? MeasureLayout(anchor, {
-		// 				visualElement: context.visualElement,
-		// 				...configAndProps,
-		// 			})
-		// 		: null;
+		let _measureInstance: Record<string, any> | null = null;
+		let rendererInstance: Record<string, any> | null = null;
 
-		// const renderer = useRender(anchor, {
-		// 	get Component() {
-		// 		return Component;
-		// 	},
-		// 	get props() {
-		// 		return props;
-		// 	},
-		// 	get ref() {
-		// 		return ref as Instance;
-		// 	},
-		// 	set ref(v: Instance) {
-		// 		ref = v;
-		// 		useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef)(ref);
-		// 	},
-		// 	get visualState() {
-		// 		return visualState;
-		// 	},
-		// 	get isStatic() {
-		// 		return isStatic;
-		// 	},
-		// 	get visualElement() {
-		// 		return context.visualElement;
-		// 	},
-		// 	get children() {
-		// 		return props.children;
-		// 	},
-		// });
+		const useStableRef = useMotionRef<Instance, RenderState>(visualState, visualElement, props.ref);
 
-		// $effect(() => {
-		// measure =
-		// 	MeasureLayout && context.visualElement
-		// 		? mount(MeasureLayout, {
-		// 				anchor,
-		// 				props: { visualElement: context.visualElement, ...configAndProps },
-		// 			})
-		// 		: null;
-
-		// renderer = mount(useRender, {
-		// 	anchor,
-		// 	props: {
-		// 		Component,
-		// 		props,
-		// 		ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-		// 		visualState,
-		// 		isStatic,
-		// 		visualElement: context.visualElement,
-		// 		children,
-		// 		el: ref,
-		// 	},
-		// });
-
-		// });
-
-		// console.log(props);
-		// console.log(configAndProps);
-
-		// $effect.pre(() => {
-		// 	const measure =
-		// 		MeasureLayout && context.visualElement
-		// 			? mount(MeasureLayout, { anchor, props: { visualElement: context.visualElement, ...configAndProps } })
-		// 			: null;
-		// 	const renderer = mount(useRender, {
-		// 		anchor,
-		// 		props: {
-		// 			get Component() {
-		// 				return Component;
-		// 			},
-		// 			get props() {
-		// 				return motionProps;
-		// 			},
-		// 			get ref() {
-		// 				return motionProps.ref as Instance;
-		// 			},
-		// 			set ref(v: Instance) {
-		// 				useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef)(v);
-		// 				props.ref = v;
-		// 			},
-		// 			get visualState() {
-		// 				return visualState;
-		// 			},
-		// 			get isStatic() {
-		// 				return isStatic;
-		// 			},
-		// 			get visualElement() {
-		// 				return context.visualElement;
-		// 			},
-		// 			get children() {
-		// 				return children;
-		// 			},
-		// 		},
-		// 	});
-
-		// 	flushSync();
-
-		// 	return () => {
-		// 		if (measure) unmount(measure);
-		// 		unmount(renderer);
-		// 	};
-		// });
-
-		// $effect(() => () => {
-		// 	// Since useMotionRef is not called on destroy, the visual element is unmounted here
-		// 	context.visualElement?.unmount();
-		// });
-
-		// $effect(() => {
-		// 	measure =
-		// 		MeasureLayout && context.visualElement
-		// 			? mount(MeasureLayout, {
-		// 					target: anchor,
-		// 					props: { visualElement: context.visualElement, ...configAndProps },
-		// 				})
-		// 			: null;
-		// 	renderer = mount(useRender, {
-		// 		target: anchor,
-		// 		props: {
-		// 			Component,
-		// 			props,
-		// 			ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-		// 			visualState,
-		// 			isStatic,
-		// 			visualElement: context.visualElement,
-		// 			children: props.children,
-		// 			el: ref,
-		// 		},
-		// 	});
-
-		// 	// flushSync();
-
-		// 	return () => {
-		// 		if (measure) unmount(measure);
-		// 		unmount(renderer);
-		// 	};
-		// });
-
-		// style="display: contents"
-		// const children = createRawSnippet(() => {
-		// 	return {
-		// 		render: () => '<slot></slot>',
-		// 		setup(target: Element) {
-		// 			$effect.pre(() => {
-		// 				const measure =
-		// 					MeasureLayout && context.visualElement
-		// 						? hydrate(MeasureLayout, {
-		// 								target,
-		// 								props: { visualElement: context.visualElement, ...configAndProps },
-		// 							})
-		// 						: null;
-		// 				const renderer = hydrate(useRender, {
-		// 					target,
-		// 					props: {
-		// 						Component,
-		// 						props,
-		// 						ref: useMotionRef<Instance, RenderState>(visualState, context.visualElement, externalRef),
-		// 						visualState,
-		// 						isStatic,
-		// 						visualElement: context.visualElement,
-		// 						children: props.children,
-		// 						el: ref,
-		// 					},
-		// 				});
-
-		// 				flushSync();
-
-		// 				return () => {
-		// 					if (measure) unmount(measure);
-		// 					unmount(renderer);
-		// 				};
-		// 			});
-		// 		},
-		// 	};
-		// });
-
-		return Motion<Props, Instance, RenderState>(anchor, {
-			get Component() {
-				return Component;
-			},
-			get useRender() {
-				return useRender;
-			},
-			get useVisualState() {
-				return useVisualState;
-			},
-			get createVisualElement() {
-				return createVisualElement;
-			},
-			get props() {
-				return props;
-			},
-			get ref() {
-				return props.ref;
-			},
-			set ref(v) {
-				props.ref = v;
-			},
+		$effect.pre(() => {
+			rendererInstance = useRender(anchor, {
+				get Component() {
+					return Component;
+				},
+				get props() {
+					return props;
+				},
+				get ref() {
+					return useStableRef;
+				},
+				get visualState() {
+					return visualState;
+				},
+				get isStatic() {
+					return isStatic;
+				},
+			});
 		});
+
+		$effect.pre(() => {
+			if (MeasureLayout && context.visualElement) {
+				_measureInstance = MeasureLayout(anchor, {
+					...configAndProps,
+					get visualElement() {
+						return context.visualElement;
+					},
+				});
+			}
+		});
+
+		return rendererInstance;
 	};
 
 	(MotionComponent as any)[motionComponentSymbol] = Component;
@@ -321,7 +149,7 @@ export function useLayoutId(props: () => MotionProps) {
 	const { layoutId } = props();
 	const { id: layoutGroupId } = useLayoutGroupContext().current;
 
-	return layoutGroupId && layoutId !== undefined ? layoutGroupId + '-' + layoutId : layoutId;
+	return layoutGroupId && layoutId !== undefined ? `${layoutGroupId}-${layoutId}` : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {

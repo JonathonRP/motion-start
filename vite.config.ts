@@ -30,13 +30,13 @@ export default defineConfig({
 		strictPort: true,
 		host: '127.0.0.1',
 		watch: {
-			ignored: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**', '**/.beads/**'],
+			ignored: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**'],
 		},
 	},
 
 	build: {
 		watch: {
-			exclude: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**', '**/.beads/**'],
+			exclude: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**'],
 		},
 	},
 });

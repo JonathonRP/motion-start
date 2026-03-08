@@ -16,7 +16,7 @@
   let navs = {
     navbar: [
       { label: "Docs", icon: Home, href: "/", id: "home" },
-      { label: "Test", icon: GalleryVerticalEnd, href: "/demo", id: "demo" },
+      { label: "Demo", icon: GalleryVerticalEnd, href: "/demo", id: "demo" },
     ],
   };
 </script>

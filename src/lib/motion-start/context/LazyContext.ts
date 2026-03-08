@@ -19,7 +19,7 @@ function useLazyContext() {
 	try {
 		return getLazyContext();
 	} catch {
-		return ref({ strict: true });
+		return ref({ strict: false });
 	}
 }
 

@@ -170,9 +170,6 @@ motion-start/
 │   ├── EVENT_HANDLERS.md          # Task 2 detailed plan (396 lines)
 │   ├── REACTIVE_CONTEXTS.md       # Task 3 detailed plan (441 lines)
 │   └── ELEMENT_ATTACHMENT.md      # Task 4 detailed plan (462 lines)
-│
-└── .beads/
-    └── issues.jsonl               # bd tasks (7 open)
 ```
 
 ## Key Information

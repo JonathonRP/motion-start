@@ -84,7 +84,7 @@ function useLayoutGroupContext() {
 	try {
 		return getLayoutGroupContext();
 	} catch {
-		return ref({});
+		return ref({} as LayoutGroupContext);
 	}
 }
 

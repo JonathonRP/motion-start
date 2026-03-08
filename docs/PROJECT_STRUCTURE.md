@@ -76,7 +76,6 @@ motion-start/
 ├── cypress/                           # E2E tests
 │   ├── e2e/                          # Feature tests
 │   └── support/                       # Test utilities
-├── .beads/                            # Beads issue tracking
 ├── docs/                              # Project documentation (NEW)
 ├── plans/                             # AI planning documents (NEW)
 ├── vite.config.ts                     # Vite configuration

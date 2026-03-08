@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun install && bun install -g @beads/bd"
+            "command": "bun install"
           }
         ]
       }

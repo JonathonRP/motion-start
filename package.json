@@ -15,31 +15,31 @@
 			"default": "./dist/index.js"
 		},
 		"./package.json": "./package.json",
-		"./context/MotionContext": {
+		"./src/context/MotionContext": {
 			"types": "./dist/context/MotionContext/index.d.ts",
 			"svelte": "./dist/context/MotionContext/index.js",
 			"import": "./dist/context/MotionContext/index.js",
 			"default": "./dist/context/MotionContext/index.js"
 		},
-		"./motion": {
+		"./src/motion": {
 			"types": "./dist/motion/index.svelte.d.ts",
 			"svelte": "./dist/motion/index.svelte.js",
 			"import": "./dist/motion/index.svelte.js",
 			"default": "./dist/motion/index.svelte.js"
 		},
-		"./value": {
+		"./src/value": {
 			"types": "./dist/value/index.d.ts",
 			"svelte": "./dist/value/index.js",
 			"import": "./dist/value/index.js",
 			"default": "./dist/value/index.js"
 		},
-		"./*.js": {
+		"./src/*.js": {
 			"types": "./dist/*.d.ts",
 			"svelte": "./dist/*.js",
 			"import": "./dist/*.js",
 			"default": "./dist/*.js"
 		},
-		"./*.svelte": {
+		"./src/*.svelte": {
 			"types": "./dist/*.svelte.d.ts",
 			"svelte": "./dist/*.svelte",
 			"default": "./dist/*.svelte"
@@ -73,7 +73,7 @@
 		"csstype": "^3.2.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.5",
+		"@biomejs/biome": "^2.4.6",
 		"@changesets/cli": "^2.30.0",
 		"@emotion/is-prop-valid": "^1.4.0",
 		"@lucide/svelte": "^0.544.0",
@@ -86,9 +86,9 @@
 		"@tsconfig/svelte": "^5.0.8",
 		"@types/bun": "latest",
 		"@types/cypress": "^1.1.6",
-		"@types/node": "^20.19.35",
+		"@types/node": "^20.19.37",
 		"@vitest/ui": "latest",
-		"bits-ui": "^2.16.2",
+		"bits-ui": "^2.16.3",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cypress": "latest",
@@ -99,7 +99,7 @@
 		"publint": "^0.3.18",
 		"runed": "^0.37.1",
 		"sv": "^0.11.4",
-		"svelte-check": "^4.4.4",
+		"svelte-check": "^4.4.5",
 		"svelte-render-scan": "^1.1.0",
 		"tailwind-merge": "^3.5.0",
 		"tailwind-variants": "^3.2.2",
@@ -111,7 +111,7 @@
 		"vitest": "latest"
 	},
 	"peerDependencies": {
-		"svelte": "^5.53.6"
+		"svelte": "^5.53.7"
 	},
 	"engines": {
 		"bun": ">=1.0.0",

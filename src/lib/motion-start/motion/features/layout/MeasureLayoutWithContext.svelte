@@ -69,7 +69,7 @@
 
 	// getSnapshotBeforeUpdate
 	watch.pre(
-		[() => props, () => props.visualElement.projection],
+		[() => props, () => props.visualElement?.projection],
 		([props], [prevProps]) => {
 			const { layoutDependency, visualElement, drag, isPresent } =
 				props ?? {};

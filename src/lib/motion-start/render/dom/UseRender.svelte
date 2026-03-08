@@ -3,7 +3,6 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-	import { untrack } from "svelte";
 	import type { RenderComponent } from "../../motion/features/types";
 	import type { HTMLRenderState } from "../html/types";
 	import type { SVGRenderState } from "../svg/types";
@@ -12,6 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import { useSvgProps } from "../svg/use-props.svelte";
 	import { useHTMLProps } from "../html/use-props.svelte";
 	import type { Attachment } from "svelte/attachments";
+	import { untrack } from "svelte";
 
 	type Props = Parameters<
 		RenderComponent<
@@ -58,12 +58,10 @@ Copyright (c) 2018 Framer B.V. -->
 		...visualProps,
 	});
 
-	// Attachment callback - runs in $effect.pre context after render
-	// Using untrack to prevent the attachment from re-running when ref changes
-	// The attachment should only run once on mount and cleanup on unmount
+	// Use untrack to prevent the visualElement.current $state write (inside
+	// visualElement.mount) from triggering a reactive cascade. Without untrack,
+	// drag feature's addListeners() can be called before projection is ready.
 	const motionRef: Attachment<HTMLElement | SVGElement> = (node) => {
-		// Use untrack to prevent reactive tracking of ref access
-		// This ensures the attachment doesn't re-run when ref identity changes
 		return untrack(() => {
 			if (typeof ref === "function") {
 				ref(node);

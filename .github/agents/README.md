@@ -16,9 +16,7 @@ This directory contains agents used to enforce Test-Driven Development (TDD) wor
 4. **Land the Plane**:
    - `npx sv check`
    - `npx cypress run` (or targeted specs)
-   - Update/close bd issues (`bd update`, `bd close --json`)
    - Format with Biome (`npx @biomejs/biome format --write .`)
-   - Commit code changes together with `.beads/issues.jsonl`
    - Provide a concise summary of changes, test results, and follow-ups
 
 ## Notes

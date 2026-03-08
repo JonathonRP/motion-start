@@ -196,12 +196,6 @@ export function createPresenceContext() {
 ## Commands
 
 ```bash
-# View ready work
-npx @beads/bd ready --json
-
-# Check current task status
-npx @beads/bd show motion-start-fca --json
-
 # Run tests with happy-dom
 npx vitest run src/lib/motion-start/__tests__/
 

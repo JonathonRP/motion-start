@@ -13,7 +13,7 @@ import { usePresenceContext } from '../../context/PresenceContext.svelte';
 import { useSwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import { microtask } from '../../frameloop/microtask';
 import type { IProjectionNode } from '../../projection/node/types';
-import { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import { isRefObject } from '../../utils/is-ref-object.js';
 import { ref } from '../../utils/ref.svelte';
@@ -47,14 +47,15 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement = createVisualElement || lazyContext.renderer;
 
 	if (!visualElementRef.current && createVisualElement) {
-		visualElementRef.current = createVisualElement(Component, {
-			visualState: visualState(),
-			parent,
-			props: props(),
-			presenceContext: presenceContext ? presenceContext : null,
-			blockInitialAnimation: presenceContext ? presenceContext.initial === false : false,
-			reducedMotionConfig: reducedMotionContext,
-		}) ?? null;
+		visualElementRef.current =
+			createVisualElement(Component, {
+				visualState: visualState(),
+				parent,
+				props: props(),
+				presenceContext: presenceContext ? presenceContext : null,
+				blockInitialAnimation: presenceContext ? presenceContext.initial === false : false,
+				reducedMotionConfig: reducedMotionContext,
+			}) ?? null;
 	}
 
 	const visualElement = $derived(visualElementRef.current);
@@ -103,15 +104,13 @@ export function useVisualElement<Instance, RenderState>(
 			window.MotionHasOptimisedAnimation?.(optimisedAppearId)
 	);
 
-	$effect(() => {
-		// $inspect.trace();
-
+	$effect.pre(() => {
 		if (!visualElement?.current) return;
 
 		window.MotionIsMounted = true;
 
 		visualElement.updateFeatures();
-		microtask.render(() => visualElement.render);
+		microtask.render(visualElement.render);
 
 		/**
 		 * Ideally this function would always run in a useEffect.
@@ -124,22 +123,21 @@ export function useVisualElement<Instance, RenderState>(
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
 		tick().then(() => {
-		if (wantsHandoff && visualElement.animationState) {
-			visualElement.animationState.animateChanges();
-		}
-	});
+			if (wantsHandoff && visualElement.animationState) {
+				visualElement.animationState.animateChanges();
+			}
+		});
 	});
 
-	$effect(() => {
-		// $inspect.trace();
+	$effect.pre(() => {
 		props();
 		if (!visualElement?.current) return;
 
 		tick().then(() => {
-		if (!wantsHandoff && visualElement.animationState) {
-			visualElement.animationState.animateChanges();
-		}
-	});
+			if (!wantsHandoff && visualElement.animationState) {
+				visualElement.animationState.animateChanges();
+			}
+		});
 
 		if (wantsHandoff) {
 			// This ensures all future calls to animateChanges() in this component will run in useEffect
