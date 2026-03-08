@@ -60,25 +60,22 @@
 	</div>
 
 	<div class="items-container">
-		<AnimatePresence {presenceAffectsLayout} list={items.map((item) => ({ key: item.id }))}>
+		<AnimatePresence {presenceAffectsLayout} list={items.map((item) => ({ key: item.id, color: item.color, text: item.text }))}>
 			{#snippet children({ item })}
-				{@const data = items.find((i) => i.id === item.key)}
-				{#if data}
-					<Motion.div
-						layout
-						initial={{ opacity: 0, x: -100 }}
-						animate={{ opacity: 1, x: 0, backgroundColor: data.color }}
-						exit={{ opacity: 0, x: 100 }}
-						transition={{
-							duration: 0.5,
-							layout: { duration: 0.3 }
-						}}
-						class="item-card"
-					>
-						<div class="item-text">{data.text}</div>
-						<button class="remove-btn" onclick={() => removeItem(data.id)}> Remove </button>
-					</Motion.div>
-				{/if}
+				<Motion.div
+					layout
+					initial={{ opacity: 0, x: -100 }}
+					animate={{ opacity: 1, x: 0, backgroundColor: item.color }}
+					exit={{ opacity: 0, x: 100 }}
+					transition={{
+						duration: 0.5,
+						layout: { duration: 0.3 }
+					}}
+					class="item-card"
+				>
+					<div class="item-text">{item.text}</div>
+					<button class="remove-btn" onclick={() => removeItem(item.key)}> Remove </button>
+				</Motion.div>
 			{/snippet}
 		</AnimatePresence>
 	</div>
