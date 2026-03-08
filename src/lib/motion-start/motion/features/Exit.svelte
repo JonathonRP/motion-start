@@ -20,11 +20,10 @@ Copyright (c) 2018 Framer B.V. -->
   let { props, visualElement, isCustom, children } = $props();
   const { custom } = $derived(props);
 
-  const presenceContext = $derived(
+  const presenceContext =
     getContext<Writable<PresenceContextProps>>(PresenceContext) ||
-      PresenceContext(isCustom),
-  );
-  const presence = $derived(usePresence(isCustom));
+    PresenceContext(isCustom);
+  const presence = usePresence(isCustom);
 
   const _effect = (pres: AlwaysPresent | Present | NotPresent) => {
     const [isPresent, onExitComplete] = pres;
