@@ -1,24 +1,30 @@
 <script>
-	import { Motion, AnimatePresence, useMotionValue, useTransform } from 'motion-start';
+	import { Motion, AnimatePresence } from 'motion-start';
+	import Card from './Card.svelte';
 
 	let index = 0;
 
 	const cards = [
-		{ id: 1, color: '#FF6B6B', emoji: '❤️' },
-		{ id: 2, color: '#4ECDC4', emoji: '💙' },
-		{ id: 3, color: '#45B7D1', emoji: '💚' },
-		{ id: 4, color: '#96CEB4', emoji: '💛' },
-		{ id: 5, color: '#FFEAA7', emoji: '🧡' },
-		{ id: 6, color: '#DFE6E9', emoji: '💜' }
+		{ id: 1, color: '#FF6B6B', emoji: '❤️', label: 'Card 1' },
+		{ id: 2, color: '#4ECDC4', emoji: '💙', label: 'Card 2' },
+		{ id: 3, color: '#45B7D1', emoji: '💚', label: 'Card 3' },
+		{ id: 4, color: '#96CEB4', emoji: '💛', label: 'Card 4' },
+		{ id: 5, color: '#FFEAA7', emoji: '🧡', label: 'Card 5' },
+		{ id: 6, color: '#DFE6E9', emoji: '💜', label: 'Card 6' }
 	];
 
-	// Card component state
+	// Direction the front card should fly when dismissed.
 	let exitX = 0;
-	const x = useMotionValue(0);
-	const rotate = useTransform(x, [-150, 0, 150], [-30, 0, 30]);
+
+	// Embed full card data in the list item so that AnimatePresence can keep
+	// displaying the correct card content (color, emoji) during the exit
+	// animation — even after `index` has already advanced.
+	$: currentCard = cards[index % cards.length];
+	$: nextCard = cards[(index + 1) % cards.length];
+	$: frontList = [{ key: index, ...currentCard }];
 
 	const variantsFrontCard = {
-		initial: { scale: 1, y: 0, opacity: 1 },
+		initial: { scale: 1, y: 0, opacity: 0 },
 		animate: { scale: 1, y: 0, opacity: 1 },
 		exit: (custom) => ({ x: custom, opacity: 0, scale: 0.5 })
 	};
@@ -32,8 +38,7 @@
 		if (info.offset.x < -100) {
 			exitX = -250;
 			index = index + 1;
-		}
-		if (info.offset.x > 100) {
+		} else if (info.offset.x > 100) {
 			exitX = 250;
 			index = index + 1;
 		}
@@ -43,9 +48,6 @@
 		index = 0;
 		exitX = 0;
 	}
-
-	$: currentCard = cards[index % cards.length];
-	$: nextCard = cards[(index + 1) % cards.length];
 </script>
 
 <div class="app">
@@ -53,7 +55,7 @@
 	<p class="subtitle">Drag the card left or right to dismiss</p>
 
 	<div class="stage">
-		<!-- Back card (outside AnimatePresence) -->
+		<!-- Back card: peek behind the front card -->
 		<Motion.div
 			variants={variantsBackCard}
 			initial="initial"
@@ -63,32 +65,20 @@
 		>
 			<div class="card-content">
 				<div class="emoji">{nextCard.emoji}</div>
-				<div class="card-number">{(index + 1) % cards.length + 1}</div>
+				<div class="card-label">{nextCard.label}</div>
 			</div>
 		</Motion.div>
 
-		<!-- Front card (inside AnimatePresence) -->
-		<AnimatePresence initial={false} list={[{ key: index }]} let:item>
-			{#key item.key}
-				<Motion.div
-					drag="x"
-					dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
-					style={{ x, rotate }}
-					variants={variantsFrontCard}
-					initial="initial"
-					animate={{ ...variantsFrontCard.animate, backgroundColor: currentCard.color }}
-					exit="exit"
-					custom={exitX}
-					transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-					ondragend={handleDragEnd}
-					class="card front-card"
-				>
-					<div class="card-content">
-						<div class="emoji">{currentCard.emoji}</div>
-						<div class="card-number">{(index % cards.length) + 1}</div>
-					</div>
-				</Motion.div>
-			{/key}
+		<!-- Front card: managed by AnimatePresence for exit animations.
+		     Item data is embedded in the list so the exiting card still
+		     shows the correct color/emoji while sliding away. -->
+		<AnimatePresence initial={false} list={frontList} let:item>
+			<Card
+				card={item}
+				{exitX}
+				{variantsFrontCard}
+				ondragend={handleDragEnd}
+			/>
 		</AnimatePresence>
 	</div>
 
@@ -196,8 +186,8 @@
 		line-height: 1;
 	}
 
-	.card-number {
-		font-size: 3rem;
+	.card-label {
+		font-size: 2rem;
 		font-weight: 700;
 		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
@@ -289,8 +279,8 @@
 			font-size: 4rem;
 		}
 
-		.card-number {
-			font-size: 2.5rem;
+		.card-label {
+			font-size: 1.5rem;
 		}
 	}
 </style>

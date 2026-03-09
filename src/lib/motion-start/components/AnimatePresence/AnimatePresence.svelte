@@ -18,6 +18,7 @@ Copyright (c) 2018 Framer B.V. -->
         LayoutEpochContext,
         createLayoutEpoch,
     } from "../../context/LayoutEpochContext.js";
+    import { LayoutSnapshotContext } from "../../context/LayoutSnapshotContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -38,9 +39,15 @@ Copyright (c) 2018 Framer B.V. -->
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
 
-    // Provide a counter that Measure.svelte subscribes to.  Incrementing it
-    // before the DOM update lets $effect.pre in Measure snapshot positions
-    // while the old layout is still intact.
+    // Synchronous snapshot registry: Measure.svelte registers its updater here.
+    // AnimatePresence calls all callbacks inside its reactive block, before
+    // childrenToRender is mutated, so Measure snapshots the OLD layout for FLIP.
+    const snapshotCallbacks = new Set<() => void>();
+    setContext(LayoutSnapshotContext, snapshotCallbacks);
+
+    // Epoch counter: incremented after snapshots but still before the DOM
+    // update. MeasureContextProvider subscribes and passes it as the `update`
+    // prop to Measure, whose $effect fires afterU once the DOM has settled.
     const layoutEpoch = createLayoutEpoch();
     setContext(LayoutEpochContext, layoutEpoch);
 
@@ -88,7 +95,13 @@ Copyright (c) 2018 Framer B.V. -->
     ];
 
     $: if (!isInitialRender) {
-        // Signal Measure.svelte to snapshot positions before the DOM changes.
+        // 1. Snapshot current positions synchronously (Svelte 4 reactive blocks
+        //    run before the component's own DOM diff is applied, so the DOM is
+        //    still in its "before" state here — the correct FLIP "from" position).
+        snapshotCallbacks.forEach((fn) => fn());
+
+        // 2. Increment epoch so MeasureContextProvider passes a new `update`
+        //    prop to Measure, whose $effect fires afterU once the DOM settles.
         layoutEpoch.update((n) => n + 1);
 
         // If this is a subsequent render, deal with entering and exiting children

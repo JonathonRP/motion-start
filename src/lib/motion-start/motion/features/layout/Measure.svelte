@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-  import { getContext, onMount } from "svelte";
+  import { getContext, onDestroy, onMount } from "svelte";
   import { get, type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
@@ -11,6 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../../context/ScaleCorrectionProvider.svelte";
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
+  import { LayoutSnapshotContext } from "../../../context/LayoutSnapshotContext.js";
 
   let { visualElement, syncLayout, framerSyncLayout, update } = $props();
 
@@ -66,9 +67,22 @@ Copyright (c) 2018 Framer B.V. -->
     }
   };
 
-  // $effect.pre fires BEFORE the DOM is updated.  Reading `update` here means
-  // we re-snapshot whenever AnimatePresence increments the layout epoch, while
-  // the old layout is still intact — giving us the FLIP "from" position.
+  // Register updater in the synchronous snapshot registry provided by the
+  // nearest AnimatePresence ancestor.  AnimatePresence calls all registered
+  // callbacks inside its Svelte 4 reactive block — before childrenToRender (and
+  // therefore the DOM) changes — so we snapshot the correct "from" position for
+  // FLIP.  The `updated` guard in updater() prevents double-execution if
+  // $effect.pre also fires for the non-AnimatePresence case.
+  const snapshotCallbacks = getContext<Set<() => void>>(LayoutSnapshotContext);
+  if (snapshotCallbacks) {
+    snapshotCallbacks.add(updater);
+    onDestroy(() => snapshotCallbacks.delete(updater));
+  }
+
+  // Fallback: for layout animations not driven by AnimatePresence (standalone
+  // `layout` prop), $effect.pre fires before the Svelte 5 component's own DOM
+  // update and provides the snapshot.  It is a no-op when the synchronous
+  // callback already ran (updated guard).
   $effect.pre(() => {
     const _u = update; void _u;
     updater();
