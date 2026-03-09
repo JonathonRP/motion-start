@@ -18,6 +18,7 @@
 	const rotate = useTransform(x, [-150, 0, 150], [-30, 0, 30]);
 
 	const variantsFrontCard = {
+		initial: { scale: 1, y: 0, opacity: 1 },
 		animate: { scale: 1, y: 0, opacity: 1 },
 		exit: (custom) => ({ x: custom, opacity: 0, scale: 0.5 })
 	};
@@ -74,6 +75,7 @@
 					dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
 					style={{ x, rotate }}
 					variants={variantsFrontCard}
+					initial="initial"
 					animate={{ ...variantsFrontCard.animate, backgroundColor: currentCard.color }}
 					exit="exit"
 					custom={exitX}

@@ -76,24 +76,22 @@
       }))}
       let:item
     >
-      {#if data}
-        <Motion.div
-          layout
-          initial={{ opacity: 0, x: -100 }}
-          animate={{ opacity: 1, x: 0, backgroundColor: item.color }}
-          exit={{ opacity: 0, x: 100 }}
-          transition={{
-            duration: 0.5,
-            layout: { duration: 0.3 },
-          }}
-          class="item-card"
-        >
-          <div class="item-text">{item.text}</div>
-          <button class="remove-btn" onclick={() => removeItem(item.key)}>
-            Remove
-          </button>
-        </Motion.div>
-      {/if}
+      <Motion.div
+        layout
+        initial={{ opacity: 0, x: -100 }}
+        animate={{ opacity: 1, x: 0, backgroundColor: item.color }}
+        exit={{ opacity: 0, x: 100 }}
+        transition={{
+          duration: 0.5,
+          layout: { duration: 0.3 },
+        }}
+        class="item-card"
+      >
+        <div class="item-text">{item.text}</div>
+        <button class="remove-btn" onclick={() => removeItem(item.key)}>
+          Remove
+        </button>
+      </Motion.div>
     </AnimatePresence>
   </div>
 
