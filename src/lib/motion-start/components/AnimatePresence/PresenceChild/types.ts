@@ -8,4 +8,5 @@ export interface PresenceChildProps {
 	custom?: any;
 	presenceAffectsLayout: boolean;
 	isCustom: boolean;
+	presenceKey?: any;
 }

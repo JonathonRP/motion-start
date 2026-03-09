@@ -1,10 +1,9 @@
 <script>
 	import { Motion, useMotionValue, useTransform } from 'motion-start';
 
-	export let card; // { color, emoji }
-	export let exitX;
-	export let variantsFrontCard;
-	export let ondragend;
+	export let card; // { color, emoji, label, isFront }
+	export let exitX = 0;
+	export let onDragEnd = undefined;
 
 	// Each Card instance owns its own x / rotate so that the exiting card and
 	// the entering card don't share the same MotionValue.
@@ -13,18 +12,21 @@
 </script>
 
 <Motion.div
-	drag="x"
+	drag={card.isFront ? 'x' : false}
 	dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
 	dragElastic={1}
-	style={{ x, rotate }}
-	variants={variantsFrontCard}
-	initial="initial"
-	animate={{ ...variantsFrontCard.animate, backgroundColor: card.color }}
-	exit="exit"
-	custom={exitX}
+	style={card.isFront ? { x, rotate } : undefined}
+	initial={{ scale: card.isFront ? 1 : 0.9, y: card.isFront ? 0 : 40, opacity: 0 }}
+	animate={{
+		scale: card.isFront ? 1 : 0.9,
+		y: card.isFront ? 0 : 20,
+		opacity: card.isFront ? 1 : 0.5,
+		backgroundColor: card.color
+	}}
+	exit={card.isFront ? { x: exitX, opacity: 0, scale: 0.5 } : { opacity: 0, scale: 0.85 }}
 	transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-	{ondragend}
-	class="card front-card"
+	{onDragEnd}
+	class="card {card.isFront ? 'front-card' : 'back-card'}"
 >
 	<div class="card-content">
 		<div class="emoji">{card.emoji}</div>

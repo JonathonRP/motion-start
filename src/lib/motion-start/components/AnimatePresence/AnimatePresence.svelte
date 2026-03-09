@@ -19,6 +19,7 @@ Copyright (c) 2018 Framer B.V. -->
         createLayoutEpoch,
     } from "../../context/LayoutEpochContext.js";
     import { LayoutSnapshotContext } from "../../context/LayoutSnapshotContext.js";
+    import { LayoutPositionContext } from "../../context/LayoutPositionContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -44,6 +45,13 @@ Copyright (c) 2018 Framer B.V. -->
     // childrenToRender is mutated, so Measure snapshots the OLD layout for FLIP.
     const snapshotCallbacks = new Set<() => void>();
     setContext(LayoutSnapshotContext, snapshotCallbacks);
+
+    // Position:absolute registry: AnimateLayoutContextProvider registers a callback
+    // keyed by presenceKey. AnimatePresence calls it for exiting elements (when
+    // presenceAffectsLayout=true) after snapshot but before epoch update, so remaining
+    // elements' FLIP "to" positions are measured without the exiting element in flow.
+    const positionRegistry = new Map<any, () => void>();
+    setContext(LayoutPositionContext, positionRegistry);
 
     // Epoch counter: incremented after snapshots but still before the DOM
     // update. MeasureContextProvider subscribes and passes it as the `update`
@@ -95,12 +103,28 @@ Copyright (c) 2018 Framer B.V. -->
     ];
 
     $: if (!isInitialRender) {
+        // 0. Pre-compute exiting keys BEFORE snapshot so we can apply
+        //    position:absolute after the snapshot (for presenceAffectsLayout=true).
+        const presentKeys = presentChildren.map(getChildKey);
+        const targetKeys = filteredChildren.map(getChildKey);
+
         // 1. Snapshot current positions synchronously (Svelte 4 reactive blocks
         //    run before the component's own DOM diff is applied, so the DOM is
         //    still in its "before" state here — the correct FLIP "from" position).
         snapshotCallbacks.forEach((fn) => fn());
 
-        // 2. Increment epoch so MeasureContextProvider passes a new `update`
+        // 2. Apply position:absolute to exiting elements (presenceAffectsLayout=true).
+        //    This removes them from the layout flow so remaining elements shift to
+        //    their final positions before the FLIP "to" measurement fires.
+        if (presenceAffectsLayout) {
+            presentKeys.forEach((key) => {
+                if (targetKeys.indexOf(key) === -1) {
+                    positionRegistry.get(key)?.();
+                }
+            });
+        }
+
+        // 3. Increment epoch so MeasureContextProvider passes a new `update`
         //    prop to Measure, whose $effect fires afterU once the DOM settles.
         layoutEpoch.update((n) => n + 1);
 
@@ -115,9 +139,7 @@ Copyright (c) 2018 Framer B.V. -->
         ];
 
         // Diff the keys of the currently-present and target children to update our
-        // exiting list.
-        const presentKeys = presentChildren.map(getChildKey);
-        const targetKeys = filteredChildren.map(getChildKey);
+        // exiting list (keys already computed above).
         // Diff the present children with our target children and mark those that are exiting
         const numPresent = presentKeys.length;
         for (let i = 0; i < numPresent; i++) {
@@ -208,6 +230,7 @@ Copyright (c) 2018 Framer B.V. -->
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
         {isCustom}
+        presenceKey={child.key}
     >
         <slot item={child.item} />
     </PresenceChild>

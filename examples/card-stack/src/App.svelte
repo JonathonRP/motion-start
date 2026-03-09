@@ -1,10 +1,11 @@
 <script>
-	import { Motion, AnimatePresence } from 'motion-start';
+	import { AnimatePresence } from 'motion-start';
 	import Card from './Card.svelte';
 
 	let index = 0;
+	let exitX = 0;
 
-	const cards = [
+	const allCards = [
 		{ id: 1, color: '#FF6B6B', emoji: '❤️', label: 'Card 1' },
 		{ id: 2, color: '#4ECDC4', emoji: '💙', label: 'Card 2' },
 		{ id: 3, color: '#45B7D1', emoji: '💚', label: 'Card 3' },
@@ -13,26 +14,15 @@
 		{ id: 6, color: '#DFE6E9', emoji: '💜', label: 'Card 6' }
 	];
 
-	// Direction the front card should fly when dismissed.
-	let exitX = 0;
-
-	// Embed full card data in the list item so that AnimatePresence can keep
-	// displaying the correct card content (color, emoji) during the exit
-	// animation — even after `index` has already advanced.
-	$: currentCard = cards[index % cards.length];
-	$: nextCard = cards[(index + 1) % cards.length];
-	$: frontList = [{ key: index, ...currentCard }];
-
-	const variantsFrontCard = {
-		initial: { scale: 1, y: 0, opacity: 0 },
-		animate: { scale: 1, y: 0, opacity: 1 },
-		exit: (custom) => ({ x: custom, opacity: 0, scale: 0.5 })
-	};
-
-	const variantsBackCard = {
-		initial: { scale: 0.9, y: 40, opacity: 0 },
-		animate: { scale: 0.9, y: 20, opacity: 0.5 }
-	};
+	// Both the front and back card are managed by AnimatePresence.
+	// The key is the index, so when index increments:
+	//   - key=index exits (front card slides away)
+	//   - key=index+1 stays but transitions from back→front animate target
+	//   - key=index+2 enters as the new back card
+	$: visibleList = [
+		{ key: index, isFront: true, ...allCards[index % allCards.length] },
+		{ key: index + 1, isFront: false, ...allCards[(index + 1) % allCards.length] }
+	];
 
 	function handleDragEnd(_, info) {
 		if (info.offset.x < -100) {
@@ -55,29 +45,11 @@
 	<p class="subtitle">Drag the card left or right to dismiss</p>
 
 	<div class="stage">
-		<!-- Back card: peek behind the front card -->
-		<Motion.div
-			variants={variantsBackCard}
-			initial="initial"
-			animate={{ ...variantsBackCard.animate, backgroundColor: nextCard.color }}
-			transition={{ scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
-			class="card back-card"
-		>
-			<div class="card-content">
-				<div class="emoji">{nextCard.emoji}</div>
-				<div class="card-label">{nextCard.label}</div>
-			</div>
-		</Motion.div>
-
-		<!-- Front card: managed by AnimatePresence for exit animations.
-		     Item data is embedded in the list so the exiting card still
-		     shows the correct color/emoji while sliding away. -->
-		<AnimatePresence initial={false} list={frontList} let:item>
+		<AnimatePresence initial={false} list={visibleList} let:item>
 			<Card
 				card={item}
 				{exitX}
-				{variantsFrontCard}
-				ondragend={handleDragEnd}
+				onDragEnd={item.isFront ? handleDragEnd : undefined}
 			/>
 		</AnimatePresence>
 	</div>

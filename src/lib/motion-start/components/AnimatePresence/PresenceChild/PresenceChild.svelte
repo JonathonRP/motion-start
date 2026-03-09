@@ -30,6 +30,7 @@ Copyright (c) 2018 Framer B.V. -->
     presenceAffectsLayout,
     isCustom,
     children,
+    presenceKey = undefined,
   }: Props = $props();
 
   const presenceChildren = newChildrenMap();
@@ -40,6 +41,7 @@ Copyright (c) 2018 Framer B.V. -->
   const memoContext = (flag?: boolean) => {
     return {
       id,
+      presenceKey,
       initial,
       isPresent,
       custom,
