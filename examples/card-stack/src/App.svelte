@@ -2,10 +2,6 @@
 	import { Motion, AnimatePresence, useMotionValue, useTransform } from 'motion-start';
 
 	let index = 0;
-	let exitX = 0;
-
-	const x = useMotionValue(0);
-	const rotate = useTransform(x, [-150, 0, 150], [-30, 0, 30]);
 
 	const cards = [
 		{ id: 1, color: '#FF6B6B', emoji: '❤️' },
@@ -15,6 +11,21 @@
 		{ id: 5, color: '#FFEAA7', emoji: '🧡' },
 		{ id: 6, color: '#DFE6E9', emoji: '💜' }
 	];
+
+	// Card component state
+	let exitX = 0;
+	const x = useMotionValue(0);
+	const rotate = useTransform(x, [-150, 0, 150], [-30, 0, 30]);
+
+	const variantsFrontCard = {
+		animate: { scale: 1, y: 0, opacity: 1 },
+		exit: (custom) => ({ x: custom, opacity: 0, scale: 0.5 })
+	};
+
+	const variantsBackCard = {
+		initial: { scale: 0.9, y: 40, opacity: 0 },
+		animate: { scale: 0.9, y: 20, opacity: 0.5 }
+	};
 
 	function handleDragEnd(_, info) {
 		if (info.offset.x < -100) {
@@ -44,10 +55,12 @@
 		<AnimatePresence initial={false} list={[{ key: index }]} let:item>
 			<!-- Back card -->
 			<Motion.div
-				initial={{ scale: 0.9, y: 40, opacity: 0 }}
-				animate={{ scale: 0.9, y: 20, opacity: 0.5, backgroundColor: nextCard.color }}
+				variants={variantsBackCard}
+				initial="initial"
+				animate="animate"
 				transition={{ scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
 				class="card back-card"
+				style={{ backgroundColor: nextCard.color }}
 			>
 				<div class="card-content">
 					<div class="emoji">{nextCard.emoji}</div>
@@ -59,9 +72,11 @@
 			<Motion.div
 				drag="x"
 				dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
-				style={{ x, rotate }}
-				animate={{ scale: 1, y: 0, opacity: 1, backgroundColor: currentCard.color }}
-				exit={{ x: exitX, opacity: 0, scale: 0.5 }}
+				style={{ x, rotate, backgroundColor: currentCard.color }}
+				variants={variantsFrontCard}
+				animate="animate"
+				exit="exit"
+				custom={exitX}
 				transition={{ type: 'spring', stiffness: 300, damping: 20 }}
 				ondragend={handleDragEnd}
 				class="card front-card"
