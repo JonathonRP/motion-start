@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
+    import { getContext, setContext } from "svelte";
     import {
         SharedLayoutContext,
         isSharedLayout,
@@ -14,6 +14,10 @@ Copyright (c) 2018 Framer B.V. -->
         type SharedLayoutSyncMethods,
         type SyncLayoutBatcher,
     } from "../AnimateSharedLayout/types.js";
+    import {
+        LayoutEpochContext,
+        createLayoutEpoch,
+    } from "../../context/LayoutEpochContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -33,6 +37,12 @@ Copyright (c) 2018 Framer B.V. -->
         getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
+
+    // Provide a counter that Measure.svelte subscribes to.  Incrementing it
+    // before the DOM update lets $effect.pre in Measure snapshot positions
+    // while the old layout is still intact.
+    const layoutEpoch = createLayoutEpoch();
+    setContext(LayoutEpochContext, layoutEpoch);
 
     $: forceRender = () => {
         if (isSharedLayout($layoutContext)) {
@@ -78,6 +88,9 @@ Copyright (c) 2018 Framer B.V. -->
     ];
 
     $: if (!isInitialRender) {
+        // Signal Measure.svelte to snapshot positions before the DOM changes.
+        layoutEpoch.update((n) => n + 1);
+
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
             ...filteredChildren.map((v) => ({
