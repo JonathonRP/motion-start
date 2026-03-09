@@ -80,7 +80,6 @@
 			{/if}
 		</AnimatePresence>
 	</div>
-	</div>
 
 	<div class="info">
 		<h3>How it works:</h3>

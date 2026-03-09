@@ -52,40 +52,41 @@
 	<p class="subtitle">Drag the card left or right to dismiss</p>
 
 	<div class="stage">
-		<AnimatePresence initial={false} list={[{ key: index }]} let:item>
-			<!-- Back card -->
-			<Motion.div
-				variants={variantsBackCard}
-				initial="initial"
-				animate="animate"
-				transition={{ scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
-				class="card back-card"
-				style={{ backgroundColor: nextCard.color }}
-			>
-				<div class="card-content">
-					<div class="emoji">{nextCard.emoji}</div>
-					<div class="card-number">{(index + 1) % cards.length + 1}</div>
-				</div>
-			</Motion.div>
+		<!-- Back card (outside AnimatePresence) -->
+		<Motion.div
+			variants={variantsBackCard}
+			initial="initial"
+			animate={{ ...variantsBackCard.animate, backgroundColor: nextCard.color }}
+			transition={{ scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
+			class="card back-card"
+		>
+			<div class="card-content">
+				<div class="emoji">{nextCard.emoji}</div>
+				<div class="card-number">{(index + 1) % cards.length + 1}</div>
+			</div>
+		</Motion.div>
 
-			<!-- Front card -->
-			<Motion.div
-				drag="x"
-				dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
-				style={{ x, rotate, backgroundColor: currentCard.color }}
-				variants={variantsFrontCard}
-				animate="animate"
-				exit="exit"
-				custom={exitX}
-				transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-				ondragend={handleDragEnd}
-				class="card front-card"
-			>
-				<div class="card-content">
-					<div class="emoji">{currentCard.emoji}</div>
-					<div class="card-number">{(index % cards.length) + 1}</div>
-				</div>
-			</Motion.div>
+		<!-- Front card (inside AnimatePresence) -->
+		<AnimatePresence initial={false} list={[{ key: index }]} let:item>
+			{#key item.key}
+				<Motion.div
+					drag="x"
+					dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
+					style={{ x, rotate }}
+					variants={variantsFrontCard}
+					animate={{ ...variantsFrontCard.animate, backgroundColor: currentCard.color }}
+					exit="exit"
+					custom={exitX}
+					transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+					ondragend={handleDragEnd}
+					class="card front-card"
+				>
+					<div class="card-content">
+						<div class="emoji">{currentCard.emoji}</div>
+						<div class="card-number">{(index % cards.length) + 1}</div>
+					</div>
+				</Motion.div>
+			{/key}
 		</AnimatePresence>
 	</div>
 
