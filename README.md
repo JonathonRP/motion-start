@@ -9,7 +9,7 @@
 
 An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
-[![pkg.pr.new](/badge/JonathonRP/motion-start)](/~/JonathonRP/motion-start) 
+[![pkg.pr.new](https://pkg.pr.new/badge/JonathonRP/motion-start)](/~/JonathonRP/motion-start) 
 [![Discord](https://img.shields.io/discord/1288125623570530334?logo=discord&logoColor=white&label=discord&labelColor=5865F2")](https://discord.gg/bTa32kj9T3)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yaml)](https://github.com/JonathonRP/motion-start/actions)
 [![License](https://img.shields.io/npm/l/motion-start.svg?color=blue)](https://github.com/JonathonRP/motion-start/blob/main/LICENSE.md)
