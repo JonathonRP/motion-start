@@ -33,3 +33,25 @@
 		<div class="card-label">{card.label}</div>
 	</div>
 </Motion.div>
+
+<style>
+	.card-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		color: white;
+		pointer-events: none;
+	}
+
+	.emoji {
+		font-size: 5rem;
+		line-height: 1;
+	}
+
+	.card-label {
+		font-size: 2rem;
+		font-weight: 700;
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	}
+</style>

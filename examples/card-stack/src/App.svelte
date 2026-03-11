@@ -145,25 +145,6 @@
 		z-index: 10;
 	}
 
-	.card-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-		color: white;
-	}
-
-	.emoji {
-		font-size: 5rem;
-		line-height: 1;
-	}
-
-	.card-label {
-		font-size: 2rem;
-		font-weight: 700;
-		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	}
-
 	.reset-btn {
 		padding: 0.75rem 2rem;
 		background: white;
