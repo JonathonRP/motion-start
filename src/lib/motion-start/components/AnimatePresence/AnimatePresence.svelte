@@ -102,14 +102,19 @@ Copyright (c) 2018 Framer B.V. -->
         //   remaining items (they animate to their new positions).
         // presenceAffectsLayout=false: skip snapshot + epoch → remaining items just
         //   snap to their new positions immediately, no layout animation.
+        // presenceAffectsLayout=true: snapshot synchronously (before DOM diff) so Measure
+        //   captures the correct "from" positions for FLIP. Remaining items animate.
+        // presenceAffectsLayout=false: skip snapshot. $effect.pre in Measure.svelte fires
+        //   AFTER the Svelte 4 DOM update (mixed-mode timing), so "from"="to" → no FLIP.
+        //   Items just snap to new positions after the exiting element is removed.
         if (presenceAffectsLayout) {
-            // Snapshot current positions synchronously — Svelte 4 reactive blocks run
-            // before the DOM diff is applied, so this captures the correct "from" state.
             snapshotCallbacks.forEach((fn) => fn());
-            // Increment epoch: MeasureContextProvider passes it as `update` to Measure,
-            // whose $effect fires afterU once the DOM has settled.
-            layoutEpoch.update((n) => n + 1);
         }
+        // Always increment epoch: triggers afterU → syncLayout.flush() for ALL layout
+        // elements. This resolves the layout feature's usePresence registration (safeToRemove
+        // called in Animate.svelte after animations complete) so exiting elements can unmount
+        // regardless of presenceAffectsLayout.
+        layoutEpoch.update((n) => n + 1);
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [

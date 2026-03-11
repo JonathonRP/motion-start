@@ -206,6 +206,10 @@ Copyright (c) 2018 Framer B.V. -->
     return Promise.all(animations).then(() => {
       isAnimatingTree = false;
       onComplete && onComplete();
+      // Signal to AnimatePresence that the layout feature is done with this element.
+      // For non-shared layout this is the only path that resolves the layout feature's
+      // usePresence registration (id2); notifyLayoutAnimationComplete handles shared layout.
+      safeToRemove?.();
       visualElement.notifyLayoutAnimationComplete();
     });
   };
