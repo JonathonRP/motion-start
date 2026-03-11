@@ -13,7 +13,7 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/JonathonRP/motion-start/main.yaml)](https://github.com/JonathonRP/motion-start/actions)
 [![License](https://img.shields.io/npm/l/motion-start.svg?color=blue)](https://github.com/JonathonRP/motion-start/blob/main/LICENSE.md)
 [![Latest Release](https://img.shields.io/npm/v/motion-start.svg)](https://github.com/JonathonRP/motion-start/releases)
-[![Downloads](https://img.shields.io/npm/dt/motion-start.svg)](https://www.npmjs.com/package/motion-start) [![pkg.pr.new](https://pkg.pr.new/badge/JonathonRP/motion-start)](/~/JonathonRP/motion-start)
+[![Downloads](https://img.shields.io/npm/dt/motion-start.svg)](https://www.npmjs.com/package/motion-start) [![pkg.pr.new](https://pkg.pr.new/badge/JonathonRP/motion-start)](https://pkg.pr.new/~/JonathonRP/motion-start)
 </div>
 
 ---
