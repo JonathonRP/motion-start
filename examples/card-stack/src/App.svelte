@@ -25,11 +25,13 @@
 	];
 
 	function handleDragEnd(_, info) {
-		if (info.offset.x < -100) {
-			exitX = -250;
+		const swipedLeft = info.offset.x < -80 || info.velocity.x < -500;
+		const swipedRight = info.offset.x > 80 || info.velocity.x > 500;
+		if (swipedLeft) {
+			exitX = -300;
 			index = index + 1;
-		} else if (info.offset.x > 100) {
-			exitX = 250;
+		} else if (swipedRight) {
+			exitX = 300;
 			index = index + 1;
 		}
 	}
@@ -130,6 +132,7 @@
 		justify-content: center;
 		user-select: none;
 		cursor: grab;
+		touch-action: none;
 	}
 
 	:global(.card:active) {
