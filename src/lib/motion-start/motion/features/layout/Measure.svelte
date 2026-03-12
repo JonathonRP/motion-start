@@ -10,7 +10,7 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../../context/ScaleCorrectionProvider.svelte";
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
-  import { LayoutSnapshotContext } from "../../../context/LayoutSnapshotContext.js";
+  import { LayoutEpochContext } from "../../../context/LayoutEpochContext.js";
 
   export let visualElement, syncLayout, framerSyncLayout, update;
 
@@ -70,6 +70,7 @@ Copyright (c) 2018 Framer B.V. -->
   if (update === undefined) {
     beforeUpdate(updater);
   }
+
   const afterU = (nc = false) => {
     updated = false;
     /* Second part of the updater calling in child layouts first.*/
@@ -89,12 +90,18 @@ Copyright (c) 2018 Framer B.V. -->
      */
     //setCurrentViewportBox(visualElement);
   };
-  // Register updater in AnimatePresence's synchronous snapshot registry so FLIP
-  // snapshots are taken before the DOM changes (beforeUpdate fires too late in Svelte 4).
-  const snapshotCallbacks = getContext<Set<() => void>>(LayoutSnapshotContext);
-  if (snapshotCallbacks) {
-    snapshotCallbacks.add(updater);
-    onDestroy(() => snapshotCallbacks.delete(updater));
+
+  // Subscribe to LayoutEpochContext so AnimatePresence's forceRender() triggers a
+  // synchronous snapshot (store.update fires subscribers before the DOM changes)
+  // and MeasureContextProvider's reactive $: triggers afterU after DOM settles.
+  const layoutEpoch = getContext<Writable<number>>(LayoutEpochContext);
+  if (layoutEpoch) {
+    let ready = false;
+    const unsub = layoutEpoch.subscribe(() => {
+      if (!ready) { ready = true; return; } // skip initial call at subscribe time
+      updater();
+    });
+    onDestroy(unsub);
   }
 
   scaleCorrectionParentContext.update((v) =>

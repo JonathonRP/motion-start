@@ -18,7 +18,6 @@ Copyright (c) 2018 Framer B.V. -->
         LayoutEpochContext,
         createLayoutEpoch,
     } from "../../context/LayoutEpochContext.js";
-    import { LayoutSnapshotContext } from "../../context/LayoutSnapshotContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -39,17 +38,19 @@ Copyright (c) 2018 Framer B.V. -->
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
 
-    // Synchronous snapshot registry — Measure registers its updater() here.
-    // Called before childrenToRender mutates so FLIP snapshots the old layout.
-    const snapshotCallbacks = new Set<() => void>();
-    setContext(LayoutSnapshotContext, snapshotCallbacks);
-
-    // Epoch counter — incremented every list change to trigger afterU flush
-    // on remaining Measure components (which wouldn't otherwise re-render).
+    // Epoch store — Measure subscribes to it directly for synchronous snapshots
+    // (store.update fires subscribers synchronously, before DOM changes).
+    // MeasureContextProvider also reads it reactively to trigger afterU flush.
     const layoutEpoch = createLayoutEpoch();
     setContext(LayoutEpochContext, layoutEpoch);
 
     $: forceRender = () => {
+        // Increment epoch here (only when exit actually completes) rather than on
+        // every list change.  Measure's synchronous subscribe snapshots positions
+        // before _list mutates; MeasureContextProvider's reactive $: triggers afterU.
+        if (presenceAffectsLayout) {
+            layoutEpoch.update((n) => n + 1);
+        }
         if (isSharedLayout($layoutContext)) {
             $layoutContext.forceUpdate();
         }
@@ -96,15 +97,6 @@ Copyright (c) 2018 Framer B.V. -->
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
 
-        // When presenceAffectsLayout=true, snapshot remaining items' positions
-        // synchronously (before DOM changes) so FLIP has the correct "from" position.
-        if (presenceAffectsLayout) {
-            snapshotCallbacks.forEach((fn) => fn());
-        }
-        // Always increment epoch so MeasureContextProvider re-renders remaining items
-        // after the DOM settles, triggering afterU → syncLayout.flush() → FLIP plays.
-        layoutEpoch.update((n) => n + 1);
-
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
             ...filteredChildren.map((v) => ({
@@ -132,8 +124,8 @@ Copyright (c) 2018 Framer B.V. -->
         if (exitBeforeEnter && exiting.size) {
             childrenToRender = [];
         }
-        // Loop through all currently exiting components and clone them to overwrite `animate`
-        // with any `exit` prop they might have defined.
+        // Loop through all currently exiting components and clone them to overwrite animate
+        // with any exit prop they might have defined.
         exiting.forEach((key) => {
             // If this component is actually entering again, early return
             if (targetKeys.indexOf(key) !== -1) return;
@@ -172,25 +164,6 @@ Copyright (c) 2018 Framer B.V. -->
                 onExit,
             });
         });
-        // Add `MotionContext` even to children that don't need it to ensure we're rendering
-        // the same tree between renders
-
-        /*
-        childrenToRender = childrenToRender.map((child) => {
-            const key = child.key as string | number;
-            return exiting.has(key) ? (
-                child
-            ) : (
-                <PresenceChild
-                    key={getChildKey(child)}
-                    isPresent
-                    presenceAffectsLayout={presenceAffectsLayout}
-                >
-                    {child}
-                </PresenceChild>
-            );
-        });
-        */
         presentChildren = childrenToRender;
     } else {
         isInitialRender = false;
