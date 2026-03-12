@@ -98,6 +98,9 @@ Copyright (c) 2018 Framer B.V. -->
       ...props,
       layoutId,
     });
+    visualElement.isPresent = isPresent($presenceContext);
+    visualElement.isPresenceRoot =
+      !parent || parent.presenceId !== $presenceContext?.id;
 
     /**
      * Fire a render to ensure the latest state is reflected on-screen.

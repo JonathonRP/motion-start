@@ -17,6 +17,7 @@ Copyright (c) 2018 Framer B.V. -->
     import {
         LayoutEpochContext,
         createLayoutEpoch,
+        type LayoutEpoch,
     } from "../../context/LayoutEpochContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
@@ -45,11 +46,10 @@ Copyright (c) 2018 Framer B.V. -->
     setContext(LayoutEpochContext, layoutEpoch);
 
     $: forceRender = () => {
-        // When presenceAffectsLayout=true, increment epoch here (before _list
-        // changes) so Measure's synchronous subscribe snapshots the current
-        // positions for FLIP — then afterU animates remaining items to new spots.
+        // When presenceAffectsLayout=true, snapshot sibling positions before
+        // _list changes so Measure can FLIP them to their new spots.
         if (presenceAffectsLayout) {
-            layoutEpoch.update((n) => n + 1);
+            layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: true }));
         }
         if (isSharedLayout($layoutContext)) {
             $layoutContext.forceUpdate();
@@ -97,11 +97,10 @@ Copyright (c) 2018 Framer B.V. -->
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
 
-        // Always increment epoch on list change so afterU → syncLayout.flush()
-        // fires for layout elements — this calls animateF which resolves the
-        // layout feature's usePresence registration (layoutSafeToRemove path),
-        // allowing exiting elements to eventually be removed from the DOM.
-        layoutEpoch.update((n) => n + 1);
+        // Flush-only epoch: triggers afterU → syncLayout.flush() → animateF for
+        // exiting layout elements (layoutSafeToRemove path).  snapshot=false so
+        // sibling Measures skip the snapshot and don't FLIP.
+        layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }));
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [

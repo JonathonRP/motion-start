@@ -10,7 +10,10 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../../context/ScaleCorrectionProvider.svelte";
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
-  import { LayoutEpochContext } from "../../../context/LayoutEpochContext.js";
+  import {
+    LayoutEpochContext,
+    type LayoutEpoch,
+  } from "../../../context/LayoutEpochContext.js";
 
   export let visualElement, syncLayout, framerSyncLayout, update;
 
@@ -91,15 +94,31 @@ Copyright (c) 2018 Framer B.V. -->
     //setCurrentViewportBox(visualElement);
   };
 
-  // Subscribe to LayoutEpochContext so AnimatePresence's forceRender() triggers a
-  // synchronous snapshot (store.update fires subscribers before the DOM changes)
-  // and MeasureContextProvider's reactive $: triggers afterU after DOM settles.
-  const layoutEpoch = getContext<Writable<number>>(LayoutEpochContext);
+  // Subscribe to LayoutEpochContext synchronously (store.update fires subscribers
+  // before DOM changes — required for FLIP "before" snapshot timing).
+  //
+  // snapshot=true  (presenceAffectsLayout=true): full updater() — snapshot + add
+  //   to syncLayout for all elements.  MeasureContextProvider's $: epochUpdate
+  //   triggers a Measure re-render → $: updater(update) guard + afterUpdate(afterU)
+  //   → syncLayout.flush() after DOM settles.
+  //
+  // snapshot=false (presenceAffectsLayout=false): for the exiting element only
+  //   (isPresent=false) add to syncLayout and flush immediately so animateF →
+  //   safeToRemove fires.  Siblings are skipped — they snap to new positions.
+  const layoutEpoch = getContext<Writable<LayoutEpoch>>(LayoutEpochContext);
   if (layoutEpoch) {
     let ready = false;
-    const unsub = layoutEpoch.subscribe(() => {
+    const unsub = layoutEpoch.subscribe((e) => {
       if (!ready) { ready = true; return; } // skip initial call at subscribe time
-      updater();
+      if (e.snapshot) {
+        updater();
+      } else if (!visualElement.isPresent) {
+        if (!isSharedLayout(syncLayout)) {
+          snapshotViewportBox(visualElement);
+          syncLayout.add(visualElement);
+        }
+        afterU();
+      }
     });
     onDestroy(unsub);
   }
