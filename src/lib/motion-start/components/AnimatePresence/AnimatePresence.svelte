@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext, setContext } from "svelte";
+    import { getContext, setContext, tick } from "svelte";
     import {
         SharedLayoutContext,
         isSharedLayout,
@@ -107,12 +107,15 @@ Copyright (c) 2018 Framer B.V. -->
         const hasAdditions = targetKeys.some((k) => presentKeys.indexOf(k) === -1);
 
         if (hasRemovals) {
-            // Flush-only epoch (snapshot=false): Measure's subscribe callback fires
-            // immediately for the exiting element (!isPresent path) → snapshotViewportBox
-            // + syncLayout.add + afterU() synchronously so animateF → safeToRemove fires.
-            // Siblings are skipped here; forceRender fires snapshotLayout() after the
-            // exit animation completes so they FLIP to their post-removal positions.
-            layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }));
+            // Flush-only epoch (snapshot=false): drives animateF → safeToRemove for the
+            // exiting layout element (id2 registration).  Deferred by one tick so that
+            // PresenceChild's $effect (Svelte 5) has fired, updating PresenceContext and
+            // therefore visualElement.isPresent before Measure.svelte's epoch handler
+            // checks !visualElement.isPresent.  Siblings are skipped here; forceRender
+            // fires snapshotLayout() after the exit completes so they FLIP.
+            tick().then(() =>
+                layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }))
+            );
         } else if (hasAdditions) {
             // Snapshot sibling positions before the DOM update (same logic as
             // forceRender) so they FLIP to their new positions after the incoming

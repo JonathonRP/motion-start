@@ -29,6 +29,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
+  import { get, type Readable } from "svelte/store";
   import {
     getValueTransition,
     startAnimation,
@@ -40,6 +41,11 @@ Copyright (c) 2018 Framer B.V. -->
   import { tweenAxis } from "./utils";
   import type { Axis, AxisBox2D } from "../../../types/geometry.js";
   import type { VisualElement } from "../../../render/types.js";
+  import type {
+    AlwaysPresent,
+    NotPresent,
+    Present,
+  } from "../../../components/AnimatePresence/use-presence.js";
 
   export let visualElement: VisualElement,
     //initial = undefined,
@@ -102,7 +108,16 @@ Copyright (c) 2018 Framer B.V. -->
     //MotionAdvancedProps
     //custom = undefined,
     //inherit = undefined,
-    safeToRemove;
+    presence: Readable<AlwaysPresent | Present | NotPresent>;
+
+  /**
+   * Read the safeToRemove callback from the presence store at call time so we
+   * always get the latest value regardless of Svelte's reactive batching.
+   */
+  const getSafeToRemove = (): (() => void) | undefined => {
+    const $p = get(presence);
+    return $p[0] === false ? ($p as NotPresent)[1] : undefined;
+  };
 
   /**
    * A mutable object that tracks the target viewport box
@@ -145,7 +160,8 @@ Copyright (c) 2018 Framer B.V. -->
      */
     if (shouldStackAnimate === false) {
       isAnimatingTree = false;
-      return safeToRemove();
+      getSafeToRemove()?.();
+      return;
     }
 
     /**
@@ -207,9 +223,9 @@ Copyright (c) 2018 Framer B.V. -->
       isAnimatingTree = false;
       onComplete && onComplete();
       // Signal to AnimatePresence that the layout feature is done with this element.
-      // For non-shared layout this is the only path that resolves the layout feature's
-      // usePresence registration (id2); notifyLayoutAnimationComplete handles shared layout.
-      safeToRemove?.();
+      // Read safeToRemove from the store at resolution time to avoid Svelte prop-update
+      // timing races (the prop may still be undefined when the Promise resolves early).
+      getSafeToRemove()?.();
       visualElement.notifyLayoutAnimationComplete();
     });
   };
@@ -305,7 +321,7 @@ Copyright (c) 2018 Framer B.V. -->
     visualElement.enableLayoutProjection();
     const unsubLayoutReady = visualElement.onLayoutUpdate(animateF);
     visualElement.layoutSafeToRemove = function () {
-      safeToRemove();
+      getSafeToRemove()?.();
     };
 
     addScaleCorrection(defaultScaleCorrectors);

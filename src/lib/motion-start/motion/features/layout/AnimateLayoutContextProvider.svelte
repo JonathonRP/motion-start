@@ -11,4 +11,4 @@ Copyright (c) 2018 Framer B.V. -->
   const presence = usePresence(isCustom);
 </script>
 
-<Animate {visualElement} {layout} safeToRemove={$presence[1]} />
+<Animate {visualElement} {layout} {presence} />
