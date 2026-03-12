@@ -97,10 +97,20 @@ Copyright (c) 2018 Framer B.V. -->
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
 
-        // Flush-only epoch: triggers afterU → syncLayout.flush() → animateF for
-        // exiting layout elements (layoutSafeToRemove path).  snapshot=false so
-        // sibling Measures skip the snapshot and don't FLIP.
-        layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }));
+        const hasRemovals = presentKeys.some((k) => targetKeys.indexOf(k) === -1);
+        const hasAdditions = targetKeys.some((k) => presentKeys.indexOf(k) === -1);
+
+        if (hasRemovals) {
+            // Flush-only epoch: drives animateF → layoutSafeToRemove for exiting
+            // layout elements. snapshot=false so siblings don't FLIP here;
+            // forceRender fires snapshot=true after exit completes when
+            // presenceAffectsLayout=true.
+            layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }));
+        } else if (hasAdditions && presenceAffectsLayout) {
+            // Snapshot sibling positions before DOM update so they can FLIP to
+            // their new positions after the incoming element shifts them.
+            layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: true }));
+        }
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
