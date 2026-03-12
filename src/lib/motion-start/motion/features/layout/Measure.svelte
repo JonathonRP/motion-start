@@ -2,7 +2,7 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
-  import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
+  import { afterUpdate, beforeUpdate, getContext, onDestroy, onMount } from "svelte";
   import { get, type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
@@ -10,6 +10,7 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../../context/ScaleCorrectionProvider.svelte";
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
+  import { LayoutSnapshotContext } from "../../../context/LayoutSnapshotContext.js";
 
   export let visualElement, syncLayout, framerSyncLayout, update;
 
@@ -88,6 +89,14 @@ Copyright (c) 2018 Framer B.V. -->
      */
     //setCurrentViewportBox(visualElement);
   };
+  // Register updater in AnimatePresence's synchronous snapshot registry so FLIP
+  // snapshots are taken before the DOM changes (beforeUpdate fires too late in Svelte 4).
+  const snapshotCallbacks = getContext<Set<() => void>>(LayoutSnapshotContext);
+  if (snapshotCallbacks) {
+    snapshotCallbacks.add(updater);
+    onDestroy(() => snapshotCallbacks.delete(updater));
+  }
+
   scaleCorrectionParentContext.update((v) =>
     v.concat([
       {

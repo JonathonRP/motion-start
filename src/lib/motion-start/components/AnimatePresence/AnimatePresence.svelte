@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
+    import { getContext, setContext } from "svelte";
     import {
         SharedLayoutContext,
         isSharedLayout,
@@ -14,6 +14,11 @@ Copyright (c) 2018 Framer B.V. -->
         type SharedLayoutSyncMethods,
         type SyncLayoutBatcher,
     } from "../AnimateSharedLayout/types.js";
+    import {
+        LayoutEpochContext,
+        createLayoutEpoch,
+    } from "../../context/LayoutEpochContext.js";
+    import { LayoutSnapshotContext } from "../../context/LayoutSnapshotContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -33,6 +38,16 @@ Copyright (c) 2018 Framer B.V. -->
         getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
+
+    // Synchronous snapshot registry — Measure registers its updater() here.
+    // Called before childrenToRender mutates so FLIP snapshots the old layout.
+    const snapshotCallbacks = new Set<() => void>();
+    setContext(LayoutSnapshotContext, snapshotCallbacks);
+
+    // Epoch counter — incremented every list change to trigger afterU flush
+    // on remaining Measure components (which wouldn't otherwise re-render).
+    const layoutEpoch = createLayoutEpoch();
+    setContext(LayoutEpochContext, layoutEpoch);
 
     $: forceRender = () => {
         if (isSharedLayout($layoutContext)) {
@@ -80,6 +95,15 @@ Copyright (c) 2018 Framer B.V. -->
     $: if (!isInitialRender) {
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
+
+        // When presenceAffectsLayout=true, snapshot remaining items' positions
+        // synchronously (before DOM changes) so FLIP has the correct "from" position.
+        if (presenceAffectsLayout) {
+            snapshotCallbacks.forEach((fn) => fn());
+        }
+        // Always increment epoch so MeasureContextProvider re-renders remaining items
+        // after the DOM settles, triggering afterU → syncLayout.flush() → FLIP plays.
+        layoutEpoch.update((n) => n + 1);
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [

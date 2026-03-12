@@ -13,7 +13,6 @@
         DurBasedSpring,
         KeyFramesPosition,
         MorphSvg,
-        PresenceAffectsLayout,
         Repeat,
         ReverseEffect,
         ScrollProgress,
