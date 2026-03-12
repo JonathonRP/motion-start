@@ -9,7 +9,6 @@ bun.lockb
 /.svelte-kit
 /build
 /dist/*
-!/dist/cdn/
 
 # OS
 .DS_Store
