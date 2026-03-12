@@ -38,16 +38,16 @@ Copyright (c) 2018 Framer B.V. -->
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
 
-    // Epoch store — Measure subscribes to it directly for synchronous snapshots
-    // (store.update fires subscribers synchronously, before DOM changes).
-    // MeasureContextProvider also reads it reactively to trigger afterU flush.
+    // Single epoch store.  Measure subscribes to it for synchronous snapshots
+    // (store.update fires subscribers before DOM changes) and MeasureContextProvider
+    // reads it reactively to trigger afterU → syncLayout.flush() after DOM settles.
     const layoutEpoch = createLayoutEpoch();
     setContext(LayoutEpochContext, layoutEpoch);
 
     $: forceRender = () => {
-        // Increment epoch here (only when exit actually completes) rather than on
-        // every list change.  Measure's synchronous subscribe snapshots positions
-        // before _list mutates; MeasureContextProvider's reactive $: triggers afterU.
+        // When presenceAffectsLayout=true, increment epoch here (before _list
+        // changes) so Measure's synchronous subscribe snapshots the current
+        // positions for FLIP — then afterU animates remaining items to new spots.
         if (presenceAffectsLayout) {
             layoutEpoch.update((n) => n + 1);
         }
@@ -96,6 +96,12 @@ Copyright (c) 2018 Framer B.V. -->
     $: if (!isInitialRender) {
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
+
+        // Always increment epoch on list change so afterU → syncLayout.flush()
+        // fires for layout elements — this calls animateF which resolves the
+        // layout feature's usePresence registration (layoutSafeToRemove path),
+        // allowing exiting elements to eventually be removed from the DOM.
+        layoutEpoch.update((n) => n + 1);
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
