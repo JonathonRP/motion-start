@@ -45,15 +45,21 @@ Copyright (c) 2018 Framer B.V. -->
     const layoutEpoch = createLayoutEpoch();
     setContext(LayoutEpochContext, layoutEpoch);
 
-    $: forceRender = () => {
-        // When presenceAffectsLayout=true, snapshot sibling positions before
-        // _list changes so Measure can FLIP them to their new spots.
+    // Snapshot sibling positions (snapshot=true) and notify shared layout before
+    // a DOM change so Measure can FLIP elements to their new spots.
+    // Called by forceRender (post-exit) and by the addition path in the reactive
+    // block below — both cases need the same snapshot + shared-layout notification.
+    function snapshotLayout() {
         if (presenceAffectsLayout) {
             layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: true }));
         }
         if (isSharedLayout($layoutContext)) {
             $layoutContext.forceUpdate();
         }
+    }
+
+    $: forceRender = () => {
+        snapshotLayout();
         _list = [..._list];
     };
 
@@ -101,16 +107,22 @@ Copyright (c) 2018 Framer B.V. -->
         const hasAdditions = targetKeys.some((k) => presentKeys.indexOf(k) === -1);
 
         if (hasRemovals) {
-            // Flush-only epoch: drives animateF → layoutSafeToRemove for exiting
-            // layout elements. snapshot=false so siblings don't FLIP here;
-            // forceRender fires snapshot=true after exit completes when
-            // presenceAffectsLayout=true.
+            // Flush-only epoch (snapshot=false): Measure's subscribe callback fires
+            // immediately for the exiting element (!isPresent path) → snapshotViewportBox
+            // + syncLayout.add + afterU() synchronously so animateF → safeToRemove fires.
+            // Siblings are skipped here; forceRender fires snapshotLayout() after the
+            // exit animation completes so they FLIP to their post-removal positions.
             layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }));
-        } else if (hasAdditions && presenceAffectsLayout) {
-            // Snapshot sibling positions before DOM update so they can FLIP to
-            // their new positions after the incoming element shifts them.
-            layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: true }));
+        } else if (hasAdditions) {
+            // Snapshot sibling positions before the DOM update (same logic as
+            // forceRender) so they FLIP to their new positions after the incoming
+            // element shifts them.  presenceAffectsLayout and shared-layout notify
+            // are handled inside snapshotLayout().
+            snapshotLayout();
         }
+        // No epoch when hasRemovals=false && hasAdditions=false: this is a
+        // forceRender-triggered re-run (no real diff).  forceRender already fired
+        // snapshotLayout() before _list=[..._list], so we must not fire again.
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
