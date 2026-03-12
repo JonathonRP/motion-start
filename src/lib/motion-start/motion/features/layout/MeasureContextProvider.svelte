@@ -12,21 +12,11 @@ Copyright (c) 2018 Framer B.V. -->
     FramerTreeLayoutContext,
     SharedLayoutContext,
   } from "../../../context/SharedLayoutContext.js";
-  import {
-    LayoutEpochContext,
-  } from "../../../context/LayoutEpochContext.js";
   import Measure from "./Measure.svelte";
 
   export let visualElement, props, isCustom;
 
   $: ({ update } = props);
-
-  // layoutEpoch changes whenever AnimatePresence adds/removes an item.
-  // We pass it as the `update` prop to Measure so its $effect.pre fires
-  // before the DOM update and can snapshot current positions for FLIP.
-  const layoutEpoch = getContext<Writable<number>>(LayoutEpochContext);
-  $: epochUpdate = layoutEpoch ? $layoutEpoch : undefined;
-
   const syncLayout =
     getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
       SharedLayoutContext,
@@ -41,5 +31,5 @@ Copyright (c) 2018 Framer B.V. -->
   syncLayout={$syncLayout}
   framerSyncLayout={$framerSyncLayout}
   {visualElement}
-  update={update ?? epochUpdate}
+  {update}
 />

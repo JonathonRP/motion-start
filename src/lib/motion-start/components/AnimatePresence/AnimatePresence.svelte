@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext, setContext } from "svelte";
+    import { getContext } from "svelte";
     import {
         SharedLayoutContext,
         isSharedLayout,
@@ -14,11 +14,6 @@ Copyright (c) 2018 Framer B.V. -->
         type SharedLayoutSyncMethods,
         type SyncLayoutBatcher,
     } from "../AnimateSharedLayout/types.js";
-    import {
-        LayoutEpochContext,
-        createLayoutEpoch,
-    } from "../../context/LayoutEpochContext.js";
-    import { LayoutSnapshotContext } from "../../context/LayoutSnapshotContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -38,18 +33,6 @@ Copyright (c) 2018 Framer B.V. -->
         getContext<Writable<SyncLayoutBatcher | SharedLayoutSyncMethods>>(
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
-
-    // Synchronous snapshot registry: Measure.svelte registers its updater here.
-    // AnimatePresence calls all callbacks inside its reactive block, before
-    // childrenToRender is mutated, so Measure snapshots the OLD layout for FLIP.
-    const snapshotCallbacks = new Set<() => void>();
-    setContext(LayoutSnapshotContext, snapshotCallbacks);
-
-    // Epoch counter: incremented after snapshots but still before the DOM
-    // update. MeasureContextProvider subscribes and passes it as the `update`
-    // prop to Measure, whose $effect fires afterU once the DOM has settled.
-    const layoutEpoch = createLayoutEpoch();
-    setContext(LayoutEpochContext, layoutEpoch);
 
     $: forceRender = () => {
         if (isSharedLayout($layoutContext)) {
@@ -97,24 +80,6 @@ Copyright (c) 2018 Framer B.V. -->
     $: if (!isInitialRender) {
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
-
-        // presenceAffectsLayout=true: snapshot + epoch → FLIP animation plays for
-        //   remaining items (they animate to their new positions).
-        // presenceAffectsLayout=false: skip snapshot + epoch → remaining items just
-        //   snap to their new positions immediately, no layout animation.
-        // presenceAffectsLayout=true: snapshot synchronously (before DOM diff) so Measure
-        //   captures the correct "from" positions for FLIP. Remaining items animate.
-        // presenceAffectsLayout=false: skip snapshot. $effect.pre in Measure.svelte fires
-        //   AFTER the Svelte 4 DOM update (mixed-mode timing), so "from"="to" → no FLIP.
-        //   Items just snap to new positions after the exiting element is removed.
-        if (presenceAffectsLayout) {
-            snapshotCallbacks.forEach((fn) => fn());
-        }
-        // Always increment epoch: triggers afterU → syncLayout.flush() for ALL layout
-        // elements. This resolves the layout feature's usePresence registration (safeToRemove
-        // called in Animate.svelte after animations complete) so exiting elements can unmount
-        // regardless of presenceAffectsLayout.
-        layoutEpoch.update((n) => n + 1);
 
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [

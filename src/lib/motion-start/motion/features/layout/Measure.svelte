@@ -1,9 +1,8 @@
 <!-- based on framer-motion@4.1.16,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
 
 <script lang="ts">
-  import { getContext, onDestroy, onMount } from "svelte";
+  import { afterUpdate, beforeUpdate, getContext, onMount } from "svelte";
   import { get, type Writable } from "svelte/store";
   import {
     ScaleCorrectionContext,
@@ -11,9 +10,8 @@ Copyright (c) 2018 Framer B.V. -->
   } from "../../../context/ScaleCorrectionProvider.svelte";
   import { isSharedLayout } from "../../../context/SharedLayoutContext.js";
   import { snapshotViewportBox } from "../../../render/dom/projection/utils.js";
-  import { LayoutSnapshotContext } from "../../../context/LayoutSnapshotContext.js";
 
-  let { visualElement, syncLayout, framerSyncLayout, update } = $props();
+  export let visualElement, syncLayout, framerSyncLayout, update;
 
   const scaleCorrectionContext = getContext<Writable<any[]>>(
     ScaleCorrectionContext,
@@ -37,12 +35,21 @@ Copyright (c) 2018 Framer B.V. -->
       }
     });
   });
-  let updated = false;
+  /**
+   * If this is a child of a SyncContext, notify it that it needs to re-render. It will then
+   * handle the snapshotting.
+   *
+   * If it is stand-alone component, add it to the batcher.
+   */
 
+  let updated = false;
   const updater = (nc = false) => {
-    if (updated) return null;
+    if (updated) {
+      return null;
+    }
     updated = true;
 
+    // in React the updater function is called on children first, in Svelte the child does not call it.
     get(scaleCorrectionContext).forEach((v) => {
       v.updater?.(true);
     });
@@ -57,45 +64,37 @@ Copyright (c) 2018 Framer B.V. -->
     return null;
   };
 
+  $: update !== undefined && updater(update);
+
+  if (update === undefined) {
+    beforeUpdate(updater);
+  }
   const afterU = (nc = false) => {
     updated = false;
+    /* Second part of the updater calling in child layouts first.*/
     const scc = get(scaleCorrectionContext);
-    scc.forEach((v: any) => { v.afterU?.(true); });
+
+    scc.forEach((v: any, i) => {
+      v.afterU?.(true);
+    });
 
     if (!isSharedLayout(syncLayout)) {
       syncLayout.flush();
     }
+
+    /**
+     * If this axis isn't animating as a result of this render we want to reset the targetBox
+     * to the measured box
+     */
+    //setCurrentViewportBox(visualElement);
   };
-
-  // Register updater in the synchronous snapshot registry provided by the
-  // nearest AnimatePresence ancestor.  AnimatePresence calls all registered
-  // callbacks inside its Svelte 4 reactive block — before childrenToRender (and
-  // therefore the DOM) changes — so we snapshot the correct "from" position for
-  // FLIP.  The `updated` guard in updater() prevents double-execution if
-  // $effect.pre also fires for the non-AnimatePresence case.
-  const snapshotCallbacks = getContext<Set<() => void>>(LayoutSnapshotContext);
-  if (snapshotCallbacks) {
-    snapshotCallbacks.add(updater);
-    onDestroy(() => snapshotCallbacks.delete(updater));
-  }
-
-  // Fallback: for layout animations not driven by AnimatePresence (standalone
-  // `layout` prop), $effect.pre fires before the Svelte 5 component's own DOM
-  // update and provides the snapshot.  It is a no-op when the synchronous
-  // callback already ran (updated guard).
-  $effect.pre(() => {
-    const _u = update; void _u;
-    updater();
-  });
-
-  // $effect fires AFTER DOM updates — flush the batcher to measure new
-  // positions and kick off the FLIP animations.
-  $effect(() => {
-    const _u = update; void _u;
-    afterU();
-  });
-
   scaleCorrectionParentContext.update((v) =>
-    v.concat([{ updater, afterU }]),
+    v.concat([
+      {
+        updater,
+        afterU,
+      },
+    ]),
   );
+  afterUpdate(afterU);
 </script>
