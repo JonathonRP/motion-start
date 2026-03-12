@@ -62,7 +62,6 @@ Copyright (c) 2018 Framer B.V. -->
       ? $layoutGroupId + "-" + props.layoutId
       : props.layoutId;
 
-  let presenceUnsub: (() => void) | undefined;
   let visualElementRef: VisualElement | undefined = undefined;
   /**
    * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
@@ -84,6 +83,15 @@ Copyright (c) 2018 Framer B.V. -->
   let visualElement: VisualElement | undefined = visualElementRef;
   $:(visualElement = visualElementRef);
 
+  // Subscribe synchronously so isPresent is updated immediately when PresenceChild
+  // sets the store — $: reactive blocks are deferred and framesync reads isPresent
+  // before the next flush, causing safeToRemove to not be a function.
+  const presenceUnsub = presenceContext.subscribe(($ctx) => {
+    if (!visualElement) return;
+    visualElement.isPresent = isPresent($ctx);
+    visualElement.isPresenceRoot = !parent || parent.presenceId !== $ctx?.id;
+  });
+
   $: if (visualElement) {
     visualElement.setProps({
       ...$config,
@@ -98,14 +106,6 @@ Copyright (c) 2018 Framer B.V. -->
      * Fire a render to ensure the latest state is reflected on-screen.
      */
     visualElement.syncRender();
-    if (!presenceUnsub) {
-      presenceUnsub = presenceContext.subscribe(($ctx) => {
-        if (visualElement) {
-          visualElement.isPresent = isPresent($ctx);
-          visualElement.isPresenceRoot = !parent || parent.presenceId !== $ctx?.id;
-        }
-      });
-    }
   }
 
   afterUpdate(() => {
@@ -115,7 +115,7 @@ Copyright (c) 2018 Framer B.V. -->
   });
 
   onDestroy(() => {
-    presenceUnsub?.();
+    presenceUnsub();
     visualElement?.notifyUnmount();
   });
 </script>
