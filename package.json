@@ -40,17 +40,6 @@
 			"svelte": "./dist/value/index.js",
 			"import": "./dist/value/index.js",
 			"default": "./dist/value/index.js"
-		},
-		"./src/*.js": {
-			"types": "./dist/**/*.d.ts",
-			"svelte": "./dist/**/*.js",
-			"import": "./dist/**/*.js",
-			"default": "./dist/**/*.js"
-		},
-		"./src/*.svelte": {
-			"types": "./dist/**/*.d.ts",
-			"svelte": "./dist/**/*.svelte",
-			"default": "./dist/**/*.svelte"
 		}
 	},
 	"files": [
