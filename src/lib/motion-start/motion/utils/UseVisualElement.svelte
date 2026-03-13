@@ -26,7 +26,7 @@ Copyright (c) 2018 Framer B.V. -->
     PresenceContext,
     type PresenceContextProps,
   } from "../../context/PresenceContext.js";
-    import type { VisualElement } from "../../render/types.js";
+  import type { VisualElement } from "../../render/types.js";
 
   export let createVisualElement = undefined,
     props,
@@ -35,16 +35,20 @@ Copyright (c) 2018 Framer B.V. -->
     isCustom;
 
   const config =
-    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) || MotionConfigContext(isCustom);
+    getContext<Writable<MotionConfigContextObject>>(MotionConfigContext) ||
+    MotionConfigContext(isCustom);
 
   const presenceContext =
-    getContext<Writable<PresenceContextProps>>(PresenceContext) || PresenceContext(isCustom);
+    getContext<Writable<PresenceContextProps>>(PresenceContext) ||
+    PresenceContext(isCustom);
 
   const lazyContext =
-    getContext<Writable<LazyContextProps>>(LazyContext) || LazyContext(isCustom);
+    getContext<Writable<LazyContextProps>>(LazyContext) ||
+    LazyContext(isCustom);
 
   const mc =
-    getContext<Writable<MotionContextProps>>(MotionContext) || MotionContext(isCustom);
+    getContext<Writable<MotionContextProps>>(MotionContext) ||
+    MotionContext(isCustom);
 
   let parent = get(mc).visualElement;
   $: parent = $mc.visualElement;
@@ -81,7 +85,7 @@ Copyright (c) 2018 Framer B.V. -->
   }
 
   let visualElement: VisualElement | undefined = visualElementRef;
-  $:(visualElement = visualElementRef);
+  $: visualElement = visualElementRef;
 
   $: if (visualElement) {
     visualElement.setProps({
