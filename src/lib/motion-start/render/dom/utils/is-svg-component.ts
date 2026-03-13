@@ -3,9 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import type { Component } from 'svelte';
 import { lowercaseSVGElements } from '../../svg/lowercase-elements.js';
 
-export function isSVGComponent(Component: string) {
+export function isSVGComponent(Component: string | Component) {
 	if (
 		/**
 		 * If it's not a string, it's a custom React component. Currently we only support

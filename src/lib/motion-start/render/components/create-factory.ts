@@ -1,4 +1,4 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
@@ -11,33 +11,45 @@ import { isSVGComponent } from '../dom/utils/is-svg-component';
 import { svgMotionConfig } from '../svg/config-motion';
 import { htmlMotionConfig } from '../html/config-motion';
 import { createUseRender } from '../dom/use-render';
-import type { Component, Snippet } from 'svelte';
-import type { SvelteHTMLElements } from 'svelte/elements';
-import type { MotionProps } from '$lib/motion-start/motion/types';
-import type { PropsWithChildren } from '$lib/motion-start/utils/types';
-
-type MotionComponent<T extends keyof SvelteHTMLElements, P> = T extends keyof DOMMotionComponents
-	? DOMMotionComponents[T]
-	: Component<MotionComponentProps<PropsWithChildren<P>>>;
+import type { Component } from 'svelte';
 
 export function createMotionComponentFactory(
 	preloadedFeatures?: FeaturePackages,
-	createVisualElement?: CreateVisualElement<any>
+	createVisualElement?: CreateVisualElement<Element>
 ) {
-	return function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = 'div'>(
-		Component: TagName | string,
-		{ forwardMotionProps } = { forwardMotionProps: false }
-	) {
-		const baseConfig = isSVGComponent(Component) ? svgMotionConfig : htmlMotionConfig;
+	function createMotionComponent<TagName extends keyof DOMMotionComponents>(
+		Component: TagName,
+		options?: { forwardMotionProps?: boolean }
+	): DOMMotionComponents[TagName];
+
+	function createMotionComponent<TagName extends string>(
+		Component: TagName,
+		options?: { forwardMotionProps?: boolean }
+	): Component<MotionComponentProps<Record<string, unknown>>>;
+
+	function createMotionComponent<Props extends Record<string, unknown>>(
+		Component: Component<Props>,
+		options?: { forwardMotionProps?: boolean }
+	): Component<MotionComponentProps<Props>>;
+
+	function createMotionComponent(
+		Component: string | Component<Record<string, unknown>>,
+		{ forwardMotionProps }: { forwardMotionProps?: boolean } = {}
+	): Component<Record<string, unknown>> {
+		const baseConfig = isSVGComponent(Component as string) ? svgMotionConfig : htmlMotionConfig;
 
 		const config = {
 			...baseConfig,
 			preloadedFeatures,
-			useRender: createUseRender(forwardMotionProps),
+			useRender: createUseRender(forwardMotionProps ?? false),
 			createVisualElement,
 			Component,
 		};
 
-		return createRendererMotionComponent(config as any) as MotionComponent<TagName, Props>;
-	};
+		return createRendererMotionComponent(
+			config as unknown as Parameters<typeof createRendererMotionComponent>[0]
+		) as Component<Record<string, unknown>>;
+	}
+
+	return createMotionComponent;
 }

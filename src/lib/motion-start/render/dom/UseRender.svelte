@@ -79,11 +79,19 @@ Copyright (c) 2018 Framer B.V. -->
 	};
 </script>
 
-<svelte:element
-	this={Component}
-	{...elementProps}
-	{@attach motionRef}
-	xmlns={isSVGComponent(Component) ? "http://www.w3.org/2000/svg" : undefined}
->
-	{@render props.children?.()}
-</svelte:element>
+{#if typeof Component === "string"}
+	<svelte:element
+		this={Component}
+		{...elementProps}
+		{@attach motionRef}
+		xmlns={isSVGComponent(Component)
+			? "http://www.w3.org/2000/svg"
+			: undefined}
+	>
+		{@render props.children?.()}
+	</svelte:element>
+{:else}
+	<Component {...elementProps} {@attach motionRef}>
+		{@render props.children?.()}
+	</Component>
+{/if}

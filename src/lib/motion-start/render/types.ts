@@ -3,19 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Component, Snippet } from 'svelte';
-import type {
-	Booleanish,
-	ClipboardEventHandler,
-	CompositionEventHandler,
-	DragEventHandler,
-	EventHandler,
-	FocusEventHandler,
-	KeyboardEventHandler,
-	MouseEventHandler,
-	SVGAttributes,
-	ToggleEventHandler,
-} from 'svelte/elements';
+import type { Component } from 'svelte';
 
 import type { VisualState } from '../motion/utils/use-visual-state.svelte';
 import type { MotionValue } from '../value';
@@ -152,6 +140,6 @@ export interface AnimationLifecycles {
 export type EventProps = LayoutLifecycles & AnimationLifecycles;
 
 export type CreateVisualElement<Instance> = (
-	Component: string, // | Component<{ children: Snippet | Component }>
+	Component: string | Component<Record<string, unknown>>,
 	options: VisualElementOptions<Instance>
 ) => VisualElement<Instance>;

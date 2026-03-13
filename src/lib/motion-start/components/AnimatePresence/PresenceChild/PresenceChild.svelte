@@ -1,9 +1,9 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
-function newChildrenMap(): Map<string | number, boolean> {
-	return new Map<string | number, boolean>();
-}
+    function newChildrenMap(): Map<string | number, boolean> {
+        return new Map<string | number, boolean>();
+    }
 </script>
 
 <script lang="ts">
@@ -55,9 +55,15 @@ function newChildrenMap(): Map<string | number, boolean> {
     });
 
     // Keep reactive props in sync with the stable $state object
-    $effect(() => { context.isPresent = isPresent; });
-    $effect(() => { context.initial = initial; });
-    $effect(() => { context.custom = custom; });
+    $effect(() => {
+        context.isPresent = isPresent;
+    });
+    $effect(() => {
+        context.initial = initial;
+    });
+    $effect(() => {
+        context.custom = custom;
+    });
     // onExitComplete prop can change between renders — keep context in sync
     $effect(() => {
         context.onExitComplete = (childId: string | number) => {
@@ -72,7 +78,9 @@ function newChildrenMap(): Map<string | number, boolean> {
     // Reset children completion status when transitioning to not-present
     $effect(() => {
         if (!isPresent) {
-            presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
+            presenceChildren.forEach((_, key) =>
+                presenceChildren.set(key, false),
+            );
         }
     });
 

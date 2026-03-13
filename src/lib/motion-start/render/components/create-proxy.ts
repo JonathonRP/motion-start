@@ -1,5 +1,4 @@
-import type { Component, Snippet } from 'svelte';
-import type { SvelteHTMLElements } from 'svelte/elements';
+import type { Component } from 'svelte';
 import type { MotionProps } from '../../motion/types.js';
 import { warnOnce } from '../../utils/warn-once';
 import type { DOMMotionComponents } from '../dom/types.js';
@@ -16,52 +15,50 @@ export type CustomDomComponent<Props extends Record<string, any>> = Component<
 	(Props & MotionProps) | (SVGElement | HTMLElement)
 >;
 
-// type MotionComponent<Element extends keyof SvelteHTMLElements> = Component<
-// 	MotionProps & {
-// 		children?: Snippet;
-// 		class?: string;
-// 		this?: SvelteHTMLElements[Element]['this'];
-// 	} & Omit<SvelteHTMLElements[Element], 'style'>
-// >;
+type MotionProxy = typeof createMotionComponent &
+	DOMMotionComponents & {
+		create: typeof createMotionComponent;
+	};
+
+type CreateMotionComponent = typeof createMotionComponent;
 
 /**
- * Convert any React component into a `motion` component. The provided component
- * **must** use `React.forwardRef` to the underlying DOM component you want to animate.
- *
- * ```jsx
- * const Component = React.forwardRef((props, ref) => {
- *   return <div ref={ref} />
- * })
- *
- * const MotionComponent = motion(Component)
- * ```
+ * Convert any Svelte component into a `motion` component. The provided component
+ * **must** spread `{...restProps}` onto its root DOM element so that the motion
+ * attachment can reach the underlying DOM node.
  *
  * @public
  */
-export function createDOMMotionComponentProxy<Props>(componentFactory: typeof createMotionComponent): {
-	[K in keyof DOMMotionComponents]: DOMMotionComponents[K];
-} & {
-	create: typeof componentFactory;
-} & typeof componentFactory {
-	type MotionProxy = { [K in keyof DOMMotionComponents]: DOMMotionComponents[K] } & {
-		create: typeof componentFactory;
-	} & typeof componentFactory;
-
+export function createDOMMotionComponentProxy(componentFactory: CreateMotionComponent): MotionProxy {
 	if (typeof Proxy === 'undefined') {
 		return componentFactory as MotionProxy;
 	}
 
-	const deprecatedFactoryFunction: typeof createMotionComponent = (...args) => {
+	const componentCache = new Map<string, Component>();
+
+	const deprecatedFactoryFunction = (...args: Parameters<CreateMotionComponent>): ReturnType<CreateMotionComponent> => {
 		if (process.env.NODE_ENV !== 'production') {
 			warnOnce(false, 'motion() is deprecated. Use motion.create() instead.');
 		}
-		return componentFactory(...args);
+		return (componentFactory as (...a: Parameters<CreateMotionComponent>) => ReturnType<CreateMotionComponent>)(
+			...args
+		);
 	};
 
-	return new Proxy(deprecatedFactoryFunction as ReturnType<typeof createDOMMotionComponentProxy>, {
-		get(_target, key: string) {
+	const proxy: MotionProxy = new Proxy(deprecatedFactoryFunction as MotionProxy, {
+		get(_target, key) {
+			if (typeof key !== 'string') {
+				throw new Error(`motion.${String(key)} is not a valid motion component.`);
+			}
 			if (key === 'create') return componentFactory;
-			return componentFactory<Props, typeof key>(key);
+
+			// Cache and return HTML/SVG element motion components
+			if (!componentCache.has(key)) {
+				componentCache.set(key, componentFactory(key));
+			}
+			return componentCache.get(key);
 		},
 	});
+
+	return proxy;
 }

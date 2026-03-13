@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { IsMounted } from 'runed';
-import { tick, untrack } from 'svelte';
+import { tick, untrack, type Component } from 'svelte';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { useLazyContext } from '../../context/LazyContext';
 import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte';
@@ -21,7 +21,7 @@ import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
 
 export function useVisualElement<Instance, RenderState>(
-	Component: string,
+	Component: string | Component,
 	visualState: () => VisualState<Instance, RenderState>,
 	props: () => MotionProps,
 	createVisualElement: CreateVisualElement<Instance> | undefined,
@@ -90,6 +90,26 @@ export function useVisualElement<Instance, RenderState>(
 			 * points to the same $state object that PopChildMeasure mutates.
 			 */
 			untrack(() => visualElement.update(props(), presenceContextRef.current));
+		}
+	});
+
+	/**
+	 * Drive exit animations when isPresent changes. Uses presenceContextRef.current?.isPresent
+	 * directly (not via the $derived presenceContext) to track deep property mutations on the
+	 * $state context object in PresenceChild. Deferred via tick() so PresenceChild's $effect
+	 * has already set context.onExitComplete to the correct child.onExit before ExitAnimationFeature
+	 * reads it.
+	 */
+	$effect.pre(() => {
+		void presenceContextRef.current?.isPresent;
+		if (isMounted.current) {
+			untrack(() => {
+				if (visualElement?.current) {
+					tick().then(() => {
+						if (visualElement.current) visualElement.updateFeatures();
+					});
+				}
+			});
 		}
 	});
 

@@ -78,7 +78,7 @@ export const usePresence = (): (() => AlwaysPresent | Present | NotPresent) => {
 	$effect(() => {
 		const ctx = context;
 		if (ctx?.register) {
-			untrack(() => ctx.register(id));
+			return untrack(() => ctx.register(id));
 		}
 	});
 
@@ -96,7 +96,6 @@ export const usePresence = (): (() => AlwaysPresent | Present | NotPresent) => {
 		const { isPresent, onExitComplete } = ctx;
 		const safeToRemove = () => onExitComplete?.(id);
 
-		console.log('[usePresence] returning isPresent:', isPresent, 'id:', id);
 		return !isPresent && onExitComplete ? [false, safeToRemove] : [true];
 	};
 };

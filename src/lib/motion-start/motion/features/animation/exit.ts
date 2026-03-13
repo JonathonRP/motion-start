@@ -10,6 +10,8 @@ let id = 0;
 export class ExitAnimationFeature extends Feature<unknown> {
 	private id: number = id++;
 	private hasRegistered: boolean = false;
+	private deregister?: () => void;
+	private prevIsPresent?: boolean;
 
 	update() {
 		if (!this.node.presenceContext) {
@@ -21,23 +23,26 @@ export class ExitAnimationFeature extends Feature<unknown> {
 		if (!this.hasRegistered) {
 			const { register } = this.node.presenceContext;
 			if (register) {
-				this.unmount = register(this.id);
+				this.deregister = register(this.id);
 				this.hasRegistered = true;
 			}
 		}
 
-		const { isPresent, onExitComplete, measurePop } = this.node.presenceContext;
-		const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
+		const { isPresent, measurePop } = this.node.presenceContext;
+		const prevIsPresent = this.prevIsPresent;
+		this.prevIsPresent = isPresent;
 
-		if (!this.node.animationState || isPresent === prevIsPresent) {
+		if (!this.node.animationState || prevIsPresent === undefined || isPresent === prevIsPresent) {
 			return;
 		}
 
 		const exitAnimation = this.node.animationState.setActive('exit', !isPresent);
 
-		if (onExitComplete && !isPresent) {
+		if (this.node.presenceContext.onExitComplete && !isPresent) {
 			measurePop?.(this.node.current as HTMLElement | SVGElement);
-			exitAnimation.then(() => onExitComplete(this.id));
+			exitAnimation.then(() => {
+				this.node.presenceContext?.onExitComplete?.(this.id);
+			});
 		}
 	}
 
@@ -45,10 +50,12 @@ export class ExitAnimationFeature extends Feature<unknown> {
 		const { register } = this.node.presenceContext || {};
 
 		if (register) {
-			this.unmount = register(this.id);
+			this.deregister = register(this.id);
 			this.hasRegistered = true;
 		}
 	}
 
-	unmount() {}
+	unmount() {
+		this.deregister?.();
+	}
 }

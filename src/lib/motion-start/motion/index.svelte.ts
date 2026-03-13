@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Component } from 'svelte';
+import type { Component, ComponentProps, Snippet } from 'svelte';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
@@ -25,7 +25,7 @@ export interface MotionComponentConfig<Instance, RenderState> {
 	createVisualElement?: CreateVisualElement<Instance>;
 	useRender: RenderComponent<Instance, RenderState>;
 	useVisualState: UseVisualState<Instance, RenderState>;
-	Component: string;
+	Component: string | Component<ComponentProps<Component> & { children: Snippet | Component }>;
 }
 
 export type MotionComponentProps<Props> = {
@@ -36,7 +36,7 @@ export type MotionComponentProps<Props> = {
  * Create a `motion` component.
  *
  * This function accepts a Component argument, which can be either a string (ie "div"
- * for `MotionDiv`), or an actual React component.
+ * for `MotionDiv`), or an actual Svelte component.
  *
  * Alongside this is a config option which provides a way of rendering the provided
  * component "offline", or outside the React render cycle.
@@ -105,26 +105,22 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		let _measureInstance: Record<string, any> | null = null;
 		let rendererInstance: Record<string, any> | null = null;
 
-		const useStableRef = useMotionRef<Instance, RenderState>(visualState, visualElement, props.ref);
-
-		$effect.pre(() => {
-			rendererInstance = useRender(anchor, {
-				get Component() {
-					return Component;
-				},
-				get props() {
-					return props;
-				},
-				get ref() {
-					return useStableRef;
-				},
-				get visualState() {
-					return visualState;
-				},
-				get isStatic() {
-					return isStatic;
-				},
-			});
+		rendererInstance = useRender(anchor, {
+			get Component() {
+				return Component;
+			},
+			get props() {
+				return props;
+			},
+			get ref() {
+				return useMotionRef<Instance, RenderState>(visualState, context.visualElement, props.ref);
+			},
+			get visualState() {
+				return visualState;
+			},
+			get isStatic() {
+				return isStatic;
+			},
 		});
 
 		$effect.pre(() => {

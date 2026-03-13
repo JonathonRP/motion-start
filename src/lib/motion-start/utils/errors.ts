@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== 'production') {
 		}
 	};
 
-	invariant = (check, message) => {
+	invariant = (check, message): asserts check is true => {
 		if (!check) {
 			throw new Error(message);
 		}

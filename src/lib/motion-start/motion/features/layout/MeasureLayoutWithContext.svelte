@@ -75,7 +75,12 @@
 				props ?? {};
 			const projection = visualElement?.projection;
 
-			if (!projection) return;
+			if (!projection) {
+				if (prevProps?.isPresent !== isPresent && !isPresent) {
+					safeToRemove();
+				}
+				return;
+			}
 
 			/**
 			 * TODO: We use this data in relegate to determine whether to
@@ -98,29 +103,14 @@
 
 			if (prevProps?.isPresent !== isPresent) {
 				if (isPresent) {
-					console.log(
-						"[MeasureLayoutWithContext] isPresent changed true -> calling promote()",
-					);
 					projection.promote();
 				} else if (!projection.relegate()) {
-					/**
-					 * If there's another stack member taking over from this one,
-					 * it's in charge of the exit animation and therefore should
-					 * be in charge of the safe to remove. Otherwise we call it here.
-					 */
-					console.log(
-						"[MeasureLayoutWithContext] isPresent changed false, relegate() returned false -> scheduling safeToRemove",
-					);
 					frame.postRender(() => {
 						const stack = projection.getStack();
 						if (!stack || !stack.members.length) {
 							safeToRemove();
 						}
 					});
-				} else {
-					console.log(
-						"[MeasureLayoutWithContext] isPresent changed false, relegate() returned true",
-					);
 				}
 			}
 		},

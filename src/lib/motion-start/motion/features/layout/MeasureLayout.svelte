@@ -42,10 +42,6 @@ Copyright (c) 2018 Framer B.V. -->
 
 	const [isPresent, safeToRemove] = $derived.by(usePresence());
 
-	$effect(() => {
-		console.log('[MeasureLayout] isPresent from usePresence:', isPresent);
-	});
-
 	const layoutGroup = $derived(
 		useLayoutGroupContext().current ?? {
 			forceRender: () => {},

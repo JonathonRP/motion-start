@@ -9,9 +9,8 @@ import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
 import type { Feature } from './Feature';
 import type MeasureLayout from './layout/MeasureLayout.svelte';
-import type { Ref, RefCallBack } from '../../utils/safe-react-types';
-import type { Component, Snippet } from 'svelte';
-import type { SvelteHTMLElements } from 'svelte/elements';
+import type { Ref } from '../../utils/safe-react-types';
+import type { Component } from 'svelte';
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
@@ -59,7 +58,7 @@ export interface FeatureBundle extends FeaturePackages {
 export type LazyFeatureBundle = () => Promise<FeatureBundle>;
 
 export type RenderComponent<Instance, RenderState> = Component<{
-	Component: string;
+	Component: string | Component<Record<string, unknown>>;
 	props: MotionProps;
 	ref: Ref<Instance>;
 	visualState: VisualState<Instance, RenderState>;

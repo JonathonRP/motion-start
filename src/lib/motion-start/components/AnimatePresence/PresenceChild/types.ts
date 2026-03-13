@@ -1,9 +1,8 @@
-import type { SvelteHTMLElements } from 'svelte/elements';
 import type { VariantLabels } from '../../../motion/types';
 import type { Snippet } from 'svelte';
-import type { Attachment } from 'svelte/attachments';
 
 export interface PresenceChildProps {
+	presenceKey?: string | number;
 	isPresent: boolean;
 	onExitComplete?: () => void;
 	initial?: false | VariantLabels;

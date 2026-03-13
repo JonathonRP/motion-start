@@ -66,9 +66,21 @@ Copyright (c) 2018 Framer B.V. -->
 		// Compute target list from reactive props
 		const presentChildren: typeof renderedChildren =
 			list !== undefined
-				? list.map((v) => ({ present: true, data: v, key: v.key, onExit: undefined }))
+				? list.map((v) => ({
+						present: true,
+						data: v,
+						key: v.key,
+						onExit: undefined,
+					}))
 				: show
-					? [{ present: true, data: { key: 1 }, key: 1, onExit: undefined }]
+					? [
+							{
+								present: true,
+								data: { key: 1 },
+								key: 1,
+								onExit: undefined,
+							},
+						]
 					: [];
 
 		const presentKeys = presentChildren.map((c) => getChildKey(c));
