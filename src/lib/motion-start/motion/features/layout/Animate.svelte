@@ -29,7 +29,6 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
-  import { get, type Readable } from "svelte/store";
   import {
     getValueTransition,
     startAnimation,
@@ -41,11 +40,6 @@ Copyright (c) 2018 Framer B.V. -->
   import { tweenAxis } from "./utils";
   import type { Axis, AxisBox2D } from "../../../types/geometry.js";
   import type { VisualElement } from "../../../render/types.js";
-  import type {
-    AlwaysPresent,
-    NotPresent,
-    Present,
-  } from "../../../components/AnimatePresence/use-presence.js";
 
   export let visualElement: VisualElement,
     //initial = undefined,
@@ -108,16 +102,7 @@ Copyright (c) 2018 Framer B.V. -->
     //MotionAdvancedProps
     //custom = undefined,
     //inherit = undefined,
-    presence: Readable<AlwaysPresent | Present | NotPresent>;
-
-  /**
-   * Read the safeToRemove callback from the presence store at call time so we
-   * always get the latest value regardless of Svelte's reactive batching.
-   */
-  const getSafeToRemove = (): (() => void) | undefined => {
-    const $p = get(presence);
-    return $p[0] === false ? ($p as NotPresent)[1] : undefined;
-  };
+    safeToRemove;
 
   /**
    * A mutable object that tracks the target viewport box
@@ -160,8 +145,7 @@ Copyright (c) 2018 Framer B.V. -->
      */
     if (shouldStackAnimate === false) {
       isAnimatingTree = false;
-      getSafeToRemove()?.();
-      return;
+      return safeToRemove();
     }
 
     /**
@@ -222,10 +206,6 @@ Copyright (c) 2018 Framer B.V. -->
     return Promise.all(animations).then(() => {
       isAnimatingTree = false;
       onComplete && onComplete();
-      // Signal to AnimatePresence that the layout feature is done with this element.
-      // Read safeToRemove from the store at resolution time to avoid Svelte prop-update
-      // timing races (the prop may still be undefined when the Promise resolves early).
-      getSafeToRemove()?.();
       visualElement.notifyLayoutAnimationComplete();
     });
   };
@@ -321,12 +301,14 @@ Copyright (c) 2018 Framer B.V. -->
     visualElement.enableLayoutProjection();
     const unsubLayoutReady = visualElement.onLayoutUpdate(animateF);
     visualElement.layoutSafeToRemove = function () {
-      getSafeToRemove()?.();
+      safeToRemove();
     };
 
     addScaleCorrection(defaultScaleCorrectors);
 
+    // The returned function runs when the component is unmounted
     return () => {
+      // this should be onmount cleanup function that gets run sync on component unmount
       unsubLayoutReady();
       eachAxis((axis) => stopAxisAnimation[axis]?.());
     };
