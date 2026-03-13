@@ -83,15 +83,6 @@ Copyright (c) 2018 Framer B.V. -->
   let visualElement: VisualElement | undefined = visualElementRef;
   $:(visualElement = visualElementRef);
 
-  // Subscribe synchronously so isPresent is updated immediately when PresenceChild
-  // sets the store — $: reactive blocks are deferred and framesync reads isPresent
-  // before the next flush, causing safeToRemove to not be a function.
-  const presenceUnsub = presenceContext.subscribe(($ctx) => {
-    if (!visualElement) return;
-    visualElement.isPresent = isPresent($ctx);
-    visualElement.isPresenceRoot = !parent || parent.presenceId !== $ctx?.id;
-  });
-
   $: if (visualElement) {
     visualElement.setProps({
       ...$config,
@@ -115,7 +106,6 @@ Copyright (c) 2018 Framer B.V. -->
   });
 
   onDestroy(() => {
-    presenceUnsub();
     visualElement?.notifyUnmount();
   });
 </script>
