@@ -199,8 +199,6 @@ Copyright (c) 2018 Framer B.V. -->
             });
         });
         presentChildren = childrenToRender;
-        // framermotion doesn't pass initial after initial render, but we want to be able to trigger it on new children
-        initial = true;
     } else {
         isInitialRender = false;
     }
@@ -209,7 +207,7 @@ Copyright (c) 2018 Framer B.V. -->
 {#each childrenToRender as child (getChildKey(child))}
     <PresenceChild
         isPresent={child.present}
-        initial={initial ? undefined : false}
+        initial={!isInitialRender || initial ? undefined : false}
         custom={child.onExit ? custom : undefined}
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
