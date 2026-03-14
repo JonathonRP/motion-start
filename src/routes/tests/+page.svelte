@@ -2,6 +2,7 @@
     import * as Card from "$lib/components/ui/card";
     import {
         AnimateLayout,
+        AnimatePresenceAffectsLayout,
         AnimatePresenceStack,
         AnimationSequence,
         ColorInterpolation,
@@ -387,6 +388,25 @@
             </Card.Header>
             <Card.Content>
                 <AnimateLayout />
+            </Card.Content>
+            <Card.Footer>
+                <Card.Footer class="grid gap-1">
+                    <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-green-500">Passed test</p>
+                </Card.Footer>
+            </Card.Footer>
+        </Card.Root>
+        <!-- End -->
+        <!-- Start -->
+        <Card.Root>
+            <Card.Header>
+                <Card.Title>AnimatePresence Affects Layout</Card.Title>
+                <Card.Description>
+                    Remove tasks to see siblings FLIP into their new positions
+                </Card.Description>
+            </Card.Header>
+            <Card.Content>
+                <AnimatePresenceAffectsLayout />
             </Card.Content>
             <Card.Footer>
                 <Card.Footer class="grid gap-1">

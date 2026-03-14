@@ -103,8 +103,12 @@ Copyright (c) 2018 Framer B.V. -->
         const presentKeys = presentChildren.map(getChildKey);
         const targetKeys = filteredChildren.map(getChildKey);
 
-        const hasRemovals = presentKeys.some((k) => targetKeys.indexOf(k) === -1);
-        const hasAdditions = targetKeys.some((k) => presentKeys.indexOf(k) === -1);
+        const hasRemovals = presentKeys.some(
+            (k) => targetKeys.indexOf(k) === -1,
+        );
+        const hasAdditions = targetKeys.some(
+            (k) => presentKeys.indexOf(k) === -1,
+        );
 
         if (hasRemovals) {
             // Flush-only epoch (snapshot=false): drives animateF → safeToRemove for the
@@ -114,7 +118,7 @@ Copyright (c) 2018 Framer B.V. -->
             // checks !visualElement.isPresent.  Siblings are skipped here; forceRender
             // fires snapshotLayout() after the exit completes so they FLIP.
             tick().then(() =>
-                layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false }))
+                layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false })),
             );
         } else if (hasAdditions) {
             // Snapshot sibling positions before the DOM update (same logic as
@@ -195,6 +199,8 @@ Copyright (c) 2018 Framer B.V. -->
             });
         });
         presentChildren = childrenToRender;
+        // framermotion doesn't pass initial after initial render, but we want to be able to trigger it on new children
+        initial = true;
     } else {
         isInitialRender = false;
     }
