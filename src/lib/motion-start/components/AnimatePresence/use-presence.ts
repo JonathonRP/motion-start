@@ -3,7 +3,7 @@ based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
 import type { Readable, Writable } from 'svelte/store';
-import type { PresenceContextProps } from "../../context/PresenceContext";
+import type { PresenceContextProps, PresenceTuple } from "../../context/PresenceContext";
 
 import { derived, get, readable } from 'svelte/store';
 import { PresenceContext } from '../../context/PresenceContext.js';
@@ -14,6 +14,7 @@ export type SafeToRemove = () => void;
 export type AlwaysPresent = [true, null];
 export type Present = [true];
 export type NotPresent = [false, SafeToRemove];
+export type { PresenceTuple };
 
 let counter = 0;
 const incrementId = () => counter++;
@@ -82,10 +83,10 @@ export const usePresence = (isCustom = false): Readable<AlwaysPresent | Present 
     const unregister = contextValue.register(id);
     onDestroy(unregister);
 
-    return derived(context, $v => {
-        if ($v === null) return [true, null] satisfies AlwaysPresent;
-        return (!$v.isPresent && $v.onExitComplete) ?
-            [false, () => $v.onExitComplete?.(id)] satisfies NotPresent :
-            [true] satisfies Present;
+    // Delegate tuple construction to the context so presence logic lives
+    // in one place — the context — rather than being re-implemented here.
+    return derived(context, ($v): AlwaysPresent | Present | NotPresent => {
+        if ($v === null) return [true, null];
+        return $v.getPresenceTuple(id) as AlwaysPresent | Present | NotPresent;
     });
 }

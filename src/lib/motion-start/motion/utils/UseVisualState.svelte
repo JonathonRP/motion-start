@@ -46,7 +46,8 @@ Copyright (c) 2018 Framer B.V. -->
     },
   ) {
     const values: any = {};
-    const blockInitialAnimation = presenceContext?.initial === false;
+    // getInitialOptions() encapsulates this derivation in the context.
+    const blockInitialAnimation = presenceContext?.getInitialOptions().blockInitialAnimation ?? false;
 
     const motionValues = scrapeMotionValues(props);
     for (const key in motionValues) {

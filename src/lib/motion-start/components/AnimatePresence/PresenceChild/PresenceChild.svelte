@@ -17,7 +17,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import { setContext, tick, untrack } from "svelte";
   import { setDomContext } from "../../../context/DOMcontext.js";
-  import { PresenceContext } from "../../../context/PresenceContext.js";
+  import { PresenceContext, type PresenceTuple } from "../../../context/PresenceContext.js";
   import type { PresenceChildProps } from "./index.js";
 
   interface Props extends PresenceChildProps {}
@@ -39,26 +39,53 @@ Copyright (c) 2018 Framer B.V. -->
   const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
 
   const memoContext = (flag?: boolean) => {
+    function handleOnExitComplete(childId: number) {
+      if (!presenceChildren.has(childId)) return;
+      if (presenceChildren.get(childId) === true) return;
+      presenceChildren.set(childId, true);
+      let allComplete = true;
+      presenceChildren.forEach((isComplete) => {
+        if (!isComplete) allComplete = false;
+      });
+      allComplete && onExitComplete?.();
+    }
+
     return {
       id,
       presenceKey,
       initial,
       isPresent,
       custom,
-      onExitComplete: (childId: number) => {
-        if (!presenceChildren.has(childId)) return;
-        if (presenceChildren.get(childId) === true) return;
-        presenceChildren.set(childId, true);
-        let allComplete = true;
-        presenceChildren.forEach((isComplete) => {
-          if (!isComplete) allComplete = false;
-        });
-
-        allComplete && onExitComplete?.();
-      },
+      onExitComplete: handleOnExitComplete,
       register: (childId: number) => {
         presenceChildren.set(childId, false);
         return () => presenceChildren.delete(childId);
+      },
+
+      /** Returns presenceId and blockInitialAnimation for visual element creation. */
+      getInitialOptions() {
+        return {
+          presenceId: id,
+          blockInitialAnimation: initial === false,
+        };
+      },
+
+      /** True when the visual element is the root of this presence group. */
+      isPresenceRoot(parentPresenceId?: number) {
+        return parentPresenceId === undefined || parentPresenceId !== id;
+      },
+
+      /** Returns custom data for exit animations, falling back to the provided value. */
+      getCustomData(fallback?: any) {
+        return custom ?? fallback;
+      },
+
+      /** Returns the [isPresent, safeToRemove?] tuple for a registered child id. */
+      getPresenceTuple(childId: number): PresenceTuple {
+        if (!isPresent) {
+          return [false, () => handleOnExitComplete(childId)];
+        }
+        return [true];
       },
     };
   };

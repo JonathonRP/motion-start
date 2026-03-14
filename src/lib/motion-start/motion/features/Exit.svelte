@@ -27,10 +27,11 @@ Copyright (c) 2018 Framer B.V. -->
   const _effect = (pres: AlwaysPresent | Present | NotPresent) => {
     const [isPresent, onExitComplete] = pres;
 
+    // getCustomData() encapsulates the "context.custom ?? fallback" logic in the context.
     const animation = visualElement.animationState?.setActive(
       AnimationType.Exit,
       !isPresent,
-      { custom: $presenceContext?.custom ?? custom },
+      { custom: $presenceContext?.getCustomData(custom) ?? custom },
     );
 
     !isPresent && animation?.then(onExitComplete);

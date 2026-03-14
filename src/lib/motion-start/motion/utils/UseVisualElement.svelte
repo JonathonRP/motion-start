@@ -8,7 +8,6 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
   import { afterUpdate, getContext, onDestroy, tick } from "svelte";
   import { get, type Writable } from "svelte/store";
-  import { isPresent } from "../../components/AnimatePresence/use-presence.js";
   import { LayoutGroupContext } from "../../context/LayoutGroupContext.js";
   import {
     LazyContext,
@@ -75,12 +74,14 @@ Copyright (c) 2018 Framer B.V. -->
   }
 
   $: if (!visualElementRef && createVisualElement) {
+    // getInitialOptions() encapsulates presenceId + blockInitialAnimation in the context.
+    const presenceOpts = $presenceContext?.getInitialOptions();
     visualElementRef = createVisualElement(Component, {
       visualState,
       parent: parent,
       props: { ...props, layoutId },
-      presenceId: $presenceContext?.id,
-      blockInitialAnimation: $presenceContext?.initial === false,
+      presenceId: presenceOpts?.presenceId,
+      blockInitialAnimation: presenceOpts?.blockInitialAnimation ?? false,
     });
   }
 
@@ -93,9 +94,10 @@ Copyright (c) 2018 Framer B.V. -->
       ...props,
       layoutId,
     });
-    visualElement.isPresent = isPresent($presenceContext);
+    // isPresent and isPresenceRoot logic now lives in the context via its methods.
+    visualElement.isPresent = $presenceContext?.isPresent ?? true;
     visualElement.isPresenceRoot =
-      !parent || parent.presenceId !== $presenceContext?.id;
+      $presenceContext ? $presenceContext.isPresenceRoot(parent?.presenceId) : true;
 
     /**
      * Fire a render to ensure the latest state is reflected on-screen.
