@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" generics="T extends {key:any}">
     import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
-    import { getContext } from "svelte";
+    import { getContext, setContext, tick } from "svelte";
     import {
         SharedLayoutContext,
         isSharedLayout,
@@ -14,6 +14,11 @@ Copyright (c) 2018 Framer B.V. -->
         type SharedLayoutSyncMethods,
         type SyncLayoutBatcher,
     } from "../AnimateSharedLayout/types.js";
+    import {
+        LayoutEpochContext,
+        createLayoutEpoch,
+        type LayoutEpoch,
+    } from "../../context/LayoutEpochContext.js";
 
     type $$Props = AnimatePresenceProps<ConditionalGeneric<T>>;
 
@@ -34,10 +39,27 @@ Copyright (c) 2018 Framer B.V. -->
             SharedLayoutContext,
         ) || SharedLayoutContext(isCustom);
 
-    $: forceRender = () => {
+    // Single epoch store.  Measure subscribes to it for synchronous snapshots
+    // (store.update fires subscribers before DOM changes) and MeasureContextProvider
+    // reads it reactively to trigger afterU → syncLayout.flush() after DOM settles.
+    const layoutEpoch = createLayoutEpoch();
+    setContext(LayoutEpochContext, layoutEpoch);
+
+    // Snapshot sibling positions (snapshot=true) and notify shared layout before
+    // a DOM change so Measure can FLIP elements to their new spots.
+    // Called by forceRender (post-exit) and by the addition path in the reactive
+    // block below — both cases need the same snapshot + shared-layout notification.
+    function snapshotLayout() {
+        if (presenceAffectsLayout) {
+            layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: true }));
+        }
         if (isSharedLayout($layoutContext)) {
             $layoutContext.forceUpdate();
         }
+    }
+
+    $: forceRender = () => {
+        snapshotLayout();
         _list = [..._list];
     };
 
@@ -78,6 +100,37 @@ Copyright (c) 2018 Framer B.V. -->
     ];
 
     $: if (!isInitialRender) {
+        const presentKeys = presentChildren.map(getChildKey);
+        const targetKeys = filteredChildren.map(getChildKey);
+
+        const hasRemovals = presentKeys.some(
+            (k) => targetKeys.indexOf(k) === -1,
+        );
+        const hasAdditions = targetKeys.some(
+            (k) => presentKeys.indexOf(k) === -1,
+        );
+
+        if (hasRemovals) {
+            // Flush-only epoch (snapshot=false): drives animateF → safeToRemove for the
+            // exiting layout element (id2 registration).  Deferred by one tick so that
+            // PresenceChild's $effect (Svelte 5) has fired, updating PresenceContext and
+            // therefore visualElement.isPresent before Measure.svelte's epoch handler
+            // checks !visualElement.isPresent.  Siblings are skipped here; forceRender
+            // fires snapshotLayout() after the exit completes so they FLIP.
+            tick().then(() =>
+                layoutEpoch.update((v) => ({ n: v.n + 1, snapshot: false })),
+            );
+        } else if (hasAdditions) {
+            // Snapshot sibling positions before the DOM update (same logic as
+            // forceRender) so they FLIP to their new positions after the incoming
+            // element shifts them.  presenceAffectsLayout and shared-layout notify
+            // are handled inside snapshotLayout().
+            snapshotLayout();
+        }
+        // No epoch when hasRemovals=false && hasAdditions=false: this is a
+        // forceRender-triggered re-run (no real diff).  forceRender already fired
+        // snapshotLayout() before _list=[..._list], so we must not fire again.
+
         // If this is a subsequent render, deal with entering and exiting children
         childrenToRender = [
             ...filteredChildren.map((v) => ({
@@ -88,10 +141,6 @@ Copyright (c) 2018 Framer B.V. -->
             })),
         ];
 
-        // Diff the keys of the currently-present and target children to update our
-        // exiting list.
-        const presentKeys = presentChildren.map(getChildKey);
-        const targetKeys = filteredChildren.map(getChildKey);
         // Diff the present children with our target children and mark those that are exiting
         const numPresent = presentKeys.length;
         for (let i = 0; i < numPresent; i++) {
@@ -109,8 +158,8 @@ Copyright (c) 2018 Framer B.V. -->
         if (exitBeforeEnter && exiting.size) {
             childrenToRender = [];
         }
-        // Loop through all currently exiting components and clone them to overwrite `animate`
-        // with any `exit` prop they might have defined.
+        // Loop through all currently exiting components and clone them to overwrite animate
+        // with any exit prop they might have defined.
         exiting.forEach((key) => {
             // If this component is actually entering again, early return
             if (targetKeys.indexOf(key) !== -1) return;
@@ -149,26 +198,9 @@ Copyright (c) 2018 Framer B.V. -->
                 onExit,
             });
         });
-        // Add `MotionContext` even to children that don't need it to ensure we're rendering
-        // the same tree between renders
-
-        /*
-        childrenToRender = childrenToRender.map((child) => {
-            const key = child.key as string | number;
-            return exiting.has(key) ? (
-                child
-            ) : (
-                <PresenceChild
-                    key={getChildKey(child)}
-                    isPresent
-                    presenceAffectsLayout={presenceAffectsLayout}
-                >
-                    {child}
-                </PresenceChild>
-            );
-        });
-        */
         presentChildren = childrenToRender;
+        // framermotion doesn't pass initial after initial render, but we want to be able to trigger it on new children
+        initial = true;
     } else {
         isInitialRender = false;
     }
@@ -182,6 +214,7 @@ Copyright (c) 2018 Framer B.V. -->
         {presenceAffectsLayout}
         onExitComplete={child.onExit}
         {isCustom}
+        presenceKey={child.key}
     >
         <slot item={child.item} />
     </PresenceChild>

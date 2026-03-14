@@ -306,7 +306,9 @@ Copyright (c) 2018 Framer B.V. -->
 
     addScaleCorrection(defaultScaleCorrectors);
 
+    // The returned function runs when the component is unmounted
     return () => {
+      // this should be onmount cleanup function that gets run sync on component unmount
       unsubLayoutReady();
       eachAxis((axis) => stopAxisAnimation[axis]?.());
     };

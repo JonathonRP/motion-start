@@ -12,6 +12,8 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js",
+			"import": "./dist/index.js",
+			"module": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
 		"./package.json": "./package.json",
@@ -38,17 +40,6 @@
 			"svelte": "./dist/value/index.js",
 			"import": "./dist/value/index.js",
 			"default": "./dist/value/index.js"
-		},
-		"./src/*.js": {
-			"types": "./dist/*.d.ts",
-			"svelte": "./dist/*.js",
-			"import": "./dist/*.js",
-			"default": "./dist/*.js"
-		},
-		"./src/*.svelte": {
-			"types": "./dist/*.d.ts",
-			"svelte": "./dist/*.svelte",
-			"default": "./dist/*.svelte"
 		}
 	},
 	"files": [
@@ -56,8 +47,11 @@
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"browser": "./dist/index.js",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",

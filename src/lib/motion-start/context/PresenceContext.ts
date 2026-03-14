@@ -9,6 +9,7 @@ import type { Writable } from 'svelte/store'
  */
 export interface PresenceContextProps {
     id: number;
+    presenceKey?: any;
     isPresent: boolean;
     register: (id: number) => () => void;
     onExitComplete?: (id: number) => void;

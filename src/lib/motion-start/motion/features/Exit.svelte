@@ -1,6 +1,5 @@
 <!-- based on framer-motion@4.0.3,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
 
 <script lang="ts">
   import { getContext } from "svelte";
@@ -17,14 +16,13 @@ Copyright (c) 2018 Framer B.V. -->
   import { AnimationType } from "../../render/utils/types.js";
   import type { Writable } from "svelte/store";
 
-  let { props, visualElement, isCustom, children } = $props();
-  const { custom } = $derived(props);
+  export let props: any, visualElement: any, isCustom: boolean;
+  $: custom = props?.custom;
 
-  const presenceContext = $derived(
+  const presenceContext =
     getContext<Writable<PresenceContextProps>>(PresenceContext) ||
-      PresenceContext(isCustom),
-  );
-  const presence = $derived(usePresence(isCustom));
+    PresenceContext(isCustom);
+  const presence = usePresence(isCustom);
 
   const _effect = (pres: AlwaysPresent | Present | NotPresent) => {
     const [isPresent, onExitComplete] = pres;
@@ -37,7 +35,5 @@ Copyright (c) 2018 Framer B.V. -->
 
     !isPresent && animation?.then(onExitComplete);
   };
-  $effect(() => _effect($presence));
+  $: _effect($presence);
 </script>
-
-{@render children?.()}
