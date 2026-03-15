@@ -85,7 +85,6 @@
 			const { layoutDependency, visualElement, drag, isPresent } = props;
 			const projection = visualElement?.projection;
 
-
 			if (!projection) {
 				if (prevIsPresent !== isPresent && !isPresent) {
 					safeToRemove();

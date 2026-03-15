@@ -40,15 +40,7 @@ Copyright (c) 2018 Framer B.V. -->
         isPresent,
         custom,
         layoutDependency: 0,
-        onExitComplete: (childId: string | number) => {
-            // Ignore stale callbacks from unmounted children (e.g. after mode switch remount).
-            if (!presenceChildren.has(childId)) return;
-            presenceChildren.set(childId, true);
-            for (const [, isComplete] of presenceChildren) {
-                if (!isComplete) return;
-            }
-            onExitComplete?.();
-        },
+        onExitComplete: undefined,
         register: (childId: string | number) => {
             presenceChildren.set(childId, false);
             return () => {
