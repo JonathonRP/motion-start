@@ -144,9 +144,7 @@ Copyright (c) 2018 Framer B.V. -->
 			}
 		},
 	});
-	setReorderContext({
-		current: context,
-	});
+	setReorderContext(context);
 </script>
 
 <ReorderGroup {...props} bind:ref={externalRef} ignoreStrict>

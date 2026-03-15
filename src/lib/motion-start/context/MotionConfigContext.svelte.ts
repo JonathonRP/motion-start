@@ -1,4 +1,4 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
@@ -6,8 +6,6 @@ Copyright (c) 2018 Framer B.V.
 import { createContext } from 'svelte';
 import type { TransformPoint } from '../projection/geometry/types';
 import type { Transition } from '../types';
-import type { MutableRefObject } from '../utils/safe-react-types';
-import { ref } from '../utils/ref.svelte';
 
 export type ReducedMotionConfig = 'always' | 'never' | 'user';
 
@@ -96,13 +94,13 @@ export const MOTION_CONFIG_CONTEXT_KEY = Symbol('MotionConfigContext');
 /**
  * @public
  */
-const [getMotionConfigContext, setMotionConfigContext] = createContext<MutableRefObject<MotionConfigContext>>();
+const [getMotionConfigContext, setMotionConfigContext] = createContext<MotionConfigContext>();
 
 function useMotionConfigContext() {
 	try {
 		return getMotionConfigContext();
 	} catch {
-		return ref(defaultMotionConfig);
+		return defaultMotionConfig;
 	}
 }
 

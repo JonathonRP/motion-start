@@ -11,7 +11,7 @@ export type FrameCallback = (timestamp: number, delta: number) => void;
 
 export function useAnimationFrame(callback: FrameCallback) {
 	let initialTimestamp = 0;
-	const { isStatic } = useMotionConfigContext().current;
+	const { isStatic } = useMotionConfigContext();
 
 	if (isStatic) return;
 

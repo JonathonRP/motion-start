@@ -53,8 +53,8 @@ function makeState<I, RS>(
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
 	(props: () => MotionProps, isStatic: boolean): () => VisualState<I, RS> => {
-		const context = $derived(useMotionContext().current);
-		const presenceContext = $derived(usePresenceContext().current);
+		const context = $derived(useMotionContext());
+		const presenceContext = $derived(usePresenceContext());
 		const make = () => makeState(config, props(), context, presenceContext);
 
 		const state = $derived.by(make);

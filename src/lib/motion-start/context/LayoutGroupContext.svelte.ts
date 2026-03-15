@@ -1,12 +1,10 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
 import type { NodeGroup } from '../projection/node/group';
-import type { MutableRefObject } from '../utils/safe-react-types';
-import { ref } from '../utils/ref.svelte';
 
 export interface LayoutGroupContext {
 	id?: string;
@@ -78,13 +76,13 @@ export function createLayoutGroupContext(): LayoutGroupContextType {
 // Context key
 export const LAYOUT_GROUP_CONTEXT_KEY = Symbol('LayoutGroupContext');
 
-const [getLayoutGroupContext, setLayoutGroupContext] = createContext<MutableRefObject<LayoutGroupContext>>();
+const [getLayoutGroupContext, setLayoutGroupContext] = createContext<LayoutGroupContext | null>();
 
 function useLayoutGroupContext() {
 	try {
 		return getLayoutGroupContext();
 	} catch {
-		return ref({} as LayoutGroupContext);
+		return null;
 	}
 }
 

@@ -9,7 +9,7 @@ import { isVariantLabel } from '../../render/utils/is-variant-label';
 import { isControllingVariants } from '../../render/utils/is-controlling-variants';
 
 export function getCurrentTreeVariants(props: () => MotionProps, context: MotionContext): MotionContext {
-	if (isControllingVariants(props)) {
+	if (isControllingVariants(props())) {
 		const { initial, animate } = $derived.by(props);
 		return {
 			initial: initial === false || isVariantLabel(initial) ? (initial as any) : undefined,

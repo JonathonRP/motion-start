@@ -17,12 +17,8 @@ Copyright (c) 2018 Framer B.V. -->
 	 */
 	export function useLayoutGroupProvider(props: LayoutGroupProps) {
 		// Get parent group context if it exists
-		const oldId = $derived(
-			useDeprecatedLayoutGroupContext().current ?? undefined,
-		);
-		const parentGroup = $derived(
-			useLayoutGroupContext().current || { id: oldId },
-		);
+		const oldId = $derived(useDeprecatedLayoutGroupContext() ?? undefined);
+		const parentGroup = $derived(useLayoutGroupContext() || { id: oldId });
 		const [forceRender, key] = useForceUpdate();
 
 		const context = $derived({
@@ -35,12 +31,10 @@ Copyright (c) 2018 Framer B.V. -->
 		});
 
 		// Make group context available to children
-		return () =>
-			setLayoutGroupContext({
-				get current() {
-					return context;
-				},
-			}).current as typeof context;
+		return () => {
+			setLayoutGroupContext(context);
+			return context;
+		};
 	}
 
 	/**

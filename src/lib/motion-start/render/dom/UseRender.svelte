@@ -29,7 +29,29 @@ Copyright (c) 2018 Framer B.V. -->
 		visualState,
 		isStatic,
 		forwardMotionProps,
+		visualElement = undefined,
 	}: Props = $props();
+
+	const handle = $derived(visualElement?.handle ?? {});
+
+	// Compose gesture handlers with user-supplied handlers so both fire.
+	// If the same event name exists in both elementProps and handle, wrap them.
+	function mergeHandlers(userProps: Record<string, any>, gestureHandle: Record<string, any>): Record<string, any> {
+		const merged: Record<string, any> = {};
+		for (const key of Object.keys(gestureHandle)) {
+			if (typeof userProps[key] === 'function') {
+				const userHandler = userProps[key];
+				const gestureHandler = gestureHandle[key];
+				merged[key] = (event: Event) => {
+					userHandler(event);
+					gestureHandler(event);
+				};
+			} else {
+				merged[key] = gestureHandle[key];
+			}
+		}
+		return merged;
+	}
 
 	const useVisualProps = $derived(
 		isSVGComponent(Component) ? useSvgProps : useHTMLProps,
@@ -83,6 +105,7 @@ Copyright (c) 2018 Framer B.V. -->
 	<svelte:element
 		this={Component}
 		{...elementProps}
+		{...mergeHandlers(elementProps, handle)}
 		{@attach motionRef}
 		xmlns={isSVGComponent(Component)
 			? "http://www.w3.org/2000/svg"
@@ -91,7 +114,7 @@ Copyright (c) 2018 Framer B.V. -->
 		{@render props.children?.()}
 	</svelte:element>
 {:else}
-	<Component {...elementProps} {@attach motionRef}>
+	<Component {...elementProps} {...mergeHandlers(elementProps, handle)} {@attach motionRef}>
 		{@render props.children?.()}
 	</Component>
 {/if}

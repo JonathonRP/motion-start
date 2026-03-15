@@ -1,17 +1,14 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { addDomEvent } from '../events/add-dom-event';
 import { Feature } from '../motion/features/Feature';
-import { pipe } from '../utils/pipe';
-// import { Gesture } from './Gesture';
 
 export class FocusGesture extends Feature<Element> {
 	private isActive = false;
 
-	onFocus() {
+	private onFocus() {
 		let isFocusVisible = false;
 
 		/**
@@ -21,8 +18,8 @@ export class FocusGesture extends Feature<Element> {
 		 * to the element by default and we want to match that behaviour with whileFocus.
 		 */
 		try {
-			isFocusVisible = this.node.current!.matches(':focus-visible');
-		} catch (e) {
+			isFocusVisible = (this.node.current as Element).matches(':focus-visible');
+		} catch {
 			isFocusVisible = true;
 		}
 
@@ -32,18 +29,19 @@ export class FocusGesture extends Feature<Element> {
 		this.isActive = true;
 	}
 
-	onBlur() {
+	private onBlur() {
 		if (!this.isActive || !this.node.animationState) return;
 		this.node.animationState.setActive('whileFocus', false);
 		this.isActive = false;
 	}
 
 	mount() {
-		this.unmount = pipe(
-			addDomEvent(this.node.current!, 'focus', () => this.onFocus()),
-			addDomEvent(this.node.current!, 'blur', () => this.onBlur())
-		) as VoidFunction;
+		this.registerHandler('onfocus', () => this.onFocus());
+		this.registerHandler('onblur', () => this.onBlur());
 	}
 
-	unmount() {}
+	unmount() {
+		this.removeHandler('onfocus');
+		this.removeHandler('onblur');
+	}
 }

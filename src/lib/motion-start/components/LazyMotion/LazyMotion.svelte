@@ -72,12 +72,8 @@ Copyright (c) 2018 Framer B.V. -->
   }
 
   setLazyContext({
-    get current() {
-      return {
-        renderer: loadedRenderer,
-        strict: strict!,
-      };
-    },
+    renderer: loadedRenderer,
+    strict: strict!,
   });
 </script>
 

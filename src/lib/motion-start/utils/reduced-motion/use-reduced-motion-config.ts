@@ -8,7 +8,7 @@ import { useReducedMotion } from './use-reduced-motion';
 
 export function useReducedMotionConfig() {
 	const reducedMotionPreference = useReducedMotion();
-	const { reducedMotion } = useMotionConfigContext().current;
+	const { reducedMotion } = useMotionConfigContext();
 
 	if (reducedMotion === 'never') {
 		return false;

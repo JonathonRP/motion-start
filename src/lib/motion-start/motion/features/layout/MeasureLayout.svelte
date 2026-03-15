@@ -44,13 +44,11 @@ Copyright (c) 2018 Framer B.V. -->
 
 	const [isPresent, safeToRemove] = $derived.by(usePresence());
 
-	const presenceContextRef = usePresenceContext();
-	const presenceLayoutDependency = $derived(presenceContextRef.current?.layoutDependency);
-	const presenceSnapshotTrigger = $derived(presenceContextRef.current?.snapshotTrigger);
+	const presenceContext = usePresenceContext();
+	const presenceLayoutDependency = $derived(presenceContext?.layoutDependency);
+	const presenceSnapshotTrigger = $derived(presenceContext?.snapshotTrigger);
 
-	const layoutGroup = $derived(
-		useLayoutGroupContext().current ?? { forceRender: () => {} },
-	);
+	const layoutGroup = $derived(useLayoutGroupContext() ?? { forceRender: () => {} });
 </script>
 
 <MeasureLayoutWithContext
@@ -58,7 +56,7 @@ Copyright (c) 2018 Framer B.V. -->
 	layoutDependency={presenceLayoutDependency ?? props.layoutDependency}
 	snapshotTrigger={presenceSnapshotTrigger}
 	{layoutGroup}
-	switchLayoutGroup={useSwitchLayoutGroupContext().current}
+	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}
 	{isPresent}
 	{safeToRemove}
 />

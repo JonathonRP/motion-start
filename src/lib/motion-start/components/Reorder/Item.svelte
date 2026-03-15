@@ -72,7 +72,7 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 
-	const context = $derived(useReorderContext().current);
+	const context = $derived(useReorderContext());
 	const point: Record<"x" | "y", ReturnType<typeof useDefaultMotionValue>> = {
 		x: useDefaultMotionValue(style?.x),
 		y: useDefaultMotionValue(style?.y),

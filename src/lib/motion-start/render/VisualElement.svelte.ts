@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { untrack } from 'svelte';
 import { frame, cancelFrame } from '../frameloop';
 import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
 import type { FeatureDefinitions } from '../motion/features/types';
@@ -23,7 +24,6 @@ import {
 import { updateMotionValuesFromProps } from './utils/motion-values';
 import { resolveVariantFromProps } from './utils/resolve-variants';
 import { warnOnce } from '../utils/warn-once';
-import { featureDefinitions } from '../motion/features/definitions';
 import type { PresenceContext } from '../context/PresenceContext.svelte';
 import { visualElementStore } from './store';
 import { KeyframeResolver } from './utils/KeyframesResolver';
@@ -254,6 +254,60 @@ export abstract class VisualElement<
 	} = {};
 
 	/**
+	 * Per-feature DOM event handlers. Each feature stores its own handlers keyed by event name.
+	 * `handle` is composed from all feature handlers — if multiple features register the same
+	 * event name, both fire in registration order.
+	 *
+	 * `handle` is `$state` so UseRender's `$derived` reacts to property mutations.
+	 * All writes go through `untrack` to avoid write-during-read cycles in `$effect.pre`.
+	 */
+	private _featureHandlers = new Map<object, Record<string, (event: Event) => void>>();
+	handle: Record<string, (event: Event) => void> = $state({});
+
+	addFeatureHandler(feature: object, eventName: string, handler: (event: Event) => void) {
+		let featureMap = this._featureHandlers.get(feature);
+		if (!featureMap) {
+			featureMap = {};
+			this._featureHandlers.set(feature, featureMap);
+		}
+		featureMap[eventName] = handler;
+		this._recomputeHandle();
+	}
+
+	removeFeatureHandler(feature: object, eventName: string) {
+		const featureMap = this._featureHandlers.get(feature);
+		if (featureMap) {
+			delete featureMap[eventName];
+			if (Object.keys(featureMap).length === 0) {
+				this._featureHandlers.delete(feature);
+			}
+		}
+		this._recomputeHandle();
+	}
+
+	private _recomputeHandle() {
+		const composed: Record<string, ((event: Event) => void)[]> = {};
+		for (const handlers of this._featureHandlers.values()) {
+			for (const [eventName, handler] of Object.entries(handlers)) {
+				(composed[eventName] ??= []).push(handler);
+			}
+		}
+		const next: Record<string, (event: Event) => void> = {};
+		for (const [eventName, handlers] of Object.entries(composed)) {
+			next[eventName] = handlers.length === 1
+				? handlers[0]
+				: (event: Event) => { for (const h of handlers) h(event); };
+		}
+		// Use untrack to write $state inside $effect.pre without creating a reactive cycle.
+		untrack(() => {
+			for (const key of Object.keys(this.handle)) {
+				if (!(key in next)) delete this.handle[key];
+			}
+			Object.assign(this.handle, next);
+		});
+	}
+
+	/**
 	 * A map of every subscription that binds the provided or generated
 	 * motion values onChange listeners to this visual element.
 	 */
@@ -466,38 +520,6 @@ export abstract class VisualElement<
 		}
 
 		return this.sortInstanceNodePosition(this.current as Instance, other.current as Instance);
-	}
-
-	updateFeatures() {
-		let key: keyof typeof featureDefinitions = 'animation';
-
-		for (key in featureDefinitions) {
-			const featureDefinition = featureDefinitions[key];
-
-			if (!featureDefinition) continue;
-
-			const { isEnabled, Feature: FeatureConstructor } = featureDefinition;
-
-			/**
-			 * If this feature is enabled but not active, make a new instance.
-			 */
-			if (!this.features[key] && FeatureConstructor && isEnabled(this.props)) {
-				this.features[key] = new FeatureConstructor(this as VisualElement<HTMLElement>) as any;
-			}
-
-			/**
-			 * If we have a feature, mount or update it.
-			 */
-			if (this.features[key]) {
-				const feature = this.features[key]!;
-				if (feature.isMounted) {
-					feature.update();
-				} else {
-					feature.mount();
-					feature.isMounted = true;
-				}
-			}
-		}
 	}
 
 	notifyUpdate = () => this.notify('Update', this.latestValues);

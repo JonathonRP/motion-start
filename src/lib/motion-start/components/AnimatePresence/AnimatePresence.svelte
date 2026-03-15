@@ -30,9 +30,9 @@ Copyright (c) 2018 Framer B.V. -->
 		warning(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
 	});
 
-	const layoutContext = $derived(useLayoutGroupContext().current);
+	const layoutContext = $derived(useLayoutGroupContext());
 	const forceRender = () => {
-		layoutContext.forceRender?.();
+		layoutContext?.forceRender?.();
 		renderedChildren = [...renderedChildren];
 	};
 

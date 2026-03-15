@@ -38,7 +38,7 @@ function toNumber(v: string | number) {
  * @public
  */
 export const useSpring = (source: MotionValue | number, config: MaybeGetter<SpringOptions> = {}) => {
-	const { isStatic } = useMotionConfigContext().current;
+	const { isStatic } = useMotionConfigContext();
 
 	let activeSpringAnimation: MainThreadAnimation<number> | null = null;
 

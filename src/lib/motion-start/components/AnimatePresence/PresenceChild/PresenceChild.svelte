@@ -104,11 +104,7 @@ Copyright (c) 2018 Framer B.V. -->
     });
 
     // Set context with stable reference - same object every time
-    setPresenceContext({
-        get current() {
-            return context;
-        },
-    });
+    setPresenceContext(context);
 
     const pop = $derived(
         mode === "popLayout"

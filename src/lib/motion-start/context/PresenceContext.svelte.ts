@@ -5,9 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { createContext } from 'svelte';
 import type { VariantLabels } from '../motion/types';
-import type { MutableRefObject } from '../utils/safe-react-types';
 import type { Attachment } from 'svelte/attachments';
-import { ref } from '../utils/ref.svelte';
 
 /**
  * @public
@@ -25,13 +23,13 @@ export interface PresenceContext {
 	snapshotTrigger?: number;
 }
 
-const [getPresenceContext, setPresenceContext] = createContext<MutableRefObject<PresenceContext>>();
+const [getPresenceContext, setPresenceContext] = createContext<PresenceContext | null>();
 
 function usePresenceContext() {
 	try {
 		return getPresenceContext();
 	} catch {
-		return ref(null);
+		return null;
 	}
 }
 

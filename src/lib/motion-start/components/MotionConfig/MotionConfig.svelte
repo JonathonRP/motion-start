@@ -23,18 +23,13 @@ Copyright (c) 2018 Framer B.V. -->
 	 * Inherit props from any parent MotionConfig components
 	 */
 	config = {
-		...useMotionConfigContext().current,
+		...useMotionConfigContext(),
 		...config,
 	};
 
 	config.isStatic = config.isStatic ?? false;
 
-	const context = {
-		get current() {
-			return config;
-		},
-	};
-	setMotionConfigContext(context);
+	setMotionConfigContext(config);
 </script>
 
 {@render children?.()}

@@ -4,7 +4,6 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { type PanInfo, PanSession } from './PanSession';
-import { addPointerEvent } from '../../events/add-pointer-event';
 import { Feature } from '../../motion/features/Feature';
 import { noop } from '../../utils/noop';
 import { getContextWindow } from '../../utils/get-context-window';
@@ -46,9 +45,7 @@ export class PanGesture extends Feature<Element> {
 	}
 
 	mount() {
-		this.removePointerDownListener = addPointerEvent(this.node.current!, 'pointerdown', (event: PointerEvent) =>
-			this.onPointerDown(event)
-		);
+		this.registerHandler('onpointerdown', (event) => this.onPointerDown(event as PointerEvent));
 	}
 
 	update() {
@@ -57,6 +54,7 @@ export class PanGesture extends Feature<Element> {
 
 	unmount() {
 		this.removePointerDownListener();
+		this.removeHandler('onpointerdown');
 		this.session && this.session.end();
 	}
 }

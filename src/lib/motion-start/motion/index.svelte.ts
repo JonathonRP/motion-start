@@ -60,7 +60,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
 
 		const configAndProps = $derived({
-			...useMotionConfigContext().current,
+			...useMotionConfigContext(),
 			...props,
 			layoutId: useLayoutId(() => props),
 		});
@@ -121,6 +121,9 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			get isStatic() {
 				return isStatic;
 			},
+			get visualElement() {
+				return visualElement ?? undefined;
+			},
 		});
 
 		// Mount MeasureLayout once and keep it alive — do NOT recreate it on every prop change.
@@ -135,59 +138,20 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				_renderCount++;
 			});
 		});
-		const measureProps: MotionProps & { visualElement: typeof visualElement } = {
-			get _renderCount() {
-				return _renderCount;
-			},
-			get layoutDependency() {
-				return configAndProps.layoutDependency;
-			},
-			get layoutId() {
-				return configAndProps.layoutId;
-			},
-			get layout() {
-				return configAndProps.layout;
-			},
-			get drag() {
-				return configAndProps.drag;
-			},
-			get dragConstraints() {
-				return configAndProps.dragConstraints;
-			},
-			get dragElastic() {
-				return configAndProps.dragElastic;
-			},
-			get dragMomentum() {
-				return configAndProps.dragMomentum;
-			},
-			get dragPropagation() {
-				return configAndProps.dragPropagation;
-			},
-			get dragTransition() {
-				return configAndProps.dragTransition;
-			},
-			get dragControls() {
-				return configAndProps.dragControls;
-			},
-			get onDragStart() {
-				return configAndProps.onDragStart;
-			},
-			get onDragEnd() {
-				return configAndProps.onDragEnd;
-			},
-			get onDrag() {
-				return configAndProps.onDrag;
-			},
-			get onDirectionLock() {
-				return configAndProps.onDirectionLock;
-			},
-			get onDragTransitionEnd() {
-				return configAndProps.onDragTransitionEnd;
-			},
-			get visualElement() {
-				return context.visualElement ?? null;
-			},
-		};
+		// Stable $state object updated on every configAndProps change.
+		// MeasureLayout is instantiated once — it must read from the same object reference.
+		// $state makes fields reactive so MeasureLayoutWithContext's watch.pre re-fires correctly.
+		const measureProps = $state({
+			...configAndProps,
+			_renderCount,
+			visualElement: context.visualElement ?? null,
+		});
+		$effect.pre(() => {
+			Object.assign(measureProps, configAndProps, {
+				_renderCount,
+				visualElement: context.visualElement ?? null,
+			});
+		});
 		$effect.pre(() => {
 			if (MeasureLayout && context.visualElement && !_measureInstance) {
 				_measureInstance = MeasureLayout(anchor, measureProps as unknown as MotionProps);
@@ -203,13 +167,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 export function useLayoutId(props: () => MotionProps) {
 	const { layoutId } = props();
-	const { id: layoutGroupId } = useLayoutGroupContext().current;
+	const { id: layoutGroupId } = useLayoutGroupContext() ?? {};
 
 	return layoutGroupId && layoutId !== undefined ? `${layoutGroupId}-${layoutId}` : layoutId;
 }
 
 export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
-	const { strict: isStrict } = useLazyContext().current;
+	const { strict: isStrict } = useLazyContext();
 
 	/**
 	 * If we're in development mode, check to make sure we're not rendering a motion component

@@ -40,7 +40,7 @@ export function isPresent(context: () => PresenceContext | null) {
  * @public
  */
 export const useIsPresent = (): (() => boolean) => {
-	return isPresent(() => usePresenceContext().current);
+	return isPresent(() => usePresenceContext());
 };
 
 /**
@@ -66,8 +66,7 @@ export const useIsPresent = (): (() => boolean) => {
  * @public
  */
 export const usePresence = (): (() => AlwaysPresent | Present | NotPresent) => {
-	const contextRef = usePresenceContext();
-	const context = $derived(contextRef.current);
+	const context = usePresenceContext();
 
 	// Early return for no context - but check reactively
 	const isContextNull = $derived(context === null);

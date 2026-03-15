@@ -1,4 +1,4 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
@@ -15,8 +15,8 @@ import { microtask } from '../../frameloop/microtask';
 import type { IProjectionNode } from '../../projection/node/types';
 import type { VisualElement } from '../../render/VisualElement.svelte';
 import type { CreateVisualElement } from '../../render/types';
+import { featureDefinitions } from '../features/definitions';
 import { isRefObject } from '../../utils/is-ref-object.js';
-import { ref } from '../../utils/ref.svelte';
 import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
 
@@ -27,54 +27,44 @@ export function useVisualElement<Instance, RenderState>(
 	createVisualElement: CreateVisualElement<Instance> | undefined,
 	ProjectionNodeConstructor: () => (new (...args: any[]) => IProjectionNode<unknown>) | undefined
 ): () => VisualElement<Instance> | null {
-	const { visualElement: parent } = $derived(useMotionContext().current);
+	const { visualElement: parent } = $derived(useMotionContext());
 
-	const lazyContext = $derived(useLazyContext().current);
-
-	// Keep the ref so visualElement.update() always receives the live $state object —
-	// PopChildMeasure mutates context.measurePop in place and we must see that mutation.
 	const presenceContext = usePresenceContext();
-	// Track isPresent as a fine-grained derived so mutations to that property (in-place
-	// on the same $state object) invalidate the watch.pre below.
-	const isPresent = $derived(presenceContext.current?.isPresent);
+	// Fine-grained derived on isPresent so in-place mutations to the $state context object
+	// cause watch.pre to re-fire (object reference never changes — only the property does).
+	const isPresent = $derived(presenceContext?.isPresent);
+	const reducedMotionContext = $derived(useMotionConfigContext().reducedMotion);
+	const initialLayoutGroupConfig = $derived(useSwitchLayoutGroupContext());
 
-	const reducedMotionContext = $derived(useMotionConfigContext().current.reducedMotion);
+	let visualElement = $state<VisualElement<Instance> | null>(null);
 
-	const visualElementRef = ref<VisualElement<Instance> | null>(null);
+	createVisualElement = createVisualElement || useLazyContext().renderer;
 
-	/**
-	 * If we haven't preloaded a renderer, check to see if we have one lazy-loaded
-	 */
-	createVisualElement = createVisualElement || lazyContext.renderer;
-
-	if (!visualElementRef.current && createVisualElement) {
-		visualElementRef.current =
+	if (!visualElement && createVisualElement) {
+		visualElement =
 			createVisualElement(Component, {
 				visualState: visualState(),
 				parent,
 				props: props(),
 				get presenceContext() {
-					return presenceContext.current;
+					return presenceContext;
 				},
 				get blockInitialAnimation() {
-					return presenceContext.current ? presenceContext.current.initial === false : false;
+					return presenceContext ? presenceContext.initial === false : false;
 				},
 				reducedMotionConfig: reducedMotionContext,
 			}) ?? null;
 	}
 
-	const visualElement = $derived(visualElementRef.current);
-
-	const initialLayoutGroupConfig = $derived(useSwitchLayoutGroupContext().current);
-
 	$effect.pre(() => {
+		const ProjectionNode = ProjectionNodeConstructor();
 		if (
 			visualElement &&
 			!visualElement.projection &&
-			ProjectionNodeConstructor() &&
+			ProjectionNode &&
 			(visualElement.type === 'html' || visualElement.type === 'svg')
 		) {
-			createProjectionNode(visualElementRef.current!, props(), ProjectionNodeConstructor()!, initialLayoutGroupConfig);
+			createProjectionNode(visualElement, props(), ProjectionNode, initialLayoutGroupConfig);
 		}
 	});
 
@@ -86,31 +76,15 @@ export function useVisualElement<Instance, RenderState>(
 	// Fires when props, presenceContext, isMounted, or visualElement change.
 	// isMounted in sources ensures update() is called immediately on mount (not just on prop changes).
 	watch.pre(
-		[() => props(), () => presenceContext.current, () => isMounted, () => visualElement],
+		[() => props(), () => isPresent, () => isMounted, () => visualElement],
 		() => {
 			if (visualElement && isMounted) {
-				visualElement.update(props(), presenceContext.current);
+				visualElement.update(props(), presenceContext);
 			}
 		},
 		{ lazy: true }
 	);
 
-	// Lazy: only fire when isPresent changes (not on initial mount).
-	// isPresent is a fine-grained $derived on the property — tracks in-place mutations
-	// to the $state context object in PresenceChild.
-	watch.pre(
-		() => isPresent,
-		() => {
-			if (isMounted) {
-				if (visualElement?.current) {
-					tick().then(() => {
-						if (visualElement.current) visualElement.updateFeatures();
-					});
-				}
-			}
-		},
-		{ lazy: true }
-	);
 
 	/**
 	 * Cache this value as we want to know whether HandoffAppearAnimations
@@ -129,7 +103,26 @@ export function useVisualElement<Instance, RenderState>(
 		isMounted = true;
 		window.MotionIsMounted = true;
 
-		visualElement.updateFeatures();
+		// Mount or update all features declaratively (replaces updateFeatures()).
+		let fKey: keyof typeof featureDefinitions = 'animation';
+		for (fKey in featureDefinitions) {
+			const featureDefinition = featureDefinitions[fKey];
+			if (!featureDefinition) continue;
+			const { isEnabled, Feature: FeatureConstructor } = featureDefinition;
+			if (!visualElement.features[fKey] && FeatureConstructor && isEnabled(visualElement.props)) {
+				visualElement.features[fKey] = new FeatureConstructor(visualElement as VisualElement<HTMLElement>) as any;
+			}
+			const feature = visualElement.features[fKey];
+			if (feature) {
+				if (feature.isMounted) {
+					feature.update();
+				} else {
+					feature.mount();
+					feature.isMounted = true;
+				}
+			}
+		}
+
 		microtask.render(visualElement.render);
 
 		/**
@@ -156,15 +149,43 @@ export function useVisualElement<Instance, RenderState>(
 
 			wantsHandoff = false;
 		}
+
+		return () => {
+			let fKey: keyof typeof visualElement.features = 'animation';
+			for (fKey in visualElement.features) {
+				const feature = visualElement.features[fKey];
+				if (feature?.isMounted) {
+					feature.unmount();
+					feature.isMounted = false;
+				}
+			}
+		};
 	});
 
-	// Lazy: re-run animateChanges on prop changes after mount.
+	// Re-run feature update() when isPresent changes so ExitAnimationFeature detects the transition.
+	watch.pre(
+		() => isPresent,
+		() => {
+			if (!visualElement?.current || !isMounted) return;
+			let fKey: keyof typeof featureDefinitions = 'animation';
+			for (fKey in featureDefinitions) {
+				visualElement.features[fKey]?.update();
+			}
+		},
+		{ lazy: true }
+	);
+
+	// Re-run feature update() + animateChanges on prop changes after mount.
 	watch.pre(
 		() => props(),
 		() => {
-			if (!visualElement?.current) return;
+			if (!visualElement?.current || !isMounted) return;
+			let fKey: keyof typeof featureDefinitions = 'animation';
+			for (fKey in featureDefinitions) {
+				visualElement.features[fKey]?.update();
+			}
 			tick().then(() => {
-				if (wantsHandoff && visualElement.animationState) {
+				if (!wantsHandoff && visualElement.animationState) {
 					visualElement.animationState.animateChanges();
 				}
 			});
@@ -179,7 +200,7 @@ function createProjectionNode(
 	visualElement: VisualElement<any>,
 	props: MotionProps,
 	ProjectionNodeConstructor: new (...args: any[]) => IProjectionNode<unknown>,
-	initialPromotionConfig?: InitialPromotionConfig
+	initialPromotionConfig?: InitialPromotionConfig | null
 ) {
 	const { layoutId, layout, drag, dragConstraints, layoutScroll, layoutRoot } = props;
 
@@ -203,7 +224,7 @@ function createProjectionNode(
 		 *
 		 */
 		animationType: typeof layout === 'string' ? (layout as 'size' | 'position' | 'both' | 'preserve-aspect') : 'both',
-		initialPromotionConfig,
+		initialPromotionConfig: initialPromotionConfig ?? undefined,
 		layoutScroll,
 		layoutRoot,
 	});

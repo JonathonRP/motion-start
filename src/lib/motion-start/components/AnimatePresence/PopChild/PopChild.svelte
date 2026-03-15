@@ -10,8 +10,8 @@ Copyright (c) 2018 Framer B.V. -->
     let { isPresent, children }: Props = $props();
 
     const id = $props.id();
-    const { nonce } = $derived(useMotionConfigContext().current);
-    const presenceRef = usePresenceContext();
+    const { nonce } = $derived(useMotionConfigContext());
+    const presenceContext = usePresenceContext();
 
     // Keep a reference to the injected style element so we can clean it up.
     let injectedStyle: HTMLStyleElement | null = null;
@@ -28,7 +28,7 @@ Copyright (c) 2018 Framer B.V. -->
     // (position:absolute hasn't been applied yet), so offsetTop/offsetLeft give
     // the correct parent-relative coordinates for the absolute positioning.
     $effect(() => {
-        const context = presenceRef.current;
+        const context = presenceContext;
         if (!context) return;
         context.measurePop = (node) => {
             const child = node as HTMLElement;

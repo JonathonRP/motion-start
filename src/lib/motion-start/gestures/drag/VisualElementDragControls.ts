@@ -8,7 +8,6 @@ import { PanSession, type PanInfo } from '../pan/PanSession';
 import type { ResolvedConstraints } from './types';
 import { type Lock, getGlobalLock } from './utils/lock';
 import { isRefObject } from '../../utils/is-ref-object';
-import { addPointerEvent } from '../../events/add-pointer-event';
 import {
 	calcRelativeConstraints,
 	calcViewportConstraints,
@@ -511,15 +510,6 @@ export class VisualElementDragControls {
 	addListeners() {
 		if (!this.visualElement.current) return;
 		elementDragControls.set(this.visualElement, this);
-		const element = this.visualElement.current;
-
-		/**
-		 * Attach a pointerdown event listener on this DOM element to initiate drag tracking.
-		 */
-		const stopPointerListener = addPointerEvent(element, 'pointerdown', (event) => {
-			const { drag, dragListener = true } = this.getProps();
-			drag && dragListener && this.start(event);
-		});
 
 		const measureDragConstraints = () => {
 			const { dragConstraints } = this.getProps();
@@ -568,7 +558,6 @@ export class VisualElementDragControls {
 
 		return () => {
 			stopResizeListener();
-			stopPointerListener();
 			stopMeasureLayoutListener();
 			stopLayoutUpdateListener && stopLayoutUpdateListener();
 		};

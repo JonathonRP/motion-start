@@ -73,6 +73,11 @@ export class ExitAnimationFeature extends Feature<unknown> {
 			this.deregister = register(this.id);
 			this.hasRegistered = true;
 		}
+
+		// Initialize prevIsPresent to true: we always assume the element starts present
+		// so the first isPresent=false transition triggers the exit animation.
+		// Note: `isPresent ?? true` is wrong — `false ?? true` evaluates to `false`.
+		this.prevIsPresent = true;
 	}
 
 	unmount() {

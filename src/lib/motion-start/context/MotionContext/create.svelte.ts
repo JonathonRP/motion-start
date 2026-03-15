@@ -8,7 +8,7 @@ import type { MotionProps } from '../../motion/types';
 import { getCurrentTreeVariants } from './utils.svelte';
 
 export function useCreateMotionContext<Instance>(props: () => MotionProps): () => MotionContext<Instance> {
-	const { initial, animate } = $derived(getCurrentTreeVariants(props, useMotionContext().current));
+	const { initial, animate } = $derived(getCurrentTreeVariants(props, useMotionContext()));
 
 	const context = (_initial: string | false | undefined, _animate: string | false | undefined) => ({
 		initial,
