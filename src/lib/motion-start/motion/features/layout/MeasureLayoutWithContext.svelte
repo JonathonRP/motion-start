@@ -62,13 +62,11 @@ Copyright (c) 2018 Framer B.V. -->
 	});
 
 	// getSnapshotBeforeUpdate — mirrors React's getSnapshotBeforeUpdate.
-	// Fires before DOM changes via watch.pre. Explicit deps: _renderCount (bumped every render),
-	// layoutDependency, projection, and isPresent — mirrors the four sources of layout changes.
+	// Fires before DOM changes via watch.pre. Deps: layoutDependency, projection, isPresent.
 	let prevLayoutDependency: number | undefined = undefined;
 	let prevIsPresent: boolean | undefined = undefined;
 	watch.pre(
 		[
-			() => props._renderCount,
 			() => props.layoutDependency,
 			() => props.visualElement?.projection,
 			() => props.isPresent,
@@ -134,10 +132,10 @@ Copyright (c) 2018 Framer B.V. -->
 		{ lazy: true },
 	);
 
-	// componentDidUpdate — re-runs on every render (via _renderCount) and on layoutDependency.
+	// componentDidUpdate — re-runs on layoutDependency change.
 	// Uses watch (EFFECT phase, post-DOM) so didUpdate() sees the committed DOM.
 	watch(
-		[() => props._renderCount, () => props.layoutDependency],
+		() => props.layoutDependency,
 		() => {
 			if (props.visualElement?.projection) {
 				const { projection } = props.visualElement;

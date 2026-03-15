@@ -3,22 +3,22 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { untrack, type Component, type ComponentProps, type Snippet } from 'svelte';
-import type { MotionProps } from './types';
-import type { RenderComponent, FeatureBundle } from './features/types';
-import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
-import type { UseVisualState } from './utils/use-visual-state.svelte';
-import { loadFeatures } from './features/load-features';
+import type { Component, ComponentProps, Snippet } from 'svelte';
 import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte';
 import { useLazyContext } from '../context/LazyContext';
-import { motionComponentSymbol } from './utils/symbol';
+import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
+import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import type { CreateVisualElement } from '../render/types';
 import { invariant, warning } from '../utils/errors';
-import { featureDefinitions } from './features/definitions';
 import type { Ref } from '../utils/safe-react-types';
-import { useVisualElement } from './utils/use-visual-element.svelte';
-import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
+import { featureDefinitions } from './features/definitions';
+import { loadFeatures } from './features/load-features';
+import type { RenderComponent, FeatureBundle } from './features/types';
+import type { MotionProps } from './types';
 import { useMotionRef } from './utils/use-motion-ref.svelte';
+import type { UseVisualState } from './utils/use-visual-state.svelte';
+import { motionComponentSymbol } from './utils/symbol';
+import { useVisualElement } from './utils/use-visual-element.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -128,27 +128,14 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 		// Mount MeasureLayout once and keep it alive — do NOT recreate it on every prop change.
 		// Recreating would reset prevLayoutDependency in MeasureLayoutWithContext, breaking FLIP.
-		// Pass a stable getter-based props object so the live instance sees updated props reactively.
-		// _renderCount changes on every configAndProps update, making MeasureLayoutWithContext's
-		// watch.pre re-fire on every render (equivalent to React's getSnapshotBeforeUpdate).
-		let _renderCount = $state(0);
-		$effect.pre(() => {
-			configAndProps; // track entire derived object — re-run on every prop change
-			untrack(() => {
-				_renderCount++;
-			});
-		});
 		// Stable $state object updated on every configAndProps change.
-		// MeasureLayout is instantiated once — it must read from the same object reference.
 		// $state makes fields reactive so MeasureLayoutWithContext's watch.pre re-fires correctly.
 		const measureProps = $state({
 			...configAndProps,
-			_renderCount,
 			visualElement: context.visualElement ?? null,
 		});
 		$effect.pre(() => {
 			Object.assign(measureProps, configAndProps, {
-				_renderCount,
 				visualElement: context.visualElement ?? null,
 			});
 		});

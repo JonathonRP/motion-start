@@ -15,8 +15,6 @@ Copyright (c) 2018 Framer B.V. -->
 		safeToRemove?: VoidFunction | null;
 		/** Bumped (via flushSync) before DOM removal to snapshot positions while exiting sibling still in DOM */
 		snapshotTrigger?: number;
-		/** Bumped on every configAndProps change — used by MeasureLayoutWithContext to re-run on every render */
-		_renderCount?: number;
 	}
 
 	export interface MeasureProps extends MotionProps, MeasureContextProps {
