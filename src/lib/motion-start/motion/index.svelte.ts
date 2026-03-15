@@ -131,26 +131,62 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		let _renderCount = $state(0);
 		$effect.pre(() => {
 			configAndProps; // track entire derived object — re-run on every prop change
-			untrack(() => { _renderCount++; });
+			untrack(() => {
+				_renderCount++;
+			});
 		});
 		const measureProps: MotionProps & { visualElement: typeof visualElement } = {
-			get _renderCount() { return _renderCount; },
-			get layoutDependency() { return configAndProps.layoutDependency; },
-			get layoutId() { return configAndProps.layoutId; },
-			get layout() { return configAndProps.layout; },
-			get drag() { return configAndProps.drag; },
-			get dragConstraints() { return configAndProps.dragConstraints; },
-			get dragElastic() { return configAndProps.dragElastic; },
-			get dragMomentum() { return configAndProps.dragMomentum; },
-			get dragPropagation() { return configAndProps.dragPropagation; },
-			get dragTransition() { return configAndProps.dragTransition; },
-			get dragControls() { return configAndProps.dragControls; },
-			get onDragStart() { return configAndProps.onDragStart; },
-			get onDragEnd() { return configAndProps.onDragEnd; },
-			get onDrag() { return configAndProps.onDrag; },
-			get onDirectionLock() { return configAndProps.onDirectionLock; },
-			get onDragTransitionEnd() { return configAndProps.onDragTransitionEnd; },
-			get visualElement() { return context.visualElement ?? null; },
+			get _renderCount() {
+				return _renderCount;
+			},
+			get layoutDependency() {
+				return configAndProps.layoutDependency;
+			},
+			get layoutId() {
+				return configAndProps.layoutId;
+			},
+			get layout() {
+				return configAndProps.layout;
+			},
+			get drag() {
+				return configAndProps.drag;
+			},
+			get dragConstraints() {
+				return configAndProps.dragConstraints;
+			},
+			get dragElastic() {
+				return configAndProps.dragElastic;
+			},
+			get dragMomentum() {
+				return configAndProps.dragMomentum;
+			},
+			get dragPropagation() {
+				return configAndProps.dragPropagation;
+			},
+			get dragTransition() {
+				return configAndProps.dragTransition;
+			},
+			get dragControls() {
+				return configAndProps.dragControls;
+			},
+			get onDragStart() {
+				return configAndProps.onDragStart;
+			},
+			get onDragEnd() {
+				return configAndProps.onDragEnd;
+			},
+			get onDrag() {
+				return configAndProps.onDrag;
+			},
+			get onDirectionLock() {
+				return configAndProps.onDirectionLock;
+			},
+			get onDragTransitionEnd() {
+				return configAndProps.onDragTransitionEnd;
+			},
+			get visualElement() {
+				return context.visualElement ?? null;
+			},
 		};
 		$effect.pre(() => {
 			if (MeasureLayout && context.visualElement && !_measureInstance) {

@@ -3,6 +3,11 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
+	import type { LayoutGroupContext } from "../../../context/LayoutGroupContext.svelte";
+	import type { SwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
+	import type { VisualElement } from "../../../render/VisualElement.svelte";
+	import type { MotionProps } from "../../types";
+
 	interface MeasureContextProps {
 		layoutGroup: LayoutGroupContext;
 		switchLayoutGroup?: SwitchLayoutGroupContext;
@@ -27,17 +32,9 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
 	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte";
-	import {
-		type LayoutGroupContext,
-		useLayoutGroupContext,
-	} from "../../../context/LayoutGroupContext.svelte";
-	import {
-		useSwitchLayoutGroupContext,
-		type SwitchLayoutGroupContext,
-	} from "../../../context/SwitchLayoutGroupContext";
+	import { useLayoutGroupContext } from "../../../context/LayoutGroupContext.svelte";
+	import { useSwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
 	import { usePresenceContext } from "../../../context/PresenceContext.svelte";
-	import type { MotionProps } from "../../types";
-	import type { VisualElement } from "../../../render/VisualElement.svelte";
 	import MeasureLayoutWithContext from "./MeasureLayoutWithContext.svelte";
 
 	interface MeasureLayoutProps extends MotionProps {
@@ -52,9 +49,7 @@ Copyright (c) 2018 Framer B.V. -->
 	const presenceSnapshotTrigger = $derived(presenceContextRef.current?.snapshotTrigger);
 
 	const layoutGroup = $derived(
-		useLayoutGroupContext().current ?? {
-			forceRender: () => {},
-		},
+		useLayoutGroupContext().current ?? { forceRender: () => {} },
 	);
 </script>
 

@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-// IsMounted intentionally removed — replaced with $effect.pre-based flag below
-import { tick, untrack, type Component } from 'svelte';
+import { watch } from 'runed';
+import { tick, type Component } from 'svelte';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { useLazyContext } from '../../context/LazyContext';
 import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte';
@@ -31,11 +31,12 @@ export function useVisualElement<Instance, RenderState>(
 
 	const lazyContext = $derived(useLazyContext().current);
 
-	// Keep the ref itself (not .current) so we always read the live $state object.
-	// If we derived .current here, PopChildMeasure's mutation to measurePop would
-	// be invisible to visualElement.presenceContext (which would hold a stale snapshot).
-	const presenceContextRef = usePresenceContext();
-	const presenceContext = $derived(presenceContextRef.current);
+	// Keep the ref so visualElement.update() always receives the live $state object —
+	// PopChildMeasure mutates context.measurePop in place and we must see that mutation.
+	const presenceContext = usePresenceContext();
+	// Track isPresent as a fine-grained derived so mutations to that property (in-place
+	// on the same $state object) invalidate the watch.pre below.
+	const isPresent = $derived(presenceContext.current?.isPresent);
 
 	const reducedMotionContext = $derived(useMotionConfigContext().current.reducedMotion);
 
@@ -52,8 +53,12 @@ export function useVisualElement<Instance, RenderState>(
 				visualState: visualState(),
 				parent,
 				props: props(),
-				presenceContext: presenceContext ? presenceContext : null,
-				blockInitialAnimation: presenceContext ? presenceContext.initial === false : false,
+				get presenceContext() {
+					return presenceContext.current;
+				},
+				get blockInitialAnimation() {
+					return presenceContext.current ? presenceContext.current.initial === false : false;
+				},
 				reducedMotionConfig: reducedMotionContext,
 			}) ?? null;
 	}
@@ -78,46 +83,34 @@ export function useVisualElement<Instance, RenderState>(
 	// $effect deferral problem in raw component functions on remount).
 	let isMounted = $state(false);
 
-	$effect.pre(() => {
-		// $inspect.trace();
-		props();
-		presenceContext;
-		/**
-		 * Check the component has already mounted before calling
-		 * `update` unnecessarily. This ensures we skip the initial update.
-		 */
-		if (visualElement && isMounted) {
-			/**
-			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
-			 * Pass the live ref's .current so visualElement.presenceContext always
-			 * points to the same $state object that PopChildMeasure mutates.
-			 */
-			untrack(() => visualElement.update(props(), presenceContextRef.current));
-		}
-	});
+	// Fires when props, presenceContext, isMounted, or visualElement change.
+	// isMounted in sources ensures update() is called immediately on mount (not just on prop changes).
+	watch.pre(
+		[() => props(), () => presenceContext.current, () => isMounted, () => visualElement],
+		() => {
+			if (visualElement && isMounted) {
+				visualElement.update(props(), presenceContext.current);
+			}
+		},
+		{ lazy: true }
+	);
 
-	/**
-	 * Drive exit animations when isPresent changes. Uses presenceContextRef.current?.isPresent
-	 * directly (not via the $derived presenceContext) to track deep property mutations on the
-	 * $state context object in PresenceChild. Deferred via tick() so PresenceChild's $effect
-	 * has already set context.onExitComplete to the correct child.onExit before ExitAnimationFeature
-	 * reads it.
-	 *
-	 * Note: measurePop is called by ExitAnimationFeature.update() (exit.ts) synchronously when
-	 * isPresent becomes false — no additional wiring needed here.
-	 */
-	$effect.pre(() => {
-		void presenceContextRef.current?.isPresent;
-		if (isMounted) {
-			untrack(() => {
+	// Lazy: only fire when isPresent changes (not on initial mount).
+	// isPresent is a fine-grained $derived on the property — tracks in-place mutations
+	// to the $state context object in PresenceChild.
+	watch.pre(
+		() => isPresent,
+		() => {
+			if (isMounted) {
 				if (visualElement?.current) {
 					tick().then(() => {
 						if (visualElement.current) visualElement.updateFeatures();
 					});
 				}
-			});
-		}
-	});
+			}
+		},
+		{ lazy: true }
+	);
 
 	/**
 	 * Cache this value as we want to know whether HandoffAppearAnimations
@@ -150,17 +143,6 @@ export function useVisualElement<Instance, RenderState>(
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
 		tick().then(() => {
-			if (wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
-			}
-		});
-	});
-
-	$effect.pre(() => {
-		props();
-		if (!visualElement?.current) return;
-
-		tick().then(() => {
 			if (!wantsHandoff && visualElement.animationState) {
 				visualElement.animationState.animateChanges();
 			}
@@ -175,6 +157,20 @@ export function useVisualElement<Instance, RenderState>(
 			wantsHandoff = false;
 		}
 	});
+
+	// Lazy: re-run animateChanges on prop changes after mount.
+	watch.pre(
+		() => props(),
+		() => {
+			if (!visualElement?.current) return;
+			tick().then(() => {
+				if (wantsHandoff && visualElement.animationState) {
+					visualElement.animationState.animateChanges();
+				}
+			});
+		},
+		{ lazy: true }
+	);
 
 	return () => visualElement;
 }

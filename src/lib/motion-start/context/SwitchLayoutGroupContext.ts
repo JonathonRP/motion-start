@@ -37,6 +37,6 @@ export function useSwitchLayoutGroupContext() {
 	try {
 		return getSwitchLayoutGroupContext();
 	} catch {
-		return ref({});
+		return ref({} as SwitchLayoutGroupContext);
 	}
 }

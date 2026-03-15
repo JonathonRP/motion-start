@@ -1,10 +1,5 @@
 // Export reactive context utilities and context keys
 export {
-	createPresenceContext,
-	type PresenceContextType,
-	PRESENCE_CONTEXT_KEY,
-} from './PresenceContext.svelte';
-export {
 	createMotionConfigContext,
 	type MotionConfigContextType,
 	defaultMotionConfig,

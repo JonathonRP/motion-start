@@ -1,5 +1,5 @@
 <!-- based on framer-motion@11.11.11,
- Copyright (c) 2018 Framer B.V. -->
+Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
@@ -30,19 +30,13 @@
 		boxShadow: correctBoxShadow,
 	};
 
-	interface Props extends MeasureProps {}
+	const props: MeasureProps = $props();
 
-	const props: Props = $props();
-
-	const safeToRemove = () => {
-		const { safeToRemove } = props;
-		safeToRemove && safeToRemove();
-	};
+	const safeToRemove = () => props.safeToRemove?.();
 
 	// componentDidMount
 	onMount(() => {
-		const { visualElement, layoutGroup, switchLayoutGroup, layoutId } =
-			props;
+		const { visualElement, layoutGroup, switchLayoutGroup, layoutId } = props;
 		const { projection } = visualElement;
 
 		addScaleCorrector(defaultScaleCorrectors);
@@ -68,10 +62,8 @@
 	});
 
 	// getSnapshotBeforeUpdate — mirrors React's getSnapshotBeforeUpdate.
-	// Watches _renderCount (bumped on every configAndProps change in index.svelte.ts)
-	// and projection changes. Uses separate prev-value tracking for layoutDependency
-	// and isPresent to correctly detect changes (getter-based props always return current
-	// values, so we cannot rely on prevProps object comparison).
+	// Fires before DOM changes via watch.pre. Explicit deps: _renderCount (bumped every render),
+	// layoutDependency, projection, and isPresent — mirrors the four sources of layout changes.
 	let prevLayoutDependency: number | undefined = undefined;
 	let prevIsPresent: boolean | undefined = undefined;
 	watch.pre(
@@ -131,47 +123,45 @@
 	// snapshotTrigger is bumped (via flushSync) BEFORE DOM removal so siblings snapshot
 	// their positions while the exiting element is still in the DOM. It fires watch.pre
 	// only (not $effect), so update()/didUpdate() are NOT called prematurely.
-	// The main watch.pre above uses _renderCount which won't re-run for snapshotTrigger
-	// changes, so we need a separate watcher.
-	watch.pre([() => props.snapshotTrigger], ([snapshotTrigger], [prevST]) => {
-		if (prevST === snapshotTrigger) return;
-		const projection = props.visualElement?.projection;
-		if (projection) {
-			projection.willUpdate();
-		}
-	});
+	watch.pre(
+		() => props.snapshotTrigger,
+		() => {
+			const projection = props.visualElement?.projection;
+			if (projection) {
+				projection.willUpdate();
+			}
+		},
+		{ lazy: true },
+	);
 
-	// componentDidUpdate — re-runs on every render (via _renderCount) and on layoutDependency
-	// or projection changes. Calls didUpdate() to trigger FLIP and schedules safeToRemove check.
-	$effect(() => {
-		void props._renderCount;
-		void props.layoutDependency;
-		if (props.visualElement?.projection) {
-			const { projection } = props.visualElement;
-			projection.root!.didUpdate();
+	// componentDidUpdate — re-runs on every render (via _renderCount) and on layoutDependency.
+	// Uses watch (EFFECT phase, post-DOM) so didUpdate() sees the committed DOM.
+	watch(
+		[() => props._renderCount, () => props.layoutDependency],
+		() => {
+			if (props.visualElement?.projection) {
+				const { projection } = props.visualElement;
+				projection.root!.didUpdate();
 
-			microtask.postRender(() => {
-				if (!projection.currentAnimation && projection.isLead()) {
-					safeToRemove();
-				}
-			});
-		}
-	});
+				microtask.postRender(() => {
+					if (!projection.currentAnimation && projection.isLead()) {
+						safeToRemove();
+					}
+				});
+			}
+		},
+	);
 
 	// component will unmount
 	onDestroy(() => {
-		const {
-			visualElement,
-			layoutGroup,
-			switchLayoutGroup: promoteContext,
-		} = props;
+		const { visualElement, layoutGroup, switchLayoutGroup } = props;
 		if (visualElement?.projection) {
 			const { projection } = visualElement;
 			projection.scheduleCheckAfterUnmount();
 			if (layoutGroup && layoutGroup.group)
 				layoutGroup.group.remove(projection);
-			if (promoteContext && promoteContext.deregister)
-				promoteContext.deregister(projection);
+			if (switchLayoutGroup && switchLayoutGroup.deregister)
+				switchLayoutGroup.deregister(projection);
 		}
 	});
 </script>
