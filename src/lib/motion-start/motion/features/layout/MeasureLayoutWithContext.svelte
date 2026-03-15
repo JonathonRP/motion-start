@@ -3,7 +3,7 @@
 <svelte:options runes />
 
 <script lang="ts">
-	import { Previous, watch } from "runed";
+	import { watch } from "runed";
 	import { onDestroy, onMount } from "svelte";
 	import { frame } from "../../../frameloop";
 	import { microtask } from "../../../frameloop/microtask";
@@ -67,41 +67,41 @@
 		globalProjectionState.hasEverUpdated = true;
 	});
 
-	// getSnapshotBeforeUpdate
+	// getSnapshotBeforeUpdate — mirrors React's getSnapshotBeforeUpdate.
+	// Watches _renderCount (bumped on every configAndProps change in index.svelte.ts)
+	// and projection changes. Uses separate prev-value tracking for layoutDependency
+	// and isPresent to correctly detect changes (getter-based props always return current
+	// values, so we cannot rely on prevProps object comparison).
+	let prevLayoutDependency: number | undefined = undefined;
+	let prevIsPresent: boolean | undefined = undefined;
 	watch.pre(
-		[() => props, () => props.visualElement?.projection],
-		([props], [prevProps]) => {
-			const { layoutDependency, visualElement, drag, isPresent } =
-				props ?? {};
+		[() => props._renderCount, () => props.layoutDependency, () => props.visualElement?.projection],
+		() => {
+			const { layoutDependency, visualElement, drag, isPresent } = props;
 			const projection = visualElement?.projection;
 
 			if (!projection) {
-				if (prevProps?.isPresent !== isPresent && !isPresent) {
+				if (prevIsPresent !== isPresent && !isPresent) {
 					safeToRemove();
 				}
+				prevIsPresent = isPresent;
 				return;
 			}
 
-			/**
-			 * TODO: We use this data in relegate to determine whether to
-			 * promote a previous element. There's no guarantee its presence data
-			 * will have updated by this point - if a bug like this arises it will
-			 * have to be that we markForRelegation and then find a new lead some other way,
-			 * perhaps in didUpdate
-			 */
 			projection.isPresent = isPresent;
 
 			if (
 				drag ||
-				prevProps?.layoutDependency !== layoutDependency ||
+				prevLayoutDependency !== layoutDependency ||
 				layoutDependency === undefined
 			) {
 				projection.willUpdate();
-			} else {
+			} else if (prevIsPresent === isPresent) {
+				// Layout stable AND presence stable — element can be safely removed
 				safeToRemove();
 			}
 
-			if (prevProps?.isPresent !== isPresent) {
+			if (prevIsPresent !== isPresent) {
 				if (isPresent) {
 					projection.promote();
 				} else if (!projection.relegate()) {
@@ -113,11 +113,37 @@
 					});
 				}
 			}
+
+			// When transitioning to not-present, keep prevLayoutDependency as undefined
+			// so subsequent renders during exit animation always call willUpdate(), never safeToRemove().
+			// This matches the original "recreate on every render" behavior where prevLayoutDependency
+			// was always undefined (fresh component instance each time).
+			prevLayoutDependency = isPresent ? layoutDependency : undefined;
+			prevIsPresent = isPresent;
 		},
 	);
 
-	// componentDidUpdate
+	// snapshotTrigger is bumped (via flushSync) BEFORE DOM removal so siblings snapshot
+	// their positions while the exiting element is still in the DOM. It fires watch.pre
+	// only (not $effect), so update()/didUpdate() are NOT called prematurely.
+	// The main watch.pre above uses _renderCount which won't re-run for snapshotTrigger
+	// changes, so we need a separate watcher.
+	watch.pre(
+		[() => props.snapshotTrigger],
+		([snapshotTrigger], [prevST]) => {
+			if (prevST === snapshotTrigger) return;
+			const projection = props.visualElement?.projection;
+			if (projection) {
+				projection.willUpdate();
+			}
+		},
+	);
+
+	// componentDidUpdate — re-runs on every render (via _renderCount) and on layoutDependency
+	// or projection changes. Calls didUpdate() to trigger FLIP and schedules safeToRemove check.
 	$effect(() => {
+		void props._renderCount;
+		void props.layoutDependency;
 		if (props.visualElement?.projection) {
 			const { projection } = props.visualElement;
 			projection.root!.didUpdate();

@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts" generics="T">
-	import { untrack, type Snippet } from "svelte";
+	import { untrack, flushSync, type Snippet } from "svelte";
 	import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
 	import PresenceChild from "./PresenceChild/PresenceChild.svelte";
 	import { useLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
@@ -37,6 +37,11 @@ Copyright (c) 2018 Framer B.V. -->
 	};
 
 	let isInitialRender = $state(true);
+	// Shared layout dependency counter — bumped WITH DOM removal so MeasureLayout calls didUpdate/FLIP.
+	let sharedLayoutDependency = $state(0);
+	// Snapshot trigger — bumped BEFORE DOM removal (via flushSync) so MeasureLayout snapshots
+	// sibling positions while the exiting element is still in the DOM.
+	let sharedSnapshotTrigger = $state(0);
 
 	// renderedChildren is the authoritative render list (present + exiting).
 	let renderedChildren = $state<
@@ -152,6 +157,20 @@ Copyright (c) 2018 Framer B.V. -->
 						if (!done) allComplete = false;
 					});
 
+					if (presenceAffectsLayout) {
+						// Phase 1: snapshot sibling positions BEFORE DOM removal.
+						// flushSync forces watch.pre to run immediately (triggering willUpdate)
+						// while the exiting element is still in the DOM. The $effect does NOT
+						// fire (it doesn't watch snapshotTrigger), so update() is not called yet.
+						sharedSnapshotTrigger++;
+						flushSync();
+
+						// Phase 2: remove from DOM + bump layoutDependency in the same batch.
+						// The {#each} DOM removal and $effect-triggered didUpdate/FLIP all happen
+						// in the next Svelte flush, after the snapshot is safely taken.
+						sharedLayoutDependency++;
+					}
+
 					if (allComplete) {
 						exitComplete.clear();
 						// Use pendingPresentChildren — always the latest target list.
@@ -191,15 +210,18 @@ Copyright (c) 2018 Framer B.V. -->
 			);
 		}
 	});
+
 </script>
 
 {#each renderedChildren as child (getChildKey(child))}
 	<PresenceChild
 		{mode}
 		isPresent={child.present}
-		initial={!isInitialRender && initial ? undefined : false}
+		initial={!isInitialRender || initial ? undefined : false}
 		custom={child.onExit ? custom : undefined}
 		{presenceAffectsLayout}
+		{sharedLayoutDependency}
+		{sharedSnapshotTrigger}
 		onExitComplete={child.onExit}
 	>
 		{@render children?.({ item: child.data })}

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Component, ComponentProps, Snippet } from 'svelte';
+import { untrack, type Component, type ComponentProps, type Snippet } from 'svelte';
 import type { MotionProps } from './types';
 import type { RenderComponent, FeatureBundle } from './features/types';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
@@ -123,14 +123,38 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			},
 		});
 
+		// Mount MeasureLayout once and keep it alive — do NOT recreate it on every prop change.
+		// Recreating would reset prevLayoutDependency in MeasureLayoutWithContext, breaking FLIP.
+		// Pass a stable getter-based props object so the live instance sees updated props reactively.
+		// _renderCount changes on every configAndProps update, making MeasureLayoutWithContext's
+		// watch.pre re-fire on every render (equivalent to React's getSnapshotBeforeUpdate).
+		let _renderCount = $state(0);
 		$effect.pre(() => {
-			if (MeasureLayout && context.visualElement) {
-				_measureInstance = MeasureLayout(anchor, {
-					...configAndProps,
-					get visualElement() {
-						return context.visualElement;
-					},
-				});
+			configAndProps; // track entire derived object — re-run on every prop change
+			untrack(() => { _renderCount++; });
+		});
+		const measureProps: MotionProps & { visualElement: typeof visualElement } = {
+			get _renderCount() { return _renderCount; },
+			get layoutDependency() { return configAndProps.layoutDependency; },
+			get layoutId() { return configAndProps.layoutId; },
+			get layout() { return configAndProps.layout; },
+			get drag() { return configAndProps.drag; },
+			get dragConstraints() { return configAndProps.dragConstraints; },
+			get dragElastic() { return configAndProps.dragElastic; },
+			get dragMomentum() { return configAndProps.dragMomentum; },
+			get dragPropagation() { return configAndProps.dragPropagation; },
+			get dragTransition() { return configAndProps.dragTransition; },
+			get dragControls() { return configAndProps.dragControls; },
+			get onDragStart() { return configAndProps.onDragStart; },
+			get onDragEnd() { return configAndProps.onDragEnd; },
+			get onDrag() { return configAndProps.onDrag; },
+			get onDirectionLock() { return configAndProps.onDirectionLock; },
+			get onDragTransitionEnd() { return configAndProps.onDragTransitionEnd; },
+			get visualElement() { return context.visualElement ?? null; },
+		};
+		$effect.pre(() => {
+			if (MeasureLayout && context.visualElement && !_measureInstance) {
+				_measureInstance = MeasureLayout(anchor, measureProps as unknown as MotionProps);
 			}
 		});
 

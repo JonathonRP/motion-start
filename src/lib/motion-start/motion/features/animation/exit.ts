@@ -38,8 +38,28 @@ export class ExitAnimationFeature extends Feature<unknown> {
 
 		const exitAnimation = this.node.animationState.setActive('exit', !isPresent);
 
-		if (this.node.presenceContext.onExitComplete && !isPresent) {
-			measurePop?.(this.node.current as HTMLElement | SVGElement);
+		if (this.node.presenceContext.onExitComplete && !isPresent && measurePop) {
+			/**
+			 * popLayout: snapshot ALL sibling positions BEFORE injecting position:absolute,
+			 * then call didUpdate() AFTER so the FLIP system sees the shifted positions.
+			 *
+			 * 1. willUpdate() on every node — records each node's current layout box while
+			 *    the exiting element is still in normal document flow.
+			 * 2. measurePop() — injects `position:absolute` on the exiting element,
+			 *    which removes it from flow so siblings shift to their new positions.
+			 * 3. didUpdate() — re-measures all nodes, computes the delta from the
+			 *    snapshot, and kicks off FLIP animations on the siblings.
+			 *
+			 * Calling root.willUpdate() alone only snapshots the root node; we must
+			 * iterate root.nodes to snapshot every layout-animated sibling.
+			 */
+			this.node.projection?.root?.nodes?.forEach((node) => { node.willUpdate(); });
+			measurePop(this.node.current as HTMLElement | SVGElement);
+			this.node.projection?.root?.didUpdate();
+			exitAnimation.then(() => {
+				this.node.presenceContext?.onExitComplete?.(this.id);
+			});
+		} else if (this.node.presenceContext.onExitComplete && !isPresent) {
 			exitAnimation.then(() => {
 				this.node.presenceContext?.onExitComplete?.(this.id);
 			});

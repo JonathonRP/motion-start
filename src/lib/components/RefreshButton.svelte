@@ -16,10 +16,10 @@
         refreshing: {
             rotate: -360,
             transition: {
-                duration: 1.2,
+                duration: 0.8,
                 ease: "linear",
                 repeat: Infinity,
-                delay: 0.25,
+                delay: 0.15,
             },
         },
     };
@@ -33,7 +33,7 @@
     }}
     onpointerup={() => {
         // isPressing = false;
-        new Promise((resolve) => setTimeout(resolve, 1500)).then(() => {
+        new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
             isRefreshing = false;
         });
     }}

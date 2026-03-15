@@ -99,6 +99,9 @@ export function useVisualElement<Instance, RenderState>(
 	 * $state context object in PresenceChild. Deferred via tick() so PresenceChild's $effect
 	 * has already set context.onExitComplete to the correct child.onExit before ExitAnimationFeature
 	 * reads it.
+	 *
+	 * Note: measurePop is called by ExitAnimationFeature.update() (exit.ts) synchronously when
+	 * isPresent becomes false — no additional wiring needed here.
 	 */
 	$effect.pre(() => {
 		void presenceContextRef.current?.isPresent;

@@ -1,5 +1,7 @@
 <script lang="ts">
     import { Button } from "$lib/components/ui/button";
+    import { object, string } from "zod";
+    import { useSearchParams } from "runed/kit";
     import { page } from "$app/state";
 
     // Dynamic imports for all test fixtures
@@ -9,10 +11,17 @@
     let testName = $state("");
     let error = $state("");
     let loading = $state(true);
+    const { test, example } = $derived(
+        useSearchParams(
+            object({
+                test: string().optional(),
+                example: string().optional(),
+            }),
+        ),
+    );
 
     // Get test name from URL params
     $effect(() => {
-        const test = page.url.searchParams.get("test");
         if (test && test !== testName) {
             testName = test;
             loadFixture(test);

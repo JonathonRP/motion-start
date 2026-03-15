@@ -14,7 +14,6 @@ Copyright (c) 2018 Framer B.V. -->
     } from "../../../context/PresenceContext.svelte";
     import PopChild from "../PopChild/PopChild.svelte";
     import type { PresenceChildProps } from "./index.js";
-    import { ref } from "../../../utils/ref.svelte";
 
     interface Props extends PresenceChildProps {}
 
@@ -24,6 +23,8 @@ Copyright (c) 2018 Framer B.V. -->
         initial,
         custom = undefined,
         presenceAffectsLayout,
+        sharedLayoutDependency = undefined,
+        sharedSnapshotTrigger = undefined,
         mode,
         children: desendants,
     }: Props = $props();
@@ -38,6 +39,7 @@ Copyright (c) 2018 Framer B.V. -->
         initial,
         isPresent,
         custom,
+        layoutDependency: 0,
         onExitComplete: (childId: string | number) => {
             presenceChildren.set(childId, true);
             for (const [, isComplete] of presenceChildren) {
@@ -54,9 +56,21 @@ Copyright (c) 2018 Framer B.V. -->
         measurePop: undefined,
     });
 
-    // Keep reactive props in sync with the stable $state object
-    $effect(() => {
+    // Keep reactive props in sync with the stable $state object.
+    // Use $effect.pre so layoutDependency/snapshotTrigger are updated BEFORE
+    // MeasureLayoutWithContext's watch.pre (also $effect.pre) reads them.
+    $effect.pre(() => {
         context.isPresent = isPresent;
+        if (presenceAffectsLayout) {
+            // sharedLayoutDependency is bumped with DOM removal — triggers didUpdate/FLIP.
+            if (sharedLayoutDependency !== undefined) {
+                context.layoutDependency = sharedLayoutDependency;
+            }
+            // sharedSnapshotTrigger is bumped BEFORE DOM removal — triggers willUpdate snapshot only.
+            if (sharedSnapshotTrigger !== undefined) {
+                context.snapshotTrigger = sharedSnapshotTrigger;
+            }
+        }
     });
     $effect(() => {
         context.initial = initial;

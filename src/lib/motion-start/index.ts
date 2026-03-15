@@ -111,7 +111,7 @@ export { startOptimizedAppearAnimation } from './animation/optimized-appear/star
 /**
  * Contexts
  */
-export { type LayoutGroupContext } from './context/LayoutGroupContext.svelte';
+export type { LayoutGroupContext } from './context/LayoutGroupContext.svelte';
 // export { MotionConfigContext } from './context/MotionConfigContext';
 export type { MotionContext } from './context/MotionContext';
 // export { PresenceContext } from './context/PresenceContext';
@@ -183,3 +183,11 @@ export { useInvertedScale as useDeprecatedInvertedScale } from './value/use-inve
 
 // Keep explict delay in milliseconds export for BC with Framer
 export { delay, type DelayedFunction } from './utils/delay';
+
+// extra utils
+const animateLayout = {
+	track: <A extends unknown[], R>(fn: (...args: A) => R) => {
+		return fn;
+	},
+};
+export { animateLayout as layoutAnimation };

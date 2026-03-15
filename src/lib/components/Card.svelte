@@ -6,20 +6,26 @@
         type PanInfo,
         type Variants,
     } from "$lib/motion-start";
+
     let exitX = $state(0);
     const x = useMotionValue(0);
     const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
     const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
         clamp: false,
     });
+
     let {
         drag = false,
         frontCard = false,
         index = $bindable(0),
+        custom = undefined,
+        onDragEnd = undefined,
     }: {
         drag?: boolean | "x" | "y";
         frontCard?: boolean;
         index?: number;
+        custom?: any;
+        onDragEnd?: (event: PointerEvent, info: PanInfo) => void;
     } = $props();
 
     const variantsFrontCard: Variants = {
@@ -32,17 +38,6 @@
     };
 
     const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
-
-    function handleDragEnd(_: PointerEvent, info: PanInfo) {
-        if (info.offset.x < -100) {
-            exitX = -250;
-            index = index + 1;
-        }
-        if (info.offset.x > 100) {
-            exitX = 250;
-            index = index + 1;
-        }
-    }
 </script>
 
 <!-- Animate Presence Stack -->
@@ -59,13 +54,15 @@
     variants={isFront}
     initial="initial"
     animate="animate"
-    onDragEnd={handleDragEnd}
+    {onDragEnd}
     exit="exit"
-    custom={exitX}
+    {custom}
     transition={frontCard
         ? { type: "spring", stiffness: 300, damping: 20 }
         : { scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
-    class="w-32 h-32 top-10 bg-white rounded-xl absolute text-black flex justify-center items-center select-none"
+    class="w-32 h-32 top-10 bg-white rounded-xl absolute text-black flex justify-center items-center select-none action-none {frontCard
+        ? 'cursor-grab active:cursor-grabbing z-10'
+        : 'z-0 pointer-none'}"
 >
     {index}
 </motion.div>

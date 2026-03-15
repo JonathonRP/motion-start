@@ -20,6 +20,9 @@ export interface PresenceContext {
 	measurePop?: Attachment;
 	initial?: false | VariantLabels;
 	custom?: any;
+	layoutDependency?: number;
+	/** Bumped before DOM removal to trigger willUpdate() snapshot while exiting sibling still in DOM */
+	snapshotTrigger?: number;
 }
 
 /**
