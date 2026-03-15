@@ -41,6 +41,8 @@ Copyright (c) 2018 Framer B.V. -->
         custom,
         layoutDependency: 0,
         onExitComplete: (childId: string | number) => {
+            // Ignore stale callbacks from unmounted children (e.g. after mode switch remount).
+            if (!presenceChildren.has(childId)) return;
             presenceChildren.set(childId, true);
             for (const [, isComplete] of presenceChildren) {
                 if (!isComplete) return;
@@ -81,6 +83,8 @@ Copyright (c) 2018 Framer B.V. -->
     // onExitComplete prop can change between renders — keep context in sync
     $effect(() => {
         context.onExitComplete = (childId: string | number) => {
+            // Ignore stale callbacks from unmounted children (e.g. after mode switch remount).
+            if (!presenceChildren.has(childId)) return;
             presenceChildren.set(childId, true);
             for (const [, isComplete] of presenceChildren) {
                 if (!isComplete) return;

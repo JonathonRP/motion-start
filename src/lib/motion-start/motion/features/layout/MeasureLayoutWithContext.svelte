@@ -75,10 +75,16 @@
 	let prevLayoutDependency: number | undefined = undefined;
 	let prevIsPresent: boolean | undefined = undefined;
 	watch.pre(
-		[() => props._renderCount, () => props.layoutDependency, () => props.visualElement?.projection],
+		[
+			() => props._renderCount,
+			() => props.layoutDependency,
+			() => props.visualElement?.projection,
+			() => props.isPresent,
+		],
 		() => {
 			const { layoutDependency, visualElement, drag, isPresent } = props;
 			const projection = visualElement?.projection;
+
 
 			if (!projection) {
 				if (prevIsPresent !== isPresent && !isPresent) {
@@ -128,16 +134,13 @@
 	// only (not $effect), so update()/didUpdate() are NOT called prematurely.
 	// The main watch.pre above uses _renderCount which won't re-run for snapshotTrigger
 	// changes, so we need a separate watcher.
-	watch.pre(
-		[() => props.snapshotTrigger],
-		([snapshotTrigger], [prevST]) => {
-			if (prevST === snapshotTrigger) return;
-			const projection = props.visualElement?.projection;
-			if (projection) {
-				projection.willUpdate();
-			}
-		},
-	);
+	watch.pre([() => props.snapshotTrigger], ([snapshotTrigger], [prevST]) => {
+		if (prevST === snapshotTrigger) return;
+		const projection = props.visualElement?.projection;
+		if (projection) {
+			projection.willUpdate();
+		}
+	});
 
 	// componentDidUpdate — re-runs on every render (via _renderCount) and on layoutDependency
 	// or projection changes. Calls didUpdate() to trigger FLIP and schedules safeToRemove check.

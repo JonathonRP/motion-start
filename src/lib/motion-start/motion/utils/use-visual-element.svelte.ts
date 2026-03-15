@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { IsMounted } from 'runed';
+// IsMounted intentionally removed — replaced with $effect.pre-based flag below
 import { tick, untrack, type Component } from 'svelte';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { useLazyContext } from '../../context/LazyContext';
@@ -73,7 +73,10 @@ export function useVisualElement<Instance, RenderState>(
 		}
 	});
 
-	const isMounted = new IsMounted();
+	// Track mount state via $effect.pre so it's set in the render phase,
+	// consistent with $effect.pre effects that check it (avoids IsMounted's
+	// $effect deferral problem in raw component functions on remount).
+	let isMounted = $state(false);
 
 	$effect.pre(() => {
 		// $inspect.trace();
@@ -83,7 +86,7 @@ export function useVisualElement<Instance, RenderState>(
 		 * Check the component has already mounted before calling
 		 * `update` unnecessarily. This ensures we skip the initial update.
 		 */
-		if (visualElement && isMounted.current) {
+		if (visualElement && isMounted) {
 			/**
 			 * make sure props update but untrack update because scroll and interpolate break from infinite effect call *greater then 9/10 calls.
 			 * Pass the live ref's .current so visualElement.presenceContext always
@@ -105,7 +108,7 @@ export function useVisualElement<Instance, RenderState>(
 	 */
 	$effect.pre(() => {
 		void presenceContextRef.current?.isPresent;
-		if (isMounted.current) {
+		if (isMounted) {
 			untrack(() => {
 				if (visualElement?.current) {
 					tick().then(() => {
@@ -130,6 +133,7 @@ export function useVisualElement<Instance, RenderState>(
 	$effect.pre(() => {
 		if (!visualElement?.current) return;
 
+		isMounted = true;
 		window.MotionIsMounted = true;
 
 		visualElement.updateFeatures();
