@@ -150,7 +150,7 @@ export class PressGesture extends Feature<Element> {
 		const props = this.node.getProps();
 
 		// For globalTapTarget, the listener must go on window (imperative).
-		// Otherwise register it via the handle object so Svelte owns the listener.
+		// Otherwise attach directly to the element.
 		if (props.globalTapTarget) {
 			const removePointerListener = addPointerEvent(window, 'pointerdown', this.startPointerPress, {
 				passive: !(props.onTapStart || props['onPointerStart' as keyof typeof props]),
@@ -158,7 +158,7 @@ export class PressGesture extends Feature<Element> {
 			const removeFocusListener = addDomEvent(this.node.current!, 'focus', this.startAccessiblePress);
 			this.removeStartListeners = pipe(removePointerListener, removeFocusListener);
 		} else {
-			this.registerHandler('onpointerdown', (event) => this.startPointerPress(event as PointerEvent, extractEventInfo(event as PointerEvent)));
+			this.listen('pointerdown', (event) => this.startPointerPress(event as PointerEvent, extractEventInfo(event as PointerEvent)));
 			const removeFocusListener = addDomEvent(this.node.current!, 'focus', this.startAccessiblePress);
 			this.removeStartListeners = removeFocusListener;
 		}
@@ -168,6 +168,6 @@ export class PressGesture extends Feature<Element> {
 		this.removeStartListeners();
 		this.removeEndListeners();
 		this.removeAccessibleListeners();
-		this.removeHandler('onpointerdown');
+		super.unmount();
 	}
 }

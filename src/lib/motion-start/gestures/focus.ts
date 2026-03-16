@@ -36,12 +36,8 @@ export class FocusGesture extends Feature<Element> {
 	}
 
 	mount() {
-		this.registerHandler('onfocus', () => this.onFocus());
-		this.registerHandler('onblur', () => this.onBlur());
+		this.listen('focus', () => this.onFocus());
+		this.listen('blur', () => this.onBlur());
 	}
 
-	unmount() {
-		this.removeHandler('onfocus');
-		this.removeHandler('onblur');
-	}
 }

@@ -29,7 +29,7 @@ export class DragGesture extends Feature<HTMLElement> {
 			this.removeGroupControls = dragControls.subscribe(this.controls);
 		}
 
-		this.registerHandler('onpointerdown', (event) => {
+		this.listen('pointerdown', (event) => {
 			const { drag, dragListener = true } = this.controls.getProps();
 			drag && dragListener && this.controls.start(event as PointerEvent);
 		});
@@ -40,6 +40,6 @@ export class DragGesture extends Feature<HTMLElement> {
 	unmount() {
 		this.removeGroupControls();
 		this.removeListeners();
-		this.removeHandler('onpointerdown');
+		super.unmount();
 	}
 }

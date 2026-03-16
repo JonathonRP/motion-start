@@ -10,7 +10,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import { isSVGComponent } from "./utils/is-svg-component";
 	import { useSvgProps } from "../svg/use-props.svelte";
 	import { useHTMLProps } from "../html/use-props.svelte";
-	import type { Attachment } from "svelte/attachments";
+	import { createAttachmentKey, type Attachment } from "svelte/attachments";
 	import { untrack } from "svelte";
 
 	type Props = Parameters<
@@ -31,27 +31,6 @@ Copyright (c) 2018 Framer B.V. -->
 		forwardMotionProps,
 		visualElement = undefined,
 	}: Props = $props();
-
-	const handle = $derived(visualElement?.handle ?? {});
-
-	// Compose gesture handlers with user-supplied handlers so both fire.
-	// If the same event name exists in both elementProps and handle, wrap them.
-	function mergeHandlers(userProps: Record<string, any>, gestureHandle: Record<string, any>): Record<string, any> {
-		const merged: Record<string, any> = {};
-		for (const key of Object.keys(gestureHandle)) {
-			if (typeof userProps[key] === 'function') {
-				const userHandler = userProps[key];
-				const gestureHandler = gestureHandle[key];
-				merged[key] = (event: Event) => {
-					userHandler(event);
-					gestureHandler(event);
-				};
-			} else {
-				merged[key] = gestureHandle[key];
-			}
-		}
-		return merged;
-	}
 
 	const useVisualProps = $derived(
 		isSVGComponent(Component) ? useSvgProps : useHTMLProps,
@@ -74,10 +53,20 @@ Copyright (c) 2018 Framer B.V. -->
 		),
 	);
 
-	// Stable element props without the attachment - attachment is applied separately via {@attach}
-	const elementProps = $derived({
-		...filteredProps,
-		...visualProps,
+	// Build spread object: user/visual props + one attachment per feature listener.
+	// listeners is keyed by symbol so multiple features can share the same event name.
+	// Since visualElement.listeners is $state, this $derived re-runs when features
+	// populate listeners on mount, attaching each handler via svelte/events on().
+	const elementProps = $derived.by(() => {
+		const base = { ...filteredProps, ...visualProps };
+		const listeners = visualElement?.listeners ?? {};
+		const keys = Object.getOwnPropertySymbols(listeners);
+		if (keys.length === 0) return base;
+		const withListeners: Record<string | symbol, unknown> = { ...base };
+		for (const key of keys) {
+			withListeners[createAttachmentKey()] = listeners[key];
+		}
+		return withListeners;
 	});
 
 	// Use untrack to prevent the visualElement.current $state write (inside
@@ -90,6 +79,7 @@ Copyright (c) 2018 Framer B.V. -->
 			} else if (ref) {
 				(ref as any).current = node;
 			}
+
 			return () => {
 				if (typeof ref === "function") {
 					ref(null);
@@ -105,7 +95,6 @@ Copyright (c) 2018 Framer B.V. -->
 	<svelte:element
 		this={Component}
 		{...elementProps}
-		{...mergeHandlers(elementProps, handle)}
 		{@attach motionRef}
 		xmlns={isSVGComponent(Component)
 			? "http://www.w3.org/2000/svg"
@@ -114,7 +103,7 @@ Copyright (c) 2018 Framer B.V. -->
 		{@render props.children?.()}
 	</svelte:element>
 {:else}
-	<Component {...elementProps} {...mergeHandlers(elementProps, handle)} {@attach motionRef}>
+	<Component {...elementProps} {@attach motionRef}>
 		{@render props.children?.()}
 	</Component>
 {/if}

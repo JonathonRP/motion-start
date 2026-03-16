@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { on } from 'svelte/events';
 import type { VisualElement } from '../../render/VisualElement.svelte';
 
 export abstract class Feature<I> {
@@ -10,25 +11,26 @@ export abstract class Feature<I> {
 
 	node: VisualElement<I>;
 
+	private _controller = new AbortController();
+
 	constructor(node: VisualElement<I>) {
 		this.node = node;
 	}
 
-	/**
-	 * Register a DOM event handler for this feature.
-	 * If multiple features register the same event name, both handlers fire.
-	 */
-	protected registerHandler(eventName: string, handler: (event: Event) => void) {
-		(this.node as VisualElement<unknown>).addFeatureHandler(this, eventName, handler);
-	}
-
-	protected removeHandler(eventName: string) {
-		(this.node as VisualElement<unknown>).removeFeatureHandler(this, eventName);
+	/** Register a feature event listener as a Svelte attachment on the element. */
+	protected listen(event: string, handler: (e: Event) => void) {
+		const signal = this._controller.signal;
+		const key = Symbol(event);
+		(this.node as VisualElement<unknown>).listeners[key] = (el) =>
+			on(el, event, handler, { signal });
 	}
 
 	abstract mount(): void;
 
-	abstract unmount(): void;
+	unmount(): void {
+		this._controller.abort();
+		this._controller = new AbortController();
+	}
 
 	update(): void {}
 }

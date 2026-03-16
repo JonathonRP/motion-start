@@ -10,7 +10,7 @@ import { isDragActive } from './drag/utils/lock';
 
 export class HoverGesture extends Feature<Element> {
 	mount() {
-		this.registerHandler('onpointerenter', (event) => {
+		this.listen('pointerenter', (event) => {
 			const e = event as PointerEvent;
 			if (e.pointerType === 'touch' || isDragActive()) return;
 			const props = this.node.getProps();
@@ -22,7 +22,7 @@ export class HoverGesture extends Feature<Element> {
 			}
 		});
 
-		this.registerHandler('onpointerleave', (event) => {
+		this.listen('pointerleave', (event) => {
 			const e = event as PointerEvent;
 			if (e.pointerType === 'touch' || isDragActive()) return;
 			const props = this.node.getProps();
@@ -35,8 +35,4 @@ export class HoverGesture extends Feature<Element> {
 		});
 	}
 
-	unmount() {
-		this.removeHandler('onpointerenter');
-		this.removeHandler('onpointerleave');
-	}
 }

@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { untrack } from 'svelte';
 import { frame, cancelFrame } from '../frameloop';
 import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
 import type { FeatureDefinitions } from '../motion/features/types';
@@ -253,58 +252,11 @@ export abstract class VisualElement<
 	} = {};
 
 	/**
-	 * Per-feature DOM event handlers. Each feature stores its own handlers keyed by event name.
-	 * `handle` is composed from all feature handlers — if multiple features register the same
-	 * event name, both fire in registration order.
-	 *
-	 * `handle` is `$state` so UseRender's `$derived` reacts to property mutations.
-	 * All writes go through `untrack` to avoid write-during-read cycles in `$effect.pre`.
+	 * Feature event listeners as Svelte Attachments, keyed by unique symbol.
+	 * Using symbols means multiple features can register the same event name.
+	 * `$state` so UseRender's spread reacts when features populate on mount.
 	 */
-	private _featureHandlers = new Map<object, Record<string, (event: Event) => void>>();
-	handle: Record<string, (event: Event) => void> = $state({});
-
-	addFeatureHandler(feature: object, eventName: string, handler: (event: Event) => void) {
-		let featureMap = this._featureHandlers.get(feature);
-		if (!featureMap) {
-			featureMap = {};
-			this._featureHandlers.set(feature, featureMap);
-		}
-		featureMap[eventName] = handler;
-		this._recomputeHandle();
-	}
-
-	removeFeatureHandler(feature: object, eventName: string) {
-		const featureMap = this._featureHandlers.get(feature);
-		if (featureMap) {
-			delete featureMap[eventName];
-			if (Object.keys(featureMap).length === 0) {
-				this._featureHandlers.delete(feature);
-			}
-		}
-		this._recomputeHandle();
-	}
-
-	private _recomputeHandle() {
-		const composed: Record<string, ((event: Event) => void)[]> = {};
-		for (const handlers of this._featureHandlers.values()) {
-			for (const [eventName, handler] of Object.entries(handlers)) {
-				(composed[eventName] ??= []).push(handler);
-			}
-		}
-		const next: Record<string, (event: Event) => void> = {};
-		for (const [eventName, handlers] of Object.entries(composed)) {
-			next[eventName] = handlers.length === 1
-				? handlers[0]
-				: (event: Event) => { for (const h of handlers) h(event); };
-		}
-		// Use untrack to write $state inside $effect.pre without creating a reactive cycle.
-		untrack(() => {
-			for (const key of Object.keys(this.handle)) {
-				if (!(key in next)) delete this.handle[key];
-			}
-			Object.assign(this.handle, next);
-		});
-	}
+	listeners: Record<symbol, (el: Element) => () => void> = $state({});
 
 	/**
 	 * A map of every subscription that binds the provided or generated
