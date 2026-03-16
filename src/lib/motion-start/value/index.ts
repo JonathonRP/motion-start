@@ -81,7 +81,15 @@ export class MotionValue<V = any> {
 	 *
 	 * @internal
 	 */
-	private current: V | undefined;
+	private _current: V | undefined;
+
+	/**
+	 * Svelte signal subscriber — registers this value as a reactive dependency
+	 * when `current` is read inside a `$derived` or `$effect`.
+	 */
+	readonly #subscribe = createSubscriber((update) => {
+		return this.on('change', update);
+	});
 
 	/**
 	 * The previous state of the `MotionValue`.
@@ -151,24 +159,18 @@ export class MotionValue<V = any> {
 	constructor(init: V, options: MotionValueOptions = {}) {
 		this.setCurrent(init);
 		this.owner = options.owner;
-
-		// this.#subscribe = createSubscriber((update) => {
-		// 	for (const event in this.events) {
-		// 		return this.events[event].add(update);
-		// 	}
-		// });
 	}
 
 	setCurrent(current: V) {
-		this.current = current;
+		this._current = current;
 		this.updatedAt = time.now();
 
 		if (this.canTrackVelocity === null && current !== undefined) {
-			this.canTrackVelocity = isFloat(this.current);
+			this.canTrackVelocity = isFloat(this._current);
 		}
 	}
 
-	setPrevFrameValue(prevFrameValue: V | undefined = this.current) {
+	setPrevFrameValue(prevFrameValue: V | undefined = this._current) {
 		this.prevFrameValue = prevFrameValue;
 		this.prevUpdatedAt = this.updatedAt;
 	}
@@ -332,37 +334,43 @@ export class MotionValue<V = any> {
 			this.setPrevFrameValue();
 		}
 
-		this.prev = this.current;
+		this.prev = this._current;
 
 		this.setCurrent(v);
 
 		// Update update subscribers
-		if (this.current !== this.prev && this.events.change) {
-			this.events.change.notify(this.current);
+		if (this._current !== this.prev && this.events.change) {
+			this.events.change.notify(this._current);
 		}
 
 		// Update render subscribers
 		if (render && this.events.renderRequest) {
-			this.events.renderRequest.notify(this.current);
+			this.events.renderRequest.notify(this._current);
 		}
 	};
 
 	/**
-	 * Returns the latest state of `MotionValue`
+	 * Reactive getter — reads the current value and registers a Svelte signal
+	 * dependency when called inside `$derived` or `$effect`.
 	 *
-	 * @returns - The latest state of `MotionValue`
+	 * @public
+	 */
+	get current(): V {
+		this.#subscribe();
+		if (collectMotionValues.current) {
+			collectMotionValues.current.push(this);
+		}
+		return this._current!;
+	}
+
+	/**
+	 * Returns the latest state of `MotionValue`.
+	 * Prefer `.current` in Svelte components for reactive reads.
 	 *
 	 * @public
 	 */
 	get() {
-		// this.#subscribe?.();
-
-		if (collectMotionValues.current) {
-			collectMotionValues.current.push(this);
-		}
-		const curr = this.current!;
-
-		return curr;
+		return this.current;
 	}
 
 	/**
@@ -390,13 +398,11 @@ export class MotionValue<V = any> {
 			return 0;
 		}
 
-		// this.#subscribe?.();
-
 		const delta = Math.min(this.updatedAt - this.prevUpdatedAt!, MAX_VELOCITY_DELTA);
 
 		// Casts because of parseFloat's poor typing
 		const vel = velocityPerSecond(
-			Number.parseFloat(this.current as any) - Number.parseFloat(this.prevFrameValue as any),
+			Number.parseFloat(this._current as any) - Number.parseFloat(this.prevFrameValue as any),
 			delta
 		);
 

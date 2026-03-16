@@ -2,6 +2,12 @@
 
 motion-start is a Svelte 5 animation library ported from framer-motion. This roadmap captures the major feature work ahead, ordered roughly by priority and dependency.
 
+motionValue - participate in svelte reactivity (.current).
+use svelte ease for easing/custom easing?
+use svelte effect instead of RAF in batcher or compeletely replace frame with runed AnimationFrame.
+
+is there a way to allow raw component work with $effects without using svelte template? because svelte allows getting and setting context in raw function components in newer versions.
+
 ---
 
 ## In Progress / Blocked
