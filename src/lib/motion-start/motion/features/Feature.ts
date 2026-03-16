@@ -11,7 +11,7 @@ export abstract class Feature<I> {
 
 	node: VisualElement<I>;
 
-	private _controller = new AbortController();
+	private _controller: AbortController | null = null;
 
 	constructor(node: VisualElement<I>) {
 		this.node = node;
@@ -19,6 +19,7 @@ export abstract class Feature<I> {
 
 	/** Register a feature event listener as a Svelte attachment on the element. */
 	protected listen(event: string, handler: (e: Event) => void) {
+		this._controller ??= new AbortController();
 		const signal = this._controller.signal;
 		const key = Symbol(event);
 		(this.node as VisualElement<unknown>).listeners[key] = (el) =>
@@ -28,8 +29,8 @@ export abstract class Feature<I> {
 	abstract mount(): void;
 
 	unmount(): void {
-		this._controller.abort();
-		this._controller = new AbortController();
+		this._controller?.abort();
+		this._controller = null;
 	}
 
 	update(): void {}
