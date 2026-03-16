@@ -1,4 +1,3 @@
-import type { IProjectionNode } from '../../projection/node/types';
 import type { Axis, Box } from '../../projection/geometry/types';
 
 export interface ReorderContext<T> {
@@ -6,7 +5,6 @@ export interface ReorderContext<T> {
 	/** Increments after each reorder — used as layoutDependency to trigger re-measurement. */
 	orderVersion: number;
 	registerItem: (item: T, layout: Box) => void;
-	registerProjection: (item: T, projection: IProjectionNode) => () => void;
 	updateOrder: (item: T, offset: number, velocity: number) => void;
 }
 

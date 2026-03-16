@@ -62,12 +62,13 @@ Copyright (c) 2018 Framer B.V. -->
 	import { type Component, type Snippet, untrack } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
 	import { setReorderContext } from "../../context/ReorderContext";
+	import { useLayoutGroupContext, setLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
 	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import { invariant } from "../../utils/errors";
+	import { nodeGroup } from "../../projection/node/group";
 	import type { Ref } from "../../utils/safe-react-types";
 
-	import type { IProjectionNode } from "../../projection/node/types";
 	import type { PropsWithChildren } from "../../utils/types";
 	import { type ReorderContext, type ItemData } from "./types";
 	import { checkReorder } from "./utils/check-reorder.svelte";
@@ -96,9 +97,15 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 
+	// Create an implicit nodeGroup so item projections are registered together.
+	// This lets updateOrder call group.dirty() to synchronously snapshot all item
+	// positions before the DOM reorder — the same pattern AnimatePresence uses.
+	const parentLayoutContext = useLayoutGroupContext();
+	const group = nodeGroup();
+	setLayoutGroupContext({ ...parentLayoutContext, group });
+
 	let order: ItemData<V>[] = [];
 	let orderVersion = $state(0);
-	const projections = new Map<V, IProjectionNode>();
 
 	const context = $state<ReorderContext<V>>({
 		get axis() {
@@ -116,16 +123,17 @@ Copyright (c) 2018 Framer B.V. -->
 			}
 			order.sort(compareMin);
 		},
-		registerProjection: (item, projection) => {
-			projections.set(item, projection);
-			return () => projections.delete(item);
-		},
 		updateOrder: (item, offset, velocity) => {
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
-				// Snapshot all items BEFORE the DOM reorder so FLIP has old positions.
-				projections.forEach((proj) => proj.willUpdate());
+				// Snapshot all item positions synchronously before the DOM reorder.
+				// group.dirty() calls willUpdate() on every registered projection node,
+				// giving FLIP the pre-move positions to animate from.
+				group.dirty();
 				order = newOrder;
+				// Bump orderVersion so MeasureLayoutWithContext's watch (post-effect)
+				// calls didUpdate() after Svelte commits the DOM reorder.
+				untrack(() => orderVersion++);
 				onReorder?.(
 					newOrder
 						.map(getValue)
@@ -133,15 +141,6 @@ Copyright (c) 2018 Framer B.V. -->
 				);
 			}
 		},
-	});
-
-	// After values propagates back from onReorder: bump orderVersion so items'
-	// layoutDependency changes → MeasureLayoutWithContext watch.pre fires →
-	// willUpdate() + didUpdate() → onLayoutMeasure → order refreshed with post-FLIP positions.
-	// untrack() on the write prevents orderVersion change from re-triggering this effect.
-	$effect(() => {
-		void values;
-		untrack(() => orderVersion++);
 	});
 	setReorderContext(context);
 </script>
