@@ -62,22 +62,21 @@ Copyright (c) 2018 Framer B.V. -->
 	});
 
 	// getSnapshotBeforeUpdate — mirrors React's getSnapshotBeforeUpdate.
-	// Fires before DOM changes via watch.pre. Deps: snapshotDependency (bumped via flushSync
-	// before DOM removal), layoutDependency (for drag/manual layout changes), projection, isPresent.
-	let prevSnapshotKey: number | undefined = undefined;
+	// Fires before DOM changes via watch.pre (RENDER_EFFECT phase).
+	// When isPresent→false and measurePop is set (popLayout mode), snapshot all siblings,
+	// inject position:absolute on the exiting element, then call didUpdate() so siblings
+	// FLIP to their new positions immediately — matching framer-motion's getSnapshotBeforeUpdate.
+	let prevLayoutDependency: unknown = undefined;
 	let prevIsPresent: boolean | undefined = undefined;
 	watch.pre(
 		[
-			() => props.snapshotDependency,
 			() => props.layoutDependency,
 			() => props.visualElement?.projection,
 			() => props.isPresent,
 		],
 		() => {
-			const { snapshotDependency, layoutDependency, visualElement, drag, isPresent } = props;
+			const { layoutDependency, visualElement, drag, isPresent, measurePop } = props;
 			const projection = visualElement?.projection;
-			// Use whichever snapshot key changed most recently as the trigger signal
-			const snapshotKey = snapshotDependency ?? layoutDependency;
 
 			if (!projection) {
 				if (prevIsPresent !== isPresent && !isPresent) {
@@ -91,8 +90,8 @@ Copyright (c) 2018 Framer B.V. -->
 
 			if (
 				drag ||
-				prevSnapshotKey !== snapshotKey ||
-				snapshotKey === undefined
+				prevLayoutDependency !== layoutDependency ||
+				layoutDependency === undefined
 			) {
 				projection.willUpdate();
 			} else if (prevIsPresent === isPresent) {
@@ -103,19 +102,29 @@ Copyright (c) 2018 Framer B.V. -->
 			if (prevIsPresent !== isPresent) {
 				if (isPresent) {
 					projection.promote();
-				} else if (!projection.relegate()) {
-					frame.postRender(() => {
-						const stack = projection.getStack();
-						if (!stack || !stack.members.length) {
-							safeToRemove();
-						}
-					});
+				} else {
+					// popLayout: snapshot is already taken by willUpdate() above.
+					// Now inject position:absolute so siblings shift, then call didUpdate()
+					// to animate siblings from their snapshotted positions to their new ones.
+					if (measurePop) {
+						measurePop(visualElement.current as HTMLElement | SVGElement);
+						projection.root!.didUpdate();
+					}
+
+					if (!projection.relegate()) {
+						frame.postRender(() => {
+							const stack = projection.getStack();
+							if (!stack || !stack.members.length) {
+								safeToRemove();
+							}
+						});
+					}
 				}
 			}
 
-			// When transitioning to not-present, keep prevSnapshotKey as undefined
+			// When transitioning to not-present, keep prevLayoutDependency as undefined
 			// so subsequent renders during exit animation always call willUpdate(), never safeToRemove().
-			prevSnapshotKey = isPresent ? snapshotKey : undefined;
+			prevLayoutDependency = isPresent ? layoutDependency : undefined;
 			prevIsPresent = isPresent;
 		},
 	);

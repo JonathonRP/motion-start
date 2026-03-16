@@ -24,7 +24,6 @@ Copyright (c) 2018 Framer B.V. -->
         custom = undefined,
         presenceAffectsLayout,
         sharedLayoutDependency = undefined,
-        sharedSnapshotDependency = undefined,
         mode,
         children: desendants,
     }: Props = $props();
@@ -32,15 +31,25 @@ Copyright (c) 2018 Framer B.V. -->
     const presenceChildren = $state(newChildrenMap());
     const id = $props.id();
 
-    // Use $state so external mutations (e.g. measurePop from PopChildMeasure) persist.
+    // Use $state so external mutations (e.g. measurePop from PopChild) persist.
     // $derived would create a new object every render, discarding any mutations.
+    // onExitComplete closes over the live prop binding so no $effect is needed —
+    // it always calls the latest onExitComplete when invoked.
     let context = $state<PresenceContext>({
         id,
         initial,
         isPresent,
         custom,
         layoutDependency: 0,
-        onExitComplete: undefined,
+        onExitComplete: (childId: string | number) => {
+            // Ignore stale callbacks from unmounted children (e.g. after mode switch remount).
+            if (!presenceChildren.has(childId)) return;
+            presenceChildren.set(childId, true);
+            for (const [, isComplete] of presenceChildren) {
+                if (!isComplete) return;
+            }
+            onExitComplete?.();
+        },
         register: (childId: string | number) => {
             presenceChildren.set(childId, false);
             return () => {
@@ -51,17 +60,12 @@ Copyright (c) 2018 Framer B.V. -->
     });
 
     // Keep reactive props in sync with the stable $state object.
-    // Use $effect.pre so layoutDependency/snapshotDependency are updated BEFORE
-    // MeasureLayoutWithContext's watch.pre (also $effect.pre) reads them.
+    // Use $effect.pre so layoutDependency is updated BEFORE
+    // MeasureLayoutWithContext's watch.pre (also $effect.pre) reads it.
     $effect.pre(() => {
         context.isPresent = isPresent;
-        if (presenceAffectsLayout) {
-            if (sharedLayoutDependency !== undefined) {
-                context.layoutDependency = sharedLayoutDependency;
-            }
-            if (sharedSnapshotDependency !== undefined) {
-                context.snapshotDependency = sharedSnapshotDependency;
-            }
+        if (presenceAffectsLayout && sharedLayoutDependency !== undefined) {
+            context.layoutDependency = sharedLayoutDependency;
         }
     });
     $effect(() => {
@@ -69,18 +73,6 @@ Copyright (c) 2018 Framer B.V. -->
     });
     $effect(() => {
         context.custom = custom;
-    });
-    // onExitComplete prop can change between renders — keep context in sync
-    $effect(() => {
-        context.onExitComplete = (childId: string | number) => {
-            // Ignore stale callbacks from unmounted children (e.g. after mode switch remount).
-            if (!presenceChildren.has(childId)) return;
-            presenceChildren.set(childId, true);
-            for (const [, isComplete] of presenceChildren) {
-                if (!isComplete) return;
-            }
-            onExitComplete?.();
-        };
     });
 
     // Reset children completion status when transitioning to not-present

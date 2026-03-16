@@ -13,7 +13,7 @@ Copyright (c) 2018 Framer B.V. -->
 		switchLayoutGroup?: SwitchLayoutGroupContext;
 		isPresent: boolean;
 		safeToRemove?: VoidFunction | null;
-		snapshotDependency?: number;
+		measurePop?: import('svelte/attachments').Attachment | null;
 	}
 
 	export interface MeasureProps extends MotionProps, MeasureContextProps {
@@ -43,7 +43,8 @@ Copyright (c) 2018 Framer B.V. -->
 
 	const presenceContext = usePresenceContext();
 	const presenceLayoutDependency = $derived(presenceContext?.layoutDependency);
-	const presenceSnapshotDependency = $derived(presenceContext?.snapshotDependency);
+	// measurePop is set by PopChild when mode="popLayout"
+	const presenceMeasurePop = $derived(presenceContext?.measurePop);
 
 	// custom can serve as layoutDependency when no explicit layoutDependency is provided.
 	const layoutGroup = $derived(useLayoutGroupContext() ?? { forceRender: () => {} });
@@ -52,7 +53,7 @@ Copyright (c) 2018 Framer B.V. -->
 <MeasureLayoutWithContext
 	{...props}
 	layoutDependency={presenceLayoutDependency ?? props.layoutDependency ?? props.custom}
-	snapshotDependency={presenceSnapshotDependency}
+	measurePop={presenceMeasurePop}
 	{layoutGroup}
 	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}
 	{isPresent}

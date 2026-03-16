@@ -85,7 +85,6 @@ export function useVisualElement<Instance, RenderState>(
 		{ lazy: true }
 	);
 
-
 	/**
 	 * Cache this value as we want to know whether HandoffAppearAnimations
 	 * was present on initial render - it will be deleted after this.

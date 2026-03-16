@@ -244,7 +244,6 @@ export abstract class VisualElement<
 	prevProps?: MotionProps;
 
 	presenceContext: PresenceContext | null = $state(null);
-	prevPresenceContext?: PresenceContext | null;
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -571,9 +570,6 @@ export abstract class VisualElement<
 
 		this.prevProps = this.props;
 		this.props = props;
-		this.prevPresenceContext = this.presenceContext
-			? { ...this.presenceContext }
-			: null;
 		this.presenceContext = presenceContext;
 
 		/**

@@ -19,8 +19,6 @@ export interface PresenceContext {
 	initial?: false | VariantLabels;
 	custom?: any;
 	layoutDependency?: number;
-	/** Snapshot dependency — bumped (with flushSync) before DOM removal so watch.pre can call willUpdate() while element is still in DOM */
-	snapshotDependency?: number;
 }
 
 const [getPresenceContext, setPresenceContext] = createContext<PresenceContext | null>();

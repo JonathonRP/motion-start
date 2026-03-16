@@ -3,10 +3,11 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts" generics="T">
-	import { untrack, flushSync, type Snippet } from "svelte";
-	import type { ConditionalGeneric, AnimatePresenceProps } from "./index.js";
+	import { untrack, type Snippet } from "svelte";
+	import type { AnimatePresenceProps, ConditionalGeneric } from "./index.js";
 	import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-	import { useLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
+	import { useLayoutGroupContext, setLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
+	import { nodeGroup } from "../../projection/node/group";
 	import { warning } from "../../utils/errors.js";
 	import { getChildKey, type ComponentKey } from "./utils.js";
 
@@ -30,6 +31,22 @@ Copyright (c) 2018 Framer B.V. -->
 		warning(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
 	});
 
+	const parentLayoutContext = useLayoutGroupContext();
+
+	// When presenceAffectsLayout and there's no parent NodeGroup, create an implicit one.
+	// This ensures MeasureLayoutWithContext.onDestroy calls group.remove(projection) → dirtyAll()
+	// → siblings get willUpdate() BEFORE DOM removal → correct FLIP snapshot timing.
+	// Context must be set synchronously; the group is created once and reused so existing
+	// node registrations aren't lost if presenceAffectsLayout toggles.
+	// presenceAffectsLayout is intentionally read once — changing it after mount isn't supported.
+	const implicitGroup = presenceAffectsLayout && !parentLayoutContext?.group ? nodeGroup() : undefined;
+	if (implicitGroup) {
+		setLayoutGroupContext({
+			...parentLayoutContext,
+			group: implicitGroup,
+		});
+	}
+
 	const layoutContext = $derived(useLayoutGroupContext());
 	const forceRender = () => {
 		layoutContext?.forceRender?.();
@@ -37,12 +54,8 @@ Copyright (c) 2018 Framer B.V. -->
 	};
 
 	let isInitialRender = $state(true);
-	// Two-phase layout animation counters:
-	// sharedSnapshotDependency — bumped via flushSync BEFORE DOM removal so watch.pre (RENDER_EFFECT)
-	//   calls willUpdate() while the exiting element is still in the DOM (snapshot sibling positions).
-	// sharedLayoutDependency — bumped AFTER DOM removal so watch (EFFECT) calls didUpdate()
-	//   once the new DOM layout is committed.
-	let sharedSnapshotDependency = $state(0);
+	// Bumped after DOM removal so MeasureLayoutWithContext's watch (EFFECT) calls
+	// didUpdate() once the new DOM layout is committed.
 	let sharedLayoutDependency = $state(0);
 
 	// renderedChildren is the authoritative render list (present + exiting).
@@ -160,11 +173,9 @@ Copyright (c) 2018 Framer B.V. -->
 					});
 
 					if (presenceAffectsLayout) {
-						// Phase 1: snapshot BEFORE DOM removal.
-						// flushSync fires watch.pre (RENDER_EFFECT) immediately so willUpdate()
-						// measures sibling positions while the exiting element is still in the DOM.
-						sharedSnapshotDependency++;
-						flushSync();
+						// Snapshot sibling positions NOW, while the exiting element is still
+						// in the DOM. didUpdate() fires after DOM removal via sharedLayoutDependency.
+						implicitGroup?.dirty();
 					}
 
 					if (allComplete) {
@@ -181,9 +192,9 @@ Copyright (c) 2018 Framer B.V. -->
 					}
 
 					if (presenceAffectsLayout) {
-						// Phase 2: signal didUpdate AFTER DOM removal is committed.
-						// Bumping sharedLayoutDependency without flushSync lets Svelte commit the
-						// DOM change first; watch (EFFECT) then fires didUpdate() on the new layout.
+						// Signal didUpdate after DOM removal is committed.
+						// MeasureLayoutWithContext's watch (EFFECT) fires didUpdate() when this changes,
+						// after Svelte has committed the DOM removal in the same batch.
 						sharedLayoutDependency++;
 					}
 				};
@@ -199,6 +210,14 @@ Copyright (c) 2018 Framer B.V. -->
 			}
 
 			renderedChildren = nextChildren;
+
+			// In popLayout mode, bump sharedLayoutDependency so siblings FLIP immediately
+			// when the exiting element is removed from flow by measurePop.
+			// In sync mode siblings don't move until onExit fires (after exit animation),
+			// so we skip here — onExit handles snapshot+didUpdate instead.
+			if (presenceAffectsLayout && mode === "popLayout") {
+				sharedLayoutDependency++;
+			}
 		});
 	});
 
@@ -224,7 +243,6 @@ Copyright (c) 2018 Framer B.V. -->
 		custom={child.onExit ? custom : undefined}
 		{presenceAffectsLayout}
 		{sharedLayoutDependency}
-		{sharedSnapshotDependency}
 		onExitComplete={child.onExit}
 	>
 		{@render children?.({ item: child.data })}

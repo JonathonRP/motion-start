@@ -9,65 +9,30 @@ let id = 0;
 
 export class ExitAnimationFeature extends Feature<unknown> {
 	private id: number = id++;
-	private hasRegistered: boolean = false;
-	private deregister?: () => void;
-	private prevIsPresent?: boolean;
+	private prevIsPresent: boolean | undefined = undefined;
 
 	update() {
-		if (!this.node.presenceContext) {
-			return;
-		}
+		if (!this.node.presenceContext) return;
 
-		// Late registration: if we couldn't register in mount() because context wasn't ready,
-		// register now when context becomes available
-		if (!this.hasRegistered) {
-			const { register } = this.node.presenceContext;
-			if (register) {
-				this.deregister = register(this.id);
-				this.hasRegistered = true;
-			}
-		}
-
-		const { isPresent, measurePop } = this.node.presenceContext;
+		const { isPresent, onExitComplete } = this.node.presenceContext;
 		const prevIsPresent = this.prevIsPresent;
+
 		this.prevIsPresent = isPresent;
 
-		if (!this.node.animationState || prevIsPresent === undefined || isPresent === prevIsPresent) {
-			return;
-		}
+		if (!this.node.animationState || isPresent === prevIsPresent) return;
 
 		const exitAnimation = this.node.animationState.setActive('exit', !isPresent);
 
-		if (this.node.presenceContext.onExitComplete && !isPresent) {
-			if (measurePop) {
-				// popLayout: snapshot sibling positions BEFORE injecting position:absolute,
-				// then inject it (siblings shift to fill gap), then call didUpdate() to
-				// animate siblings from their snapshotted positions to their new ones.
-				this.node.projection?.root?.nodes?.forEach((node) => { node.willUpdate(); });
-				measurePop(this.node.current as HTMLElement | SVGElement);
-				this.node.projection?.root?.didUpdate();
-			}
-			exitAnimation.then(() => {
-				this.node.presenceContext?.onExitComplete?.(this.id);
-			});
+		if (onExitComplete && !isPresent) {
+			exitAnimation.then(() => onExitComplete(this.id));
 		}
 	}
 
 	mount() {
 		const { register } = this.node.presenceContext || {};
-
-		if (register) {
-			this.deregister = register(this.id);
-			this.hasRegistered = true;
-		}
-
-		// Initialize prevIsPresent to true: we always assume the element starts present
-		// so the first isPresent=false transition triggers the exit animation.
-		// Note: `isPresent ?? true` is wrong — `false ?? true` evaluates to `false`.
-		this.prevIsPresent = true;
+		if (register) this.unmount = register(this.id);
 	}
 
-	unmount() {
-		this.deregister?.();
-	}
+	// Replaced at mount() time by the deregister function returned from register()
+	unmount() { /* overwritten in mount */ }
 }
