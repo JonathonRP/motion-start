@@ -32,6 +32,7 @@ Copyright (c) 2018 Framer B.V. -->
         if (!context) return;
         context.measurePop = (node) => {
             const child = node as HTMLElement;
+            if (!child) return;
 
             // offsetTop/offsetLeft are already relative to offsetParent (nearest
             // positioned ancestor), so they work directly with position:absolute

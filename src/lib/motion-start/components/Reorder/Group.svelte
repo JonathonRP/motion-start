@@ -59,7 +59,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts" generics="V">
-	import { tick, type Component, type Snippet } from "svelte";
+	import { type Component, type Snippet, untrack } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
 	import { setReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
@@ -67,10 +67,10 @@ Copyright (c) 2018 Framer B.V. -->
 	import { invariant } from "../../utils/errors";
 	import type { Ref } from "../../utils/safe-react-types";
 
+	import type { IProjectionNode } from "../../projection/node/types";
 	import type { PropsWithChildren } from "../../utils/types";
 	import { type ReorderContext, type ItemData } from "./types";
 	import { checkReorder } from "./utils/check-reorder.svelte";
-	import { watch } from "runed";
 
 	let {
 		as = "ul",
@@ -97,31 +97,17 @@ Copyright (c) 2018 Framer B.V. -->
 	>;
 
 	let order: ItemData<V>[] = [];
-	let isReordering = $state(false);
+	let orderVersion = $state(0);
+	const projections = new Map<V, IProjectionNode>();
 
-	watch(
-		() => values,
-		() => {
-			tick().then(() => {
-				isReordering = false;
-			});
-		},
-		{ lazy: true },
-	);
-	watch.pre(
-		() => values,
-		() => {
-			order = [];
-		},
-	);
-
-	// $inspect(values);
 	const context = $state<ReorderContext<V>>({
 		get axis() {
 			return axis;
 		},
+		get orderVersion() {
+			return orderVersion;
+		},
 		registerItem: (value, layout) => {
-			// If the entry was already added, update it rather than adding it again
 			const idx = order.findIndex((entry) => value === entry.value);
 			if (idx !== -1) {
 				order[idx].layout = layout[axis];
@@ -130,12 +116,16 @@ Copyright (c) 2018 Framer B.V. -->
 			}
 			order.sort(compareMin);
 		},
+		registerProjection: (item, projection) => {
+			projections.set(item, projection);
+			return () => projections.delete(item);
+		},
 		updateOrder: (item, offset, velocity) => {
-			if (isReordering) return;
-
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
-				isReordering = true;
+				// Snapshot all items BEFORE the DOM reorder so FLIP has old positions.
+				projections.forEach((proj) => proj.willUpdate());
+				order = newOrder;
 				onReorder?.(
 					newOrder
 						.map(getValue)
@@ -143,6 +133,15 @@ Copyright (c) 2018 Framer B.V. -->
 				);
 			}
 		},
+	});
+
+	// After values propagates back from onReorder: bump orderVersion so items'
+	// layoutDependency changes → MeasureLayoutWithContext watch.pre fires →
+	// willUpdate() + didUpdate() → onLayoutMeasure → order refreshed with post-FLIP positions.
+	// untrack() on the write prevents orderVersion change from re-triggering this effect.
+	$effect(() => {
+		void values;
+		untrack(() => orderVersion++);
 	});
 	setReorderContext(context);
 </script>

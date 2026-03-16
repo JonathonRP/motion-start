@@ -1,4 +1,4 @@
-import { MotionValue, useMotionValue } from '$lib/motion-start';
+import { type MotionValue, useMotionValue } from '$lib/motion-start';
 import { animate } from '$lib/motion-start/animation/animate';
 import { onMount } from 'svelte';
 
@@ -11,7 +11,6 @@ export function useRaisedShadow(value: MotionValue) {
 		let isActive = false;
 		value.on('change', (latest: number) => {
 			const wasActive = isActive;
-			console.log('shadow latest', latest, isActive, wasActive);
 			if (latest !== 0) {
 				isActive = true;
 				if (isActive !== wasActive) {

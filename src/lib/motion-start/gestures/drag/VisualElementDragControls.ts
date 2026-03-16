@@ -66,6 +66,12 @@ export class VisualElementDragControls {
 	private originPoint: Point = { x: 0, y: 0 };
 
 	/**
+	 * Shift the drag origin point by `delta` on the given axis.
+	 * Called by Reorder.Group when a slot swap happens so that the next
+	 * `updateAxis` call (originPoint + panOffset) still positions the dragged
+	 * item under the cursor.
+	 */
+	/**
 	 * The permitted boundaries of travel, in pixels.
 	 */
 	private constraints: ResolvedConstraints | false = false;
@@ -147,7 +153,7 @@ export class VisualElementDragControls {
 
 				this.originPoint[axis] = current;
 			});
-
+	
 			// Fire onDragStart event
 			if (onDragStart) {
 				frame.postRender(() => onDragStart(event, info));

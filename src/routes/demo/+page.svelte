@@ -1,32 +1,32 @@
 <script lang="ts">
-import * as Card from '$lib/components/ui/card';
-import {
-	AnimateLayout,
-	AnimatePresenceMode,
-	AnimatePresenceStack,
-	AnimationSequence,
-	ColorInterpolation,
-	CyclingThroughStates,
-	Drag3DTransform,
-	DragConstraints,
-	DragDirectionLocking,
-	DragTransform,
-	DurBasedSpring,
-	KeyFramesPosition,
-	MorphSvg,
-	ReorderList,
-	Repeat,
-	ReverseEffect,
-	ScrollProgress,
-	Spring,
-	Tweened,
-	WhileDragEffect,
-	WhileHoverEffect,
-	WhileTapEffect,
-} from '$lib/components/motion';
+    import * as Card from "$lib/components/ui/card";
+    import {
+        AnimateLayout,
+        AnimatePresenceMode,
+        AnimatePresenceStack,
+        AnimationSequence,
+        ColorInterpolation,
+        CyclingThroughStates,
+        Drag3DTransform,
+        DragConstraints,
+        DragDirectionLocking,
+        DragTransform,
+        DurBasedSpring,
+        KeyFramesPosition,
+        MorphSvg,
+        ReorderList,
+        Repeat,
+        ReverseEffect,
+        ScrollProgress,
+        Spring,
+        Tweened,
+        WhileDragEffect,
+        WhileHoverEffect,
+        WhileTapEffect,
+    } from "$lib/components/motion";
 
-import { RenderScan } from 'svelte-render-scan';
-import { dev } from '$app/environment';
+    import { RenderScan } from "svelte-render-scan";
+    import { dev } from "$app/environment";
 </script>
 
 {#if dev}
@@ -390,6 +390,25 @@ import { dev } from '$app/environment';
         <!-- Start -->
         <Card.Root>
             <Card.Header>
+                <Card.Title>Animate Presence Mode</Card.Title>
+                <Card.Description>
+                    Click the box to visualize the effect
+                </Card.Description>
+            </Card.Header>
+            <Card.Content>
+                <AnimatePresenceMode />
+            </Card.Content>
+            <Card.Footer>
+                <Card.Footer class="grid gap-1">
+                    <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-green-500">Passed test</p>
+                </Card.Footer>
+            </Card.Footer>
+        </Card.Root>
+        <!-- End -->
+        <!-- Start -->
+        <Card.Root>
+            <Card.Header>
                 <Card.Title>Animate Layout</Card.Title>
                 <Card.Description>
                     Click the switch to visualize the effect
@@ -417,27 +436,8 @@ import { dev } from '$app/environment';
             </Card.Content>
             <Card.Footer>
                 <Card.Footer class="grid gap-1">
-                    <!-- <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-red-500">Failed test</p> -->
-                </Card.Footer>
-            </Card.Footer>
-        </Card.Root>
-        <!-- End -->
-        <!-- Start -->
-        <Card.Root>
-            <Card.Header>
-                <Card.Title>Animate Presence Mode</Card.Title>
-                <Card.Description>
-                    Click the box to visualize the effect
-                </Card.Description>
-            </Card.Header>
-            <Card.Content>
-                <AnimatePresenceMode />
-            </Card.Content>
-            <Card.Footer>
-                <Card.Footer class="grid gap-1">
-                    <!-- <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-red-500">Failed test</p> -->
+                    <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-green-500">Passed test</p>
                 </Card.Footer>
             </Card.Footer>
         </Card.Root>

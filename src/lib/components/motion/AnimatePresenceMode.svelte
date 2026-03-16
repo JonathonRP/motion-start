@@ -10,8 +10,8 @@
     let mode: "popLayout" | "sync" = $derived(popLayout ? "popLayout" : "sync");
 </script>
 
-<Box>
-    <div class="flex flex-col items-center">
+<Box cls="overflow-hidden">
+    <div class="flex flex-col items-center h-[300px]">
         <div class="flex flex-col p-0 pb-[50px] items-center">
             <label class="flex flex-col items-center my-[20px] mx-0">
                 <code>popLayout</code>

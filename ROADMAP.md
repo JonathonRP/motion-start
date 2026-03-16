@@ -8,7 +8,9 @@ use svelte ease for easing/custom easing?
 
 use svelte effect instead of RAF in batcher or compeletely replace frame with runed AnimationFrame.
 
-is there a way to allow raw component work with $effects without using svelte template? because svelte allows getting and setting context in raw function components in newer versions.
+~~is there a way to allow raw component work with $effects without using svelte template? because svelte allows getting and setting context in raw function components in newer versions.~~ yes, use later versions then 5.49.0? but do we get a benefit, currently everything works fine.
+
+~~why does animatePresence need layout group if motion elements have layout and they each have their own measure component?~~ fundamental difference between react and svelte - didUpdate can be called and snapshot (react doesn't change dom until after reconcile so snapshotting during didUpdate works), but svelte needs snapshot then didUpdate (snapshot - needs willUpdate called in advance, didUpdate is too late)
 
 ---
 

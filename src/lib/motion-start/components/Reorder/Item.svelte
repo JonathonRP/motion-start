@@ -11,6 +11,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { SvelteHTMLElements } from "svelte/elements";
 
 	import { type Component } from "svelte";
+	import { visualElementStore } from "../../render/store";
 	import { useReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
@@ -84,8 +85,35 @@ Copyright (c) 2018 Framer B.V. -->
 
 	// Access context properties directly to preserve getter reactivity
 	const axis = $derived(context?.axis);
+	const orderVersion = $derived(context?.orderVersion);
 	const registerItem = $derived(context?.registerItem);
 	const updateOrder = $derived(context?.updateOrder);
+
+	// Track the DOM element so we can register the projection node with Group.
+	let domElement = $state<Element | null>(null);
+	const itemRef = (el: SvelteHTMLElements[typeof as] | null) => {
+		domElement = el as Element | null;
+		if (externalRef) {
+			if (typeof externalRef === 'function') {
+				(externalRef as (el: any) => void)(el);
+			} else {
+				(externalRef as any).current = el;
+			}
+		}
+	};
+
+	// Register this item's projection node with the Group so Group can call
+	// willUpdate() on all nodes BEFORE the DOM reorder (for FLIP snapshots).
+	$effect(() => {
+		const ctx = context;
+		if (!ctx) return;
+		const el = domElement;
+		if (!el) return;
+		const ve = visualElementStore.get(el);
+		const projection = ve?.projection;
+		if (!projection) return;
+		return ctx.registerProjection(value, projection);
+	});
 </script>
 
 <ReorderItem
@@ -105,18 +133,19 @@ Copyright (c) 2018 Framer B.V. -->
 			velocity: Record<"x" | "y", number>;
 		};
 		if (axis && (axis === "x" || axis === "y")) {
-			// Type narrowed to 'x' | 'y'
 			const axisKey = axis as "x" | "y";
 			if (velocity[axisKey]) {
-				const mv = point[axisKey];
-				updateOrder?.(value, mv.get(), velocity[axisKey]);
+				updateOrder?.(value, point[axisKey].get(), velocity[axisKey]);
 			}
 		}
 		onDrag && onDrag(event, gesturePoint);
 	}}
-	onLayoutMeasure={(measured) => registerItem?.(value, measured)}
-	bind:ref={externalRef}
+	onLayoutMeasure={(measured) => {
+		registerItem?.(value, measured);
+	}}
+	ref={itemRef}
 	{layout}
+	layoutDependency={orderVersion}
 	custom={value}
 	ignoreStrict
 >
