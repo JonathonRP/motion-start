@@ -62,18 +62,22 @@ Copyright (c) 2018 Framer B.V. -->
 	});
 
 	// getSnapshotBeforeUpdate — mirrors React's getSnapshotBeforeUpdate.
-	// Fires before DOM changes via watch.pre. Deps: layoutDependency, projection, isPresent.
-	let prevLayoutDependency: number | undefined = undefined;
+	// Fires before DOM changes via watch.pre. Deps: snapshotDependency (bumped via flushSync
+	// before DOM removal), layoutDependency (for drag/manual layout changes), projection, isPresent.
+	let prevSnapshotKey: number | undefined = undefined;
 	let prevIsPresent: boolean | undefined = undefined;
 	watch.pre(
 		[
+			() => props.snapshotDependency,
 			() => props.layoutDependency,
 			() => props.visualElement?.projection,
 			() => props.isPresent,
 		],
 		() => {
-			const { layoutDependency, visualElement, drag, isPresent } = props;
+			const { snapshotDependency, layoutDependency, visualElement, drag, isPresent } = props;
 			const projection = visualElement?.projection;
+			// Use whichever snapshot key changed most recently as the trigger signal
+			const snapshotKey = snapshotDependency ?? layoutDependency;
 
 			if (!projection) {
 				if (prevIsPresent !== isPresent && !isPresent) {
@@ -87,8 +91,8 @@ Copyright (c) 2018 Framer B.V. -->
 
 			if (
 				drag ||
-				prevLayoutDependency !== layoutDependency ||
-				layoutDependency === undefined
+				prevSnapshotKey !== snapshotKey ||
+				snapshotKey === undefined
 			) {
 				projection.willUpdate();
 			} else if (prevIsPresent === isPresent) {
@@ -109,27 +113,11 @@ Copyright (c) 2018 Framer B.V. -->
 				}
 			}
 
-			// When transitioning to not-present, keep prevLayoutDependency as undefined
+			// When transitioning to not-present, keep prevSnapshotKey as undefined
 			// so subsequent renders during exit animation always call willUpdate(), never safeToRemove().
-			// This matches the original "recreate on every render" behavior where prevLayoutDependency
-			// was always undefined (fresh component instance each time).
-			prevLayoutDependency = isPresent ? layoutDependency : undefined;
+			prevSnapshotKey = isPresent ? snapshotKey : undefined;
 			prevIsPresent = isPresent;
 		},
-	);
-
-	// snapshotTrigger is bumped (via flushSync) BEFORE DOM removal so siblings snapshot
-	// their positions while the exiting element is still in the DOM. It fires watch.pre
-	// only (not $effect), so update()/didUpdate() are NOT called prematurely.
-	watch.pre(
-		() => props.snapshotTrigger,
-		() => {
-			const projection = props.visualElement?.projection;
-			if (projection) {
-				projection.willUpdate();
-			}
-		},
-		{ lazy: true },
 	);
 
 	// componentDidUpdate — re-runs on layoutDependency change.

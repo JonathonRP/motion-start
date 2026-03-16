@@ -13,8 +13,7 @@ Copyright (c) 2018 Framer B.V. -->
 		switchLayoutGroup?: SwitchLayoutGroupContext;
 		isPresent: boolean;
 		safeToRemove?: VoidFunction | null;
-		/** Bumped (via flushSync) before DOM removal to snapshot positions while exiting sibling still in DOM */
-		snapshotTrigger?: number;
+		snapshotDependency?: number;
 	}
 
 	export interface MeasureProps extends MotionProps, MeasureContextProps {
@@ -44,15 +43,16 @@ Copyright (c) 2018 Framer B.V. -->
 
 	const presenceContext = usePresenceContext();
 	const presenceLayoutDependency = $derived(presenceContext?.layoutDependency);
-	const presenceSnapshotTrigger = $derived(presenceContext?.snapshotTrigger);
+	const presenceSnapshotDependency = $derived(presenceContext?.snapshotDependency);
 
+	// custom can serve as layoutDependency when no explicit layoutDependency is provided.
 	const layoutGroup = $derived(useLayoutGroupContext() ?? { forceRender: () => {} });
 </script>
 
 <MeasureLayoutWithContext
 	{...props}
-	layoutDependency={presenceLayoutDependency ?? props.layoutDependency}
-	snapshotTrigger={presenceSnapshotTrigger}
+	layoutDependency={presenceLayoutDependency ?? props.layoutDependency ?? props.custom}
+	snapshotDependency={presenceSnapshotDependency}
 	{layoutGroup}
 	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}
 	{isPresent}

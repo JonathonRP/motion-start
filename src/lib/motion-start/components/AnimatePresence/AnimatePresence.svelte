@@ -37,11 +37,13 @@ Copyright (c) 2018 Framer B.V. -->
 	};
 
 	let isInitialRender = $state(true);
-	// Shared layout dependency counter — bumped WITH DOM removal so MeasureLayout calls didUpdate/FLIP.
+	// Two-phase layout animation counters:
+	// sharedSnapshotDependency — bumped via flushSync BEFORE DOM removal so watch.pre (RENDER_EFFECT)
+	//   calls willUpdate() while the exiting element is still in the DOM (snapshot sibling positions).
+	// sharedLayoutDependency — bumped AFTER DOM removal so watch (EFFECT) calls didUpdate()
+	//   once the new DOM layout is committed.
+	let sharedSnapshotDependency = $state(0);
 	let sharedLayoutDependency = $state(0);
-	// Snapshot trigger — bumped BEFORE DOM removal (via flushSync) so MeasureLayout snapshots
-	// sibling positions while the exiting element is still in the DOM.
-	let sharedSnapshotTrigger = $state(0);
 
 	// renderedChildren is the authoritative render list (present + exiting).
 	let renderedChildren = $state<
@@ -158,17 +160,11 @@ Copyright (c) 2018 Framer B.V. -->
 					});
 
 					if (presenceAffectsLayout) {
-						// Phase 1: snapshot sibling positions BEFORE DOM removal.
-						// flushSync forces watch.pre to run immediately (triggering willUpdate)
-						// while the exiting element is still in the DOM. The $effect does NOT
-						// fire (it doesn't watch snapshotTrigger), so update() is not called yet.
-						sharedSnapshotTrigger++;
+						// Phase 1: snapshot BEFORE DOM removal.
+						// flushSync fires watch.pre (RENDER_EFFECT) immediately so willUpdate()
+						// measures sibling positions while the exiting element is still in the DOM.
+						sharedSnapshotDependency++;
 						flushSync();
-
-						// Phase 2: remove from DOM + bump layoutDependency in the same batch.
-						// The {#each} DOM removal and $effect-triggered didUpdate/FLIP all happen
-						// in the next Svelte flush, after the snapshot is safely taken.
-						sharedLayoutDependency++;
 					}
 
 					if (allComplete) {
@@ -182,6 +178,13 @@ Copyright (c) 2018 Framer B.V. -->
 						renderedChildren = renderedChildren.filter(
 							(c) => getChildKey(c) !== key,
 						);
+					}
+
+					if (presenceAffectsLayout) {
+						// Phase 2: signal didUpdate AFTER DOM removal is committed.
+						// Bumping sharedLayoutDependency without flushSync lets Svelte commit the
+						// DOM change first; watch (EFFECT) then fires didUpdate() on the new layout.
+						sharedLayoutDependency++;
 					}
 				};
 
@@ -221,7 +224,7 @@ Copyright (c) 2018 Framer B.V. -->
 		custom={child.onExit ? custom : undefined}
 		{presenceAffectsLayout}
 		{sharedLayoutDependency}
-		{sharedSnapshotTrigger}
+		{sharedSnapshotDependency}
 		onExitComplete={child.onExit}
 	>
 		{@render children?.({ item: child.data })}

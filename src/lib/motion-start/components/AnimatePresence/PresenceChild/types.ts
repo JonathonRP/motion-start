@@ -8,10 +8,10 @@ export interface PresenceChildProps {
 	initial?: false | VariantLabels;
 	custom?: any;
 	presenceAffectsLayout: boolean;
-	/** Shared layout dependency counter from parent AnimatePresence — bumped when any sibling changes presence */
+	/** Shared layout dependency counter from parent AnimatePresence — bumped after DOM removal so watch fires didUpdate() */
 	sharedLayoutDependency?: number;
-	/** Bumped before DOM removal to trigger willUpdate() snapshot while exiting sibling still in DOM */
-	sharedSnapshotTrigger?: number;
+	/** Shared snapshot dependency — bumped (with flushSync) before DOM removal so watch.pre fires willUpdate() */
+	sharedSnapshotDependency?: number;
 	mode: 'wait' | 'sync' | 'popLayout';
 	children: Snippet;
 }

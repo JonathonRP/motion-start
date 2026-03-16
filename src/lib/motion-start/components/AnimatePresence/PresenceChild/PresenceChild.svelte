@@ -24,7 +24,7 @@ Copyright (c) 2018 Framer B.V. -->
         custom = undefined,
         presenceAffectsLayout,
         sharedLayoutDependency = undefined,
-        sharedSnapshotTrigger = undefined,
+        sharedSnapshotDependency = undefined,
         mode,
         children: desendants,
     }: Props = $props();
@@ -51,18 +51,16 @@ Copyright (c) 2018 Framer B.V. -->
     });
 
     // Keep reactive props in sync with the stable $state object.
-    // Use $effect.pre so layoutDependency/snapshotTrigger are updated BEFORE
+    // Use $effect.pre so layoutDependency/snapshotDependency are updated BEFORE
     // MeasureLayoutWithContext's watch.pre (also $effect.pre) reads them.
     $effect.pre(() => {
         context.isPresent = isPresent;
         if (presenceAffectsLayout) {
-            // sharedLayoutDependency is bumped with DOM removal — triggers didUpdate/FLIP.
             if (sharedLayoutDependency !== undefined) {
                 context.layoutDependency = sharedLayoutDependency;
             }
-            // sharedSnapshotTrigger is bumped BEFORE DOM removal — triggers willUpdate snapshot only.
-            if (sharedSnapshotTrigger !== undefined) {
-                context.snapshotTrigger = sharedSnapshotTrigger;
+            if (sharedSnapshotDependency !== undefined) {
+                context.snapshotDependency = sharedSnapshotDependency;
             }
         }
     });
