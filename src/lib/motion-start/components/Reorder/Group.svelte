@@ -62,7 +62,10 @@ Copyright (c) 2018 Framer B.V. -->
 	import { type Component, type Snippet, untrack } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
 	import { setReorderContext } from "../../context/ReorderContext";
-	import { useLayoutGroupContext, setLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
+	import {
+		useLayoutGroupContext,
+		setLayoutGroupContext,
+	} from "../../context/LayoutGroupContext.svelte";
 	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import { invariant } from "../../utils/errors";
@@ -114,7 +117,9 @@ Copyright (c) 2018 Framer B.V. -->
 	let prevItemSet = new Set<V>(values);
 	$effect.pre(() => {
 		const next = values;
-		const hasChanged = next.length !== prevItemSet.size || next.some((v) => !prevItemSet.has(v));
+		const hasChanged =
+			next.length !== prevItemSet.size ||
+			next.some((v) => !prevItemSet.has(v));
 		if (hasChanged) {
 			prevItemSet = new Set(next);
 			untrack(() => {
@@ -147,18 +152,26 @@ Copyright (c) 2018 Framer B.V. -->
 		updateOrder: (item, offset, velocity) => {
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
-				const prevIndex = order.findIndex((entry) => entry.value === item);
-				const nextIndex = newOrder.findIndex((entry) => entry.value === item);
+				const prevIndex = order.findIndex(
+					(entry) => entry.value === item,
+				);
+				const nextIndex = newOrder.findIndex(
+					(entry) => entry.value === item,
+				);
 
 				if (prevIndex !== -1 && nextIndex !== -1) {
 					// Apply the origin correction synchronously so the dragged card stays
 					// under the cursor with no async lag. The slot delta equals the
 					// difference between the destination slot's min and the current slot's min.
-					const slotDelta = newOrder[nextIndex].layout.min - order[prevIndex].layout.min;
+					const slotDelta =
+						newOrder[nextIndex].layout.min -
+						order[prevIndex].layout.min;
 					group.forEach((node) => {
 						const ve = node.options.visualElement;
 						if (!ve) return;
-						const dc = elementDragControls.get(ve as Parameters<typeof elementDragControls.get>[0]);
+						const dc = elementDragControls.get(
+							ve as Parameters<typeof elementDragControls.get>[0],
+						);
 						if (dc?.isDragging) dc.shiftOrigin(axis, slotDelta);
 					});
 

@@ -2,7 +2,6 @@
 	import { tick } from "svelte";
 	import type { PanInfo } from "$lib/motion-start";
 	import { LayoutGroup, Reorder, useDragControls } from "$lib/motion-start";
-	import { drag } from "$lib/motion-start/motion/features/drag";
 
 	type Column = "todo" | "inprogress" | "done";
 	type Card = { id: number; title: string };

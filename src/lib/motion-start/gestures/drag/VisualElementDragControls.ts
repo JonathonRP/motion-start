@@ -66,9 +66,9 @@ export class VisualElementDragControls {
 	private originPoint: Point = { x: 0, y: 0 };
 
 	/**
-	 * Set to true by shiftOrigin() when a reorder swap applies a synchronous
-	 * origin correction. The next didUpdate cycle is skipped so the same delta
-	 * isn't applied a second time (synchronous correction already handled it).
+	 * Set to true by applyReparentPosition() after placing the card under the cursor.
+	 * The next didUpdate cycle is skipped so the FLIP delta from the new projection
+	 * doesn't displace the already-correct position.
 	 */
 	private skipNextDidUpdate = false;
 
@@ -110,7 +110,6 @@ export class VisualElementDragControls {
 		this.originPoint[reorderAxis] += delta;
 		const mv = this.getAxisMotionValue(reorderAxis);
 		mv.set(mv.get() + delta);
-		this.skipNextDidUpdate = true;
 		this.visualElement.render();
 	}
 
@@ -140,6 +139,9 @@ export class VisualElementDragControls {
 			// Also seed originPoint so onStart uses the measured position.
 			this.originPoint[axis] = offset;
 		});
+		// The new projection will fire didUpdate with a FLIP delta — skip it since
+		// we've already positioned the card correctly via applyReparentPosition.
+		this.skipNextDidUpdate = true;
 	}
 
 	start(originEvent: PointerEvent, { snapToCursor = false, cursorProgress }: DragControlOptions = {}) {
@@ -211,7 +213,7 @@ export class VisualElementDragControls {
 				if (percent.test(current)) {
 					const { projection } = this.visualElement;
 
-					if (projection && projection.layout) {
+					if (projection?.layout) {
 						const measuredAxis = projection.layout.layoutBox[axis];
 
 						if (measuredAxis) {
@@ -223,7 +225,7 @@ export class VisualElementDragControls {
 
 				this.originPoint[axis] = current;
 			});
-	
+
 			// Fire onDragStart event
 			if (onDragStart) {
 				frame.postRender(() => onDragStart(event, info));
@@ -232,7 +234,7 @@ export class VisualElementDragControls {
 			addValueToWillChange(this.visualElement, 'transform');
 
 			const { animationState } = this.visualElement;
-			animationState && animationState.setActive('whileDrag', true);
+			animationState?.setActive('whileDrag', true);
 		};
 
 		const onMove = (event: PointerEvent, info: PanInfo) => {
@@ -263,7 +265,7 @@ export class VisualElementDragControls {
 
 				// If we've successfully set a direction, notify listener
 				if (this.currentDirection !== null) {
-					onDirectionLock && onDirectionLock(this.currentDirection);
+					onDirectionLock?.(this.currentDirection);
 				}
 
 				return;
@@ -285,7 +287,7 @@ export class VisualElementDragControls {
 			 * This must fire after the render call as it might trigger a state
 			 * change which itself might trigger a layout update.
 			 */
-			onDrag && onDrag(event, info);
+			onDrag?.(event, info);
 		};
 
 		const onSessionEnd = (event: PointerEvent, info: PanInfo) => this.stop(event, info);
@@ -347,7 +349,7 @@ export class VisualElementDragControls {
 		if (projection) {
 			projection.isAnimationBlocked = false;
 		}
-		this.panSession && this.panSession.end();
+		this.panSession?.end();
 		this.panSession = undefined;
 
 		const { dragPropagation } = this.getProps();
@@ -356,7 +358,7 @@ export class VisualElementDragControls {
 			this.openGlobalLock = null;
 		}
 
-		animationState && animationState.setActive('whileDrag', false);
+		animationState?.setActive('whileDrag', false);
 	}
 
 	private updateAxis(axis: DragDirection, _point: Point, offset?: Point) {
@@ -369,7 +371,7 @@ export class VisualElementDragControls {
 		let next = this.originPoint[axis] + offset[axis];
 
 		// Apply constraints
-		if (this.constraints && this.constraints[axis]) {
+		if (this.constraints?.[axis]) {
 			next = applyConstraints(next, this.constraints[axis], this.elastic[axis]);
 		}
 
@@ -464,7 +466,7 @@ export class VisualElementDragControls {
 				return;
 			}
 
-			let transition = (constraints && constraints[axis]) || {};
+			let transition = constraints?.[axis] || {};
 
 			if (dragSnapToOrigin) transition = { min: 0, max: 0 };
 
@@ -525,7 +527,7 @@ export class VisualElementDragControls {
 	 * - If _dragX and _dragY are provided, we output the gesture delta directly to those motion values.
 	 * - Otherwise, we apply the delta to the x/y motion values.
 	 */
-	getAxisMotionValue(axis: DragDirection) {
+	private getAxisMotionValue(axis: DragDirection) {
 		const dragKey = `_drag${axis.toUpperCase()}` as `_drag${Uppercase<DragDirection>}`;
 		const props = this.visualElement.getProps();
 		const externalMotionValue = props[dragKey];
@@ -548,7 +550,7 @@ export class VisualElementDragControls {
 			const { projection } = this.visualElement;
 			const axisValue = this.getAxisMotionValue(axis);
 
-			if (projection && projection.layout) {
+			if (projection?.layout) {
 				const { min, max } = projection.layout.layoutBox[axis];
 
 				axisValue.set(point[axis] - mixNumber(min, max, 0.5));
@@ -592,7 +594,7 @@ export class VisualElementDragControls {
 		 */
 		const { transformTemplate } = this.visualElement.getProps();
 		this.visualElement.current.style.transform = transformTemplate ? transformTemplate({}, '') : 'none';
-		projection.root && projection.root.updateScroll();
+		projection.root?.updateScroll();
 		projection.updateLayout();
 		this.resolveConstraints();
 
@@ -628,7 +630,7 @@ export class VisualElementDragControls {
 		const stopMeasureLayoutListener = projection?.addEventListener('measure', measureDragConstraints);
 
 		if (projection && !projection.layout) {
-			projection.root && projection.root.updateScroll();
+			projection.root?.updateScroll();
 			projection.updateLayout();
 		}
 
@@ -643,8 +645,6 @@ export class VisualElementDragControls {
 		/**
 		 * If the element's layout changes (e.g. window resize, scroll), recalculate
 		 * the drag origin point so the element stays correctly positioned.
-		 * Note: reorder slot swaps are corrected synchronously in Group.shiftOrigin()
-		 * before this listener fires, so delta here reflects only non-reorder changes.
 		 */
 		const stopLayoutUpdateListener = projection?.addEventListener('didUpdate', (({
 			delta,
