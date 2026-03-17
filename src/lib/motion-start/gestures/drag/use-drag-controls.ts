@@ -1,9 +1,15 @@
-/** 
+/**
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
 import type { VisualElementDragControls, DragControlOptions } from './VisualElementDragControls';
+
+export interface DragResumeSnapshot {
+	lastPointerEvent: PointerEvent;
+	cursorProgress: { x: number; y: number };
+}
+
 /**
  * Can manually trigger a drag gesture on one or more `drag`-enabled `motion` components.
  *
@@ -24,6 +30,16 @@ import type { VisualElementDragControls, DragControlOptions } from './VisualElem
  */
 export class DragControls {
 	private componentControls = new Set<VisualElementDragControls>();
+
+	/**
+	 * Snapshot of an interrupted drag gesture, set by DragGesture.unmount() when
+	 * a dragging element is reparented. The next DragGesture.mount() with this
+	 * same DragControls reads it and resumes the gesture.
+	 *
+	 * @internal
+	 */
+	pendingResume: DragResumeSnapshot | null = null;
+
 	/**
 	 * Subscribe a component's internal `VisualElementDragControls` to the user-facing API.
 	 *
@@ -34,6 +50,7 @@ export class DragControls {
 
 		return () => this.componentControls.delete(controls);
 	};
+
 	/**
 	 * Start a drag gesture on every `motion` component that has this set of drag controls
 	 * passed into it via the `dragControls` prop.

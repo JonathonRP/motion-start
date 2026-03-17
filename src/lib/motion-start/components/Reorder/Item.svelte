@@ -57,6 +57,7 @@ Copyright (c) 2018 Framer B.V. -->
 		value,
 		onDrag,
 		layout = true,
+		drag: dragProp,
 		ref: externalRef = $bindable(),
 		...props
 	}: Props<V> &
@@ -89,7 +90,7 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <ReorderItem
-	drag={axis}
+	drag={dragProp ?? axis}
 	{...props}
 	dragSnapToOrigin
 	style={{

@@ -1,5 +1,6 @@
 // @ts-nocheck
 export { default as AnimateLayout } from './AnimateLayout.svelte';
+export { default as AnimatePresenceMode } from './AnimatePresenceMode.svelte';
 export { default as AnimatePresenceStack } from './AnimatePresenceStack.svelte';
 export { default as AnimationSequence } from './AnimationSequence.svelte';
 export { default as ColorInterpolation } from './ColorInterpolation.svelte';
@@ -9,10 +10,12 @@ export { default as DragConstraints } from './DragConstraints.svelte';
 export { default as DragDirectionLocking } from './DragDirectionLocking.svelte';
 export { default as DragTransform } from './DragTransform.svelte';
 export { default as DurBasedSpring } from './DurBasedSpring.svelte';
+export { default as KanbanBoard } from './KanbanBoard.svelte';
 export { default as KeyFramesPosition } from './KeyFramesPosition.svelte';
 export { default as MorphSvg } from './MorphSVG.svelte';
 export { default as Navbar } from './Navbar.svelte';
 export { default as Repeat } from './Repeat.svelte';
+export { default as ReorderList } from './ReorderList/Index.svelte';
 export { default as ReverseEffect } from './ReverseEffect.svelte';
 export { default as ScrollProgress } from './ScrollProgress.svelte';
 export { default as Spring } from './Spring.svelte';
@@ -20,5 +23,3 @@ export { default as Tweened } from './Tweened.svelte';
 export { default as WhileDragEffect } from './WhileDragEffect.svelte';
 export { default as WhileHoverEffect } from './WhileHoverEffect.svelte';
 export { default as WhileTapEffect } from './WhileTapEffect.svelte';
-export { default as AnimatePresenceMode } from './AnimatePresenceMode.svelte';
-export { default as ReorderList } from './ReorderList/Index.svelte';

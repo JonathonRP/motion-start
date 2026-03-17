@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { watch } from 'runed';
-import { tick, type Component } from 'svelte';
+import { tick, untrack, type Component } from 'svelte';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { useLazyContext } from '../../context/LazyContext';
 import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte';
@@ -108,7 +108,7 @@ export function useVisualElement<Instance, RenderState>(
 			const featureDefinition = featureDefinitions[fKey];
 			if (!featureDefinition) continue;
 			const { isEnabled, Feature: FeatureConstructor } = featureDefinition;
-			if (!visualElement.features[fKey] && FeatureConstructor && isEnabled(visualElement.props)) {
+			if (!visualElement.features[fKey] && FeatureConstructor && untrack(() => isEnabled(visualElement.props))) {
 				visualElement.features[fKey] = new FeatureConstructor(visualElement as VisualElement<HTMLElement>) as any;
 			}
 			const feature = visualElement.features[fKey];
@@ -135,19 +135,21 @@ export function useVisualElement<Instance, RenderState>(
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
 		tick().then(() => {
-			if (!wantsHandoff && visualElement.animationState) {
+			if (!untrack(() => wantsHandoff) && visualElement.animationState) {
 				visualElement.animationState.animateChanges();
 			}
 		});
 
-		if (wantsHandoff) {
-			// This ensures all future calls to animateChanges() in this component will run in useEffect
-			queueMicrotask(() => {
-				window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
-			});
+		untrack(() => {
+			if (wantsHandoff) {
+				// This ensures all future calls to animateChanges() in this component will run in useEffect
+				queueMicrotask(() => {
+					window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
+				});
 
-			wantsHandoff = false;
-		}
+				wantsHandoff = false;
+			}
+		});
 
 		return () => {
 			let fKey: keyof typeof visualElement.features = 'animation';

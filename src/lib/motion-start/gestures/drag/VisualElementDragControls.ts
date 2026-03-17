@@ -66,6 +66,19 @@ export class VisualElementDragControls {
 	private originPoint: Point = { x: 0, y: 0 };
 
 	/**
+	 * The cursor's position within the element's bounding box, as a 0-1 progress
+	 * value on each axis. Updated every move. Saved on unmount so the next element
+	 * with the same dragControls can resume the gesture at the same relative position.
+	 */
+	cursorProgress: Point = { x: 0.5, y: 0.5 };
+
+	/**
+	 * The last pointer event seen during this drag. Saved so reparenting can
+	 * resume using the same event origin.
+	 */
+	lastPointerEvent: PointerEvent | null = null;
+
+	/**
 	 * Shift the drag origin point by `delta` on the given axis.
 	 * Called by Reorder.Group when a slot swap happens so that the next
 	 * `updateAxis` call (originPoint + panOffset) still positions the dragged
@@ -87,7 +100,7 @@ export class VisualElementDragControls {
 		this.visualElement = visualElement;
 	}
 
-	start(originEvent: PointerEvent, { snapToCursor = false }: DragControlOptions = {}) {
+	start(originEvent: PointerEvent, { snapToCursor = false, cursorProgress }: DragControlOptions = {}) {
 		/**
 		 * Don't start dragging if this component is exiting
 		 */
@@ -133,6 +146,22 @@ export class VisualElementDragControls {
 			 * Record gesture origin
 			 */
 			eachAxis((axis) => {
+				/**
+				 * If cursorProgress is provided (reparent resume), compute origin so
+				 * the element sits under the cursor at the same relative position.
+				 */
+				if (cursorProgress !== undefined) {
+					const { projection } = this.visualElement;
+					if (projection && projection.layout) {
+						const { min, max } = projection.layout.layoutBox[axis];
+						const elementSize = max - min;
+						const cursorPage = extractEventInfo(originEvent, 'page').point[axis];
+						// originPoint = cursorPage - cursorProgress * elementSize - min
+						this.originPoint[axis] = cursorPage - cursorProgress[axis] * elementSize - min;
+					}
+					return;
+				}
+
 				let current = this.getAxisMotionValue(axis).get() || 0;
 
 				/**
@@ -166,7 +195,20 @@ export class VisualElementDragControls {
 		};
 
 		const onMove = (event: PointerEvent, info: PanInfo) => {
-			// latestPointerEvent = event
+			this.lastPointerEvent = event;
+
+			// Update cursorProgress (cursor position within element, 0-1 on each axis)
+			const { projection } = this.visualElement;
+			const projectionLayout = projection?.layout;
+			if (projectionLayout) {
+				eachAxis((axis) => {
+					const { min, max } = projectionLayout.layoutBox[axis];
+					const elementSize = max - min;
+					if (elementSize > 0) {
+						this.cursorProgress[axis] = (info.point[axis] - min) / elementSize;
+					}
+				});
+			}
 
 			const { dragPropagation, dragDirectionLock, onDirectionLock, onDrag } = this.getProps();
 
@@ -239,6 +281,22 @@ export class VisualElementDragControls {
 		const { onDragEnd } = this.getProps();
 		if (onDragEnd) {
 			frame.postRender(() => onDragEnd(event, info));
+		}
+	}
+
+	/**
+	 * End the active PanSession and release the global drag lock without
+	 * triggering the full cancel() path (no whileDrag reset, no stop animation).
+	 * Used on reparent unmount so the old window listeners are removed and the
+	 * lock is free before the new element's start() acquires it.
+	 */
+	endPanSession() {
+		this.panSession?.end();
+		this.panSession = undefined;
+		const { dragPropagation } = this.getProps();
+		if (!dragPropagation && this.openGlobalLock) {
+			this.openGlobalLock();
+			this.openGlobalLock = null;
 		}
 	}
 
