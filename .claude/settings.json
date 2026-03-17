@@ -16,6 +16,7 @@
     ]
   },
   "enabledPlugins": {
-    "svelte@svelte": true
+    "svelte@svelte": true,
+    "frontend-design@claude-code-plugins": true
   }
 }

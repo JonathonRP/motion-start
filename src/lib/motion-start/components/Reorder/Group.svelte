@@ -67,6 +67,7 @@ Copyright (c) 2018 Framer B.V. -->
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import { invariant } from "../../utils/errors";
 	import { nodeGroup } from "../../projection/node/group";
+	import { elementDragControls } from "../../gestures/drag/VisualElementDragControls";
 	import type { Ref } from "../../utils/safe-react-types";
 
 	import type { PropsWithChildren } from "../../utils/types";
@@ -107,6 +108,22 @@ Copyright (c) 2018 Framer B.V. -->
 	let order: ItemData<V>[] = [];
 	let orderVersion = $state(0);
 
+	// When items are added or removed externally (cross-group reparenting), snapshot
+	// all positions before Svelte commits the DOM and bump orderVersion so siblings FLIP.
+	// We compare item identity (not order) to avoid double-bumping on internal reorders.
+	let prevItemSet = new Set<V>(values);
+	$effect.pre(() => {
+		const next = values;
+		const hasChanged = next.length !== prevItemSet.size || next.some((v) => !prevItemSet.has(v));
+		if (hasChanged) {
+			prevItemSet = new Set(next);
+			untrack(() => {
+				group.dirty();
+				orderVersion++;
+			});
+		}
+	});
+
 	const context = $state<ReorderContext<V>>({
 		get axis() {
 			return axis;
@@ -123,13 +140,40 @@ Copyright (c) 2018 Framer B.V. -->
 			}
 			order.sort(compareMin);
 		},
+		unregisterItem: (value) => {
+			const idx = order.findIndex((entry) => value === entry.value);
+			if (idx !== -1) order.splice(idx, 1);
+		},
 		updateOrder: (item, offset, velocity) => {
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
+				const prevIndex = order.findIndex((entry) => entry.value === item);
+				const nextIndex = newOrder.findIndex((entry) => entry.value === item);
+
+				if (prevIndex !== -1 && nextIndex !== -1) {
+					// Apply the origin correction synchronously so the dragged card stays
+					// under the cursor with no async lag. The slot delta equals the
+					// difference between the destination slot's min and the current slot's min.
+					const slotDelta = newOrder[nextIndex].layout.min - order[prevIndex].layout.min;
+					group.forEach((node) => {
+						const ve = node.options.visualElement;
+						if (!ve) return;
+						const dc = elementDragControls.get(ve as Parameters<typeof elementDragControls.get>[0]);
+						if (dc?.isDragging) dc.shiftOrigin(axis, slotDelta);
+					});
+
+					// Swap layouts so checkReorder uses accurate positions on the very
+					// next onDrag call (before onLayoutMeasure re-measures the DOM).
+					const tmp = newOrder[prevIndex].layout;
+					newOrder[prevIndex].layout = newOrder[nextIndex].layout;
+					newOrder[nextIndex].layout = tmp;
+				}
+
 				// Snapshot all item positions synchronously before the DOM reorder.
 				// group.dirty() calls willUpdate() on every registered projection node,
 				// giving FLIP the pre-move positions to animate from.
 				group.dirty();
+
 				order = newOrder;
 				// Bump orderVersion so MeasureLayoutWithContext's watch (post-effect)
 				// calls didUpdate() after Svelte commits the DOM reorder.

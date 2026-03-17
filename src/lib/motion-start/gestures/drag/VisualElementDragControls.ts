@@ -66,6 +66,13 @@ export class VisualElementDragControls {
 	private originPoint: Point = { x: 0, y: 0 };
 
 	/**
+	 * Set to true by shiftOrigin() when a reorder swap applies a synchronous
+	 * origin correction. The next didUpdate cycle is skipped so the same delta
+	 * isn't applied a second time (synchronous correction already handled it).
+	 */
+	private skipNextDidUpdate = false;
+
+	/**
 	 * The cursor's position within the element's bounding box, as a 0-1 progress
 	 * value on each axis. Updated every move. Saved on unmount so the next element
 	 * with the same dragControls can resume the gesture at the same relative position.
@@ -78,12 +85,6 @@ export class VisualElementDragControls {
 	 */
 	lastPointerEvent: PointerEvent | null = null;
 
-	/**
-	 * Shift the drag origin point by `delta` on the given axis.
-	 * Called by Reorder.Group when a slot swap happens so that the next
-	 * `updateAxis` call (originPoint + panOffset) still positions the dragged
-	 * item under the cursor.
-	 */
 	/**
 	 * The permitted boundaries of travel, in pixels.
 	 */
@@ -98,6 +99,47 @@ export class VisualElementDragControls {
 
 	constructor(visualElement: VisualElement<HTMLElement>) {
 		this.visualElement = visualElement;
+	}
+
+	/**
+	 * Synchronously shift the drag origin and motion value on a single axis by `delta`.
+	 * Called by Reorder.Group when a slot swap happens so the card stays under the
+	 * cursor immediately — no async lag waiting for didUpdate re-measurement.
+	 */
+	shiftOrigin(reorderAxis: 'x' | 'y', delta: number) {
+		this.originPoint[reorderAxis] += delta;
+		const mv = this.getAxisMotionValue(reorderAxis);
+		mv.set(mv.get() + delta);
+		this.skipNextDidUpdate = true;
+		this.visualElement.render();
+	}
+
+	/**
+	 * Measure the element's natural DOM position and immediately set the drag
+	 * MotionValues so the card appears under the cursor on first paint during reparent.
+	 * Called synchronously from DragGesture.mount() before start(), while the DOM is
+	 * attached and before any projection microtask has applied FLIP CSS transforms.
+	 */
+	applyReparentPosition(originEvent: PointerEvent, cursorProgress: { x: number; y: number }) {
+		if (!this.visualElement.projection) return;
+		const el = this.visualElement.current as HTMLElement | null;
+		if (!el) return;
+		// Clear any FLIP CSS transform before measuring so BCR reflects the natural position.
+		const savedTransform = el.style.transform;
+		el.style.transform = 'none';
+		// measure(false): we already cleared the transform, skip the mathematical removeTransform.
+		const layout = this.visualElement.projection.measure(false);
+		el.style.transform = savedTransform;
+		if (!layout) return;
+		const pagePoint = extractEventInfo(originEvent, 'page').point;
+		eachAxis((axis) => {
+			const { min, max } = layout.layoutBox[axis];
+			const elementSize = max - min;
+			const offset = pagePoint[axis] - cursorProgress[axis] * elementSize - min;
+			this.getAxisMotionValue(axis).set(offset);
+			// Also seed originPoint so onStart uses the measured position.
+			this.originPoint[axis] = offset;
+		});
 	}
 
 	start(originEvent: PointerEvent, { snapToCursor = false, cursorProgress }: DragControlOptions = {}) {
@@ -116,6 +158,18 @@ export class VisualElementDragControls {
 
 			if (snapToCursor) {
 				this.snapToCursor(extractEventInfo(event, 'page').point);
+			}
+
+			/**
+			 * When dragListener=false (drag controls), the user explicitly initiated
+			 * the drag via a separate handle — activate whileDrag immediately so cursor
+			 * and other styles apply on pointer down without waiting for 3px movement.
+			 * For dragListener=true (default), wait for onStart to avoid false positives
+			 * on simple clicks.
+			 */
+			const { dragListener = true } = this.getProps();
+			if (!dragListener) {
+				this.visualElement.animationState?.setActive('whileDrag', true);
 			}
 		};
 
@@ -143,24 +197,11 @@ export class VisualElementDragControls {
 			}
 
 			/**
-			 * Record gesture origin
+			 * Record gesture origin. When cursorProgress is provided (reparent resume),
+			 * originPoint was already set by applyReparentPosition() — skip recomputing.
 			 */
 			eachAxis((axis) => {
-				/**
-				 * If cursorProgress is provided (reparent resume), compute origin so
-				 * the element sits under the cursor at the same relative position.
-				 */
-				if (cursorProgress !== undefined) {
-					const { projection } = this.visualElement;
-					if (projection && projection.layout) {
-						const { min, max } = projection.layout.layoutBox[axis];
-						const elementSize = max - min;
-						const cursorPage = extractEventInfo(originEvent, 'page').point[axis];
-						// originPoint = cursorPage - cursorProgress * elementSize - min
-						this.originPoint[axis] = cursorPage - cursorProgress[axis] * elementSize - min;
-					}
-					return;
-				}
+				if (cursorProgress !== undefined) return;
 
 				let current = this.getAxisMotionValue(axis).get() || 0;
 
@@ -197,17 +238,17 @@ export class VisualElementDragControls {
 		const onMove = (event: PointerEvent, info: PanInfo) => {
 			this.lastPointerEvent = event;
 
-			// Update cursorProgress (cursor position within element, 0-1 on each axis)
-			const { projection } = this.visualElement;
-			const projectionLayout = projection?.layout;
-			if (projectionLayout) {
-				eachAxis((axis) => {
-					const { min, max } = projectionLayout.layoutBox[axis];
-					const elementSize = max - min;
-					if (elementSize > 0) {
-						this.cursorProgress[axis] = (info.point[axis] - min) / elementSize;
-					}
-				});
+			// Update cursorProgress: cursor position within the element as a 0-1 fraction.
+			// Use getBoundingClientRect() (client coords) + event.clientX/Y so the
+			// measurement reflects the element's CURRENT visual position during drag
+			// (including the drag translation), not the stale natural-position layout.
+			const el = this.visualElement.current as HTMLElement | null;
+			if (el) {
+				const bcr = el.getBoundingClientRect();
+				const clientX = event.clientX;
+				const clientY = event.clientY;
+				if (bcr.width > 0) this.cursorProgress.x = Math.max(0, Math.min(1, (clientX - bcr.left) / bcr.width));
+				if (bcr.height > 0) this.cursorProgress.y = Math.max(0, Math.min(1, (clientY - bcr.top) / bcr.height));
 			}
 
 			const { dragPropagation, dragDirectionLock, onDirectionLock, onDrag } = this.getProps();
@@ -484,7 +525,7 @@ export class VisualElementDragControls {
 	 * - If _dragX and _dragY are provided, we output the gesture delta directly to those motion values.
 	 * - Otherwise, we apply the delta to the x/y motion values.
 	 */
-	private getAxisMotionValue(axis: DragDirection) {
+	getAxisMotionValue(axis: DragDirection) {
 		const dragKey = `_drag${axis.toUpperCase()}` as `_drag${Uppercase<DragDirection>}`;
 		const props = this.visualElement.getProps();
 		const externalMotionValue = props[dragKey];
@@ -584,9 +625,9 @@ export class VisualElementDragControls {
 
 		const { projection } = this.visualElement;
 
-		const stopMeasureLayoutListener = projection!.addEventListener('measure', measureDragConstraints);
+		const stopMeasureLayoutListener = projection?.addEventListener('measure', measureDragConstraints);
 
-		if (projection && !projection!.layout) {
+		if (projection && !projection.layout) {
 			projection.root && projection.root.updateScroll();
 			projection.updateLayout();
 		}
@@ -600,30 +641,34 @@ export class VisualElementDragControls {
 		const stopResizeListener = addDomEvent(window, 'resize', () => this.scalePositionWithinConstraints());
 
 		/**
-		 * If the element's layout changes, calculate the delta and apply that to
-		 * the drag gesture's origin point.
+		 * If the element's layout changes (e.g. window resize, scroll), recalculate
+		 * the drag origin point so the element stays correctly positioned.
+		 * Note: reorder slot swaps are corrected synchronously in Group.shiftOrigin()
+		 * before this listener fires, so delta here reflects only non-reorder changes.
 		 */
-		const stopLayoutUpdateListener = projection!.addEventListener('didUpdate', (({
+		const stopLayoutUpdateListener = projection?.addEventListener('didUpdate', (({
 			delta,
 			hasLayoutChanged,
 		}: LayoutUpdateData) => {
 			if (this.isDragging && hasLayoutChanged) {
+				if (this.skipNextDidUpdate) {
+					this.skipNextDidUpdate = false;
+					return;
+				}
 				eachAxis((axis) => {
 					const motionValue = this.getAxisMotionValue(axis);
 					if (!motionValue) return;
-
 					this.originPoint[axis] += delta[axis].translate;
 					motionValue.set(motionValue.get() + delta[axis].translate);
 				});
-
 				this.visualElement.render();
 			}
 		}) as any);
 
 		return () => {
 			stopResizeListener();
-			stopMeasureLayoutListener();
-			stopLayoutUpdateListener && stopLayoutUpdateListener();
+			stopMeasureLayoutListener?.();
+			stopLayoutUpdateListener?.();
 		};
 	}
 

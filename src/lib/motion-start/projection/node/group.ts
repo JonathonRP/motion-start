@@ -11,6 +11,7 @@ export interface NodeGroup {
 	add: (node: IProjectionNode<unknown>) => void;
 	remove: (node: IProjectionNode<unknown>) => void;
 	dirty: VoidFunction;
+	forEach: (cb: (node: IProjectionNode<unknown>) => void) => void;
 }
 
 export function nodeGroup(): NodeGroup {
@@ -34,5 +35,6 @@ export function nodeGroup(): NodeGroup {
 			dirtyAll();
 		},
 		dirty: dirtyAll,
+		forEach: (cb) => nodes.forEach(cb),
 	};
 }

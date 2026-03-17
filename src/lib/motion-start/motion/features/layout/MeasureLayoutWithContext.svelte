@@ -75,7 +75,7 @@ Copyright (c) 2018 Framer B.V. -->
 			() => props.isPresent,
 		],
 		() => {
-			const { layoutDependency, visualElement, drag, isPresent, measurePop } = props;
+			const { layoutDependency, visualElement, isPresent, measurePop } = props;
 			const projection = visualElement?.projection;
 
 			if (!projection) {
@@ -89,7 +89,6 @@ Copyright (c) 2018 Framer B.V. -->
 			projection.isPresent = isPresent;
 
 			if (
-				drag ||
 				prevLayoutDependency !== layoutDependency ||
 				layoutDependency === undefined
 			) {

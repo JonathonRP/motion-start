@@ -10,7 +10,7 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts" generics="V">
 	import type { SvelteHTMLElements } from "svelte/elements";
 
-	import { type Component } from "svelte";
+	import { type Component, onDestroy } from "svelte";
 	import { useReorderContext } from "../../context/ReorderContext";
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
@@ -87,6 +87,10 @@ Copyright (c) 2018 Framer B.V. -->
 	const orderVersion = $derived(context?.orderVersion);
 	const registerItem = $derived(context?.registerItem);
 	const updateOrder = $derived(context?.updateOrder);
+
+	onDestroy(() => {
+		context?.unregisterItem(value);
+	});
 </script>
 
 <ReorderItem
