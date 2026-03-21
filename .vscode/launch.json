@@ -2,45 +2,90 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "full stack chrome",
-			"request": "launch",
+			"name": "🚀 SvelteKit: Dev Server (Full Stack)",
 			"type": "node",
-			"runtimeArgs": ["--bun", "dev"],
+			"request": "launch",
 			"runtimeExecutable": "bun",
+			"runtimeArgs": ["--bun", "dev"],
 			"console": "integratedTerminal",
-			"skipFiles": ["<node_internals>/**"],
+			"internalConsoleOptions": "neverOpen",
+			"skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/.svelte-kit/**"],
+			"env": {
+				"NODE_ENV": "development"
+			},
 			"serverReadyAction": {
-				"pattern": "\\bLocal:\\s+(https?://\\S+\\d)",
-				"uriFormat": "%s/demo",
-				"action": "debugWithChrome",
-				"killOnServerStop": true
+				"pattern": "Local:\\s+(https?://\\S+)",
+				"uriFormat": "%s",
+				"action": "openExternally"
 			}
 		},
 		{
-			"name": "full stack edge",
-			"request": "launch",
+			"name": "🔍 SvelteKit: Server Only (SSR/Hooks)",
 			"type": "node",
-			"runtimeArgs": ["--bun", "dev"],
+			"request": "launch",
 			"runtimeExecutable": "bun",
+			"runtimeArgs": ["--bun", "dev"],
 			"console": "integratedTerminal",
-			"skipFiles": ["<node_internals>/**"],
-			"serverReadyAction": {
-				"pattern": "\\bLocal:\\s+(https?://\\S+\\d)",
-				"uriFormat": "%s/demo",
-				"action": "debugWithEdge",
-				"killOnServerStop": true
+			"internalConsoleOptions": "neverOpen",
+			"skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/.svelte-kit/**"],
+			"env": {
+				"NODE_ENV": "development"
 			}
 		},
 		{
-			"name": "full stack test",
+			"name": "🎨 Chrome: Attach to Running Dev Server",
 			"type": "chrome",
 			"request": "attach",
-			"server": {
-				"runtimeArgs": ["--bun", "dev"],
-				"runtimeExecutable": "bun",
-				"console": "integratedTerminal",
-				"skipFiles": ["<node_internals>/**"]
+			"port": 9222,
+			"webRoot": "${workspaceFolder}",
+			"sourceMaps": true,
+			"sourceMapPathOverrides": {
+				"/.svelte-kit/*": "${workspaceFolder}/.svelte-kit/*",
+				"/src/*": "${workspaceFolder}/src/*"
+			},
+			"skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+		},
+		{
+			"name": "🧪 Cypress: E2E Tests",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceFolder}/node_modules/.bin/cypress",
+			"args": ["open"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"name": "🧪 Cypress: Run Headless",
+			"type": "node",
+			"request": "launch",
+			"runtimeExecutable": "npx",
+			"runtimeArgs": ["cypress", "run"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"name": "👁️ Preview: Production Build",
+			"type": "node",
+			"request": "launch",
+			"runtimeExecutable": "bun",
+			"runtimeArgs": ["run", "preview"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"serverReadyAction": {
+				"pattern": "Local:\\s+(https?://\\S+)",
+				"uriFormat": "%s",
+				"action": "openExternally"
 			}
+		}
+	],
+	"compounds": [
+		{
+			"name": "🔥 Full Stack: Server + Client Debug",
+			"configurations": ["🔍 SvelteKit: Server Only (SSR/Hooks)", "🎨 Chrome: Attach to Running Dev Server"],
+			"presentation": {
+				"order": 1
+			},
+			"stopAll": true
 		}
 	]
 }

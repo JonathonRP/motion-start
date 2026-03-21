@@ -13,7 +13,7 @@ export function renderHTML(
 	styleProp?: MotionStyle,
 	projection?: IProjectionNode<unknown>
 ) {
-	Object.assign(element.style, style, projection && projection.getProjectionStyles(styleProp));
+	Object.assign(element.style, style, projection?.getProjectionStyles(styleProp));
 
 	// Loop over any CSS variables and assign those.
 	for (const key in vars) {
