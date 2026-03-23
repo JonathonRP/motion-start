@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Dev Server (SvelteKit)",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": ["-u", "root", "--exec", "docker", "exec", "-w", "/workspaces/motion-start", "lucid_villani", "bun", "dev"],
+      "port": 5000
+    },
+    {
+      "name": "Preview Server",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": ["-u", "root", "--exec", "docker", "exec", "-w", "/workspaces/motion-start", "lucid_villani", "bun", "run", "preview"],
+      "port": 4173
+    },
+    {
+      "name": "Vitest UI",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": ["-u", "root", "--exec", "docker", "exec", "-w", "/workspaces/motion-start", "lucid_villani", "bun", "run", "test:ui"],
+      "port": 51204
+    }
+  ],
+  "autoVerify": true
+}

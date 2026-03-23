@@ -28,6 +28,7 @@
 
     import { RenderScan } from "svelte-render-scan";
     import { dev } from "$app/environment";
+    import Box from "$lib/components/Box.svelte";
 </script>
 
 {#if dev}
@@ -391,25 +392,6 @@
         <!-- Start -->
         <Card.Root>
             <Card.Header>
-                <Card.Title>Animate Presence Mode</Card.Title>
-                <Card.Description>
-                    Click the box to visualize the effect
-                </Card.Description>
-            </Card.Header>
-            <Card.Content>
-                <AnimatePresenceMode />
-            </Card.Content>
-            <Card.Footer>
-                <Card.Footer class="grid gap-1">
-                    <h1 class="text-2xl font-semibold">Test Summary</h1>
-                    <p class="text-green-500">Passed test</p>
-                </Card.Footer>
-            </Card.Footer>
-        </Card.Root>
-        <!-- End -->
-        <!-- Start -->
-        <Card.Root>
-            <Card.Header>
                 <Card.Title>Animate Layout</Card.Title>
                 <Card.Description>
                     Click the switch to visualize the effect
@@ -446,9 +428,29 @@
         <!-- Start -->
         <Card.Root>
             <Card.Header>
+                <Card.Title>Animate Presence Mode</Card.Title>
+                <Card.Description>
+                    Click the box to visualize the effect
+                </Card.Description>
+            </Card.Header>
+            <Card.Content>
+                <AnimatePresenceMode />
+            </Card.Content>
+            <Card.Footer>
+                <Card.Footer class="grid gap-1">
+                    <h1 class="text-2xl font-semibold">Test Summary</h1>
+                    <p class="text-green-500">Passed test</p>
+                </Card.Footer>
+            </Card.Footer>
+        </Card.Root>
+        <!-- End -->
+        <!-- Start -->
+        <Card.Root>
+            <Card.Header>
                 <Card.Title>Kanban Board</Card.Title>
                 <Card.Description>
-                    Drag cards between columns using the grip handle (shared drag gesture)
+                    Drag cards between columns using the grip handle (shared
+                    drag gesture)
                 </Card.Description>
             </Card.Header>
             <Card.Content>

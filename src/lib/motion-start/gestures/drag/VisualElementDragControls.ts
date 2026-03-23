@@ -66,26 +66,6 @@ export class VisualElementDragControls {
 	private originPoint: Point = { x: 0, y: 0 };
 
 	/**
-	 * Set to true by applyReparentPosition() after placing the card under the cursor.
-	 * The next didUpdate cycle is skipped so the FLIP delta from the new projection
-	 * doesn't displace the already-correct position.
-	 */
-	private skipNextDidUpdate = false;
-
-	/**
-	 * The cursor's position within the element's bounding box, as a 0-1 progress
-	 * value on each axis. Updated every move. Saved on unmount so the next element
-	 * with the same dragControls can resume the gesture at the same relative position.
-	 */
-	cursorProgress: Point = { x: 0.5, y: 0.5 };
-
-	/**
-	 * The last pointer event seen during this drag. Saved so reparenting can
-	 * resume using the same event origin.
-	 */
-	lastPointerEvent: PointerEvent | null = null;
-
-	/**
 	 * The permitted boundaries of travel, in pixels.
 	 */
 	private constraints: ResolvedConstraints | false = false;
@@ -101,50 +81,7 @@ export class VisualElementDragControls {
 		this.visualElement = visualElement;
 	}
 
-	/**
-	 * Synchronously shift the drag origin and motion value on a single axis by `delta`.
-	 * Called by Reorder.Group when a slot swap happens so the card stays under the
-	 * cursor immediately — no async lag waiting for didUpdate re-measurement.
-	 */
-	shiftOrigin(reorderAxis: 'x' | 'y', delta: number) {
-		this.originPoint[reorderAxis] += delta;
-		const mv = this.getAxisMotionValue(reorderAxis);
-		mv.set(mv.get() + delta);
-		this.visualElement.render();
-	}
-
-	/**
-	 * Measure the element's natural DOM position and immediately set the drag
-	 * MotionValues so the card appears under the cursor on first paint during reparent.
-	 * Called synchronously from DragGesture.mount() before start(), while the DOM is
-	 * attached and before any projection microtask has applied FLIP CSS transforms.
-	 */
-	applyReparentPosition(originEvent: PointerEvent, cursorProgress: { x: number; y: number }) {
-		if (!this.visualElement.projection) return;
-		const el = this.visualElement.current as HTMLElement | null;
-		if (!el) return;
-		// Clear any FLIP CSS transform before measuring so BCR reflects the natural position.
-		const savedTransform = el.style.transform;
-		el.style.transform = 'none';
-		// measure(false): we already cleared the transform, skip the mathematical removeTransform.
-		const layout = this.visualElement.projection.measure(false);
-		el.style.transform = savedTransform;
-		if (!layout) return;
-		const pagePoint = extractEventInfo(originEvent, 'page').point;
-		eachAxis((axis) => {
-			const { min, max } = layout.layoutBox[axis];
-			const elementSize = max - min;
-			const offset = pagePoint[axis] - cursorProgress[axis] * elementSize - min;
-			this.getAxisMotionValue(axis).set(offset);
-			// Also seed originPoint so onStart uses the measured position.
-			this.originPoint[axis] = offset;
-		});
-		// The new projection will fire didUpdate with a FLIP delta — skip it since
-		// we've already positioned the card correctly via applyReparentPosition.
-		this.skipNextDidUpdate = true;
-	}
-
-	start(originEvent: PointerEvent, { snapToCursor = false, cursorProgress }: DragControlOptions = {}) {
+	start(originEvent: PointerEvent, { snapToCursor = false }: DragControlOptions = {}) {
 		/**
 		 * Don't start dragging if this component is exiting
 		 */
@@ -160,18 +97,6 @@ export class VisualElementDragControls {
 
 			if (snapToCursor) {
 				this.snapToCursor(extractEventInfo(event, 'page').point);
-			}
-
-			/**
-			 * When dragListener=false (drag controls), the user explicitly initiated
-			 * the drag via a separate handle — activate whileDrag immediately so cursor
-			 * and other styles apply on pointer down without waiting for 3px movement.
-			 * For dragListener=true (default), wait for onStart to avoid false positives
-			 * on simple clicks.
-			 */
-			const { dragListener = true } = this.getProps();
-			if (!dragListener) {
-				this.visualElement.animationState?.setActive('whileDrag', true);
 			}
 		};
 
@@ -199,12 +124,9 @@ export class VisualElementDragControls {
 			}
 
 			/**
-			 * Record gesture origin. When cursorProgress is provided (reparent resume),
-			 * originPoint was already set by applyReparentPosition() — skip recomputing.
+			 * Record gesture origin
 			 */
 			eachAxis((axis) => {
-				if (cursorProgress !== undefined) return;
-
 				let current = this.getAxisMotionValue(axis).get() || 0;
 
 				/**
@@ -213,7 +135,7 @@ export class VisualElementDragControls {
 				if (percent.test(current)) {
 					const { projection } = this.visualElement;
 
-					if (projection?.layout) {
+					if (projection && projection.layout) {
 						const measuredAxis = projection.layout.layoutBox[axis];
 
 						if (measuredAxis) {
@@ -225,7 +147,7 @@ export class VisualElementDragControls {
 
 				this.originPoint[axis] = current;
 			});
-
+	
 			// Fire onDragStart event
 			if (onDragStart) {
 				frame.postRender(() => onDragStart(event, info));
@@ -234,24 +156,11 @@ export class VisualElementDragControls {
 			addValueToWillChange(this.visualElement, 'transform');
 
 			const { animationState } = this.visualElement;
-			animationState?.setActive('whileDrag', true);
+			animationState && animationState.setActive('whileDrag', true);
 		};
 
 		const onMove = (event: PointerEvent, info: PanInfo) => {
-			this.lastPointerEvent = event;
-
-			// Update cursorProgress: cursor position within the element as a 0-1 fraction.
-			// Use getBoundingClientRect() (client coords) + event.clientX/Y so the
-			// measurement reflects the element's CURRENT visual position during drag
-			// (including the drag translation), not the stale natural-position layout.
-			const el = this.visualElement.current as HTMLElement | null;
-			if (el) {
-				const bcr = el.getBoundingClientRect();
-				const clientX = event.clientX;
-				const clientY = event.clientY;
-				if (bcr.width > 0) this.cursorProgress.x = Math.max(0, Math.min(1, (clientX - bcr.left) / bcr.width));
-				if (bcr.height > 0) this.cursorProgress.y = Math.max(0, Math.min(1, (clientY - bcr.top) / bcr.height));
-			}
+			// latestPointerEvent = event
 
 			const { dragPropagation, dragDirectionLock, onDirectionLock, onDrag } = this.getProps();
 
@@ -265,7 +174,7 @@ export class VisualElementDragControls {
 
 				// If we've successfully set a direction, notify listener
 				if (this.currentDirection !== null) {
-					onDirectionLock?.(this.currentDirection);
+					onDirectionLock && onDirectionLock(this.currentDirection);
 				}
 
 				return;
@@ -287,7 +196,7 @@ export class VisualElementDragControls {
 			 * This must fire after the render call as it might trigger a state
 			 * change which itself might trigger a layout update.
 			 */
-			onDrag?.(event, info);
+			onDrag && onDrag(event, info);
 		};
 
 		const onSessionEnd = (event: PointerEvent, info: PanInfo) => this.stop(event, info);
@@ -327,29 +236,13 @@ export class VisualElementDragControls {
 		}
 	}
 
-	/**
-	 * End the active PanSession and release the global drag lock without
-	 * triggering the full cancel() path (no whileDrag reset, no stop animation).
-	 * Used on reparent unmount so the old window listeners are removed and the
-	 * lock is free before the new element's start() acquires it.
-	 */
-	endPanSession() {
-		this.panSession?.end();
-		this.panSession = undefined;
-		const { dragPropagation } = this.getProps();
-		if (!dragPropagation && this.openGlobalLock) {
-			this.openGlobalLock();
-			this.openGlobalLock = null;
-		}
-	}
-
 	private cancel() {
 		this.isDragging = false;
 		const { projection, animationState } = this.visualElement;
 		if (projection) {
 			projection.isAnimationBlocked = false;
 		}
-		this.panSession?.end();
+		this.panSession && this.panSession.end();
 		this.panSession = undefined;
 
 		const { dragPropagation } = this.getProps();
@@ -358,7 +251,7 @@ export class VisualElementDragControls {
 			this.openGlobalLock = null;
 		}
 
-		animationState?.setActive('whileDrag', false);
+		animationState && animationState.setActive('whileDrag', false);
 	}
 
 	private updateAxis(axis: DragDirection, _point: Point, offset?: Point) {
@@ -371,7 +264,7 @@ export class VisualElementDragControls {
 		let next = this.originPoint[axis] + offset[axis];
 
 		// Apply constraints
-		if (this.constraints?.[axis]) {
+		if (this.constraints && this.constraints[axis]) {
 			next = applyConstraints(next, this.constraints[axis], this.elastic[axis]);
 		}
 
@@ -466,7 +359,7 @@ export class VisualElementDragControls {
 				return;
 			}
 
-			let transition = constraints?.[axis] || {};
+			let transition = (constraints && constraints[axis]) || {};
 
 			if (dragSnapToOrigin) transition = { min: 0, max: 0 };
 
@@ -550,7 +443,7 @@ export class VisualElementDragControls {
 			const { projection } = this.visualElement;
 			const axisValue = this.getAxisMotionValue(axis);
 
-			if (projection?.layout) {
+			if (projection && projection.layout) {
 				const { min, max } = projection.layout.layoutBox[axis];
 
 				axisValue.set(point[axis] - mixNumber(min, max, 0.5));
@@ -594,7 +487,7 @@ export class VisualElementDragControls {
 		 */
 		const { transformTemplate } = this.visualElement.getProps();
 		this.visualElement.current.style.transform = transformTemplate ? transformTemplate({}, '') : 'none';
-		projection.root?.updateScroll();
+		projection.root && projection.root.updateScroll();
 		projection.updateLayout();
 		this.resolveConstraints();
 
@@ -627,10 +520,10 @@ export class VisualElementDragControls {
 
 		const { projection } = this.visualElement;
 
-		const stopMeasureLayoutListener = projection?.addEventListener('measure', measureDragConstraints);
+		const stopMeasureLayoutListener = projection!.addEventListener('measure', measureDragConstraints);
 
-		if (projection && !projection.layout) {
-			projection.root?.updateScroll();
+		if (projection && !projection!.layout) {
+			projection.root && projection.root.updateScroll();
 			projection.updateLayout();
 		}
 
@@ -643,32 +536,30 @@ export class VisualElementDragControls {
 		const stopResizeListener = addDomEvent(window, 'resize', () => this.scalePositionWithinConstraints());
 
 		/**
-		 * If the element's layout changes (e.g. window resize, scroll), recalculate
-		 * the drag origin point so the element stays correctly positioned.
+		 * If the element's layout changes, calculate the delta and apply that to
+		 * the drag gesture's origin point.
 		 */
-		const stopLayoutUpdateListener = projection?.addEventListener('didUpdate', (({
+		const stopLayoutUpdateListener = projection!.addEventListener('didUpdate', (({
 			delta,
 			hasLayoutChanged,
 		}: LayoutUpdateData) => {
 			if (this.isDragging && hasLayoutChanged) {
-				if (this.skipNextDidUpdate) {
-					this.skipNextDidUpdate = false;
-					return;
-				}
 				eachAxis((axis) => {
 					const motionValue = this.getAxisMotionValue(axis);
 					if (!motionValue) return;
+
 					this.originPoint[axis] += delta[axis].translate;
 					motionValue.set(motionValue.get() + delta[axis].translate);
 				});
+
 				this.visualElement.render();
 			}
 		}) as any);
 
 		return () => {
 			stopResizeListener();
-			stopMeasureLayoutListener?.();
-			stopLayoutUpdateListener?.();
+			stopMeasureLayoutListener();
+			stopLayoutUpdateListener && stopLayoutUpdateListener();
 		};
 	}
 

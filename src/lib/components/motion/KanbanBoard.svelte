@@ -1,196 +1,304 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
-	import { tick } from "svelte";
-	import type { PanInfo } from "$lib/motion-start";
-	import { LayoutGroup, Reorder, useDragControls } from "$lib/motion-start";
+    import { motion, Reorder, LayoutGroup } from "$lib/motion-start";
+    import type { PanInfo } from "$lib/motion-start/gestures/pan/PanSession";
 
-	type Column = "todo" | "inprogress" | "done";
-	type Card = { id: number; title: string };
+    type Columns = Record<string, string[]>;
 
-	let columns = $state<{ id: Column; label: string; cards: Card[] }[]>([
-		{
-			id: "todo",
-			label: "Todo",
-			cards: [
-				{ id: 1, title: "Design mockups" },
-				{ id: 2, title: "Write tests" },
-			],
-		},
-		{
-			id: "inprogress",
-			label: "In Progress",
-			cards: [
-				{ id: 3, title: "Implement feature" },
-				{ id: 4, title: "Code review" },
-			],
-		},
-		{
-			id: "done",
-			label: "Done",
-			cards: [{ id: 5, title: "Deploy to staging" }],
-		},
-	]);
+    // Constant objects — stable references prevent animateChanges() from
+    // re-starting the spring every time layoutDependency bumps during drag.
+    const DRAG_ANIM = { scale: 1.05, rotate: 3 };
+    const IDLE_ANIM = { scale: 1, rotate: 0 };
 
-	// One DragControls per card — survives reparenting and carries the live session.
-	const cardIds = [1, 2, 3, 4, 5];
-	const controls = new Map(cardIds.map((id) => [id, useDragControls()]));
-	function ctrl(id: number) {
-		if (!controls.has(id)) controls.set(id, useDragControls());
-		return controls.get(id)!;
-	}
+    const GHOST = "__ghost__";
+    const GHOST_HEIGHT = 62;
 
-	let draggingId = $state<number | null>(null);
-	let isReparenting = false;
+    const COL_LABELS: Record<string, string> = {
+        todo: "TODO",
+        inprogress: "IN PROGRESS",
+        done: "DONE",
+    };
 
-	const cardEls: Record<number, HTMLElement | null> = {};
+    const COL_ACCENT: Record<string, string> = {
+        todo: "#4f8ef7",
+        inprogress: "#f7a94f",
+        done: "#4fca6e",
+    };
 
-	function getColumnFromPoint(x: number, y: number): Column | null {
-		const els = document.elementsFromPoint(x, y);
-		const el = els.find((e) => e.hasAttribute("data-column"));
-		return (el?.getAttribute("data-column") as Column) ?? null;
-	}
+    let columns = $state<Columns>({
+        todo: [
+            "Fix Bifrost CI pipeline",
+            "Add Dr. Strange to on-call",
+            "Order Pym Particles (bulk)",
+            "Take over universe (backlog)",
+        ],
+        inprogress: [
+            "Stop Thanos (deprioritised)",
+            "Refactor Vibranium service",
+        ],
+        done: ["Recruit Loki (he quit)", "I am inevitable ✅"],
+    });
 
-	function getInsertIndex(
-		colId: Column,
-		y: number,
-		excludeId: number,
-	): number {
-		const col = columns.find((c) => c.id === colId)!;
-		const cards = col.cards.filter((c) => c.id !== excludeId);
-		for (let i = 0; i < cards.length; i++) {
-			const el = cardEls[cards[i].id];
-			if (!el) continue;
-			const { top, height } = el.getBoundingClientRect();
-			if (y < top + height / 2) return i;
-		}
-		return cards.length;
-	}
+    let preview = $state<{ col: string | null; index: number | null }>({
+        col: null,
+        index: null,
+    });
 
-	async function handleDrag(
-		card: Card,
-		srcColId: Column,
-		event: MouseEvent | TouchEvent | PointerEvent,
-		_info: PanInfo,
-	) {
-		if (isReparenting) return;
+    let draggingTask = $state<string | null>(null);
 
-		// getColumnFromPoint / getInsertIndex use document.elementsFromPoint + getBoundingClientRect
-		// which operate in viewport (client) coordinates.
-		const clientX = (event as PointerEvent).clientX;
-		const clientY = (event as PointerEvent).clientY;
+    let colRefs = $state<Record<string, HTMLElement | null>>({});
 
-		const targetCol = getColumnFromPoint(clientX, clientY);
-		if (!targetCol || targetCol === srcColId) return;
+    /** Cross-column: insert GHOST into the target column so cards slide apart
+     *  to show the drop position. GHOST stays out of the source column to avoid
+     *  scaled-layout measurement interference (framer-motion bug #1764). */
+    function getDisplayValues(colId: string, tasks: string[]): string[] {
+        if (!draggingTask || preview.col !== colId || preview.index === null)
+            return tasks;
+        if (tasks.includes(draggingTask)) return tasks;
+        const result = [...tasks];
+        result.splice(preview.index, 0, GHOST);
+        return result;
+    }
 
-		isReparenting = true;
+    function handleDrag(task: string, info: PanInfo, currentCol: string) {
+        const px = info.point.x - window.scrollX;
+        const py = info.point.y - window.scrollY;
 
-		const src = columns.find((c) => c.id === srcColId)!;
-		const dst = columns.find((c) => c.id === targetCol)!;
-		const insertIdx = getInsertIndex(targetCol, clientY, card.id);
-		src.cards = src.cards.filter((c) => c.id !== card.id);
-		const newCards = [...dst.cards];
-		newCards.splice(insertIdx, 0, card);
-		dst.cards = newCards;
+        // Cross-column detection
+        for (const [id, ref] of Object.entries(colRefs)) {
+            if (!ref || id === currentCol) continue;
+            const rect = ref.getBoundingClientRect();
+            if (
+                px > rect.left &&
+                px < rect.right &&
+                py > rect.top &&
+                py < rect.bottom
+            ) {
+                const colTasks = columns[id];
+                let targetIndex = colTasks.length;
+                for (let i = 0; i < colTasks.length; i++) {
+                    const el = document.getElementById(
+                        `kanban-task-${colTasks[i]}`,
+                    );
+                    if (el) {
+                        const r = el.getBoundingClientRect();
+                        if (py < r.top + r.height / 2) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+                }
+                preview = { col: id, index: targetIndex };
+                withinGhost = null;
+                return;
+            }
+        }
 
-		// Wait for old Reorder.Item to unmount (snapshot saved automatically) and
-		// new one to mount (gesture resumed automatically via pendingResume).
-		await tick();
+        preview = { col: null, index: null };
 
-		isReparenting = false;
-	}
+        // Within-column ghost: sort other cards by current DOM position so order
+        // is correct even mid-FLIP, then find which slot the pointer is in.
+        const slots = columns[currentCol]
+            .filter((t) => t !== task)
+            .map((t) => {
+                const el = document.getElementById(`kanban-task-${t}`);
+                return el ? { rect: el.getBoundingClientRect() } : null;
+            })
+            .filter((s): s is { rect: DOMRect } => s !== null)
+            .sort((a, b) => a.rect.top - b.rect.top);
 
-	function handleDragStart(card: Card) {
-		draggingId = card.id;
-	}
+        if (slots.length === 0) {
+            withinGhost = null;
+            return;
+        }
 
-	function handleDragEnd() {
-		draggingId = null;
-		isReparenting = false;
-	}
+        let targetIdx = slots.length;
+        for (let i = 0; i < slots.length; i++) {
+            if (py < slots[i].rect.top + slots[i].rect.height / 2) {
+                targetIdx = i;
+                break;
+            }
+        }
+
+        const ref =
+            targetIdx < slots.length
+                ? slots[targetIdx]
+                : slots[slots.length - 1];
+        const placeBelow = targetIdx >= slots.length;
+        withinGhost = placeBelow
+            ? {
+                  top: ref.rect.bottom + 10,
+                  left: ref.rect.left,
+                  width: ref.rect.width,
+              }
+            : {
+                  top: ref.rect.top - GHOST_HEIGHT - 10,
+                  left: ref.rect.left,
+                  width: ref.rect.width,
+              };
+    }
+
+    function handleDrop(task: string, currentCol: string) {
+        if (
+            preview.col !== null &&
+            preview.index !== null &&
+            preview.col !== currentCol
+        ) {
+            const { col: targetCol, index: targetIndex } = preview;
+            columns[currentCol] = columns[currentCol].filter((t) => t !== task);
+            const targetList = [...columns[targetCol]];
+            targetList.splice(targetIndex, 0, task);
+            columns[targetCol] = targetList;
+        }
+        preview = { col: null, index: null };
+        draggingTask = null;
+        withinGhost = null;
+    }
+
+    /** Within-column ghost: position:fixed div that never enters Reorder.Group
+     *  values. Computed in handleDrag on every pointer event for real-time tracking. */
+    type GhostRect = { top: number; left: number; width: number };
+    let withinGhost = $state<GhostRect | null>(null);
 </script>
 
-<LayoutGroup>
-	<div
-		class="flex flex-row gap-3 p-4 bg-gray-800 rounded-xl w-full overflow-x-auto"
-	>
-		{#each columns as col (col.id)}
-			<div
-				data-column={col.id}
-				class="rounded-lg p-3 flex flex-col gap-2 min-h-48 w-44 shrink-0 bg-gray-700"
-			>
-				<h3
-					class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1"
-				>
-					{col.label}
-					<span class="ml-1 text-gray-500">({col.cards.length})</span>
-				</h3>
+{#if withinGhost}
+    <div
+        class="ghost-card within-ghost"
+        style="top:{withinGhost.top}px; left:{withinGhost.left}px; width:{withinGhost.width}px;"
+    />
+{/if}
 
-				<Reorder.Group
-					as="div"
-					axis="y"
-					values={col.cards}
-					onReorder={(v) => {
-						col.cards = v;
-					}}
-					class="flex flex-col gap-2 min-h-6"
-				>
-					{#snippet children({ item: card })}
-						<Reorder.Item
-							as="div"
-							value={card}
-							layoutId="card-{card.id}"
-							layout={true}
-							drag={true}
-							dragControls={ctrl(card.id)}
-							dragListener={false}
-							whileDrag={{
-								rotate: 3,
-								zIndex: 50,
-								cursor: "grabbing",
-							}}
-							onDragStart={() => handleDragStart(card)}
-							onDrag={(e, info) =>
-								handleDrag(card, col.id, e, info)}
-							onDragEnd={() => handleDragEnd()}
-							class="bg-gray-600 rounded-md p-2 select-none flex items-center gap-2 text-sm text-white"
-							ref={(el) => {
-								cardEls[card.id] = el as HTMLElement | null;
-							}}
-						>
-							<div
-								class="text-gray-400 hover:text-white shrink-0 touch-none"
-								style="cursor: {draggingId === card.id
-									? 'grabbing'
-									: 'grab'}"
-								role="button"
-								tabindex="-1"
-								onpointerdown={(e) => {
-									e.preventDefault();
-									draggingId = card.id;
-									ctrl(card.id).start(e);
-								}}
-							>
-								<svg
-									width="10"
-									height="14"
-									viewBox="0 0 10 14"
-									fill="currentColor"
-									aria-hidden="true"
-								>
-									<circle cx="2.5" cy="2" r="1.5" />
-									<circle cx="7.5" cy="2" r="1.5" />
-									<circle cx="2.5" cy="6" r="1.5" />
-									<circle cx="7.5" cy="6" r="1.5" />
-									<circle cx="2.5" cy="10" r="1.5" />
-									<circle cx="7.5" cy="10" r="1.5" />
-								</svg>
-							</div>
-							<span class="truncate leading-snug"
-								>{card.title}</span
-							>
-						</Reorder.Item>
-					{/snippet}
-				</Reorder.Group>
-			</div>
-		{/each}
-	</div>
-</LayoutGroup>
+<div
+    class="flex flex-row gap-3 p-4 bg-gray-800 rounded-xl w-full overflow-x-auto"
+>
+    <LayoutGroup>
+        {#each Object.entries(columns) as [colId, tasks] (colId)}
+            <div
+                class="column"
+                style="border-top: 3px solid {COL_ACCENT[colId]}"
+                bind:this={colRefs[colId]}
+            >
+                <h3 class="col-title" style="color: {COL_ACCENT[colId]}">
+                    {COL_LABELS[colId] ?? colId.toUpperCase()}
+                </h3>
+                <Reorder.Group
+                    as="div"
+                    values={getDisplayValues(colId, tasks)}
+                    onReorder={(next) => {
+                        if (preview.col !== null && preview.col !== colId)
+                            return;
+                        columns[colId] = next.filter((t) => t !== GHOST);
+                    }}
+                    class="task-list"
+                >
+                    {#snippet children({ item: task })}
+                        {#if task === GHOST}
+                            <motion.div layout class="ghost-card" />
+                        {:else}
+                            <Reorder.Item
+                                as="div"
+                                id={`kanban-task-${task}`}
+                                value={task}
+                                layoutId={task}
+                                drag={true}
+                                onDragStart={() => (draggingTask = task)}
+                                onDrag={(_event, info) =>
+                                    handleDrag(task, info as PanInfo, colId)}
+                                onDragEnd={() => handleDrop(task, colId)}
+                                animate={draggingTask === task
+                                    ? DRAG_ANIM
+                                    : IDLE_ANIM}
+                                transition={{
+                                    rotate: {
+                                        type: "spring",
+                                        damping: 12,
+                                        stiffness: 200,
+                                    },
+                                    scale: {
+                                        type: "spring",
+                                        damping: 15,
+                                        stiffness: 200,
+                                    },
+                                }}
+                                style={draggingTask === task
+                                    ? "z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.3)"
+                                    : ""}
+                                class="card"
+                            >
+                                {task}
+                            </Reorder.Item>
+                        {/if}
+                    {/snippet}
+                </Reorder.Group>
+            </div>
+        {/each}
+    </LayoutGroup>
+</div>
+
+<style>
+    .board {
+        display: flex;
+        gap: 20px;
+        padding: 50px;
+        background: #111;
+        min-height: 100vh;
+    }
+
+    .column {
+        background: #222;
+        width: 250px;
+        padding: 15px;
+        border-radius: 12px;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .col-title {
+        margin: 0 0 15px 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    :global(.task-list) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    :global(.card) {
+        background: #333;
+        color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: grab;
+        border: 1px solid #444;
+        user-select: none;
+    }
+
+    :global(.card:active) {
+        cursor: grabbing;
+    }
+
+    :global(.ghost-card) {
+        height: 62px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 2px dashed #555;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 0;
+    }
+
+    .within-ghost {
+        position: fixed;
+        margin-bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+        transition:
+            top 0.12s ease-out,
+            left 0.12s ease-out;
+    }
+</style>
