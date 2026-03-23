@@ -55,4 +55,4 @@ jobs:
         run: bun --bun install --frozen-lockfile
 
       - name: Run tests
-        run: bun --bun run test
+        run: bun --bun run test:suite

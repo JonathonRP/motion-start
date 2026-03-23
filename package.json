@@ -67,6 +67,7 @@
 		"test:types": "vitest --typecheck.only",
 		"test:ui": "vitest --ui",
 		"test:types:ui": "vitest --ui",
+		"test:suite": "vitest --run && vitest --typecheck.only && cypress run",
 		"release": "bun --bun run build && bun --bun changeset publish"
 	},
 	"dependencies": {
