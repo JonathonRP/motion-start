@@ -1,8 +1,9 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { motion, Reorder, LayoutGroup } from "$lib/motion-start";
+    import { Reorder, LayoutGroup } from "$lib/motion-start";
     import type { PanInfo } from "$lib/motion-start/gestures/pan/PanSession";
+    import Box from "../Box.svelte";
 
     type Columns = Record<string, string[]>;
 
@@ -11,8 +12,9 @@
     const DRAG_ANIM = { scale: 1.05, rotate: 3 };
     const IDLE_ANIM = { scale: 1, rotate: 0 };
 
+    /** Sentinel inserted into TARGET column values so its cards slide apart.
+     *  Rendered as an invisible spacer; visual is the position:fixed ghost. */
     const GHOST = "__ghost__";
-    const GHOST_HEIGHT = 62;
 
     const COL_LABELS: Record<string, string> = {
         todo: "TODO",
@@ -46,12 +48,13 @@
     });
 
     let draggingTask = $state<string | null>(null);
+    /** Actual height of the card being dragged, measured at drag-start. */
+    let draggingCardHeight = $state(62);
 
     let colRefs = $state<Record<string, HTMLElement | null>>({});
 
-    /** Cross-column: insert GHOST into the target column so cards slide apart
-     *  to show the drop position. GHOST stays out of the source column to avoid
-     *  scaled-layout measurement interference (framer-motion bug #1764). */
+    /** Cross-column: insert GHOST into the target column so its cards slide
+     *  apart to show the drop slot. Never inserted into the source column. */
     function getDisplayValues(colId: string, tasks: string[]): string[] {
         if (!draggingTask || preview.col !== colId || preview.index === null)
             return tasks;
@@ -61,6 +64,45 @@
         return result;
     }
 
+    /** Unified position:fixed ghost — shown for both within-column and
+     *  cross-column. Computed on every pointer event for real-time tracking. */
+    type GhostRect = { top: number; left: number; width: number };
+    let ghost = $state<GhostRect | null>(null);
+
+    /** Compute ghost rect from slots sorted by DOM position and pointer Y. */
+    function computeGhost(
+        slots: { rect: DOMRect }[],
+        py: number,
+        colRect: DOMRect,
+    ): GhostRect {
+        if (slots.length === 0) {
+            return {
+                top: colRect.top + 55,
+                left: colRect.left + 15,
+                width: colRect.width - 30,
+            };
+        }
+        let idx = slots.length;
+        for (let i = 0; i < slots.length; i++) {
+            if (py < slots[i].rect.top + slots[i].rect.height / 2) {
+                idx = i;
+                break;
+            }
+        }
+        const ref = idx < slots.length ? slots[idx] : slots[slots.length - 1];
+        return idx >= slots.length
+            ? {
+                  top: ref.rect.bottom + 10,
+                  left: ref.rect.left,
+                  width: ref.rect.width,
+              }
+            : {
+                  top: ref.rect.top - draggingCardHeight - 10,
+                  left: ref.rect.left,
+                  width: ref.rect.width,
+              };
+    }
+
     function handleDrag(task: string, info: PanInfo, currentCol: string) {
         const px = info.point.x - window.scrollX;
         const py = info.point.y - window.scrollY;
@@ -68,37 +110,51 @@
         // Cross-column detection
         for (const [id, ref] of Object.entries(colRefs)) {
             if (!ref || id === currentCol) continue;
-            const rect = ref.getBoundingClientRect();
+            const colRect = ref.getBoundingClientRect();
             if (
-                px > rect.left &&
-                px < rect.right &&
-                py > rect.top &&
-                py < rect.bottom
+                px > colRect.left &&
+                px < colRect.right &&
+                py > colRect.top &&
+                py < colRect.bottom
             ) {
-                const colTasks = columns[id];
-                let targetIndex = colTasks.length;
-                for (let i = 0; i < colTasks.length; i++) {
-                    const el = document.getElementById(
-                        `kanban-task-${colTasks[i]}`,
-                    );
-                    if (el) {
-                        const r = el.getBoundingClientRect();
-                        if (py < r.top + r.height / 2) {
-                            targetIndex = i;
-                            break;
-                        }
+                const slots = columns[id]
+                    .map((t) => {
+                        const el = document.getElementById(`kanban-task-${t}`);
+                        return el
+                            ? { task: t, rect: el.getBoundingClientRect() }
+                            : null;
+                    })
+                    .filter(
+                        (s): s is { task: string; rect: DOMRect } => s !== null,
+                    )
+                    .sort((a, b) => a.rect.top - b.rect.top);
+
+                let sortedIdx = slots.length;
+                for (let i = 0; i < slots.length; i++) {
+                    if (py < slots[i].rect.top + slots[i].rect.height / 2) {
+                        sortedIdx = i;
+                        break;
                     }
                 }
-                preview = { col: id, index: targetIndex };
-                withinGhost = null;
+                const dropIndex =
+                    sortedIdx < slots.length
+                        ? columns[id].indexOf(slots[sortedIdx].task)
+                        : columns[id].length;
+
+                preview = {
+                    col: id,
+                    index: dropIndex < 0 ? columns[id].length : dropIndex,
+                };
+                ghost = computeGhost(slots, py, colRect);
                 return;
             }
         }
 
         preview = { col: null, index: null };
 
-        // Within-column ghost: sort other cards by current DOM position so order
-        // is correct even mid-FLIP, then find which slot the pointer is in.
+        // Within-column ghost
+        const colRef = colRefs[currentCol];
+        const colRect = colRef?.getBoundingClientRect() ?? new DOMRect();
         const slots = columns[currentCol]
             .filter((t) => t !== task)
             .map((t) => {
@@ -109,34 +165,10 @@
             .sort((a, b) => a.rect.top - b.rect.top);
 
         if (slots.length === 0) {
-            withinGhost = null;
+            ghost = null;
             return;
         }
-
-        let targetIdx = slots.length;
-        for (let i = 0; i < slots.length; i++) {
-            if (py < slots[i].rect.top + slots[i].rect.height / 2) {
-                targetIdx = i;
-                break;
-            }
-        }
-
-        const ref =
-            targetIdx < slots.length
-                ? slots[targetIdx]
-                : slots[slots.length - 1];
-        const placeBelow = targetIdx >= slots.length;
-        withinGhost = placeBelow
-            ? {
-                  top: ref.rect.bottom + 10,
-                  left: ref.rect.left,
-                  width: ref.rect.width,
-              }
-            : {
-                  top: ref.rect.top - GHOST_HEIGHT - 10,
-                  left: ref.rect.left,
-                  width: ref.rect.width,
-              };
+        ghost = computeGhost(slots, py, colRect);
     }
 
     function handleDrop(task: string, currentCol: string) {
@@ -153,25 +185,18 @@
         }
         preview = { col: null, index: null };
         draggingTask = null;
-        withinGhost = null;
+        ghost = null;
     }
-
-    /** Within-column ghost: position:fixed div that never enters Reorder.Group
-     *  values. Computed in handleDrag on every pointer event for real-time tracking. */
-    type GhostRect = { top: number; left: number; width: number };
-    let withinGhost = $state<GhostRect | null>(null);
 </script>
 
-{#if withinGhost}
+{#if ghost}
     <div
-        class="ghost-card within-ghost"
-        style="top:{withinGhost.top}px; left:{withinGhost.left}px; width:{withinGhost.width}px;"
+        class="drop-ghost"
+        style="top:{ghost.top}px; left:{ghost.left}px; width:{ghost.width}px; height:{draggingCardHeight}px;"
     />
 {/if}
 
-<div
-    class="flex flex-row gap-3 p-4 bg-gray-800 rounded-xl w-full overflow-x-auto"
->
+<Box cls="gap-3 p-4 items-stretch overflow-x-auto">
     <LayoutGroup>
         {#each Object.entries(columns) as [colId, tasks] (colId)}
             <div
@@ -194,7 +219,12 @@
                 >
                     {#snippet children({ item: task })}
                         {#if task === GHOST}
-                            <motion.div layout class="ghost-card" />
+                            <!-- Invisible spacer — makes target-column cards slide apart.
+                                 The visual indicator is the position:fixed drop-ghost above. -->
+                            <div
+                                class="ghost-spacer"
+                                style="height:{draggingCardHeight}px;"
+                            />
                         {:else}
                             <Reorder.Item
                                 as="div"
@@ -202,7 +232,15 @@
                                 value={task}
                                 layoutId={task}
                                 drag={true}
-                                onDragStart={() => (draggingTask = task)}
+                                onDragStart={() => {
+                                    draggingTask = task;
+                                    const el = document.getElementById(
+                                        `kanban-task-${task}`,
+                                    );
+                                    if (el)
+                                        draggingCardHeight =
+                                            el.getBoundingClientRect().height;
+                                }}
                                 onDrag={(_event, info) =>
                                     handleDrag(task, info as PanInfo, colId)}
                                 onDragEnd={() => handleDrop(task, colId)}
@@ -234,17 +272,9 @@
             </div>
         {/each}
     </LayoutGroup>
-</div>
+</Box>
 
 <style>
-    .board {
-        display: flex;
-        gap: 20px;
-        padding: 50px;
-        background: #111;
-        min-height: 100vh;
-    }
-
     .column {
         background: #222;
         width: 250px;
@@ -282,23 +312,26 @@
         cursor: grabbing;
     }
 
-    :global(.ghost-card) {
-        height: 62px;
+    /* Invisible spacer that pushes target-column cards apart during cross-column hover. */
+    :global(.ghost-spacer) {
+        flex-shrink: 0;
+        margin-bottom: 10px;
+    }
+
+    /* Unified visible ghost for both within-column and cross-column.
+     * cubic-bezier(0.34, 1.56, 0.64, 1) is a spring curve (slight overshoot)
+     * so single jumps feel the same as the continuous card-tracking case. */
+    .drop-ghost {
+        position: fixed;
         background: rgba(255, 255, 255, 0.04);
         border: 2px dashed #555;
         border-radius: 8px;
-        margin-bottom: 10px;
-        position: relative;
-        z-index: 0;
-    }
-
-    .within-ghost {
-        position: fixed;
-        margin-bottom: 0;
         pointer-events: none;
         z-index: 1;
         transition:
-            top 0.12s ease-out,
-            left 0.12s ease-out;
+            top 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+            left 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+            bottom 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+            right 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 </style>
