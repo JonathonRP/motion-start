@@ -41,8 +41,6 @@
             <AnimatePresence {mode} values={items.map((id) => ({ key: id }))}>
                 {#snippet children({ item })}
                     <motion.li
-                        key={item.key}
-                        id={item.key}
                         class="block bg-accent-500 h-[80px] w-full shrink-0 grow-0 basis-[80px] rounded-[20px] m-0 p-0"
                         layout
                         animate={{ scale: 1, opacity: 1 }}

@@ -22,9 +22,7 @@ export type Ref<T> = RefCallBack<T> | RefObject<T> | null;
 
 type Key = string | number;
 
-export interface Attributes {
-	key?: Key | null | undefined;
-}
+export type Attributes = {};
 export interface RefAttributes<T> extends Attributes {
 	ref?: Ref<T> | undefined;
 }
