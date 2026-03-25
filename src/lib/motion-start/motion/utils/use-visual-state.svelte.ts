@@ -57,7 +57,14 @@ export const makeUseVisualState =
 		const presenceContext = $derived(usePresenceContext());
 		const make = () => makeState(config, props(), context, presenceContext);
 
-		const state = $derived.by(make);
+		/**
+		 * Mirrors framer-motion's `useConstant(make)` — compute once for the
+		 * component's lifetime. VisualElement takes `latestValues` by reference
+		 * and mutates it in-place during animation. Re-running `make()` on every
+		 * props change would create a new empty `latestValues`, causing UseRender
+		 * to write `style=""` and clear any in-progress animated styles.
+		 */
+		const state = make();
 
 		return () => isStatic ? make() : state;
 	};

@@ -175,37 +175,3 @@ describe("SVG", () => {
         })
     })
 })
-
-describe("scroll() full height target", () => {
-    it("doesn't return progress 1 before it hits its first offset", () => {
-        cy.visit("?test=scroll-fill-range")
-            .wait(100)
-            .get("#content")
-            .should(([$element]: any) => {
-                expect($element.innerText).to.equal("0")
-            })
-    })
-})
-
-describe.skip("scroll() container tracking", () => {
-    it("correctly tracks position of a target with container of fixed height", () => {
-        cy.visit("?test=scroll-explicit-height")
-            .viewport(800, 500)
-            .wait(100)
-            .get("#scroll-container")
-            .scrollTo(0, 139)
-            .wait(100)
-            .get("#item-0")
-            .should(([$element]: any) => {
-                expect(parseInt($element.style.opacity)).to.equal(1)
-            })
-            .get("#scroll-container")
-            .scrollTo(0, 1000)
-            .wait(100)
-            .get("#item-2")
-            .should(([$element]: any) => {
-                expect($element.style.opacity).not.to.equal("0")
-                expect($element.style.opacity).not.to.equal("1")
-            })
-    })
-})

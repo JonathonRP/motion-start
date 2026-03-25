@@ -73,14 +73,25 @@ export function useVisualElement<Instance, RenderState>(
 	// $effect deferral problem in raw component functions on remount).
 	let isMounted = $state(false);
 
-	// Fires when props, presenceContext, isMounted, or visualElement change.
-	// isMounted in sources ensures update() is called immediately on mount (not just on prop changes).
+	// Unified watcher for props + presence changes — mirrors React's per-render
+	// useInsertionEffect (update) + useIsomorphicLayoutEffect (updateFeatures) + useEffect (animateChanges).
+	// Keeping props and isPresent in the same watcher ensures they're evaluated atomically:
+	// if isPresent→false happens in the same flush as a props change, exit fires synchronously
+	// before tick() resolves, so the isPresent !== false guard correctly skips animateChanges.
 	watch.pre(
-		[() => props(), () => isPresent, () => isMounted, () => visualElement],
+		[() => props(), () => isPresent],
 		() => {
-			if (visualElement && isMounted) {
-				visualElement.update(props(), presenceContext);
+			if (!visualElement?.current || !isMounted) return;
+			visualElement.update(props(), presenceContext);
+			let fKey: keyof typeof featureDefinitions = 'animation';
+			for (fKey in featureDefinitions) {
+				visualElement.features[fKey]?.update();
 			}
+			tick().then(() => {
+				if (!wantsHandoff && visualElement.animationState && isPresent) {
+					visualElement.animationState.animateChanges();
+				}
+			});
 		},
 		{ lazy: true }
 	);
@@ -135,7 +146,7 @@ export function useVisualElement<Instance, RenderState>(
 		 * are running, we use useLayoutEffect to trigger animations.
 		 */
 		tick().then(() => {
-			if (!untrack(() => wantsHandoff) && visualElement.animationState) {
+			if (!untrack(() => wantsHandoff) && visualElement.animationState && isPresent) {
 				visualElement.animationState.animateChanges();
 			}
 		});
@@ -162,37 +173,6 @@ export function useVisualElement<Instance, RenderState>(
 			}
 		};
 	});
-
-	// Re-run feature update() when isPresent changes so ExitAnimationFeature detects the transition.
-	watch.pre(
-		() => isPresent,
-		() => {
-			if (!visualElement?.current || !isMounted) return;
-			let fKey: keyof typeof featureDefinitions = 'animation';
-			for (fKey in featureDefinitions) {
-				visualElement.features[fKey]?.update();
-			}
-		},
-		{ lazy: true }
-	);
-
-	// Re-run feature update() + animateChanges on prop changes after mount.
-	watch.pre(
-		() => props(),
-		() => {
-			if (!visualElement?.current || !isMounted) return;
-			let fKey: keyof typeof featureDefinitions = 'animation';
-			for (fKey in featureDefinitions) {
-				visualElement.features[fKey]?.update();
-			}
-			tick().then(() => {
-				if (!wantsHandoff && visualElement.animationState) {
-					visualElement.animationState.animateChanges();
-				}
-			});
-		},
-		{ lazy: true }
-	);
 
 	return () => visualElement;
 }

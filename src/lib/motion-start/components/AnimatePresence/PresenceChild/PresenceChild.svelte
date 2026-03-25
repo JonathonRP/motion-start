@@ -60,19 +60,20 @@ Copyright (c) 2018 Framer B.V. -->
     });
 
     // Keep reactive props in sync with the stable $state object.
-    // Use $effect.pre so layoutDependency is updated BEFORE
+    // Use $effect.pre so layoutDependency and custom are updated BEFORE
     // MeasureLayoutWithContext's watch.pre (also $effect.pre) reads it.
+    // custom must also be $effect.pre so it's available when ExitAnimationFeature
+    // resolves the exit variant (which reads presenceContext.custom) during the
+    // same flush that sets isPresent=false.
     $effect.pre(() => {
-        context.isPresent = isPresent;
+        context.custom = custom;
         if (presenceAffectsLayout && sharedLayoutDependency !== undefined) {
             context.layoutDependency = sharedLayoutDependency;
         }
     });
     $effect(() => {
+        context.isPresent = isPresent;
         context.initial = initial;
-    });
-    $effect(() => {
-        context.custom = custom;
     });
 
     // Reset children completion status when transitioning to not-present
@@ -96,18 +97,18 @@ Copyright (c) 2018 Framer B.V. -->
     // Set context with stable reference - same object every time
     setPresenceContext(context);
 
-    const pop = $derived(
+    const component = $derived(
         mode === "popLayout"
-            ? { component: PopChild, props: { isPresent } }
+            ? { pop: PopChild, props: { isPresent } }
             : undefined,
     );
 </script>
 
 {#snippet children()}
-    {#if pop}
-        <pop.component {...pop.props}>
+    {#if component}
+        <component.pop {...component.props}>
             {@render desendants?.()}
-        </pop.component>
+        </component.pop>
     {:else}
         {@render desendants?.()}
     {/if}

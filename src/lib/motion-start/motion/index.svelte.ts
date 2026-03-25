@@ -59,8 +59,9 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		 */
 		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
 
+		const motionConfig = $derived.by(useMotionConfigContext);
 		const configAndProps = $derived({
-			...useMotionConfigContext(),
+			...motionConfig,
 			...props,
 			layoutId: useLayoutId(() => props),
 		});

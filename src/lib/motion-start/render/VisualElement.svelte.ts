@@ -243,6 +243,7 @@ export abstract class VisualElement<
 	prevProps?: MotionProps;
 
 	presenceContext: PresenceContext | null = $state(null);
+	prevPresenceContext?: PresenceContext | null = $derived(new Previous(() => this.presenceContext).current);
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -339,7 +340,7 @@ export abstract class VisualElement<
 			this.variantChildren = new Set();
 		}
 
-		this.manuallyAnimateOnMount = Boolean(parent && parent.current);
+		this.manuallyAnimateOnMount = Boolean(parent?.current);
 
 		/**
 		 * Any motion values that are provided to the element when created
@@ -407,14 +408,14 @@ export abstract class VisualElement<
 
 	unmount() {
 		visualElementStore.delete(this.current);
-		this.projection && this.projection.unmount();
+		this.projection?.unmount();
 		this.projection = undefined;
 		cancelFrame(this.notifyUpdate);
 		cancelFrame(this.render);
 		this.valueSubscriptions.forEach((remove) => remove());
 		this.valueSubscriptions.clear();
-		this.removeFromVariantTree && this.removeFromVariantTree();
-		this.parent && this.parent.children.delete(this);
+		this.removeFromVariantTree?.();
+		this.parent?.children.delete(this);
 
 		for (const key in this.events) {
 			this.events[key].clear();
@@ -432,7 +433,7 @@ export abstract class VisualElement<
 
 	private bindToMotionValue(key: string, value: MotionValue) {
 		if (this.valueSubscriptions.has(key)) {
-			this.valueSubscriptions.get(key)!();
+			this.valueSubscriptions.get(key)?.();
 		}
 
 		const valueIsTransform = transformProps.has(key);
@@ -449,7 +450,7 @@ export abstract class VisualElement<
 
 		const removeOnRenderRequest = value.on('renderRequest', this.scheduleRender);
 
-		let removeSyncCheck: VoidFunction | void;
+		let removeSyncCheck: VoidFunction | undefined;
 		if (window.MotionCheckAppearSync) {
 			removeSyncCheck = window.MotionCheckAppearSync(this, key, value);
 		}
@@ -534,7 +535,7 @@ export abstract class VisualElement<
 				delete this.propEventSubscriptions[key];
 			}
 
-			const listenerName = ('on' + key) as keyof typeof props;
+			const listenerName = `on${key}` as keyof typeof props;
 			const listener = props[listenerName];
 			if (listener) {
 				this.propEventSubscriptions[key] = this.on(key as any, listener);
@@ -590,8 +591,8 @@ export abstract class VisualElement<
 	addVariantChild(child: VisualElement<unknown>) {
 		const closestVariantNode = this.getClosestVariantNode();
 		if (closestVariantNode) {
-			closestVariantNode.variantChildren && closestVariantNode.variantChildren.add(child);
-			return () => closestVariantNode.variantChildren!.delete(child);
+			closestVariantNode.variantChildren?.add(child);
+			return () => closestVariantNode.variantChildren?.delete(child);
 		}
 	}
 
@@ -638,7 +639,7 @@ export abstract class VisualElement<
 	getValue(key: string): MotionValue | undefined;
 	getValue(key: string, defaultValue: string | number | null): MotionValue;
 	getValue(key: string, defaultValue?: string | number | null): MotionValue | undefined {
-		if (this.props.values && this.props.values[key]) {
+		if (this.props.values?.[key]) {
 			return this.props.values[key];
 		}
 

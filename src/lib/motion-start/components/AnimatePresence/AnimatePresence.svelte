@@ -82,7 +82,7 @@ Copyright (c) 2018 Framer B.V. -->
 	// always restore to the most recent snapshot, not a stale closure value.
 	let pendingPresentChildren: typeof renderedChildren = [];
 
-	$effect(() => {
+	$effect.pre(() => {
 		// Compute target list from reactive props
 		const presentChildren: typeof renderedChildren =
 			list !== undefined

@@ -199,7 +199,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			type = 'keyframes';
 		}
 
-		const animation = startWaapiAnimation(mv.owner!.current as unknown as HTMLElement, name, keyframes as string[], {
+		const animation = startWaapiAnimation(mv.owner?.current as unknown as HTMLElement, name, keyframes as string[], {
 			...this.options,
 			duration,
 			times,
@@ -225,7 +225,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			animation.onfinish = () => {
 				const { onComplete } = this.options;
 				mv.set(getFinalKeyframe(keyframes, this.options, finalKeyframe));
-				onComplete && onComplete();
+				onComplete?.();
 				this.cancel();
 				this.resolveFinishedPromise();
 			};
@@ -391,7 +391,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		}
 
 		const { onStop } = this.options;
-		onStop && onStop();
+		onStop?.();
 
 		this.cancel();
 	}

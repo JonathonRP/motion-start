@@ -16,7 +16,7 @@
 			"serverReadyAction": {
 				"pattern": "Local:\\s+(https?://\\S+)",
 				"uriFormat": "%s",
-				"action": "openExternally"
+				"action": "debugWithEdge"
 			}
 		},
 		{

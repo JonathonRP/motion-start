@@ -49,7 +49,6 @@
 <!-- Animate Presence Stack -->
 
 <motion.div
-    key={index}
     id="presswipe-{index}"
     style={{
         x,

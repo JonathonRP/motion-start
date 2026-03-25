@@ -39,7 +39,7 @@ Copyright (c) 2018 Framer B.V. -->
 	const visualProps = $derived.by(() =>
 		useVisualProps(
 			() => props as any,
-			() => visualState.latestValues,
+			() => visualElement?.latestValues ?? visualState.latestValues,
 			isStatic,
 			Component,
 		)(),
@@ -59,6 +59,14 @@ Copyright (c) 2018 Framer B.V. -->
 	// populate listeners on mount, attaching each handler via svelte/events on().
 	const elementProps = $derived.by(() => {
 		const base = { ...filteredProps, ...visualProps };
+		// Svelte's set_style treats a non-string style value as "[object Object]".
+		// Convert the ResolvedValues style object to a CSS string so it applies correctly.
+		if (base.style && typeof base.style === 'object') {
+			(base as any).style = Object.entries(base.style as Record<string, unknown>)
+				.filter(([, v]) => v != null)
+				.map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}:${v}`)
+				.join(';');
+		}
 		const listeners = visualElement?.listeners ?? {};
 		const keys = Object.getOwnPropertySymbols(listeners);
 		if (keys.length === 0) return base;

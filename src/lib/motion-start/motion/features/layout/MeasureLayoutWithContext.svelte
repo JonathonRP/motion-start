@@ -36,7 +36,8 @@ Copyright (c) 2018 Framer B.V. -->
 
 	// componentDidMount
 	onMount(() => {
-		const { visualElement, layoutGroup, switchLayoutGroup, layoutId } = props;
+		const { visualElement, layoutGroup, switchLayoutGroup, layoutId } =
+			props;
 		const { projection } = visualElement;
 
 		addScaleCorrector(defaultScaleCorrectors);
@@ -75,7 +76,8 @@ Copyright (c) 2018 Framer B.V. -->
 			() => props.isPresent,
 		],
 		() => {
-			const { layoutDependency, visualElement, isPresent, measurePop } = props;
+			const { layoutDependency, visualElement, isPresent, measurePop } =
+				props;
 			const projection = visualElement?.projection;
 
 			if (!projection) {
@@ -106,7 +108,9 @@ Copyright (c) 2018 Framer B.V. -->
 					// Now inject position:absolute so siblings shift, then call didUpdate()
 					// to animate siblings from their snapshotted positions to their new ones.
 					if (measurePop) {
-						measurePop(visualElement.current as HTMLElement | SVGElement);
+						measurePop(
+							visualElement.current as HTMLElement | SVGElement,
+						);
 						projection.root!.didUpdate();
 					}
 

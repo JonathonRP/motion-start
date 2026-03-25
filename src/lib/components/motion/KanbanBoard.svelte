@@ -192,15 +192,18 @@
     }
 </script>
 
-<div class="board-wrapper" bind:this={boardRef}>
-    {#if ghostVisible}
-        <div
-            class="drop-ghost"
-            style="top:{ghostTop}px; left:{ghostLeft}px; width:{draggingCardWidth}px; height:{draggingCardHeight}px;"
-        ></div>
-    {/if}
+<Box>
+    <div
+        class="board-wrapper flex gap-3 p-4 items-stretch justify-start overflow-x-auto"
+        bind:this={boardRef}
+    >
+        {#if ghostVisible}
+            <div
+                class="drop-ghost"
+                style="top:{ghostTop}px; left:{ghostLeft}px; width:{draggingCardWidth}px; height:{draggingCardHeight}px;"
+            ></div>
+        {/if}
 
-    <Box cls="gap-3 p-4 items-stretch justify-start overflow-x-auto">
         <LayoutGroup>
             {#each Object.entries(columns) as [colId, tasks] (colId)}
                 <div
@@ -287,8 +290,8 @@
                 </div>
             {/each}
         </LayoutGroup>
-    </Box>
-</div>
+    </div>
+</Box>
 
 <style>
     .column {
@@ -353,7 +356,7 @@
         border: 2px dashed #555;
         border-radius: 8px;
         pointer-events: none;
-        z-index: 100;
+        z-index: 0;
         transition:
             top 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
             left 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);

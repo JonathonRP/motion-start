@@ -9,15 +9,12 @@ let id = 0;
 
 export class ExitAnimationFeature extends Feature<unknown> {
 	private id: number = id++;
-	private prevIsPresent: boolean | undefined = undefined;
 
 	update() {
 		if (!this.node.presenceContext) return;
 
 		const { isPresent, onExitComplete } = this.node.presenceContext;
-		const prevIsPresent = this.prevIsPresent;
-
-		this.prevIsPresent = isPresent;
+		const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
 
 		if (!this.node.animationState || isPresent === prevIsPresent) return;
 
@@ -34,5 +31,7 @@ export class ExitAnimationFeature extends Feature<unknown> {
 	}
 
 	// Replaced at mount() time by the deregister function returned from register()
-	unmount() { /* overwritten in mount */ }
+	unmount() {
+		/* overwritten in mount */
+	}
 }
