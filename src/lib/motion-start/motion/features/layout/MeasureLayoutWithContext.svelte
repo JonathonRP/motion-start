@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts">
 	import { watch } from "runed";
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy, onMount, tick } from "svelte";
 	import { frame } from "../../../frameloop";
 	import { microtask } from "../../../frameloop/microtask";
 	import { globalProjectionState } from "../../../projection/node/state";
@@ -31,10 +31,42 @@ Copyright (c) 2018 Framer B.V. -->
 	};
 
 	const props: MeasureProps = $props();
-
 	const safeToRemove = () => props.safeToRemove?.();
 
-	// componentDidMount
+	const getDebugBox = (element: HTMLElement | SVGElement | undefined) => {
+		if (!element || !("getBoundingClientRect" in element)) return null;
+		const box = element.getBoundingClientRect();
+		return {
+			top: box.top,
+			left: box.left,
+			width: box.width,
+			height: box.height,
+		};
+	};
+
+	const getDebugLabel = (element: HTMLElement | SVGElement | undefined) => {
+		if (!element) return null;
+		const text =
+			"textContent" in element
+				? element.textContent?.replace(/\s+/g, " ").trim()
+				: undefined;
+		if (text) return text.slice(0, 80);
+		const id = "id" in element ? element.id : undefined;
+		const testId =
+			"getAttribute" in element
+				? element.getAttribute("data-testid")
+				: undefined;
+		const motionId =
+			"getAttribute" in element
+				? element.getAttribute("data-motion-debug")
+				: undefined;
+		const cls =
+			"className" in element && typeof element.className === "string"
+				? element.className
+				: undefined;
+		return motionId || testId || id || cls || element.tagName;
+	};
+
 	onMount(() => {
 		const { visualElement, layoutGroup, switchLayoutGroup, layoutId } =
 			props;
@@ -62,23 +94,38 @@ Copyright (c) 2018 Framer B.V. -->
 		globalProjectionState.hasEverUpdated = true;
 	});
 
-	// getSnapshotBeforeUpdate — mirrors React's getSnapshotBeforeUpdate.
-	// Fires before DOM changes via watch.pre (RENDER_EFFECT phase).
-	// When isPresent→false and measurePop is set (popLayout mode), snapshot all siblings,
-	// inject position:absolute on the exiting element, then call didUpdate() so siblings
-	// FLIP to their new positions immediately — matching framer-motion's getSnapshotBeforeUpdate.
-	let prevLayoutDependency: unknown = undefined;
-	let prevIsPresent: boolean | undefined = undefined;
+	// Incremented only when we actually snapshot so the post-commit didUpdate
+	// pass stays paired with a real willUpdate transaction.
+	let commitVersion = $state(0);
+
+	// Pre-commit snapshot phase. This is the Svelte analogue of
+	// getSnapshotBeforeUpdate in framer-motion's MeasureLayout.
 	watch.pre(
 		[
 			() => props.layoutDependency,
+			() => props.drag,
 			() => props.visualElement?.projection,
 			() => props.isPresent,
 		],
-		() => {
+		([], [prevLayoutDependency, , , prevIsPresent]) => {
 			const { layoutDependency, visualElement, isPresent, measurePop } =
 				props;
 			const projection = visualElement?.projection;
+			const element = visualElement.current as
+				| HTMLElement
+				| SVGElement
+				| undefined;
+			const shouldSnapshot =
+				props.drag ||
+				prevLayoutDependency !== layoutDependency ||
+				layoutDependency === undefined;
+
+			if (layoutDependency !== undefined || props.layout) {
+				const box = getDebugBox(element);
+				console.log(
+					`[MeasureLayoutWithContext] dep-pre label=${getDebugLabel(element)} layoutDependency=${layoutDependency} prevLayoutDependency=${prevLayoutDependency} isPresent=${isPresent} prevIsPresent=${prevIsPresent} boxTop=${box?.top} boxLeft=${box?.left} boxWidth=${box?.width} boxHeight=${box?.height}`,
+				);
+			}
 
 			if (!projection) {
 				if (prevIsPresent !== isPresent && !isPresent) {
@@ -90,13 +137,14 @@ Copyright (c) 2018 Framer B.V. -->
 
 			projection.isPresent = isPresent;
 
-			if (
-				prevLayoutDependency !== layoutDependency ||
-				layoutDependency === undefined
-			) {
+			if (shouldSnapshot) {
+				const box = getDebugBox(element);
+				console.log(
+					`[MeasureLayoutWithContext] before-willUpdate label=${getDebugLabel(element)} layoutDependency=${layoutDependency} prevLayoutDependency=${prevLayoutDependency} isPresent=${isPresent} boxTop=${box?.top} boxLeft=${box?.left} boxWidth=${box?.width} boxHeight=${box?.height}`,
+				);
 				projection.willUpdate();
+				commitVersion++;
 			} else if (prevIsPresent === isPresent) {
-				// Layout stable AND presence stable — element can be safely removed
 				safeToRemove();
 			}
 
@@ -104,16 +152,6 @@ Copyright (c) 2018 Framer B.V. -->
 				if (isPresent) {
 					projection.promote();
 				} else {
-					// popLayout: snapshot is already taken by willUpdate() above.
-					// Now inject position:absolute so siblings shift, then call didUpdate()
-					// to animate siblings from their snapshotted positions to their new ones.
-					if (measurePop) {
-						measurePop(
-							visualElement.current as HTMLElement | SVGElement,
-						);
-						projection.root!.didUpdate();
-					}
-
 					if (!projection.relegate()) {
 						frame.postRender(() => {
 							const stack = projection.getStack();
@@ -124,33 +162,47 @@ Copyright (c) 2018 Framer B.V. -->
 					}
 				}
 			}
-
-			// When transitioning to not-present, keep prevLayoutDependency as undefined
-			// so subsequent renders during exit animation always call willUpdate(), never safeToRemove().
-			prevLayoutDependency = isPresent ? layoutDependency : undefined;
-			prevIsPresent = isPresent;
 		},
 	);
 
-	// componentDidUpdate — re-runs on layoutDependency change.
-	// Uses watch (EFFECT phase, post-DOM) so didUpdate() sees the committed DOM.
-	watch(
-		() => props.layoutDependency,
-		() => {
-			if (props.visualElement?.projection) {
-				const { projection } = props.visualElement;
-				projection.root!.didUpdate();
+	// Post-commit projection flush. Runs after a snapshot-triggering pre-pass so
+	// projection.root.didUpdate() sees the committed DOM.
+	watch([() => commitVersion, () => props.visualElement?.projection], () => {
+		const { measurePop } = props;
+		const { visualElement } = props;
 
-				microtask.postRender(() => {
-					if (!projection.currentAnimation && projection.isLead()) {
-						safeToRemove();
-					}
-				});
+		tick().then(() => {
+			if (!commitVersion || !visualElement?.projection) return;
+
+			const { projection } = visualElement;
+			const element = visualElement.current as
+				| HTMLElement
+				| SVGElement
+				| undefined;
+			const box = getDebugBox(element);
+			console.log(
+				`[MeasureLayoutWithContext] before-didUpdate label=${getDebugLabel(element)} layoutDependency=${props.layoutDependency} isPresent=${props.isPresent} boxTop=${box?.top} boxLeft=${box?.left} boxWidth=${box?.width} boxHeight=${box?.height}`,
+			);
+			if (measurePop) {
+				measurePop(visualElement.current as HTMLElement | SVGElement);
 			}
-		},
-	);
+			projection.root!.didUpdate();
+			microtask.postRender(() => {
+				const nextElement = props.visualElement.current as
+					| HTMLElement
+					| SVGElement
+					| undefined;
+				const nextBox = getDebugBox(nextElement);
+				console.log(
+					`[MeasureLayoutWithContext] after-didUpdate label=${getDebugLabel(nextElement)} layoutDependency=${props.layoutDependency} isPresent=${props.isPresent} boxTop=${nextBox?.top} boxLeft=${nextBox?.left} boxWidth=${nextBox?.width} boxHeight=${nextBox?.height}`,
+				);
+				if (!projection.currentAnimation && projection.isLead()) {
+					safeToRemove();
+				}
+			});
+		});
+	});
 
-	// component will unmount
 	onDestroy(() => {
 		const { visualElement, layoutGroup, switchLayoutGroup } = props;
 		if (visualElement?.projection) {

@@ -59,17 +59,12 @@ Copyright (c) 2018 Framer B.V. -->
 </script>
 
 <script lang="ts" generics="V">
-	import { type Component, type Snippet, tick, untrack } from "svelte";
+	import { tick, type Component, type Snippet } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
 	import { setReorderContext } from "../../context/ReorderContext";
-	import {
-		useLayoutGroupContext,
-		setLayoutGroupContext,
-	} from "../../context/LayoutGroupContext.svelte";
 	import { motion } from "../../render/components/motion/proxy";
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import { invariant } from "../../utils/errors";
-	import { nodeGroup } from "../../projection/node/group";
 	import type { Ref } from "../../utils/safe-react-types";
 
 	import type { PropsWithChildren } from "../../utils/types";
@@ -100,37 +95,11 @@ Copyright (c) 2018 Framer B.V. -->
 		>
 	>;
 
-	// Create an implicit nodeGroup so item projections are registered together.
-	// This lets updateOrder call group.dirty() to synchronously snapshot all item
-	// positions before the DOM reorder — the same pattern AnimatePresence uses.
-	const parentLayoutContext = useLayoutGroupContext();
-	const group = nodeGroup();
-	setLayoutGroupContext({ ...parentLayoutContext, group });
-
 	let order: ItemData<V>[] = [];
 	let orderVersion = $state(0);
 
 	// Guard against multiple onReorder calls in the same render cycle.
-	// Reset when values change (after Svelte commits the reorder to the DOM).
 	let isReordering = false;
-
-	// Detect both membership AND order changes so within-column reorders trigger
-	// group.dirty() + orderVersion bump (required for FLIP layout animations).
-	let prevValues: V[] = [...values];
-	$effect.pre(() => {
-		const next = values;
-		const hasChanged =
-			next.length !== prevValues.length ||
-			next.some((v, i) => v !== prevValues[i]);
-		if (hasChanged) {
-			prevValues = [...next];
-			isReordering = false;
-			untrack(() => {
-				group.dirty();
-				orderVersion++;
-			});
-		}
-	});
 
 	const context = $state<ReorderContext<V>>({
 		get axis() {
@@ -148,30 +117,26 @@ Copyright (c) 2018 Framer B.V. -->
 			}
 			order.sort(compareMin);
 		},
-		unregisterItem: (value) => {
-			const idx = order.findIndex((entry) => value === entry.value);
-			if (idx !== -1) order.splice(idx, 1);
-		},
 		updateOrder: (item, offset, velocity) => {
 			if (isReordering) return;
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
 				isReordering = true;
-				order = newOrder;
-				onReorder?.(
-					newOrder
-						.map(getValue)
-						.filter((value) => values.includes(value)),
-				);
-				// Reset after the next Svelte commit, regardless of whether
-				// values changed. This prevents isReordering from deadlocking
-				// when onReorder is suppressed (e.g. cross-column kanban hover).
+				orderVersion++;
+				const reordered = newOrder
+					.map(getValue)
+					.filter((value) => values.includes(value));
+				// Call onReorder synchronously so the parent's values state updates
+				// in this same reactive flush. The $effect.pre above will then detect
+				// the change and bump orderVersion (triggering snapshot) before the DOM commits.
 				tick().then(() => {
+					onReorder?.(reordered);
 					isReordering = false;
 				});
 			}
 		},
 	});
+
 	setReorderContext(context);
 </script>
 

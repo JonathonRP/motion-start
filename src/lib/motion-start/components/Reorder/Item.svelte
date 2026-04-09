@@ -15,7 +15,6 @@ Copyright (c) 2018 Framer B.V. -->
 	import { motion } from "../../render/components/motion/proxy";
 	import { useMotionValue } from "../../value/use-motion-value.svelte";
 
-	import type { animateLayout } from "../../motion/features/layout/MeasureLayout.svelte";
 	import type { HTMLMotionProps } from "../../render/html/types";
 	import { invariant } from "../../utils/errors";
 	import type { Ref } from "../../utils/safe-react-types";
@@ -44,18 +43,16 @@ Copyright (c) 2018 Framer B.V. -->
 		 * @public
 		 * @default true
 		 */
-		layout?:
-			| ReturnType<(typeof animateLayout)["track"]>
-			| true
-			| "position";
+		layout?: true | "position";
 	};
 
 	let {
-		as = "li",
+		as = "li" as const,
 		children,
 		style = {},
 		value,
 		onDrag,
+		onDragEnd,
 		layout = true,
 		drag: dragProp,
 		ref: externalRef = $bindable(),
@@ -65,13 +62,16 @@ Copyright (c) 2018 Framer B.V. -->
 			ref?: Ref<SvelteHTMLElements[typeof as]>;
 		} & PropsWithChildren<{}> = $props();
 
-	const ReorderItem = motion[as as keyof typeof motion] as Component<
-		PropsWithChildren<
-			HTMLMotionProps<any> & {
-				ref?: Ref<SvelteHTMLElements[typeof as]>;
-			}
-		>
-	>;
+	const component = $derived(as as keyof typeof motion);
+	const ReorderItem = $derived(
+		motion[component] as Component<
+			PropsWithChildren<
+				HTMLMotionProps<any> & {
+					ref?: Ref<SvelteHTMLElements[typeof as]>;
+				}
+			>
+		>,
+	);
 
 	const context = $derived(useReorderContext());
 	const point: Record<"x" | "y", ReturnType<typeof useDefaultMotionValue>> = {
@@ -87,10 +87,6 @@ Copyright (c) 2018 Framer B.V. -->
 	const orderVersion = $derived(context?.orderVersion);
 	const registerItem = $derived(context?.registerItem);
 	const updateOrder = $derived(context?.updateOrder);
-
-	onDestroy(() => {
-		context?.unregisterItem(value);
-	});
 </script>
 
 <ReorderItem
@@ -103,7 +99,7 @@ Copyright (c) 2018 Framer B.V. -->
 		y: point.y,
 		zIndex,
 	}}
-	onDrag={async (event, gesturePoint) => {
+	onDrag={(event, gesturePoint) => {
 		event.preventDefault();
 
 		const { velocity } = gesturePoint as {
@@ -117,13 +113,13 @@ Copyright (c) 2018 Framer B.V. -->
 		}
 		onDrag && onDrag(event, gesturePoint);
 	}}
+	{onDragEnd}
 	onLayoutMeasure={(measured) => {
 		registerItem?.(value, measured);
 	}}
 	ref={externalRef}
 	{layout}
 	layoutDependency={orderVersion}
-	custom={value}
 	ignoreStrict
 >
 	{invariant(

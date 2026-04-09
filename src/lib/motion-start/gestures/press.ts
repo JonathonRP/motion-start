@@ -3,7 +3,6 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { addDomEvent } from '../events/add-dom-event';
 import { addPointerEvent } from '../events/add-pointer-event';
 import { type EventListenerWithPointInfo, extractEventInfo } from '../events/event-info';
 import type { EventInfo } from '../events/types';
@@ -17,7 +16,7 @@ import { isNodeOrChild } from './utils/is-node-or-child';
 
 function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPointInfo) {
 	if (!handler) return;
-	const syntheticPointerEvent = new PointerEvent('pointer' + name);
+	const syntheticPointerEvent = new PointerEvent(`pointer${name}`);
 	handler(syntheticPointerEvent, extractEventInfo(syntheticPointerEvent));
 }
 
@@ -126,14 +125,14 @@ export class PressGesture extends Feature<Element> {
 			};
 
 			this.removeEndListeners();
-			this.removeEndListeners = addDomEvent(this.node.current!, 'keyup', handleKeyup);
+			this.removeEndListeners = this.listen('keyup', handleKeyup);
 
 			fireSyntheticPointerEvent('down', (event, info) => {
 				this.startPress(event, info);
 			});
 		};
 
-		const removeKeydownListener = addDomEvent(this.node.current!, 'keydown', handleKeydown);
+		const removeKeydownListener = this.listen('keydown', handleKeydown);
 
 		const handleBlur = () => {
 			if (!this.isPressing) return;
@@ -141,7 +140,7 @@ export class PressGesture extends Feature<Element> {
 			fireSyntheticPointerEvent('cancel', (cancelEvent, cancelInfo) => this.cancelPress(cancelEvent, cancelInfo));
 		};
 
-		const removeBlurListener = addDomEvent(this.node.current!, 'blur', handleBlur);
+		const removeBlurListener = this.listen('blur', handleBlur);
 
 		this.removeAccessibleListeners = pipe(removeKeydownListener, removeBlurListener);
 	};
@@ -155,11 +154,13 @@ export class PressGesture extends Feature<Element> {
 			const removePointerListener = addPointerEvent(window, 'pointerdown', this.startPointerPress, {
 				passive: !(props.onTapStart || props['onPointerStart' as keyof typeof props]),
 			});
-			const removeFocusListener = addDomEvent(this.node.current!, 'focus', this.startAccessiblePress);
+			const removeFocusListener = this.listen('focus', this.startAccessiblePress);
 			this.removeStartListeners = pipe(removePointerListener, removeFocusListener);
 		} else {
-			this.listen('pointerdown', (event) => this.startPointerPress(event as PointerEvent, extractEventInfo(event as PointerEvent)));
-			const removeFocusListener = addDomEvent(this.node.current!, 'focus', this.startAccessiblePress);
+			this.listen('pointerdown', (event) =>
+				this.startPointerPress(event as PointerEvent, extractEventInfo(event as PointerEvent))
+			);
+			const removeFocusListener = this.listen('focus', this.startAccessiblePress);
 			this.removeStartListeners = removeFocusListener;
 		}
 	}

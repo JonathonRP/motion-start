@@ -74,7 +74,9 @@
 
     <div id="list" class="flex gap-2">
         {#each items as i (i)}
-            <div class="item border px-3 py-2">Item {i}</div>
+            <motion.div layout class="item border px-3 py-2"
+                >Item {i}</motion.div
+            >
         {/each}
     </div>
 

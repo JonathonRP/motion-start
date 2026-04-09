@@ -7,9 +7,8 @@ export interface PresenceChildProps {
 	onExitComplete?: () => void;
 	initial?: false | VariantLabels;
 	custom?: any;
+	presenceLayoutVersion?: number;
 	presenceAffectsLayout: boolean;
-	/** Shared layout dependency counter from parent AnimatePresence — bumped after DOM removal so watch fires didUpdate() */
-	sharedLayoutDependency?: number;
 	mode: 'wait' | 'sync' | 'popLayout';
 	children: Snippet;
 }

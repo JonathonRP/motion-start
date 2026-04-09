@@ -13,7 +13,7 @@ Copyright (c) 2018 Framer B.V. -->
 		switchLayoutGroup?: SwitchLayoutGroupContext;
 		isPresent: boolean;
 		safeToRemove?: VoidFunction | null;
-		measurePop?: import('svelte/attachments').Attachment | null;
+		measurePop?: import("svelte/attachments").Attachment | null;
 	}
 
 	export interface MeasureProps extends MotionProps, MeasureContextProps {
@@ -31,8 +31,9 @@ Copyright (c) 2018 Framer B.V. -->
 	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte";
 	import { useLayoutGroupContext } from "../../../context/LayoutGroupContext.svelte";
 	import { useSwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
-	import { usePresenceContext } from "../../../context/PresenceContext.svelte";
 	import MeasureLayoutWithContext from "./MeasureLayoutWithContext.svelte";
+	import { usePresenceContext } from "$lib/motion-start/context/PresenceContext.svelte";
+	import { useReorderContext } from "$lib/motion-start/context/ReorderContext";
 
 	interface MeasureLayoutProps extends MotionProps {
 		visualElement: VisualElement<unknown>;
@@ -42,17 +43,28 @@ Copyright (c) 2018 Framer B.V. -->
 	const [isPresent, safeToRemove] = $derived.by(usePresence());
 
 	const presenceContext = usePresenceContext();
-	const presenceLayoutDependency = $derived(presenceContext?.layoutDependency);
-	// measurePop is set by PopChild when mode="popLayout"
+	const reorderContext = useReorderContext();
+
+	const presenceLayoutDependency = $derived(
+		presenceContext?.presenceLayoutVersion,
+	);
+	// measurePop is set by PopChild when mode="popLayout".
 	const presenceMeasurePop = $derived(presenceContext?.measurePop);
 
-	// custom can serve as layoutDependency when no explicit layoutDependency is provided.
-	const layoutGroup = $derived(useLayoutGroupContext() ?? { forceRender: () => {} });
+	const reorderLayoutDependency = $derived(reorderContext?.orderVersion);
+
+	// custom can still serve as a local layout dependency when no explicit
+	// layoutDependency or presence-driven version is provided.
+	const layoutGroup = $derived(
+		useLayoutGroupContext() ?? { forceRender: () => {} },
+	);
 </script>
 
 <MeasureLayoutWithContext
 	{...props}
-	layoutDependency={presenceLayoutDependency ?? props.layoutDependency ?? props.custom}
+	layoutDependency={
+		props.layoutDependency ??
+		props.custom ?? presenceLayoutDependency ?? reorderLayoutDependency}
 	measurePop={presenceMeasurePop}
 	{layoutGroup}
 	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}

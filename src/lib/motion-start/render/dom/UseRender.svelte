@@ -3,100 +3,76 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-	import type { RenderComponent } from "../../motion/features/types";
-	import type { HTMLRenderState } from "../html/types";
-	import type { SVGRenderState } from "../svg/types";
-	import { filterProps } from "./utils/filter-props";
-	import { isSVGComponent } from "./utils/is-svg-component";
-	import { useSvgProps } from "../svg/use-props.svelte";
-	import { useHTMLProps } from "../html/use-props.svelte";
-	import { createAttachmentKey, type Attachment } from "svelte/attachments";
-	import { untrack } from "svelte";
+import type { RenderComponent } from '../../motion/features/types';
+import type { HTMLRenderState } from '../html/types';
+import type { SVGRenderState } from '../svg/types';
+import { filterProps } from './utils/filter-props';
+import { isSVGComponent } from './utils/is-svg-component';
+import { useSvgProps } from '../svg/use-props.svelte';
+import { useHTMLProps } from '../html/use-props.svelte';
+import { createAttachmentKey, type Attachment } from 'svelte/attachments';
+import { untrack } from 'svelte';
+import { createStyleAttachment } from './utils/create-style-attachment';
 
-	type Props = Parameters<
-		RenderComponent<
-			HTMLElement | SVGElement,
-			HTMLRenderState | SVGRenderState
-		>
-	>[1] & {
-		forwardMotionProps: boolean;
-	};
+type Props = Parameters<RenderComponent<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>>[1] & {
+	forwardMotionProps: boolean;
+};
 
-	let {
-		Component,
-		props,
-		ref,
-		visualState,
+let { Component, props, ref, visualState, isStatic, forwardMotionProps, visualElement = undefined }: Props = $props();
+
+const useVisualProps = $derived(isSVGComponent(Component) ? useSvgProps : useHTMLProps);
+
+const visualProps = $derived.by(() =>
+	useVisualProps(
+		() => props as any,
+		() => visualState.latestValues,
 		isStatic,
-		forwardMotionProps,
-		visualElement = undefined,
-	}: Props = $props();
+		Component
+	)()
+);
 
-	const useVisualProps = $derived(
-		isSVGComponent(Component) ? useSvgProps : useHTMLProps,
-	);
+const filteredProps = $derived(filterProps(() => props, typeof Component === 'string', forwardMotionProps));
 
-	const visualProps = $derived.by(() =>
-		useVisualProps(
-			() => props as any,
-			() => visualElement?.latestValues ?? visualState.latestValues,
-			isStatic,
-			Component,
-		)(),
-	);
+// Build spread object: user/visual props + attachments for feature listeners and
+// plain style values. We keep Svelte from owning the entire style attribute so
+// imperative MotionValue/layout updates on element.style do not get overwritten.
+const elementProps = $derived.by(() => {
+	const withAttachments: Record<string | symbol, unknown> = { ...filteredProps, ...visualProps };
 
-	const filteredProps = $derived(
-		filterProps(
-			() => props,
-			typeof Component === "string",
-			forwardMotionProps,
-		),
-	);
+	if (withAttachments.style && typeof withAttachments.style === 'object') {
+		const style = withAttachments.style as Record<string, unknown>;
+		delete withAttachments.style;
+		withAttachments[createAttachmentKey()] = createStyleAttachment(style);
+	}
 
-	// Build spread object: user/visual props + one attachment per feature listener.
-	// listeners is keyed by symbol so multiple features can share the same event name.
-	// Since visualElement.listeners is $state, this $derived re-runs when features
-	// populate listeners on mount, attaching each handler via svelte/events on().
-	const elementProps = $derived.by(() => {
-		const base = { ...filteredProps, ...visualProps };
-		// Svelte's set_style treats a non-string style value as "[object Object]".
-		// Convert the ResolvedValues style object to a CSS string so it applies correctly.
-		if (base.style && typeof base.style === 'object') {
-			(base as any).style = Object.entries(base.style as Record<string, unknown>)
-				.filter(([, v]) => v != null)
-				.map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}:${v}`)
-				.join(';');
+	const listeners = visualElement?.listeners ?? {};
+	for (const key of Object.getOwnPropertySymbols(listeners)) {
+		withAttachments[createAttachmentKey()] = listeners[key];
+	}
+
+	return withAttachments;
+});
+
+// Use untrack to prevent the visualElement.current $state write (inside
+// visualElement.mount) from triggering a reactive cascade. Without untrack,
+// drag feature's addListeners() can be called before projection is ready.
+const motionRef: Attachment<HTMLElement | SVGElement> = (node) => {
+	return untrack(() => {
+		if (typeof ref === 'function') {
+			ref(node);
+		} else if (ref) {
+			(ref as any).current = node;
 		}
-		const listeners = visualElement?.listeners ?? {};
-		const keys = Object.getOwnPropertySymbols(listeners);
-		if (keys.length === 0) return base;
-		const withListeners: Record<string | symbol, unknown> = { ...base };
-		for (const key of keys) {
-			withListeners[createAttachmentKey()] = listeners[key];
-		}
-		return withListeners;
-	});
 
-	// Use untrack to prevent the visualElement.current $state write (inside
-	// visualElement.mount) from triggering a reactive cascade. Without untrack,
-	// drag feature's addListeners() can be called before projection is ready.
-	const motionRef: Attachment<HTMLElement | SVGElement> = (node) => {
-		return untrack(() => {
-			if (typeof ref === "function") {
-				ref(node);
+		return () => {
+			if (typeof ref === 'function') {
+				ref(null);
 			} else if (ref) {
-				(ref as any).current = node;
+				(ref as any).current = null;
 			}
-
-			return () => {
-				if (typeof ref === "function") {
-					ref(null);
-				} else if (ref) {
-					(ref as any).current = null;
-				}
-			};
-		});
-	};
+		};
+	});
+};
 </script>
 
 {#if typeof Component === "string"}

@@ -5,6 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { frame, cancelFrame } from '../frameloop';
 import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
+import { featureDefinitions } from '../motion/features/definitions';
 import type { FeatureDefinitions } from '../motion/features/types';
 import type { MotionProps, MotionStyle } from '../motion/types';
 import type { Box } from '../projection/geometry/types';
@@ -35,7 +36,6 @@ import { createBox } from '../projection/geometry/models';
 import { time } from '../frameloop/sync-time';
 import type { HTMLRenderState } from './html/types';
 import type { SVGRenderState } from './svg/types';
-import { Previous } from 'runed';
 
 const propEventHandlers = [
 	'AnimationStart',
@@ -145,7 +145,7 @@ export abstract class VisualElement<
 	 * A reference to the current underlying Instance, e.g. a HTMLElement
 	 * or Three.Mesh etc.
 	 */
-	current: Instance | null = $state(null);
+	current: Instance | null = null;
 
 	/**
 	 * A reference to the parent VisualElement (if exists).
@@ -239,11 +239,11 @@ export abstract class VisualElement<
 	/**
 	 * A reference to the latest props provided to the VisualElement's host React component.
 	 */
-	props: MotionProps = $state()!;
+	props: MotionProps;
 	prevProps?: MotionProps;
 
-	presenceContext: PresenceContext | null = $state(null);
-	prevPresenceContext?: PresenceContext | null = $derived(new Previous(() => this.presenceContext).current);
+	presenceContext: PresenceContext | null;
+	prevPresenceContext?: PresenceContext | null;
 
 	/**
 	 * Cleanup functions for active features (hover/tap/exit etc)
@@ -476,6 +476,33 @@ export abstract class VisualElement<
 
 	notifyUpdate = () => this.notify('Update', this.latestValues);
 
+	updateFeatures() {
+		let key: keyof typeof featureDefinitions = 'animation';
+
+		for (key in featureDefinitions) {
+			const featureDefinition = featureDefinitions[key];
+
+			if (!featureDefinition) continue;
+
+			const { isEnabled, Feature: FeatureConstructor } = featureDefinition;
+
+			if (!this.features[key] && FeatureConstructor && isEnabled(this.props)) {
+				this.features[key] = new FeatureConstructor(this as VisualElement<HTMLElement>) as any;
+			}
+
+			if (this.features[key]) {
+				const feature = this.features[key]!;
+
+				if (feature.isMounted) {
+					feature.update();
+				} else {
+					feature.mount();
+					feature.isMounted = true;
+				}
+			}
+		}
+	}
+
 	triggerBuild() {
 		this.build(this.renderState, this.latestValues, this.props);
 	}
@@ -523,6 +550,7 @@ export abstract class VisualElement<
 
 		this.prevProps = this.props;
 		this.props = props;
+		this.prevPresenceContext = this.presenceContext;
 		this.presenceContext = presenceContext;
 
 		/**

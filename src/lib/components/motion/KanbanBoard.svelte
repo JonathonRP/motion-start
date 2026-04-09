@@ -1,193 +1,345 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { Reorder, LayoutGroup } from "$lib/motion-start";
+    import { LayoutGroup, Reorder } from "$lib/motion-start";
     import type { PanInfo } from "$lib/motion-start/gestures/pan/PanSession";
     import Box from "../Box.svelte";
 
-    type Columns = Record<string, string[]>;
+    const COLUMN_IDS = ["todo", "inprogress", "done"] as const;
+    type ColumnId = (typeof COLUMN_IDS)[number];
 
-    const DRAG_ANIM = { scale: 1.05, rotate: 3 };
-    const IDLE_ANIM = { scale: 1, rotate: 0 };
+    type Card = {
+        id: string;
+        title: string;
+        column: ColumnId;
+        order: number;
+    };
 
-    /** Sentinel inserted into TARGET column values so its cards slide apart.
-     *  Rendered as an invisible spacer with anchor-name; visual is the ghost. */
-    const GHOST = "__ghost__";
+    type PreviewState = {
+        col: ColumnId | null;
+        index: number | null;
+    };
 
-    const COL_LABELS: Record<string, string> = {
+    const COL_LABELS: Record<ColumnId, string> = {
         todo: "TODO",
         inprogress: "IN PROGRESS",
         done: "DONE",
     };
 
-    const COL_ACCENT: Record<string, string> = {
+    const COL_ACCENT: Record<ColumnId, string> = {
         todo: "#4f8ef7",
         inprogress: "#f7a94f",
         done: "#4fca6e",
     };
 
-    let columns = $state<Columns>({
-        todo: [
-            "Fix Bifrost CI pipeline",
-            "Add Dr. Strange to on-call",
-            "Order Pym Particles (bulk)",
-            "Take over universe (backlog)",
-        ],
-        inprogress: [
-            "Stop Thanos (deprioritised)",
-            "Refactor Vibranium service",
-        ],
-        done: ["Recruit Loki (he quit)", "I am inevitable ✅"],
-    });
+    let cards = $state<Card[]>([
+        {
+            id: "fix-bifrost-ci-pipeline",
+            title: "Fix Bifrost CI pipeline",
+            column: "todo",
+            order: 0,
+        },
+        {
+            id: "add-dr-strange-to-on-call",
+            title: "Add Dr. Strange to on-call",
+            column: "todo",
+            order: 1,
+        },
+        {
+            id: "order-pym-particles-bulk",
+            title: "Order Pym Particles (bulk)",
+            column: "todo",
+            order: 2,
+        },
+        {
+            id: "take-over-universe-backlog",
+            title: "Take over universe (backlog)",
+            column: "todo",
+            order: 3,
+        },
+        {
+            id: "stop-thanos-deprioritised",
+            title: "Stop Thanos (deprioritised)",
+            column: "inprogress",
+            order: 0,
+        },
+        {
+            id: "refactor-vibranium-service",
+            title: "Refactor Vibranium service",
+            column: "inprogress",
+            order: 1,
+        },
+        {
+            id: "recruit-loki-he-quit",
+            title: "Recruit Loki (he quit)",
+            column: "done",
+            order: 0,
+        },
+        {
+            id: "i-am-inevitable",
+            title: "I am inevitable ✅",
+            column: "done",
+            order: 1,
+        },
+    ]);
 
-    let preview = $state<{ col: string | null; index: number | null }>({
+    let preview = $state<PreviewState>({
         col: null,
         index: null,
     });
 
-    let draggingTask = $state<string | null>(null);
+    let draggingCardId = $state<string | null>(null);
+    let draggingFromCol = $state<ColumnId | null>(null);
     let draggingCardHeight = $state(62);
     let draggingCardWidth = $state(220);
 
-    let colRefs = $state<Record<string, HTMLElement | null>>({});
-
-    function getDisplayValues(colId: string, tasks: string[]): string[] {
-        if (!draggingTask || preview.col !== colId || preview.index === null)
-            return tasks;
-        if (tasks.includes(draggingTask)) return tasks;
-        const result = [...tasks];
-        result.splice(preview.index, 0, GHOST);
-        return result;
-    }
-
-    // Ghost visibility + explicit pixel coordinates.
-    // Both top and left are always explicit so CSS transitions always have a
-    // concrete before/after value — anchor() can't transition when the anchor
-    // *element* changes, only when it moves.
+    let colRefs = $state<Record<ColumnId, HTMLElement | null>>({
+        todo: null,
+        inprogress: null,
+        done: null,
+    });
+    let boardRef = $state<HTMLElement | null>(null);
     let ghostVisible = $state(false);
     let ghostTop = $state(0);
     let ghostLeft = $state(0);
-    /** Wrapper element — ghost coords are made relative to this for position:absolute. */
-    let boardRef = $state<HTMLElement | null>(null);
 
-    /** Convert a viewport-relative rect position to wrapper-relative for position:absolute. */
+    function sortByOrder(a: Card, b: Card) {
+        return a.order - b.order;
+    }
+
+    function getCard(cardId: string | null) {
+        return cardId
+            ? (cards.find((card) => card.id === cardId) ?? null)
+            : null;
+    }
+
+    function hasCrossColumnPreview() {
+        return Boolean(
+            draggingCardId &&
+                draggingFromCol &&
+                preview.col &&
+                preview.col !== draggingFromCol &&
+                preview.index !== null,
+        );
+    }
+
+    function getRenderColumn(card: Card) {
+        if (hasCrossColumnPreview() && card.id === draggingCardId) {
+            return preview.col!;
+        }
+
+        return card.column;
+    }
+
+    function getRenderOrder(card: Card) {
+        if (!hasCrossColumnPreview()) {
+            return card.order;
+        }
+
+        if (card.id === draggingCardId) {
+            return preview.index!;
+        }
+
+        if (card.column === preview.col && card.order >= preview.index!) {
+            return card.order + 1;
+        }
+
+        return card.order;
+    }
+
+    function rendersInColumn(card: Card, colId: ColumnId) {
+        return getRenderColumn(card) === colId;
+    }
+
+    function getCommittedColumnCards(colId: ColumnId) {
+        return cards.filter((card) => card.column === colId).sort(sortByOrder);
+    }
+
     function toLocal(viewportTop: number, viewportLeft: number) {
-        const wr = boardRef?.getBoundingClientRect();
+        const wrapperRect = boardRef?.getBoundingClientRect();
         return {
-            top: viewportTop - (wr?.top ?? 0),
-            left: viewportLeft - (wr?.left ?? 0),
+            top: viewportTop - (wrapperRect?.top ?? 0),
+            left: viewportLeft - (wrapperRect?.left ?? 0),
         };
     }
 
-    function handleDrag(task: string, info: PanInfo, currentCol: string) {
-        const px = info.point.x - window.scrollX;
-        const py = info.point.y - window.scrollY;
+    function setPreview(next: PreviewState) {
+        if (preview.col === next.col && preview.index === next.index) return;
+        preview = next;
+    }
 
-        // Cross-column detection
-        for (const [id, ref] of Object.entries(colRefs)) {
-            if (!ref || id === currentCol) continue;
-            const colRect = ref.getBoundingClientRect();
-            if (
-                px > colRect.left &&
-                px < colRect.right &&
-                py > colRect.top &&
-                py < colRect.bottom
-            ) {
-                const slots = columns[id]
-                    .map((t) => {
-                        const el = document.getElementById(`kanban-task-${t}`);
-                        return el
-                            ? { task: t, rect: el.getBoundingClientRect() }
-                            : null;
-                    })
-                    .filter(
-                        (s): s is { task: string; rect: DOMRect } => s !== null,
-                    )
-                    .sort((a, b) => a.rect.top - b.rect.top);
-
-                let sortedIdx = slots.length;
-                for (let i = 0; i < slots.length; i++) {
-                    if (py < slots[i].rect.top + slots[i].rect.height / 2) {
-                        sortedIdx = i;
-                        break;
-                    }
-                }
-                const dropIndex =
-                    sortedIdx < slots.length
-                        ? columns[id].indexOf(slots[sortedIdx].task)
-                        : columns[id].length;
-
-                preview = {
-                    col: id,
-                    index: dropIndex < 0 ? columns[id].length : dropIndex,
-                };
-
-                const vLeft = slots[0]?.rect.left ?? colRect.left + 15;
-                const spacerEl = document.getElementById("kanban-ghost-spacer");
-                const vTop = spacerEl
-                    ? spacerEl.getBoundingClientRect().top
-                    : sortedIdx < slots.length
-                      ? slots[sortedIdx].rect.top
-                      : (slots[slots.length - 1]?.rect.bottom ?? colRect.top) +
-                        10;
-
-                ({ top: ghostTop, left: ghostLeft } = toLocal(vTop, vLeft));
-                ghostVisible = true;
-                return;
-            }
-        }
-
-        preview = { col: null, index: null };
-
-        // Within-column: find reference card sorted by live DOM position
-        const slots = columns[currentCol]
-            .filter((t) => t !== task)
-            .map((t) => {
-                const el = document.getElementById(`kanban-task-${t}`);
-                return el
-                    ? { task: t, rect: el.getBoundingClientRect() }
+    function getColumnSlots(colId: ColumnId) {
+        return getCommittedColumnCards(colId)
+            .filter((card) => card.id !== draggingCardId)
+            .map((card) => {
+                const element = document.getElementById(
+                    `kanban-task-${card.id}`,
+                );
+                return element
+                    ? { card, rect: element.getBoundingClientRect() }
                     : null;
             })
-            .filter((s): s is { task: string; rect: DOMRect } => s !== null)
+            .filter(
+                (slot): slot is { card: Card; rect: DOMRect } => slot !== null,
+            )
             .sort((a, b) => a.rect.top - b.rect.top);
+    }
 
-        if (slots.length === 0) {
+    function setColumnOrder(colId: ColumnId, nextCards: Card[]) {
+        const nextOrder = new Map(
+            nextCards.map((card, index) => [card.id, index]),
+        );
+        cards = cards.map((card) =>
+            card.column === colId && nextOrder.has(card.id)
+                ? { ...card, order: nextOrder.get(card.id)! }
+                : card,
+        );
+    }
+
+    function moveCardToColumn(
+        cardId: string,
+        currentCol: ColumnId,
+        targetCol: ColumnId,
+        targetIndex: number,
+    ) {
+        const dragged = getCard(cardId);
+        if (!dragged) return;
+
+        const sourceCards = getCommittedColumnCards(currentCol).filter(
+            (card) => card.id !== cardId,
+        );
+        const targetCards = getCommittedColumnCards(targetCol).filter(
+            (card) => card.id !== cardId,
+        );
+        const clampedIndex = Math.min(
+            Math.max(targetIndex, 0),
+            targetCards.length,
+        );
+
+        targetCards.splice(clampedIndex, 0, {
+            ...dragged,
+            column: targetCol,
+            order: clampedIndex,
+        });
+
+        const sourceOrder = new Map(
+            sourceCards.map((card, index) => [card.id, index]),
+        );
+        const targetOrder = new Map(
+            targetCards.map((card, index) => [card.id, index]),
+        );
+
+        cards = cards.map((card) => {
+            if (card.id === cardId) {
+                return {
+                    ...card,
+                    column: targetCol,
+                    order: targetOrder.get(card.id) ?? clampedIndex,
+                };
+            }
+
+            if (card.column === currentCol && sourceOrder.has(card.id)) {
+                return { ...card, order: sourceOrder.get(card.id)! };
+            }
+
+            if (card.column === targetCol && targetOrder.has(card.id)) {
+                return { ...card, order: targetOrder.get(card.id)! };
+            }
+
+            return card;
+        });
+    }
+
+    function updateGhostForColumn(colId: ColumnId, pointY: number) {
+        const ref = colRefs[colId];
+        if (!ref) {
             ghostVisible = false;
             return;
         }
 
+        const colRect = ref.getBoundingClientRect();
+        const slots = getColumnSlots(colId);
         let idx = slots.length;
+
         for (let i = 0; i < slots.length; i++) {
-            if (py < slots[i].rect.top + slots[i].rect.height / 2) {
+            if (pointY < slots[i].rect.top + slots[i].rect.height / 2) {
                 idx = i;
                 break;
             }
         }
 
-        const refSlot =
-            idx < slots.length ? slots[idx] : slots[slots.length - 1];
-        const vTop =
-            idx < slots.length
-                ? refSlot.rect.top - draggingCardHeight - 10
-                : refSlot.rect.bottom + 10;
-        ({ top: ghostTop, left: ghostLeft } = toLocal(vTop, refSlot.rect.left));
+        const left = slots[0]?.rect.left ?? colRect.left + 15;
+        let top = colRect.top + 48;
+
+        if (slots.length > 0) {
+            if (idx < slots.length) {
+                top = slots[idx].rect.top - draggingCardHeight - 10;
+            } else {
+                top = slots[slots.length - 1].rect.bottom + 10;
+            }
+        }
+
+        ({ top: ghostTop, left: ghostLeft } = toLocal(top, left));
         ghostVisible = true;
     }
 
-    function handleDrop(task: string, currentCol: string) {
+    function handleDrag(card: Card, info: PanInfo) {
+        const sourceCol = draggingFromCol ?? card.column;
+        const px = info.point.x - window.scrollX;
+        const py = info.point.y - window.scrollY;
+
+        for (const colId of COLUMN_IDS) {
+            const ref = colRefs[colId];
+            if (!ref || colId === sourceCol) continue;
+            const colRect = ref.getBoundingClientRect();
+            if (
+                px <= colRect.left ||
+                px >= colRect.right ||
+                py <= colRect.top ||
+                py >= colRect.bottom
+            ) {
+                continue;
+            }
+
+            const slots = getColumnSlots(colId);
+            let idx = slots.length;
+            for (let i = 0; i < slots.length; i++) {
+                if (py < slots[i].rect.top + slots[i].rect.height / 2) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            setPreview({
+                col: colId,
+                index: idx,
+            });
+            updateGhostForColumn(colId, py);
+            return;
+        }
+
+        setPreview({ col: null, index: null });
+        updateGhostForColumn(sourceCol, py);
+    }
+
+    function handleDrop(cardId: string) {
         if (
+            draggingFromCol &&
             preview.col !== null &&
             preview.index !== null &&
-            preview.col !== currentCol
+            preview.col !== draggingFromCol
         ) {
-            const { col: targetCol, index: targetIndex } = preview;
-            columns[currentCol] = columns[currentCol].filter((t) => t !== task);
-            const targetList = [...columns[targetCol]];
-            targetList.splice(targetIndex, 0, task);
-            columns[targetCol] = targetList;
+            moveCardToColumn(
+                cardId,
+                draggingFromCol,
+                preview.col,
+                preview.index,
+            );
         }
+
         preview = { col: null, index: null };
-        draggingTask = null;
+        draggingCardId = null;
+        draggingFromCol = null;
         ghostVisible = false;
     }
 </script>
@@ -205,62 +357,58 @@
         {/if}
 
         <LayoutGroup>
-            {#each Object.entries(columns) as [colId, tasks] (colId)}
+            {#each COLUMN_IDS as colId (colId)}
                 <div
                     class="column"
                     style="border-top: 3px solid {COL_ACCENT[colId]}"
                     bind:this={colRefs[colId]}
                 >
                     <h3 class="col-title" style="color: {COL_ACCENT[colId]}">
-                        {COL_LABELS[colId] ?? colId.toUpperCase()}
+                        {COL_LABELS[colId]}
                     </h3>
                     <Reorder.Group
                         as="div"
-                        values={getDisplayValues(colId, tasks)}
+                        values={cards}
                         onReorder={(next) => {
-                            if (preview.col !== null && preview.col !== colId)
+                            if (hasCrossColumnPreview()) {
                                 return;
-                            columns[colId] = next.filter((t) => t !== GHOST);
+                            }
+                            setColumnOrder(colId, next);
                         }}
                         class="task-list"
                     >
-                        {#snippet children({ item: task })}
-                            {#if task === GHOST}
-                                <!-- Invisible spacer — makes target-column cards slide apart. -->
-                                <div
-                                    id="kanban-ghost-spacer"
-                                    class="ghost-spacer"
-                                    style="height:{draggingCardHeight}px;"
-                                ></div>
-                            {:else}
+                        {#snippet children({ item: card })}
+                            {#if rendersInColumn(card, colId)}
                                 <Reorder.Item
                                     as="div"
-                                    id={`kanban-task-${task}`}
-                                    value={task}
-                                    layoutId={task}
+                                    id={`kanban-task-${card.id}`}
+                                    value={card}
+                                    layoutId={card.id}
                                     drag={true}
+                                    style={{ order: getRenderOrder(card) }}
                                     onDragStart={() => {
-                                        draggingTask = task;
-                                        const el = document.getElementById(
-                                            `kanban-task-${task}`,
+                                        draggingCardId = card.id;
+                                        draggingFromCol = card.column;
+                                        const element = document.getElementById(
+                                            `kanban-task-${card.id}`,
                                         );
-                                        if (el) {
-                                            const r =
-                                                el.getBoundingClientRect();
-                                            draggingCardHeight = r.height;
-                                            draggingCardWidth = r.width;
+                                        if (element) {
+                                            const rect =
+                                                element.getBoundingClientRect();
+                                            draggingCardHeight = rect.height;
+                                            draggingCardWidth = rect.width;
                                         }
                                     }}
                                     onDrag={(_event, info) =>
-                                        handleDrag(
-                                            task,
-                                            info as PanInfo,
-                                            colId,
-                                        )}
-                                    onDragEnd={() => handleDrop(task, colId)}
-                                    animate={draggingTask === task
-                                        ? DRAG_ANIM
-                                        : IDLE_ANIM}
+                                        handleDrag(card, info as PanInfo)}
+                                    onDragEnd={() => handleDrop(card.id)}
+                                    whileDrag={{
+                                        scale: 1.05,
+                                        rotate: 3,
+                                        zIndex: 10,
+                                        boxShadow:
+                                            "0 10px 20px rgba(0,0,0,0.3)",
+                                    }}
                                     transition={{
                                         rotate: {
                                             type: "spring",
@@ -273,16 +421,9 @@
                                             stiffness: 200,
                                         },
                                     }}
-                                    style={draggingTask === task
-                                        ? {
-                                              zIndex: 10,
-                                              boxShadow:
-                                                  "0 10px 20px rgba(0,0,0,0.3)",
-                                          }
-                                        : {}}
                                     class="card"
                                 >
-                                    {task}
+                                    {card.title}
                                 </Reorder.Item>
                             {/if}
                         {/snippet}
@@ -332,20 +473,6 @@
         cursor: grabbing;
     }
 
-    /* Invisible spacer — pushes target-column cards apart during cross-column hover. */
-    :global(.ghost-spacer) {
-        flex-shrink: 0;
-        margin-bottom: 10px;
-        width: 25ch;
-    }
-
-    /*
-     * Drop ghost: position:fixed with explicit top/left set by JS on every
-     * pointermove. Both axes always transition so column switches (left change)
-     * and within-column moves (top change) both get the spring animation.
-     * Having both always defined means the browser always has a concrete
-     * before/after value — no same-tick transition-definition race.
-     */
     .board-wrapper {
         position: relative;
     }

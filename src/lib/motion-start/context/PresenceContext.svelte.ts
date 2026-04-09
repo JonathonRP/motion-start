@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { VariantLabels } from '../motion/types';
 import type { Attachment } from 'svelte/attachments';
+import type { VariantLabels } from '../motion/types';
 
 /**
  * @public
@@ -18,7 +18,7 @@ export interface PresenceContext {
 	measurePop?: Attachment;
 	initial?: false | VariantLabels;
 	custom?: any;
-	layoutDependency?: number;
+	presenceLayoutVersion?: number;
 }
 
 const [getPresenceContext, setPresenceContext] = createContext<PresenceContext | null>();

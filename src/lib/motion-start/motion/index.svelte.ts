@@ -3,6 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import { watch } from 'runed';
 import type { Component, ComponentProps, Snippet } from 'svelte';
 import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte';
 import { useLazyContext } from '../context/LazyContext';
@@ -53,26 +54,32 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
 	const MotionComponent: Component<MotionComponentProps<Props> & { ref?: Ref<Instance> }> = (anchor, props) => {
-		/**
-		 * If we need to measure the element we load this functionality in a
-		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
-		 */
-		let MeasureLayout: undefined | Component<MotionProps> = $state(undefined);
-
 		const motionConfig = $derived.by(useMotionConfigContext);
-		const configAndProps = $derived({
-			...motionConfig,
-			...props,
-			layoutId: useLayoutId(() => props),
+		const configAndProps = $derived.by(() => {
+			const propsState = $state({
+				...motionConfig,
+				...props,
+				layoutId: useLayoutId(() => props),
+			});
+			return propsState;
 		});
 
 		const { isStatic } = $derived(configAndProps);
 
 		const context = $derived.by(useCreateMotionContext<Instance>(() => props));
 
-		const visualState = $derived.by(() => useVisualState(() => props, isStatic)());
+		// Call useVisualState once — mirrors React's useConstant pattern.
+		// visualState.latestValues is taken by reference by VisualElement and mutated
+		// in-place during animation. Re-calling on every props change creates a new
+		// empty latestValues object, causing UseRender to write style="" and flash.
+		const visualState = useVisualState(() => props, isStatic);
 
 		const layoutProjection = $derived.by(() => getProjectionFunctionality(() => configAndProps));
+		/**
+		 * If we need to measure the element we load this functionality in a
+		 * separate class component in order to gain access to getSnapshotBeforeUpdate.
+		 */
+		const MeasureLayout = $derived(layoutProjection.MeasureLayout);
 
 		const visualElement = $derived.by(
 			useVisualElement<Instance, RenderState>(
@@ -86,11 +93,8 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 		useStrictMode(configAndProps, preloadedFeatures);
 
-		// Keep context and MeasureLayout in sync with derived values
-		$effect.pre(() => {
-			MeasureLayout = layoutProjection.MeasureLayout;
-		});
-		$effect.pre(() => {
+		// Keep context in sync with the current visual element before commit.
+		watch.pre([() => visualElement], () => {
 			context.visualElement = visualElement;
 		});
 
@@ -123,26 +127,28 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				return isStatic;
 			},
 			get visualElement() {
-				return visualElement ?? undefined;
+				return context.visualElement ?? undefined;
 			},
 		});
 
-		// Mount MeasureLayout once and keep it alive — do NOT recreate it on every prop change.
-		// Recreating would reset prevLayoutDependency in MeasureLayoutWithContext, breaking FLIP.
-		// Stable $state object updated on every configAndProps change.
-		// $state makes fields reactive so MeasureLayoutWithContext's watch.pre re-fires correctly.
-		const measureProps = $state({
-			...configAndProps,
-			visualElement: context.visualElement ?? null,
-		});
-		$effect.pre(() => {
-			Object.assign(measureProps, configAndProps, {
-				visualElement: context.visualElement ?? null,
+		const measureProps = $derived.by(() => {
+			const measureState = $state({
+				...configAndProps,
+				visualElement: context.visualElement ?? undefined,
 			});
+			return measureState;
 		});
-		$effect.pre(() => {
+
+		// Mount/unmount the imperative MeasureLayout helper only when the feature
+		// becomes available or disappears. Ordinary prop changes flow through the
+		// stable measureProps object and should not recreate the helper.
+		// if (!measureLayoutComponent || _measureInstance || !context.visualElement) return;
+		watch.pre([() => context.visualElement, () => MeasureLayout], () => {
 			if (MeasureLayout && context.visualElement && !_measureInstance) {
-				_measureInstance = MeasureLayout(anchor, measureProps as unknown as MotionProps);
+				_measureInstance = MeasureLayout(
+					anchor,
+					new Proxy(measureProps, { get: (_target, key) => measureProps[key as keyof typeof measureProps] })
+				);
 			}
 		});
 

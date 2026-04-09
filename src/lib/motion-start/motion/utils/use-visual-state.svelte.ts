@@ -30,7 +30,7 @@ export type makeUseVisualState = <I, RS>(config: UseVisualStateConfig<I, RS>) =>
 export type UseVisualState<Instance, RenderState> = (
 	props: () => MotionProps,
 	isStatic: boolean
-) => () => VisualState<Instance, RenderState>;
+) => VisualState<Instance, RenderState>;
 
 function makeState<I, RS>(
 	{ scrapeMotionValuesFromProps, createRenderState, onMount }: UseVisualStateConfig<I, RS>,
@@ -52,21 +52,19 @@ function makeState<I, RS>(
 
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
-	(props: () => MotionProps, isStatic: boolean): () => VisualState<I, RS> => {
-		const context = $derived(useMotionContext());
-		const presenceContext = $derived(usePresenceContext());
+	(props: () => MotionProps, isStatic: boolean): VisualState<I, RS> => {
+		const context = useMotionContext();
+		const presenceContext = usePresenceContext();
 		const make = () => makeState(config, props(), context, presenceContext);
 
 		/**
-		 * Mirrors framer-motion's `useConstant(make)` — compute once for the
-		 * component's lifetime. VisualElement takes `latestValues` by reference
-		 * and mutates it in-place during animation. Re-running `make()` on every
-		 * props change would create a new empty `latestValues`, causing UseRender
-		 * to write `style=""` and clear any in-progress animated styles.
+		 * Mirrors framer-motion's useConstant(make). VisualElement keeps latestValues
+		 * by reference and mutates them in place during animation, so recreating the
+		 * state on every props change would drop in-flight animated styles.
 		 */
 		const state = make();
 
-		return () => isStatic ? make() : state;
+		return isStatic ? make() : state;
 	};
 
 function makeLatestValues(
@@ -108,10 +106,8 @@ function makeLatestValues(
 				let valueTarget = target[key as keyof typeof target];
 
 				if (Array.isArray(valueTarget)) {
-					/**
-					 * Take final keyframe if the initial animation is blocked because
-					 * we want to initialise at the end of that blocked animation.
-					 */
+					// If the initial animation is blocked, initialise from the final keyframe
+					// so blocked entrance animations still start at their resolved end state.
 					const index = isInitialAnimationBlocked ? valueTarget.length - 1 : 0;
 					valueTarget = valueTarget[index];
 				}

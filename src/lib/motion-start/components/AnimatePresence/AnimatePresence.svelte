@@ -3,11 +3,10 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts" generics="T">
-	import { untrack, type Snippet } from "svelte";
+	import { tick, untrack, type Snippet } from "svelte";
 	import type { AnimatePresenceProps, ConditionalGeneric } from "./index.js";
 	import PresenceChild from "./PresenceChild/PresenceChild.svelte";
-	import { useLayoutGroupContext, setLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
-	import { nodeGroup } from "../../projection/node/group";
+	import { useLayoutGroupContext } from "../../context/LayoutGroupContext.svelte";
 	import { warning } from "../../utils/errors.js";
 	import { getChildKey, type ComponentKey } from "./utils.js";
 
@@ -31,33 +30,17 @@ Copyright (c) 2018 Framer B.V. -->
 		warning(!exitBeforeEnter, "Replace exitBeforeEnter with mode='wait'");
 	});
 
-	const parentLayoutContext = useLayoutGroupContext();
-
-	// When presenceAffectsLayout and there's no parent NodeGroup, create an implicit one.
-	// This ensures MeasureLayoutWithContext.onDestroy calls group.remove(projection) → dirtyAll()
-	// → siblings get willUpdate() BEFORE DOM removal → correct FLIP snapshot timing.
-	// Context must be set synchronously; the group is created once and reused so existing
-	// node registrations aren't lost if presenceAffectsLayout toggles.
-	// presenceAffectsLayout is intentionally read once — changing it after mount isn't supported.
-	const implicitGroup = presenceAffectsLayout && !parentLayoutContext?.group ? nodeGroup() : undefined;
-	if (implicitGroup) {
-		setLayoutGroupContext({
-			...parentLayoutContext,
-			group: implicitGroup,
-		});
-	}
-
 	const layoutContext = $derived(useLayoutGroupContext());
 	const forceRender = () => {
 		layoutContext?.forceRender?.();
 		renderedChildren = [...renderedChildren];
 	};
 
-	let isInitialRender = $state(true);
-	// Bumped after DOM removal so MeasureLayoutWithContext's watch (EFFECT) calls
-	// didUpdate() once the new DOM layout is committed.
-	let sharedLayoutDependency = $state(0);
+	let presenceLayoutVersion = $state(0);
+	let pendingRenderedChildren = $state<typeof renderedChildren | null>(null);
+	let pendingAllComplete = $state(false);
 
+	let isInitialRender = $state(true);
 	// renderedChildren is the authoritative render list (present + exiting).
 	let renderedChildren = $state<
 		{
@@ -81,6 +64,32 @@ Copyright (c) 2018 Framer B.V. -->
 	// pendingPresentChildren holds the latest target list so onExit closures
 	// always restore to the most recent snapshot, not a stale closure value.
 	let pendingPresentChildren: typeof renderedChildren = [];
+
+	$effect.pre(() => {
+		if (!pendingRenderedChildren) return;
+
+		const nextChildren = pendingRenderedChildren;
+		const allComplete = pendingAllComplete;
+		pendingRenderedChildren = null;
+		pendingAllComplete = false;
+
+		if (presenceAffectsLayout) {
+			presenceLayoutVersion++;
+		}
+
+		tick().then(() => {
+			renderedChildren = nextChildren;
+
+			if (allComplete) {
+				forceRender();
+				onExitComplete?.();
+			}
+
+			if (presenceAffectsLayout) {
+				presenceLayoutVersion++;
+			}
+		});
+	});
 
 	$effect.pre(() => {
 		// Compute target list from reactive props
@@ -172,30 +181,18 @@ Copyright (c) 2018 Framer B.V. -->
 						if (!done) allComplete = false;
 					});
 
-					if (presenceAffectsLayout) {
-						// Snapshot sibling positions NOW, while the exiting element is still
-						// in the DOM. didUpdate() fires after DOM removal via sharedLayoutDependency.
-						implicitGroup?.dirty();
-					}
-
 					if (allComplete) {
 						exitComplete.clear();
-						// Use pendingPresentChildren — always the latest target list.
-						renderedChildren = pendingPresentChildren;
-						forceRender();
-						onExitComplete?.();
+						// Apply the committed present-child list in a pre phase so
+						// siblings can snapshot before the DOM removal lands.
+						pendingRenderedChildren = pendingPresentChildren;
+						pendingAllComplete = true;
 					} else {
-						// Remove just this child from the rendered list.
-						renderedChildren = renderedChildren.filter(
+						// Remove just this child in a pre phase for the same reason.
+						pendingRenderedChildren = renderedChildren.filter(
 							(c) => getChildKey(c) !== key,
 						);
-					}
-
-					if (presenceAffectsLayout) {
-						// Signal didUpdate after DOM removal is committed.
-						// MeasureLayoutWithContext's watch (EFFECT) fires didUpdate() when this changes,
-						// after Svelte has committed the DOM removal in the same batch.
-						sharedLayoutDependency++;
+						pendingAllComplete = false;
 					}
 				};
 
@@ -204,20 +201,20 @@ Copyright (c) 2018 Framer B.V. -->
 				exitingChildren.push(exitChild);
 			}
 
+			if (
+				presenceAffectsLayout &&
+				mode === "popLayout" &&
+				exitingChildren.length
+			) {
+				presenceLayoutVersion++;
+			}
+
 			// In "wait" mode, only render exiting children until they're done.
 			if (mode === "wait" && exitingChildren.length) {
 				nextChildren = exitingChildren;
 			}
 
 			renderedChildren = nextChildren;
-
-			// In popLayout mode, bump sharedLayoutDependency so siblings FLIP immediately
-			// when the exiting element is removed from flow by measurePop.
-			// In sync mode siblings don't move until onExit fires (after exit animation),
-			// so we skip here — onExit handles snapshot+didUpdate instead.
-			if (presenceAffectsLayout && mode === "popLayout") {
-				sharedLayoutDependency++;
-			}
 		});
 	});
 
@@ -232,7 +229,6 @@ Copyright (c) 2018 Framer B.V. -->
 			);
 		}
 	});
-
 </script>
 
 {#each renderedChildren as child (getChildKey(child))}
@@ -241,8 +237,8 @@ Copyright (c) 2018 Framer B.V. -->
 		isPresent={child.present}
 		initial={!isInitialRender || initial ? undefined : false}
 		custom={child.onExit ? custom : undefined}
+		{presenceLayoutVersion}
 		{presenceAffectsLayout}
-		{sharedLayoutDependency}
 		onExitComplete={child.onExit}
 	>
 		{@render children?.({ item: child.data })}
