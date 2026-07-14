@@ -1,36 +1,41 @@
 <script lang="ts">
-    import { motion } from '$lib/motion-start';
-    import { page } from '$app/state';
+import { motion } from '$lib/motion-start';
+import type { LayoutProps, MotionStyle } from '$lib/motion-start';
+import { page } from '$app/state';
 
-    const type = $derived(page.url.searchParams.get('type') || 'true');
-    const layoutProp = $derived(type === 'true' ? true : type === 'false' ? false : type);
+function parseLayoutProp(value: string | null): LayoutProps['layout'] {
+	if (!value || value === 'true') return true;
+	if (value === 'false') return false;
+	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
+	return true;
+}
 
-    let state = $state(true);
+const layoutProp = $derived(parseLayoutProp(page.url.searchParams.get('type')));
 
-    const box = {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        background: 'red',
-    };
+let state = $state(true);
 
-    const a = {
-        ...box,
-        width: 100,
-        height: 100,
-    };
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '0px',
+	left: '0px',
+	background: 'red',
+};
 
-    const b = {
-        ...box,
-        width: 400,
-        height: 200,
-        top: 100,
-        left: 100,
-    };
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '100px',
+};
+
+const b: MotionStyle = {
+	...box,
+	width: '400px',
+	height: '200px',
+	top: '100px',
+	left: '100px',
+};
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <motion.div
     id="box"
     data-testid="box"
@@ -42,7 +47,7 @@
     <motion.div
         layout
         id="child"
-        style={{ width: 100, height: 100, background: 'blue' }}
+        style={{ width: '100px', height: '100px', background: 'blue' }}
         transition={{ duration: 3 }}
     />
 </motion.div>

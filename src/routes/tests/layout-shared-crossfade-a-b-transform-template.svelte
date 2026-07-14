@@ -1,52 +1,59 @@
 <script lang="ts">
-    import { motion, AnimatePresence } from '$lib/motion-start';
-    import { page } from '$app/state';
+import { motion, AnimatePresence, type LayoutProps, type MotionStyle } from '$lib/motion-start';
+import { page } from '$app/state';
 
-    const type = $derived(page.url.searchParams.get('type') || true);
-    let state = $state(true);
+function parseLayoutProp(value: string | null): LayoutProps['layout'] {
+	if (!value || value === 'true') return true;
+	if (value === 'false') return false;
+	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
+	return true;
+}
 
-    const box = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        background: 'red',
-    };
+const type = $derived(parseLayoutProp(page.url.searchParams.get('type')));
+let state = $state(true);
 
-    const a = {
-        ...box,
-        width: 100,
-        height: 200,
-    };
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '50%',
+	left: '50%',
+	background: 'red',
+};
 
-    const b = {
-        ...box,
-        top: '50%',
-        left: '50%',
-        width: 300,
-        height: 300,
-    };
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '200px',
+};
 
-    const items = $derived([{
-        key: state ? 'a' : 'b',
-        id: state ? 'a' : 'b',
-        style: state ? a : b,
-        backgroundColor: state ? '#f00' : '#0f0',
-        borderRadius: state ? 0 : 20,
-    }]);
+const b: MotionStyle = {
+	...box,
+	top: '50%',
+	left: '50%',
+	width: '300px',
+	height: '300px',
+};
+
+const items = $derived([
+	{
+		key: state ? 'a' : 'b',
+		id: state ? 'a' : 'b',
+		style: state ? a : b,
+		backgroundColor: state ? '#f00' : '#0f0',
+		borderRadius: state ? '0px' : '20px',
+	},
+]);
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <motion.div
     style={{
         position: 'relative',
-        width: 500,
-        height: 500,
+        width: '500px',
+        height: '500px',
         backgroundColor: 'blue',
     }}
 >
-    <AnimatePresence values={items}>
-        {#snippet children({ item })}
+    <AnimatePresence>
+        {#each items as item (item.key)}
             <motion.div
                 id={item.id}
                 data-testid="box"
@@ -58,11 +65,9 @@
                     borderRadius: item.borderRadius,
                 }}
                 transition={{ duration: 1, ease: () => 0.5 }}
-                onclick={() => state = !state}
-                transformTemplate={(_, generated) =>
-                    `translate(-50%, -50%) ${generated}`
-                }
+                onclick={() => (state = !state)}
+                transformTemplate={(_, generated) => `translate(-50%, -50%) ${generated}`}
             />
-        {/snippet}
+        {/each}
     </AnimatePresence>
 </motion.div>

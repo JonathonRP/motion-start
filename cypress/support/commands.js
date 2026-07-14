@@ -22,11 +22,22 @@
 //
 //
 // -- This is will overwrite an existing command --
-Cypress.Commands.overwrite("visit", (originalFn, url, options) => {
-    return originalFn(url, options).then(() => {
-        // SvelteKit has SSR disabled so the page starts blank.
-        // Wait for JS to render #loading, then wait for it to finish loading.
-        cy.get('#loading', { timeout: 10000 }).should('exist')
-        cy.get('#loading', { timeout: 10000 }).should('not.exist')
-    })
-})
+Cypress.Commands.overwrite('visit', (originalFn, url, options) => {
+	return originalFn(url, options).then((window) => {
+		if (typeof url !== 'string' || !url.startsWith('?test=')) return;
+
+		return new Cypress.Promise((resolve, reject) => {
+			const started = Date.now();
+			const checkReady = () => {
+				if (window.document.documentElement.dataset.fixtureReady) {
+					resolve(window);
+				} else if (Date.now() - started > 30000) {
+					reject(new Error('Timed out waiting for the Svelte fixture to become ready'));
+				} else {
+					setTimeout(checkReady, 10);
+				}
+			};
+			checkReady();
+		});
+	});
+});

@@ -1,101 +1,62 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
-    /**
-     * Drag test fixture - ported from motiondivision/motion
-     * Tests basic drag functionality with constraints, elastic, momentum, etc.
-     */
-    import { motion, useMotionValue } from '$lib/motion-start';
-    import { page } from '$app/state';
-    import { onMount } from 'svelte';
+import { motion } from '$lib/motion-start';
+import { page } from '$app/state';
+import { onMount } from 'svelte';
 
-    // URL params for test configuration
-    const axis = $derived(page.url.searchParams.get('axis') || 'both');
-    const lock = $derived(page.url.searchParams.get('lock') === 'true');
-    const layout = $derived(page.url.searchParams.get('layout') === 'true');
+function getValueParam(name: string, isPercentage: boolean) {
+	const param = page.url.searchParams.get(name);
+	if (!param) return 0;
+	return isPercentage ? `${param}%` : Number.parseFloat(param);
+}
 
-    // Motion values for tracking position
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
+const axis = $derived.by(() => {
+	const value = page.url.searchParams.get('axis');
+	return value === 'x' || value === 'y' ? value : undefined;
+});
+const lock = $derived(page.url.searchParams.get('lock') === 'true');
+const isPercentage = $derived(Boolean(page.url.searchParams.get('percentage')));
+const top = $derived(Number.parseFloat(page.url.searchParams.get('top') ?? '') || undefined);
+const left = $derived(Number.parseFloat(page.url.searchParams.get('left') ?? '') || undefined);
+const right = $derived(Number.parseFloat(page.url.searchParams.get('right') ?? '') || undefined);
+const bottom = $derived(Number.parseFloat(page.url.searchParams.get('bottom') ?? '') || undefined);
+const snapToOrigin = $derived(Boolean(page.url.searchParams.get('return')));
+const x = $derived(getValueParam('x', isPercentage));
+const y = $derived(getValueParam('y', isPercentage));
+const layout = $derived.by(() => {
+	const value = page.url.searchParams.get('layout');
+	if (value === 'true') return true;
+	return value === 'position' || value === 'size' || value === 'preserve-aspect' ? value : undefined;
+});
 
-    // State for displaying values
-    let dragState = $state('idle');
-    let xValue = $state(0);
-    let yValue = $state(0);
-
-    // Subscribe to motion value changes
-    $effect(() => {
-        const unsubX = x.on('change', (v) => {
-            xValue = Math.round(v);
-        });
-        const unsubY = y.on('change', (v) => {
-            yValue = Math.round(v);
-        });
-        return () => {
-            unsubX();
-            unsubY();
-        };
-    });
-
-    function handleDragStart() {
-        dragState = 'dragging';
-    }
-
-    function handleDragEnd() {
-        dragState = 'idle';
-    }
-
-    // Determine drag prop based on axis
-    const dragProp = $derived(
-        axis === 'x' ? 'x' as const :
-        axis === 'y' ? 'y' as const :
-        true as const
-    );
-
-    onMount(() => {
-        (window as any).__testReady = true;
-    });
+onMount(() => {
+	window.scrollTo(0, 100);
+});
 </script>
 
-<div id="container" style="padding: 100px;">
-    <div id="output">
-        <span id="state">{dragState}</span>
-        <span id="x">{xValue}</span>
-        <span id="y">{yValue}</span>
-    </div>
-
+<div style="height: 2000px; padding-top: 100px;">
     <motion.div
         id="box"
-        drag={dragProp}
+        data-testid="draggable"
+        drag={axis ?? true}
+        dragElastic={0}
+        dragMomentum={false}
+        dragConstraints={{ top, left, right, bottom }}
+        dragSnapToOrigin={snapToOrigin}
         dragDirectionLock={lock}
         layout={layout}
-        dragConstraints={{
-            top: -100,
-            left: -100,
-            right: 100,
-            bottom: 100,
-        }}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        style={{
+        initial={{
+            width: '50px',
+            height: '50px',
+            background: 'red',
             x,
             y,
-            width: '100px',
-            height: '100px',
+        }}
+        style={{
+            width: '50px',
+            height: '50px',
             background: 'red',
         }}
     />
 </div>
-
-<style>
-    #container {
-        position: relative;
-        width: 400px;
-        height: 400px;
-        background: #f0f0f0;
-    }
-    #output {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 20px;
-        font-family: monospace;
-    }
-</style>

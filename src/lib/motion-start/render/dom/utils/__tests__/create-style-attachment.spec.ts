@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { motionValue } from '../../../../value';
 import { createStyleAttachment } from '../create-style-attachment';
 

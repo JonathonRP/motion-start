@@ -1,52 +1,54 @@
 <script lang="ts">
-	import { Motion as motion, useInstantLayoutTransition } from '$lib/motion-start';
+import { motion, type LayoutProps, type MotionStyle, useInstantLayoutTransition } from '$lib/motion-start';
 
-	const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-	const type = params.get('type') || true;
+const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+const paramType = params.get('type');
+const type: LayoutProps['layout'] =
+	paramType === 'position' || paramType === 'size' || paramType === 'preserve-aspect' ? paramType : true;
 
-	let bgColor = $state('#f00');
-	let state = $state(true);
+let bgColor = $state('#f00');
+let isFirstLayout = $state(true);
 
-	const startTransition = useInstantLayoutTransition();
+const startTransition = useInstantLayoutTransition();
 
-	const box = {
-		position: 'absolute',
-		top: '0',
-		left: '0',
-	};
+const box = {
+	position: 'absolute',
+	top: '0',
+	left: '0',
+} satisfies MotionStyle;
 
-	const a = {
-		...box,
-		width: '100px',
-		height: '200px',
-	};
+const a = {
+	...box,
+	width: '100px',
+	height: '200px',
+} satisfies MotionStyle;
 
-	const b = {
-		...box,
-		top: '100px',
-		left: '200px',
-		width: '300px',
-		height: '300px',
-	};
+const b = {
+	...box,
+	top: '100px',
+	left: '200px',
+	width: '300px',
+	height: '300px',
+} satisfies MotionStyle;
 
-	function handleClick() {
-		startTransition(() => {
-			bgColor = '#00f';
-		});
-		state = !state;
-	}
+function handleClick() {
+	startTransition(() => {
+		bgColor = '#00f';
+	});
+	isFirstLayout = !isFirstLayout;
+}
 </script>
 
-{#key state}
+{#key isFirstLayout}
 	<motion.div
-		id={state ? 'a' : 'b'}
+		id={isFirstLayout ? 'a' : 'b'}
 		data-testid="box"
 		layoutId="box"
 		layout={type}
 		style={{
-			...(state ? a : b),
+			...(isFirstLayout ? a : b),
 			backgroundColor: bgColor,
-			borderRadius: state ? '0' : '20px',
+			borderRadius: isFirstLayout ? '0' : '20px',
 		}}
 		onclick={handleClick}
 	/>

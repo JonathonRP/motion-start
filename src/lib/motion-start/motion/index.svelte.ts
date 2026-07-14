@@ -8,6 +8,7 @@ import type { Component, ComponentProps, Snippet } from 'svelte';
 import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte';
 import { useLazyContext } from '../context/LazyContext';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
+import { setMotionContext, useMotionContext } from '../context/MotionContext';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte';
 import type { CreateVisualElement } from '../render/types';
 import { invariant, warning } from '../utils/errors';
@@ -66,13 +67,18 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 		const { isStatic } = $derived(configAndProps);
 
-		const context = $derived.by(useCreateMotionContext<Instance>(() => props));
+		const parentContext = useMotionContext();
+
+		const context = $derived.by(useCreateMotionContext<Instance>(() => props, parentContext));
 
 		// Call useVisualState once — mirrors React's useConstant pattern.
 		// visualState.latestValues is taken by reference by VisualElement and mutated
 		// in-place during animation. Re-calling on every props change creates a new
 		// empty latestValues object, causing UseRender to write style="" and flash.
-		const visualState = useVisualState(() => props, isStatic);
+		const visualState = useVisualState(
+			() => props,
+			() => isStatic
+		);
 
 		const layoutProjection = $derived.by(() => getProjectionFunctionality(() => configAndProps));
 		/**
@@ -87,11 +93,24 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				() => visualState,
 				() => configAndProps,
 				createVisualElement,
-				() => layoutProjection.ProjectionNode
+				() => layoutProjection.ProjectionNode,
+				parentContext
 			)
 		);
 
-		useStrictMode(configAndProps, preloadedFeatures);
+		useStrictMode(() => configAndProps, preloadedFeatures);
+
+		setMotionContext({
+			get visualElement() {
+				return visualElement;
+			},
+			get initial() {
+				return context.initial;
+			},
+			get animate() {
+				return context.animate;
+			},
+		});
 
 		// Keep context in sync with the current visual element before commit.
 		watch.pre([() => visualElement], () => {
@@ -166,7 +185,7 @@ export function useLayoutId(props: () => MotionProps) {
 	return layoutGroupId && layoutId !== undefined ? `${layoutGroupId}-${layoutId}` : layoutId;
 }
 
-export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: FeatureBundle) {
+export function useStrictMode(configAndProps: () => MotionProps, preloadedFeatures?: FeatureBundle) {
 	const { strict: isStrict } = useLazyContext();
 
 	/**
@@ -176,7 +195,7 @@ export function useStrictMode(configAndProps: MotionProps, preloadedFeatures?: F
 	if (process.env.NODE_ENV !== 'production' && preloadedFeatures && isStrict) {
 		const strictMessage =
 			'You have rendered a `motion` component within a `LazyMotion` component. This will break tree shaking. Import and render a `m` component instead.';
-		configAndProps.ignoreStrict ? warning(false, strictMessage) : invariant(false, strictMessage);
+		configAndProps().ignoreStrict ? warning(false, strictMessage) : invariant(false, strictMessage);
 	}
 }
 

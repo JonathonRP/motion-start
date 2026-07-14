@@ -2,9 +2,9 @@
 Copyright (c) 2018 Framer B.V. -->
 
 <script lang="ts" module>
-	function useDefaultMotionValue(value: any, defaultValue = 0) {
-		return isMotionValue(value) ? value : useMotionValue(defaultValue);
-	}
+function useDefaultMotionValue(value: any, defaultValue = 0) {
+	return isMotionValue(value) ? value : useMotionValue(defaultValue);
+}
 </script>
 
 <script lang="ts" generics="V">
@@ -74,9 +74,12 @@ Copyright (c) 2018 Framer B.V. -->
 	);
 
 	const context = $derived(useReorderContext());
+	function getInitialStyleValue(axis: "x" | "y") {
+		return style?.[axis];
+	}
 	const point: Record<"x" | "y", ReturnType<typeof useDefaultMotionValue>> = {
-		x: useDefaultMotionValue(style?.x),
-		y: useDefaultMotionValue(style?.y),
+		x: useDefaultMotionValue(getInitialStyleValue("x")),
+		y: useDefaultMotionValue(getInitialStyleValue("y")),
 	};
 
 	const zIndex = useTransform([point.x, point.y], ([latestX, latestY]) =>

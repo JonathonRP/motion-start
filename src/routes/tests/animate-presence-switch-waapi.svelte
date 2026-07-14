@@ -16,8 +16,8 @@
 <div>
     Animation count: <motion.span id="count">{count.get()}</motion.span>
 </div>
-<AnimatePresence initial={false} values={items}>
-    {#snippet children({ item })}
+<AnimatePresence initial={false}>
+    {#each items as item (item.key)}
         <motion.div
             id={item.id}
             class="item"
@@ -29,5 +29,5 @@
         >
             {item.key}
         </motion.div>
-    {/snippet}
+    {/each}
 </AnimatePresence>

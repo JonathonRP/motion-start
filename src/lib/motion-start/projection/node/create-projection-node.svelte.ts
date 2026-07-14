@@ -763,6 +763,12 @@ export function createProjectionNode<I = unknown>({
 		updateSnapshot() {
 			if (this.snapshot || !this.instance) return;
 
+			const instance = this.instance as unknown as Element | undefined;
+			if (instance && !instance.isConnected && this.layout) {
+				this.snapshot = cloneMeasurements(this.layout, this.latestValues, this.target);
+				return;
+			}
+
 			this.snapshot = this.measure();
 		}
 
@@ -1774,7 +1780,6 @@ function updateLayout<I>(node: IProjectionNode<I>) {
 
 function notifyLayoutUpdate<I>(node: IProjectionNode<I>) {
 	const snapshot = node.resumeFrom?.snapshot || node.snapshot;
-
 	if (node.isLead() && node.layout && snapshot && node.hasListeners('didUpdate')) {
 		const { layoutBox: layout, measuredBox: measuredLayout } = node.layout;
 		const { animationType } = node.options;
@@ -1916,6 +1921,25 @@ function clearMeasurements<I>(node: IProjectionNode<I>) {
 
 function clearIsLayoutDirty<I>(node: IProjectionNode<I>) {
 	node.isLayoutDirty = false;
+}
+
+function cloneMeasurements(
+	measurements: Measurements,
+	latestValues: ResolvedValues,
+	layoutBoxOverride?: Box
+): Measurements {
+	const measuredBox = createBox();
+	const layoutBox = createBox();
+	copyBoxInto(measuredBox, layoutBoxOverride || measurements.measuredBox);
+	copyBoxInto(layoutBox, layoutBoxOverride || measurements.layoutBox);
+
+	return {
+		animationId: measurements.animationId,
+		measuredBox,
+		layoutBox,
+		latestValues: { ...latestValues },
+		source: measurements.source,
+	};
 }
 
 function resetTransformStyle<I>(node: IProjectionNode<I>) {

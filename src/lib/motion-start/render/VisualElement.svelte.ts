@@ -47,6 +47,52 @@ const propEventHandlers = [
 	'LayoutAnimationComplete',
 ] as const;
 
+function findClosestProjectingParent(instance: unknown, layoutId?: string) {
+	if (!(instance instanceof Element)) return undefined;
+
+	let parent = instance.parentElement;
+	while (parent) {
+		const parentVisualElement = visualElementStore.get(parent);
+		const parentOptions = parentVisualElement?.options as { allowProjection?: boolean } | undefined;
+		const projection =
+			parentOptions?.allowProjection !== false ? parentVisualElement?.projection : undefined;
+
+		if (projection && (layoutId === undefined || projection.options.layoutId !== layoutId)) {
+			return projection;
+		}
+
+		parent = parent.parentElement;
+	}
+
+	return undefined;
+}
+
+function setProjectionParent(projection: IProjectionNode<unknown>, parent: IProjectionNode<unknown> | undefined) {
+	projection.parent = parent;
+	projection.root = parent ? parent.root || parent : projection;
+	projection.path = parent ? [...parent.path, parent] : [];
+	projection.depth = parent ? parent.depth + 1 : 0;
+}
+
+function syncProjectionParentWithDom(projection: IProjectionNode<unknown>, instance: unknown) {
+	const actualParent = findClosestProjectingParent(instance, projection.options.layoutId);
+
+	if (actualParent) {
+		if (projection.parent !== actualParent) {
+			setProjectionParent(projection, actualParent);
+		}
+		return;
+	}
+
+	const currentParentInstance = projection.parent?.instance;
+	const inheritedParentIsNotAncestor =
+		currentParentInstance instanceof Element && instance instanceof Node && !currentParentInstance.contains(instance);
+
+	if (inheritedParentIsNotAncestor && projection.root !== projection) {
+		setProjectionParent(projection, projection.root);
+	}
+}
+
 type ExtractFeature<T extends FeatureDefinitions[keyof FeatureDefinitions]> =
 	T extends FeatureDefinitions[keyof FeatureDefinitions]
 		? T[Exclude<keyof T, 'isEnabled' | 'MeasureLayout' | 'ProjectionNode'>]
@@ -369,6 +415,7 @@ export abstract class VisualElement<
 		visualElementStore.set(instance, this as VisualElement<unknown>);
 
 		if (this.projection && !this.projection.instance) {
+			syncProjectionParentWithDom(this.projection as IProjectionNode<unknown>, instance);
 			this.projection.mount(instance);
 		}
 
@@ -450,7 +497,7 @@ export abstract class VisualElement<
 
 		const removeOnRenderRequest = value.on('renderRequest', this.scheduleRender);
 
-		let removeSyncCheck: VoidFunction | undefined;
+		let removeSyncCheck: VoidFunction | void;
 		if (window.MotionCheckAppearSync) {
 			removeSyncCheck = window.MotionCheckAppearSync(this, key, value);
 		}

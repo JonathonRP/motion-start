@@ -1,27 +1,31 @@
 <script lang="ts">
-    import { motion, AnimatePresence } from '$lib/motion-start';
-    import { onMount } from 'svelte';
+import { motion, AnimatePresence } from '$lib/motion-start';
+import { onMount } from 'svelte';
 
-    let visible = $state(true);
+let visible = $state(true);
 
-    const animation = {
-        x: 0,
-        opacity: 0.5,
-    };
+const animation = {
+	x: 0,
+	opacity: 0.5,
+};
 
-    onMount(() => {
-        visible = !visible;
-    });
+onMount(() => {
+	const timer = setTimeout(() => {
+		visible = false;
+	}, 50);
+
+	return () => clearTimeout(timer);
+});
 </script>
 
-<AnimatePresence show={visible}>
-    {#snippet children()}
+<AnimatePresence>
+    {#if visible}
         <motion.div
-            id="box"
-            layout
-            style={{ width: 100, height: 100, background: 'blue' }}
-            transition={{ duration: 0.1 }}
-            exit={animation}
+        id="box"
+        layout
+        style={{ width: '100px', height: '100px', background: 'blue' }}
+        transition={{ duration: 0.1 }}
+        exit={animation}
         />
-    {/snippet}
+    {/if}
 </AnimatePresence>

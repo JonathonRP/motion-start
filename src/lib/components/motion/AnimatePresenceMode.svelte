@@ -1,13 +1,13 @@
 <!-- https://codesandbox.io/p/sandbox/t7qxhv?file=/src/styles.css -->
 
 <script lang="ts">
-    import { AnimatePresence, motion } from "$lib/motion-start";
-    import Box from "../Box.svelte";
+import { AnimatePresence, motion } from '$lib/motion-start';
+import Box from '../Box.svelte';
 
-    let count = $state(0);
-    let items = $state<number[]>([0]);
-    let popLayout = $state(false);
-    let mode: "popLayout" | "sync" = $derived(popLayout ? "popLayout" : "sync");
+let count = $state(0);
+let items = $state<number[]>([0]);
+let popLayout = $state(false);
+let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
 </script>
 
 <Box cls="overflow-hidden">
@@ -36,10 +36,10 @@
             </motion.button>
         </div>
         <ul
-            class="flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 list-none"
+            class="relative flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 list-none"
         >
-            <AnimatePresence {mode} values={items.map((id) => ({ key: id }))}>
-                {#snippet children({ item })}
+            <AnimatePresence {mode}>
+                {#each items as item (item)}
                     <motion.li
                         class="block bg-accent-500 h-[80px] w-full shrink-0 grow-0 basis-[80px] rounded-[20px] m-0 p-0"
                         layout
@@ -47,10 +47,10 @@
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring" }}
                         onclick={() => {
-                            items = items.filter((value) => value !== item.key);
+                            items = items.filter((value) => value !== item);
                         }}
                     />
-                {/snippet}
+                {/each}
             </AnimatePresence>
         </ul>
     </div>

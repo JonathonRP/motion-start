@@ -1,9 +1,9 @@
 <!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
 <script module lang="ts">
-	function newChildrenMap(): Map<string | number, boolean> {
-		return new Map<string | number, boolean>();
-	}
+function newChildrenMap(): Map<string | number, boolean> {
+	return new Map<string | number, boolean>();
+}
 </script>
 
 <script lang="ts">
@@ -51,26 +51,34 @@ Copyright (c) 2018 Framer B.V. -->
 		};
 	};
 
-	let context = $state<PresenceContext>({
+	let measurePop = $state<Attachment | undefined>();
+	const layoutVersion = $derived(
+		presenceAffectsLayout && presenceLayoutVersion !== undefined ? presenceLayoutVersion : 0,
+	);
+
+	const context: PresenceContext = {
 		id,
 		register,
 		onExitComplete: handleExitComplete,
-		measurePop: undefined,
-		initial,
-		isPresent,
-		custom,
-		presenceLayoutVersion: 0,
-	});
-
-	$effect.pre(() => {
-		context.initial = initial;
-		context.isPresent = isPresent;
-		context.custom = custom;
-
-		if (presenceAffectsLayout && presenceLayoutVersion !== undefined) {
-			context.presenceLayoutVersion = presenceLayoutVersion;
-		}
-	});
+		get measurePop() {
+			return measurePop;
+		},
+		set measurePop(value) {
+			measurePop = value;
+		},
+		get initial() {
+			return initial;
+		},
+		get isPresent() {
+			return isPresent;
+		},
+		get custom() {
+			return custom;
+		},
+		get presenceLayoutVersion() {
+			return layoutVersion;
+		},
+	};
 
 	// When this child begins exiting, reset every registered descendant back to
 	// incomplete so the parent waits for the new exit cycle to finish.

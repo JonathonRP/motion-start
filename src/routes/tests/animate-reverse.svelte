@@ -1,44 +1,50 @@
 <script lang="ts">
-	/**
-	 * animate-reverse test fixture - ported from framer-motion
-	 * Tests that animate() plays in reverse with negative speed when layout prop is present
-	 * Expected: clicking #action button results in #result value = "Success"
-	 */
-	import { motion, animate } from '$lib/motion-start';
-	import { onMount } from 'svelte';
+import { animate, motion } from '$lib/motion-start';
+import { tick } from 'svelte';
 
-	let boxRef: HTMLDivElement | undefined = $state();
-	let result = $state('');
+let count = $state(0);
+let result = $state('');
 
-	function handleClick() {
-		if (!boxRef) return;
+$effect(() => {
+	if (count % 2 === 0) return;
 
-		const controls = animate(
-			boxRef,
-			{ x: [100, 0] },
-			{
-				duration: 0.5,
-				onComplete: () => {
-					result = 'Success';
-				},
-			}
-		);
+	let stop: VoidFunction | undefined;
+	let cancelled = false;
 
-		// Set reverse playback speed
+	tick().then(() => {
+		if (cancelled) return;
+
+		const output: number[] = [];
+		const controls = animate(0, 100, {
+			duration: 0.5,
+			ease: 'linear',
+			onUpdate: (value: number) => output.push(value),
+			onComplete: () => {
+				const last = output[output.length - 1];
+				result = output[0] >= 90 && last === 0 && output.length !== 2 ? 'Success' : 'Fail';
+			},
+		});
+
+		controls.time = controls.duration;
 		controls.speed = -1;
-	}
-
-	onMount(() => {
-		(window as any).__testReady = true;
+		stop = controls.stop;
 	});
+
+	return () => {
+		cancelled = true;
+		stop?.();
+	};
+});
 </script>
 
-<button id="action" onclick={handleClick}>Animate Reverse</button>
-<input id="result" type="text" readonly value={result} />
-
-<motion.div
-	bind:this={boxRef}
-	id="box"
-	layout
-	style={{ width: '100px', height: '100px', background: 'red' }}
-></motion.div>
+<section
+    style="position: relative; display: flex; flex-direction: column; padding: 100px;"
+>
+    <button id="action" onclick={() => (count += 1)}>Animate</button>
+    <input id="result" type="text" readonly value={result} />
+    <motion.div
+        class="box"
+        layout
+        style={{ width: '100px', height: '100px', backgroundColor: 'red' }}
+    />
+</section>

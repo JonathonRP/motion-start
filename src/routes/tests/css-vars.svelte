@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { motion, useMotionValue } from '$lib/motion-start';
+import { motion, type MotionStyle } from '$lib/motion-start';
 
-    const style = {
-        width: 100,
-        height: 100,
-        backgroundColor: '#f00',
-        x: 0,
-        borderRadius: 20,
-    };
+const style: MotionStyle = {
+	width: '100px',
+	height: '100px',
+	backgroundColor: '#f00',
+	x: 0,
+	borderRadius: '20px',
+};
 
-    let isFirstFrame = true;
-    const content = useMotionValue('');
+let isFirstFrame = true;
+let content = $state('');
 </script>
 
 <div style="--a: #00F; --b: 100px; --c: 2; --d: 0.5;">
@@ -27,12 +27,12 @@
         {style}
         onUpdate={({ scale }) => {
             if (isFirstFrame) {
-                content.set(typeof scale === 'string' ? 'Fail' : 'Success');
+                content = typeof scale === 'string' ? 'Fail' : 'Success';
             }
             isFirstFrame = false;
         }}
         id="test"
     >
-        {content.get()}
+        {content}
     </motion.div>
 </div>

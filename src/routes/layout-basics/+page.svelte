@@ -81,7 +81,8 @@
     </div>
 
     <div class="h-24">
-        <AnimatePresence show={showPresence}>
+        <AnimatePresence>
+            {#if showPresence}
             <motion.div
                 id="presence-box"
                 class="border px-3 py-2"
@@ -91,6 +92,7 @@
             >
                 Presence
             </motion.div>
+            {/if}
         </AnimatePresence>
     </div>
 
@@ -116,8 +118,8 @@
             </button>
         </div>
         <div id="layout-list" class="flex flex-col gap-2">
-            <AnimatePresence values={layoutItems}>
-                {#snippet children({ item })}
+            <AnimatePresence>
+                {#each layoutItems as item (item.key)}
                     <motion.div
                         class="layout-item border px-3 py-2 bg-blue-100"
                         initial={{ opacity: 0, y: -20 }}
@@ -127,7 +129,7 @@
                     >
                         Layout Item {item.key}
                     </motion.div>
-                {/snippet}
+                {/each}
             </AnimatePresence>
         </div>
     </div>
@@ -154,11 +156,8 @@
             </button>
         </div>
         <div id="no-layout-list" class="flex flex-col gap-2">
-            <AnimatePresence
-                presenceAffectsLayout={false}
-                values={noLayoutItems}
-            >
-                {#snippet children({ item })}
+            <AnimatePresence presenceAffectsLayout={false}>
+                {#each noLayoutItems as item (item.key)}
                     <motion.div
                         class="no-layout-item border px-3 py-2 bg-red-100"
                         initial={{ opacity: 0, y: -20 }}
@@ -168,7 +167,7 @@
                     >
                         No-Layout Item {item.key}
                     </motion.div>
-                {/snippet}
+                {/each}
             </AnimatePresence>
         </div>
     </div>
@@ -184,8 +183,8 @@
             Add Default Item
         </button>
         <div id="default-presence-list" class="flex flex-col gap-2">
-            <AnimatePresence values={defaultItems}>
-                {#snippet children({ item })}
+            <AnimatePresence>
+                {#each defaultItems as item (item.key)}
                     <motion.div
                         class="default-item border px-3 py-2 bg-green-100"
                         initial={{ opacity: 0 }}
@@ -195,7 +194,7 @@
                     >
                         Default Item {item.key}
                     </motion.div>
-                {/snippet}
+                {/each}
             </AnimatePresence>
         </div>
     </div>

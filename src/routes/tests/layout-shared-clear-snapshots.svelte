@@ -1,33 +1,34 @@
 <script lang="ts">
-    import { motion, useCycle } from '$lib/motion-start';
-    import { page } from '$app/state';
+import { page } from '$app/state';
+import { motion, useCycle, type MotionStyle } from '$lib/motion-start';
 
-    const sibling = $derived(page.url.searchParams.get('sibling') === 'true');
-    const [state, cycle] = useCycle(0, 1, 2);
+const sibling = $derived(Boolean(page.url.searchParams.get('sibling')));
+const [state, cycle] = useCycle(0, 1, 2);
+const currentState = $derived(state());
 
-    const box = {
-        position: 'absolute',
-        top: 100,
-        left: 0,
-        width: 100,
-        height: 100,
-        background: 'red',
-    };
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '100px',
+	left: '0px',
+	width: '100px',
+	height: '100px',
+	background: 'red',
+};
 
-    const a = { ...box };
-    const b = { ...box, left: 200 };
+const a: MotionStyle = { ...box };
+const b: MotionStyle = { ...box, left: '200px' };
 </script>
 
 <button id="next" onclick={() => cycle()}>
     Next
 </button>
 
-{#if state !== 1}
+{#if currentState !== 1}
     <motion.div
         id="box"
         layout
         layoutId="box"
-        style={state === 0 ? a : b}
+        style={currentState === 0 ? a : b}
         transition={{
             duration: 0.15,
         }}
@@ -41,9 +42,6 @@
     methods can fire it) so the checkUpdateFailed will flag on the next frame
     and cancel the update
 -->
-{#if sibling && state !== 2}
-    <motion.div
-        layout
-        style={{ ...box, backgroundColor: 'blue', top: 200 }}
-    />
+{#if sibling && currentState !== 2}
+    <motion.div layout style={{ ...box, backgroundColor: 'blue', top: '200px' }} />
 {/if}

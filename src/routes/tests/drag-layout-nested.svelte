@@ -5,8 +5,13 @@
 
     let count = $state(0);
 
-    const parentDragParam = page.url.searchParams.get('parentDrag');
-    const childDragParam = page.url.searchParams.get('childDrag');
+    type DragAxis = true | 'x' | 'y';
+
+    function getDragParam(name: string): DragAxis {
+        const value = page.url.searchParams.get(name);
+        return value === 'x' || value === 'y' ? value : true;
+    }
+
     const parentLayout = $derived(page.url.searchParams.get('parentLayout') ? true : undefined);
     const childLayout = $derived(page.url.searchParams.get('childLayout') ? true : undefined);
     const constraints = $derived(Boolean(page.url.searchParams.get('constraints')));
@@ -15,43 +20,43 @@
 
     const parentDrag = $derived.by(() => {
         if (bothAxes) return 'y';
-        return parentDragParam || true;
+        return getDragParam('parentDrag');
     });
 
     const childDrag = $derived.by(() => {
         if (bothAxes) return 'x';
-        return childDragParam || true;
+        return getDragParam('childDrag');
     });
 
     const b = {
         position: 'absolute',
-        top: 100,
-        left: 100,
-        width: 300,
-        height: 300,
-        borderRadius: 10,
+        top: '100px',
+        left: '100px',
+        width: '300px',
+        height: '300px',
+        borderRadius: '10px',
         background: '#ff0055',
-    };
+    } as const;
 
     const a = {
         position: 'relative',
-        top: 50,
-        left: 50,
-        width: 600,
-        height: 200,
+        top: '50px',
+        left: '50px',
+        width: '600px',
+        height: '200px',
         background: '#ffcc00',
-        borderRadius: 10,
-    };
+        borderRadius: '10px',
+    } as const;
 
     const c = {
         position: 'relative',
-        top: 50,
-        left: 50,
-        width: 100,
-        height: 100,
+        top: '50px',
+        left: '50px',
+        width: '100px',
+        height: '100px',
         background: '#ffaa00',
-        borderRadius: 10,
-    };
+        borderRadius: '10px',
+    } as const;
 
     // Trigger layout projection in the child
     onMount(() => {

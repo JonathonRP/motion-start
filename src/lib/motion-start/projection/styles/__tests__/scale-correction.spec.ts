@@ -1,7 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/projection/styles/__tests__/scale-correction.test.ts */
 import { describe, test, expect, beforeEach } from 'vitest';
 import { createTestNode } from '../../node/__tests__/TestProjectionNode.svelte';
-import type { IProjectionNode } from '../../node/types';
 import { correctBorderRadius, pixelsToPercent } from '../scale-border-radius';
 import { correctBoxShadow } from '../scale-box-shadow';
 
@@ -16,7 +15,7 @@ describe('pixelsToPercent', () => {
 });
 
 describe('correctBorderRadius', () => {
-	let node: IProjectionNode;
+	let node: ReturnType<typeof createTestNode>;
 	beforeEach(() => {
 		node = createTestNode();
 	});
@@ -47,7 +46,7 @@ describe('correctBorderRadius', () => {
 });
 
 describe('correctBoxShadow', () => {
-	let node: IProjectionNode;
+	let node: ReturnType<typeof createTestNode>;
 	beforeEach(() => {
 		node = createTestNode();
 		node.projectionDelta = {
@@ -58,16 +57,12 @@ describe('correctBoxShadow', () => {
 
 	test('Correctly scales box shadow', () => {
 		node.treeScale = { x: 1, y: 1 };
-		expect(correctBoxShadow.correct('5px 10px 20px 40px #000', node)).toBe(
-			'10px 20px 40px 80px rgba(0, 0, 0, 1)'
-		);
+		expect(correctBoxShadow.correct('5px 10px 20px 40px #000', node)).toBe('10px 20px 40px 80px rgba(0, 0, 0, 1)');
 	});
 
 	test('Correctly scales box shadow when the tree is scaled', () => {
 		node.treeScale = { x: 0.5, y: 0.5 };
-		expect(correctBoxShadow.correct('10px 10px 10px 10px #000', node)).toBe(
-			'40px 40px 40px 40px rgba(0, 0, 0, 1)'
-		);
+		expect(correctBoxShadow.correct('10px 10px 10px 10px #000', node)).toBe('40px 40px 40px 40px rgba(0, 0, 0, 1)');
 	});
 
 	test('Correctly scale box shadow with CSS variables', () => {
@@ -77,9 +72,7 @@ describe('correctBoxShadow', () => {
 				'10px 10px 10px 10px var(--token-c8953278-7b3-4177-a0fa-f3cda39afd50, rgba(0, 0, 0, 1))',
 				node
 			)
-		).toBe(
-			'20px 20px 20px 20px var(--token-c8953278-7b3-4177-a0fa-f3cda39afd50, rgba(0, 0, 0, 1))'
-		);
+		).toBe('20px 20px 20px 20px var(--token-c8953278-7b3-4177-a0fa-f3cda39afd50, rgba(0, 0, 0, 1))');
 
 		// TODO: Only supports a single shadow
 		expect(

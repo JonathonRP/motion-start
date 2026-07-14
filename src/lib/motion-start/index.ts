@@ -32,7 +32,7 @@ export { useElementScroll } from './value/scroll/use-element-scroll';
 export { useViewportScroll } from './value/scroll/use-viewport-scroll';
 export { useMotionTemplate } from './value/use-motion-template';
 export { useMotionValue } from './value/use-motion-value.svelte';
-export { useScroll, type UseScrollOptions } from './value/use-scroll';
+export { useScroll, type UseScrollOptions } from './value/use-scroll.svelte';
 export { useSpring } from './value/use-spring';
 export { useTime } from './value/use-time';
 export { useTransform } from './value/use-transform';

@@ -14,6 +14,42 @@
 			"svelte": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
+		"./dom": {
+			"types": "./dist/dom.d.ts",
+			"svelte": "./dist/dom.js",
+			"import": "./dist/dom.js",
+			"default": "./dist/dom.js"
+		},
+		"./dom/mini": {
+			"types": "./dist/dom-mini.d.ts",
+			"svelte": "./dist/dom-mini.js",
+			"import": "./dist/dom-mini.js",
+			"default": "./dist/dom-mini.js"
+		},
+		"./client": {
+			"types": "./dist/client.d.ts",
+			"svelte": "./dist/client.js",
+			"import": "./dist/client.js",
+			"default": "./dist/client.js"
+		},
+		"./m": {
+			"types": "./dist/m.d.ts",
+			"svelte": "./dist/m.js",
+			"import": "./dist/m.js",
+			"default": "./dist/m.js"
+		},
+		"./mini": {
+			"types": "./dist/mini.d.ts",
+			"svelte": "./dist/mini.js",
+			"import": "./dist/mini.js",
+			"default": "./dist/mini.js"
+		},
+		"./projection": {
+			"types": "./dist/projection.d.ts",
+			"svelte": "./dist/projection.js",
+			"import": "./dist/projection.js",
+			"default": "./dist/projection.js"
+		},
 		"./package.json": "./package.json",
 		"./src/context/MotionContext": {
 			"types": "./dist/context/MotionContext/index.d.ts",
@@ -74,46 +110,46 @@
 		"csstype": "^3.2.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.10",
-		"@changesets/cli": "^2.30.0",
+		"@biomejs/biome": "^2.5.2",
+		"@changesets/cli": "^2.31.0",
 		"@emotion/is-prop-valid": "^1.4.0",
 		"@lucide/svelte": "^0.544.0",
 		"@sveltejs/adapter-auto": "^6.1.1",
-		"@sveltejs/kit": "^2.56.1",
-		"@sveltejs/package": "^2.5.7",
+		"@sveltejs/kit": "^2.69.1",
+		"@sveltejs/package": "^2.5.8",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
-		"@tailwindcss/typography": "^0.5.19",
-		"@tailwindcss/vite": "^4.2.2",
+		"@tailwindcss/typography": "^0.5.20",
+		"@tailwindcss/vite": "^4.3.2",
 		"@tsconfig/svelte": "^5.0.8",
 		"@types/bun": "latest",
 		"@types/cypress": "^1.1.6",
-		"@types/node": "^20.19.39",
+		"@types/node": "^20.19.43",
 		"@vitest/ui": "latest",
-		"bits-ui": "^2.17.2",
+		"bits-ui": "^2.18.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cypress": "latest",
 		"cypress-real-events": "^1.15.0",
-		"happy-dom": "^20.8.9",
+		"happy-dom": "^20.10.6",
 		"lucide-svelte": "^0.542.0",
 		"mode-watcher": "^1.1.0",
-		"publint": "^0.3.18",
+		"publint": "^0.3.21",
 		"runed": "^0.37.1",
-		"sv": "^0.14.0",
-		"svelte-check": "^4.4.6",
+		"sv": "^0.14.1",
+		"svelte-check": "^4.7.1",
 		"svelte-render-scan": "^1.1.0",
-		"tailwind-merge": "^3.5.0",
+		"tailwind-merge": "^3.6.0",
 		"tailwind-variants": "^3.2.2",
-		"tailwindcss": "^4.2.2",
+		"tailwindcss": "^4.3.2",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.9.3",
-		"vite": "^7.3.1",
+		"vite": "^7.3.6",
 		"vite-plugin-devtools-json": "^1.0.0",
 		"vitest": "latest",
-		"zod": "^4.3.6"
+		"zod": "^4.4.3"
 	},
 	"peerDependencies": {
-		"svelte": "5.55.1"
+		"svelte": "5.56.4"
 	},
 	"engines": {
 		"bun": ">=1.0.0",

@@ -1,23 +1,23 @@
 <script lang="ts">
-    import { scroll, frameData } from '$lib/motion-start';
-    import { onMount } from 'svelte';
+import { scroll, frameData } from '$lib/motion-start';
+import { onMount } from 'svelte';
 
-    let progress = $state(0);
-    let error = $state('');
+let progress = $state(0);
+let error = $state('');
 
-    onMount(() => {
-        let prevFrameStamp = 0;
+onMount(() => {
+	let prevFrameStamp = 0;
 
-        return scroll((p) => {
-            progress = p;
+	return scroll((p: number) => {
+		progress = p;
 
-            if (prevFrameStamp === frameData.timestamp) {
-                error = 'Concurrent event handlers detected';
-            }
+		if (prevFrameStamp === frameData.timestamp) {
+			error = 'Concurrent event handlers detected';
+		}
 
-            prevFrameStamp = frameData.timestamp;
-        });
-    });
+		prevFrameStamp = frameData.timestamp;
+	});
+});
 </script>
 
 <div style="height: 100vh; background-color: red;"></div>
@@ -25,8 +25,8 @@
 <div style="height: 100vh; background-color: blue;"></div>
 <div style="height: 100vh; background-color: yellow;"></div>
 <div id="progress" style="position: fixed; top: 0; left: 0;">
-    {progress}
+	{progress}
 </div>
 <div id="error" style="position: fixed; bottom: 0; left: 0;">
-    {error}
+	{error}
 </div>

@@ -1,30 +1,24 @@
 <script lang="ts">
-	import { Motion as motion } from '$lib/motion-start';
+import { motion, type MotionStyle } from '$lib/motion-start';
 
-	const box = {
-		position: 'absolute',
-		backgroundColor: 'red',
-		inset: '0',
-	};
+const box = {
+	position: 'absolute',
+	backgroundColor: 'red',
+	inset: '0',
+} satisfies MotionStyle;
 
-	const a = { ...box };
+const a = { ...box } satisfies MotionStyle;
 
-	const b = {
-		...box,
-		inset: '-20px',
-	};
+const b = {
+	...box,
+	inset: '-20px',
+} satisfies MotionStyle;
 
-	function styleToString(obj: Record<string, string>) {
-		return Object.entries(obj).map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}:${v}`).join(';');
-	}
-</script>
-
-<script lang="ts" module>
-	import type { Snippet } from 'svelte';
+let hover = $state(false);
+let boxHover = $state(false);
 </script>
 
 {#snippet Box()}
-	{@const boxHover = $state({ value: false })}
 	<motion.div
 		id="container"
 		layout
@@ -39,10 +33,10 @@
 			id="box"
 			data-testid="box"
 			layout
-			style={boxHover.value ? b : a}
+			style={boxHover ? b : a}
 			onclick={(e: MouseEvent) => {
 				e.stopPropagation();
-				boxHover.value = !boxHover.value;
+				boxHover = !boxHover;
 			}}
 			transition={{ duration: 1 }}
 		>
@@ -63,10 +57,6 @@
 	</motion.div>
 {/snippet}
 
-<script lang="ts">
-	let hover = $state(false);
-</script>
-
 <motion.div style={{ width: '400px', height: '400px', position: 'relative' }}>
 	<motion.div
 		id="parent"
@@ -81,7 +71,7 @@
 		}}
 		onclick={() => hover = !hover}
 		transition={{ duration: 5, ease: () => 0.5 }}
-		transformTemplate={(_, generated) => `translateY(-50%) ${generated}`}
+		transformTemplate={(_, generated) => 'translateY(-50%) ' + generated}
 	>
 		{@render Box()}
 	</motion.div>

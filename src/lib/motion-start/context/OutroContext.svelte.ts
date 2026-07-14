@@ -1,0 +1,22 @@
+import { createContext } from 'svelte';
+
+export interface MotionOutroContext {
+	readonly custom: unknown;
+	readonly mode: 'sync' | 'popLayout' | 'wait';
+	readonly nonce?: string;
+	begin: () => (id: string | number, completed?: boolean) => void;
+	reserve: (duration: number) => void;
+	remaining: () => number;
+}
+
+const [getMotionOutroContext, setMotionOutroContext] = createContext<MotionOutroContext | null>();
+
+export function useMotionOutroContext() {
+	try {
+		return getMotionOutroContext();
+	} catch {
+		return null;
+	}
+}
+
+export { setMotionOutroContext };

@@ -29,7 +29,7 @@ export type makeUseVisualState = <I, RS>(config: UseVisualStateConfig<I, RS>) =>
 
 export type UseVisualState<Instance, RenderState> = (
 	props: () => MotionProps,
-	isStatic: boolean
+	isStatic: () => boolean
 ) => VisualState<Instance, RenderState>;
 
 function makeState<I, RS>(
@@ -52,7 +52,7 @@ function makeState<I, RS>(
 
 export const makeUseVisualState =
 	<I, RS>(config: UseVisualStateConfig<I, RS>): UseVisualState<I, RS> =>
-	(props: () => MotionProps, isStatic: boolean): VisualState<I, RS> => {
+	(props: () => MotionProps, isStatic: () => boolean): VisualState<I, RS> => {
 		const context = useMotionContext();
 		const presenceContext = usePresenceContext();
 		const make = () => makeState(config, props(), context, presenceContext);
@@ -64,7 +64,7 @@ export const makeUseVisualState =
 		 */
 		const state = make();
 
-		return isStatic ? make() : state;
+		return isStatic() ? make() : state;
 	};
 
 function makeLatestValues(

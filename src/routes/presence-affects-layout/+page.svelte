@@ -47,8 +47,8 @@
 			</div>
 
 			<div id="list-with-layout" class="flex flex-col gap-2 min-h-12">
-				<AnimatePresence values={items1}>
-					{#snippet children({ item })}
+				<AnimatePresence>
+					{#each items1 as item (item.key)}
 						<motion.div
 							id="item-with-layout-{item}"
 							class="item-with-layout border px-3 py-2 bg-blue-100 rounded"
@@ -60,7 +60,7 @@
 						>
 							Item {item.key}
 						</motion.div>
-					{/snippet}
+					{/each}
 				</AnimatePresence>
 			</div>
 		</div>
@@ -92,8 +92,8 @@
 			</div>
 
 			<div id="list-without-layout" class="flex flex-col gap-2 min-h-12">
-				<AnimatePresence presenceAffectsLayout={false} values={items2}>
-					{#snippet children({ item })}
+				<AnimatePresence presenceAffectsLayout={false}>
+					{#each items2 as item (item.key)}
 						<motion.div
 							id="item-without-layout-{item}"
 							class="item-without-layout border px-3 py-2 bg-red-100 rounded"
@@ -105,7 +105,7 @@
 						>
 							Item {item.key}
 						</motion.div>
-					{/snippet}
+					{/each}
 				</AnimatePresence>
 			</div>
 		</div>

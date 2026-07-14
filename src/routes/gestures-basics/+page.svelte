@@ -55,7 +55,7 @@ import { motion } from '$lib/motion-start';
         border: 1px solid #ccc;
         position: relative;
     }
-    .draggable {
+    :global(.draggable) {
         width: 80px;
         height: 80px;
         background: #0ea5e9;
@@ -67,7 +67,7 @@ import { motion } from '$lib/motion-start';
         font-weight: 500;
         user-select: none;
     }
-    .box {
+    :global(.box) {
         width: 120px;
         height: 60px;
         background: #e5e7eb;

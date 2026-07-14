@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { RefObject } from '../../utils/safe-react-types';
 import { warnOnce } from '../../utils/warn-once';
-import { useScroll } from '../use-scroll';
+import { useScroll } from '../use-scroll.svelte';
 
 /**
  * @deprecated useElementScroll is deprecated. Convert to useScroll({ container: ref })

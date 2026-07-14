@@ -3,11 +3,9 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-  function isLazyBundle(
-    features: FeatureBundle | LazyFeatureBundle,
-  ): features is LazyFeatureBundle {
-    return typeof features === "function";
-  }
+function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is LazyFeatureBundle {
+	return typeof features === 'function';
+}
 </script>
 
 <script lang="ts">
@@ -65,15 +63,23 @@ Copyright (c) 2018 Framer B.V. -->
 
   let loadedRenderer: CreateVisualElement<any> | undefined = undefined;
 
-  if (!isLazyBundle(features)) {
-    const { renderer, ...loadedFeatures } = features;
-    loadedRenderer = renderer;
-    loadFeatures(loadedFeatures);
+  function loadInitialFeatures() {
+    if (!isLazyBundle(features)) {
+      const { renderer, ...loadedFeatures } = features;
+      loadedRenderer = renderer;
+      loadFeatures(loadedFeatures);
+    }
   }
 
+  loadInitialFeatures();
+
   setLazyContext({
-    renderer: loadedRenderer,
-    strict: strict!,
+    get renderer() {
+      return loadedRenderer;
+    },
+    get strict() {
+      return strict;
+    },
   });
 </script>
 

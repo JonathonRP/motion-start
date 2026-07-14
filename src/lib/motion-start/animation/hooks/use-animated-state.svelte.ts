@@ -51,7 +51,10 @@ const useVisualState = makeUseVisualState({
  */
 export function useAnimatedState(initialState: any) {
 	let animationState = initialState;
-	const visualState = useVisualState(() => ({}), false);
+	const visualState = useVisualState(
+		() => ({}),
+		() => false
+	);
 
 	const element = $state(
 		new StateVisualElement(

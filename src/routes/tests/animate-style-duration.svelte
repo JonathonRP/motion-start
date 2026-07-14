@@ -1,10 +1,5 @@
 <script lang="ts">
-	/**
-	 * animate-style-duration test fixture - ported from framer-motion
-	 * Tests that animateMini correctly respects the duration option
-	 * Expected: animation completes in specified duration
-	 */
-	import { animateMini } from '$lib/motion-start';
+	import { animateMini, spring } from '$lib/motion-start';
 	import { onMount } from 'svelte';
 
 	let boxRef: HTMLDivElement | undefined = $state();
@@ -12,22 +7,32 @@
 	onMount(() => {
 		if (!boxRef) return;
 
-		// Start time tracking
-		const startTime = performance.now();
+		boxRef.style.backgroundColor = 'red';
 
-		animateMini(boxRef, { opacity: 0.5 }, { duration: 0.5 }).then(() => {
-			const endTime = performance.now();
-			const elapsed = endTime - startTime;
-			// Store the elapsed time in a data attribute for testing
-			if (boxRef) {
-				boxRef.dataset.elapsed = String(Math.round(elapsed));
+		let animation = animateMini(boxRef, { width: [null, 200] }, { duration: 0.1 });
+
+		if (animation.duration === 0.1) {
+			animation = animateMini(boxRef, { width: [null, 200] }, {});
+
+			if (animation.duration === 0.3) {
+				animation = animateMini(boxRef, { width: [null, 200] }, { type: spring });
+
+				if (animation.duration === 1.1) {
+					boxRef.style.backgroundColor = 'green';
+				}
 			}
-		});
+		}
+
+		return () => {
+			animation.cancel();
+		};
 	});
 </script>
 
 <div
 	bind:this={boxRef}
 	id="box"
-	style="width: 100px; height: 100px; background: red; opacity: 1;"
-></div>
+	style="width: 100px; height: 100px; background-color: #fff;"
+>
+	content
+</div>

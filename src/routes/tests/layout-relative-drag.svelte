@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { motion } from '$lib/motion-start';
-    import { onMount } from 'svelte';
+import { motion } from '$lib/motion-start';
+import { onMount } from 'svelte';
 
-    let state = $state(true);
+let state = $state(true);
 
-    onMount(() => {
-        state = !state;
-    });
+onMount(() => {
+	state = !state;
+});
 </script>
 
 <motion.div
@@ -16,14 +16,14 @@
     dragMomentum={false}
     layout
     style={{
-        width: 200,
-        height: 200,
+        width: '200px',
+        height: '200px',
         background: 'red',
     }}
 >
     <motion.div
         id="child"
         layout
-        style={{ width: 100, height: 100, background: 'blue' }}
+        style={{ width: '100px', height: '100px', background: 'blue' }}
     />
 </motion.div>

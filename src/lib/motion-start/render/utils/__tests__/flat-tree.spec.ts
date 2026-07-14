@@ -5,7 +5,7 @@ import { FlatTree } from '../flat-tree';
 
 describe('FlatTree', () => {
 	test('Correctly sorts by depth on iteration', () => {
-		const tree = new FlatTree();
+		const tree = new FlatTree<WithDepth>();
 
 		tree.add({ depth: 1 });
 		tree.add({ depth: 0 });
@@ -18,7 +18,7 @@ describe('FlatTree', () => {
 	});
 
 	test("Doesn't crash when removing child mid-loop", () => {
-		const tree = new FlatTree();
+		const tree = new FlatTree<WithDepth>();
 		const toRemove = { depth: 1 };
 		tree.add({ depth: 0 });
 		tree.add(toRemove);

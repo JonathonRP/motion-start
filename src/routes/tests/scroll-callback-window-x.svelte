@@ -10,11 +10,18 @@
 </script>
 
 <div style="display: flex; width: 400vw;">
-    <div style="width: 100vw; height: 100vh; background-color: red; flex-shrink: 0;"></div>
-    <div style="width: 100vw; height: 100vh; background-color: green; flex-shrink: 0;"></div>
-    <div style="width: 100vw; height: 100vh; background-color: blue; flex-shrink: 0;"></div>
-    <div style="width: 100vw; height: 100vh; background-color: yellow; flex-shrink: 0;"></div>
+    <div style="width: 100vw; height: 500px; background-color: red; flex-shrink: 0;"></div>
+    <div style="width: 100vw; height: 500px; background-color: green; flex-shrink: 0;"></div>
+    <div style="width: 100vw; height: 500px; background-color: blue; flex-shrink: 0;"></div>
+    <div style="width: 100vw; height: 500px; background-color: yellow; flex-shrink: 0;"></div>
 </div>
 <div id="progress" style="position: fixed; top: 0; left: 0;">
     {progress}
 </div>
+
+<style>
+	:global(body) {
+		overflow-x: scroll !important;
+		overflow-y: hidden;
+	}
+</style>

@@ -1,61 +1,60 @@
 <script lang="ts">
-    /**
-     * Layout shared crossfade test: 0 -> a -> b -> 0
-     * Tests crossfade transitions where:
-     * - count=0: nothing shown
-     * - count=1: element "a" shown
-     * - count=2: element "b" shown (crossfade from a)
-     * - count=3: nothing shown
-     * Ported from motiondivision/motion v11.11.11
-     */
-    import { motion } from '$lib/motion-start';
-    import { page } from '$app/state';
+import { motion, type LayoutProps, type MotionStyle } from '$lib/motion-start';
+import { page } from '$app/state';
 
-    const type = $derived(page.url.searchParams.get('type') || true);
-    let count = $state(0);
+function parseLayoutProp(value: string | null): LayoutProps['layout'] {
+	if (!value || value === 'true') return true;
+	if (value === 'false') return false;
+	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
+	return true;
+}
 
-    const transition = {
-        default: { duration: 5, ease: () => 0.5 },
-    };
+const type = $derived(parseLayoutProp(page.url.searchParams.get('type')));
+let count = $state(0);
 
-    const overlay = {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-    };
+const transition = {
+	default: { duration: 0.2, ease: () => 0.5 },
+};
 
-    const box = {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        background: 'red',
-    };
+function nextCount() {
+	count = count + 1;
+}
 
-    const a = {
-        ...box,
-        width: 100,
-        height: 200,
-    };
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ' ') nextCount();
+}
 
-    const b = {
-        ...box,
-        top: 100,
-        left: 200,
-        width: 300,
-        height: 300,
-    };
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '0px',
+	left: '0px',
+	background: 'red',
+};
+
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '200px',
+};
+
+const b: MotionStyle = {
+	...box,
+	top: '100px',
+	left: '200px',
+	width: '300px',
+	height: '300px',
+};
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     id="trigger"
-    style={overlay}
-    onclick={() => count = count + 1}
+    style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;"
+    role="button"
+    tabindex="0"
+    onclick={nextCount}
+    onkeydown={handleKeydown}
 >
-    {#if count === 1}
+    {#if count === 1 || count === 3}
         <motion.div
             id="a"
             layoutId="box"

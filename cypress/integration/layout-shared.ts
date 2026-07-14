@@ -1009,7 +1009,7 @@ describe("Shared layout: A -> undefined -> B transition", () => {
                     height: 100,
                 })
             })
-            .get("button")
+            .get("#next")
             .click()
             .wait(50)
             .click()
@@ -1037,7 +1037,7 @@ describe("Shared layout: A -> undefined -> B transition", () => {
                     height: 100,
                 })
             })
-            .get("button")
+            .get("#next")
             .click()
             .wait(50)
             .click()

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Motion as motion } from '$lib/motion-start';
+import { motion } from '$lib/motion-start';
 
-	let count = $state(0);
+let count = $state(0);
 
-	// Note: Svelte doesn't have React Suspense. This is a simplified version
-	// that demonstrates the animation behavior without actual suspension.
-	// The test verifies animation initial/animate states work correctly.
+// Note: Svelte doesn't have React Suspense. This is a simplified version
+// that demonstrates the animation behavior without actual suspension.
+// The test verifies animation initial/animate states work correctly.
 </script>
 
 <button onclick={() => count++}>Re-mount components</button>

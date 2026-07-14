@@ -3,8 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
+import type { ResolvedValues } from '../../render/types';
 import { addUniqueItem, removeItem } from '../../utils/array';
-import type { IProjectionNode } from '../node/types';
+import { copyBoxInto } from '../geometry/copy';
+import { createBox } from '../geometry/models';
+import type { IProjectionNode, Measurements } from '../node/types';
 
 export class NodeStack<I> {
 	lead?: IProjectionNode<I>;
@@ -75,6 +78,8 @@ export class NodeStack<I> {
 			if (prevLead.snapshot) {
 				node.snapshot = prevLead.snapshot;
 				node.snapshot.latestValues = prevLead.animationValues || prevLead.latestValues;
+			} else if (prevLead.layout) {
+				node.snapshot = cloneMeasurements(prevLead.layout, prevLead.animationValues || prevLead.latestValues);
 			}
 
 			if (node.root && node.root.isUpdating) {
@@ -128,4 +133,19 @@ export class NodeStack<I> {
 			this.lead.snapshot = undefined;
 		}
 	}
+}
+
+function cloneMeasurements(measurements: Measurements, latestValues: ResolvedValues): Measurements {
+	const measuredBox = createBox();
+	const layoutBox = createBox();
+	copyBoxInto(measuredBox, measurements.measuredBox);
+	copyBoxInto(layoutBox, measurements.layoutBox);
+
+	return {
+		animationId: measurements.animationId,
+		measuredBox,
+		layoutBox,
+		latestValues: { ...latestValues },
+		source: measurements.source,
+	};
 }

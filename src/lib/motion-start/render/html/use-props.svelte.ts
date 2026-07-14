@@ -12,6 +12,8 @@ import { buildHTMLStyles } from './utils/build-styles.js';
 import { createHtmlRenderState } from './utils/create-render-state.js';
 import type { HTMLAttributes } from 'svelte/elements';
 
+type HTMLProps = Omit<HTMLAttributes<HTMLElement>, keyof MotionProps> & MotionProps;
+
 export function copyRawValuesOnly(
 	target: ResolvedValues,
 	source: { [key: string]: string | number | MotionValue },
@@ -50,10 +52,7 @@ function useStyle(props: MotionProps, visualState: ResolvedValues): ResolvedValu
 	return style;
 }
 
-export function useHTMLProps(
-	props: () => MotionProps & HTMLAttributes<HTMLElement>,
-	visualState: () => ResolvedValues
-) {
+export function useHTMLProps(props: () => HTMLProps, visualState: () => ResolvedValues) {
 	// The `any` isn't ideal but it is the type of createElement props argument
 	return () => {
 		const htmlProps: { draggable?: boolean; tabIndex?: number; style?: ResolvedValues } = {};

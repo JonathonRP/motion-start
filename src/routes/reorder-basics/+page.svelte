@@ -1,11 +1,11 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { Reorder } from "$lib/motion-start/components/Reorder";
-    let items = $state(["Alpha", "Bravo", "Charlie", "Delta"]);
-    function onReorder(newOrder: string[]) {
-        items = newOrder;
-    }
+import { Reorder } from '$lib/motion-start/components/Reorder';
+let items = $state(['Alpha', 'Bravo', 'Charlie', 'Delta']);
+function onReorder(newOrder: string[]) {
+	items = newOrder;
+}
 </script>
 
 <div class="container">
@@ -47,12 +47,12 @@
         font-weight: 600;
         margin-bottom: 12px;
     }
-    .list {
+    :global(.list) {
         display: flex;
         flex-direction: column;
         gap: 8px;
     }
-    .item {
+    :global(.item) {
         display: flex;
         align-items: center;
         gap: 10px;

@@ -1,42 +1,30 @@
 <script lang="ts">
-    import { motion, MotionConfig } from '$lib/motion-start';
+import { motion, MotionConfig, type MotionStyle } from '$lib/motion-start';
 
-    let isOpen = $state(false);
+let isOpen = $state(false);
 
-    const box = {
-        background: 'red',
-    };
+const box: MotionStyle = {
+	background: 'red',
+};
 
-    const a = {
-        ...box,
-        width: 100,
-        height: 200,
-    };
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '200px',
+};
 
-    const b = {
-        ...box,
-        width: 300,
-        height: 300,
-        background: 'blue',
-        borderRadius: 20,
-    };
+const b: MotionStyle = {
+	...box,
+	width: '300px',
+	height: '300px',
+	background: 'blue',
+	borderRadius: '20px',
+};
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <MotionConfig transition={{ duration: 0.1 }}>
-    <motion.div
-        id="a"
-        layoutId="box"
-        style={a}
-        onclick={() => isOpen = true}
-    />
+    <motion.div id="a" layoutId="box" style={a} onclick={() => (isOpen = true)} />
     {#if isOpen}
-        <motion.div
-            id="b"
-            layoutId="box"
-            style={b}
-            onclick={() => isOpen = false}
-        />
+        <motion.div id="b" layoutId="box" style={b} onclick={() => (isOpen = false)} />
     {/if}
 </MotionConfig>

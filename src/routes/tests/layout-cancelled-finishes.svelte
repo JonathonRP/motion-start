@@ -5,14 +5,13 @@
     const startTransition = useInstantLayoutTransition();
 </script>
 
-<AnimatePresence show={isVisible}>
-    {#snippet children()}
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
+<AnimatePresence>
+    {#if isVisible}
         <motion.div
+            layout
             onclick={() => startTransition(() => isVisible = false)}
             data-testid="cancellable"
-            style={{ height: 100 }}
+            style={{ height: '100px' }}
         />
-    {/snippet}
+    {/if}
 </AnimatePresence>

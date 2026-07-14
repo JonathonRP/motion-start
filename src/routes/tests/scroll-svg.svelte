@@ -1,49 +1,48 @@
 <script lang="ts">
-    import { motion, useScroll } from '$lib/motion-start';
+import { motion, useScroll } from '$lib/motion-start';
+import type { MotionStyle } from '$lib/motion-start';
+import type { RefObject } from '$lib/motion-start/utils/safe-react-types';
 
-    let rectRef: SVGRectElement | undefined = $state();
-    let svgRef: SVGSVGElement | undefined = $state();
+let rectRef: SVGRectElement | null = $state(null);
+let svgRef: SVGSVGElement | null = $state(null);
 
-    const rectValues = useScroll({
-        get target() { return rectRef; },
-        offset: ['start end', 'end start'],
-    });
+const rect = {
+	get current() {
+		return rectRef;
+	},
+} satisfies RefObject<Element>;
 
-    const svgValues = useScroll({
-        get target() { return svgRef; },
-        offset: ['start end', 'end start'],
-    });
+const svg = {
+	get current() {
+		return svgRef;
+	},
+} satisfies RefObject<Element>;
 
-    const fixed = {
-        position: 'fixed',
-        top: 10,
-        left: 10,
-    };
+const rectValues = useScroll({
+	target: rect,
+	offset: ['start end', 'end start'],
+});
+
+const svgValues = useScroll({
+	target: svg,
+	offset: ['start end', 'end start'],
+});
+
+const fixed: MotionStyle = {
+	position: 'fixed',
+	top: '10px',
+	left: '10px',
+};
 </script>
 
-<div
-    style={{
-        paddingTop: 400,
-        paddingBottom: 400,
-    }}
->
-    <svg bind:this={svgRef} viewBox="0 0 200 200" width="200" height="200">
-        <rect
-            bind:this={rectRef}
-            width="100"
-            height="100"
-            x="50"
-            y="50"
-            fill="red"
-        />
-    </svg>
+<div style="padding-top: 400px; padding-bottom: 400px;">
+	<svg bind:this={svgRef} viewBox="0 0 200 200" width="200" height="200">
+		<rect bind:this={rectRef} width="100" height="100" x="50" y="50" fill="red" />
+	</svg>
 </div>
 <motion.div style={{ ...fixed, color: 'white' }} id="rect-progress">
-    {rectValues.scrollYProgress.get()}
+	{rectValues.scrollYProgress.get()}
 </motion.div>
-<motion.div
-    style={{ ...fixed, top: 50, color: 'white' }}
-    id="svg-progress"
->
-    {svgValues.scrollYProgress.get()}
+<motion.div style={{ ...fixed, top: '50px', color: 'white' }} id="svg-progress">
+	{svgValues.scrollYProgress.get()}
 </motion.div>

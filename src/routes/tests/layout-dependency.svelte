@@ -1,52 +1,47 @@
 <script lang="ts">
-	import { motion, useMotionValue } from "$lib/motion-start";
+import { page } from '$app/state';
+import { motion, useMotionValue, type LayoutProps, type MotionStyle } from '$lib/motion-start';
 
-	const params = new URLSearchParams(
-		typeof window !== "undefined" ? window.location.search : "",
-	);
-	const type = params.get("type") || true;
+const toLayoutType = (value: string | null): LayoutProps['layout'] => {
+	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
+	if (value === 'false') return false;
+	return true;
+};
 
-	let state = $state(true);
-	const backgroundColor = useMotionValue("red");
+const type = $derived(toLayoutType(page.url.searchParams.get('type')));
 
-	const box = {
-		position: "absolute" as const,
-		top: "0",
-		left: "0",
-		background: "red",
-	};
+let state = $state(true);
+const backgroundColor = useMotionValue('red');
 
-	const a = {
-		...box,
-		width: "100px",
-		height: "200px",
-	};
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '0px',
+	left: '0px',
+	background: 'red',
+};
 
-	const b = {
-		...box,
-		top: "100px",
-		left: "200px",
-		width: "300px",
-		height: "300px",
-	};
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '200px',
+};
 
-	function styleToString(obj: Record<string, string>) {
-		return Object.entries(obj)
-			.map(
-				([k, v]) =>
-					`${k.replace(/([A-Z])/g, "-$1").toLowerCase()}:${v}`,
-			)
-			.join(";");
-	}
+const b: MotionStyle = {
+	...box,
+	top: '100px',
+	left: '200px',
+	width: '300px',
+	height: '300px',
+};
 </script>
 
 <motion.div
-	id="box"
-	data-testid="box"
-	layout={type}
-	layoutDependency={0}
-	style={{ ...(state ? a : b), backgroundColor }}
-	onclick={() => (state = !state)}
-	transition={{ duration: 0.15, ease: () => 0.5 }}
-	onLayoutAnimationComplete={() => backgroundColor.set("blue")}
+    id="box"
+    data-testid="box"
+    layout={type}
+    layoutDependency={0}
+    style={{ ...(state ? a : b), backgroundColor }}
+    onclick={() => (state = !state)}
+    transition={{ duration: 0.15, ease: () => 0.5 }}
+    onLayoutAnimationComplete={() => backgroundColor.set('blue')}
 />

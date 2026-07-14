@@ -1,62 +1,74 @@
 <script lang="ts">
-	import { Motion as motion } from '$lib/motion-start';
+import { motion, type LayoutProps, type MotionStyle } from '$lib/motion-start';
+import { page } from '$app/state';
 
-	const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-	const type = params.get('type') || true;
+function parseLayoutProp(value: string | null): LayoutProps['layout'] {
+	if (!value || value === 'true') return true;
+	if (value === 'false') return false;
+	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
+	return true;
+}
 
-	let count = $state(0);
+const type = $derived(parseLayoutProp(page.url.searchParams.get('type')));
+let count = $state(0);
 
-	const transition = {
-		default: { duration: 0.2, ease: () => 0.5 },
-	};
+const transition = {
+	default: { duration: 0.2, ease: () => 0.5 },
+};
 
-	const overlay = {
-		position: 'fixed',
-		inset: '0',
-	};
+function nextCount() {
+	count = count + 1;
+}
 
-	const box = {
-		position: 'absolute',
-		top: '0',
-		left: '0',
-		background: 'red',
-	};
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ' ') nextCount();
+}
 
-	const a = {
-		...box,
-		width: '100px',
-		height: '200px',
-	};
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '0px',
+	left: '0px',
+	background: 'red',
+};
 
-	const b = {
-		...box,
-		top: '100px',
-		left: '200px',
-		width: '300px',
-		height: '300px',
-	};
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '200px',
+};
 
-	function styleToString(obj: Record<string, string>) {
-		return Object.entries(obj).map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}:${v}`).join(';');
-	}
+const b: MotionStyle = {
+	...box,
+	top: '100px',
+	left: '200px',
+	width: '300px',
+	height: '300px',
+};
 </script>
 
-<div id="trigger" style={styleToString(overlay)} onclick={() => count++}>
-	{#if count === 1 || count === 3}
-		<motion.div
-			id="a"
-			layoutId="box"
-			layout={type}
-			style={a}
-			transition={transition}
-		/>
-	{/if}
-	{#if count === 2}
-		<motion.div
-			id="b"
-			layoutId="box"
-			style={b}
-			transition={transition}
-		/>
-	{/if}
+<div
+    id="trigger"
+    style="position: fixed; inset: 0;"
+    role="button"
+    tabindex="0"
+    onclick={nextCount}
+    onkeydown={handleKeydown}
+>
+    {#if count === 1 || count === 3}
+        <motion.div
+            id="a"
+            layoutId="box"
+            layout={type}
+            style={a}
+            transition={transition}
+        />
+    {/if}
+    {#if count === 2}
+        <motion.div
+            id="b"
+            layoutId="box"
+            style={b}
+            transition={transition}
+        />
+    {/if}
 </div>

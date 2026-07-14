@@ -1,27 +1,33 @@
-<script lang="ts">
-	/**
-	 * animate-x-percent test fixture - ported from framer-motion
-	 * Tests that percentage-based x animation works correctly
-	 */
-	import { motion } from '$lib/motion-start';
-	import { onMount } from 'svelte';
+<svelte:options runes={true} />
 
-	onMount(() => {
-		(window as any).__testReady = true;
-	});
+<script lang="ts">
+import { AnimatePresence, motion } from '$lib/motion-start';
+import { ref as createRef } from '$lib/motion-start/utils/ref.svelte';
+
+let isVisible = $state(true);
+let output = $state<Array<string | number>>([]);
+const testRef = createRef<HTMLDivElement | null>(null);
 </script>
 
-<div style="width: 200px; height: 100px; position: relative; background: #eee;">
-	<motion.div
-		id="box"
-		initial={{ x: '0%' }}
-		animate={{ x: '100%' }}
-		transition={{ duration: 0.2 }}
-		style={{
-			width: '50px',
-			height: '50px',
-			background: 'red',
-			position: 'absolute',
-		}}
-	></motion.div>
+<div style="height: 100px; width: 200px; display: flex;">
+    <AnimatePresence>
+        {#if isVisible}
+            <motion.div
+                id="test"
+                ref={testRef}
+                animate={{ x: '100%', y: '100%', rotate: '-30deg' }}
+                style={{ width: '200px', background: 'red' }}
+                onclick={() => (isVisible = false)}
+                transition={{ duration: 2 }}
+                onUpdate={({ x }) => {
+                    output.push(x);
+                }}
+                onAnimationComplete={() => {
+                    if (output[0] === '100%' && testRef.current) {
+                        testRef.current.innerHTML = 'Error';
+                    }
+                }}
+            />
+        {/if}
+    </AnimatePresence>
 </div>

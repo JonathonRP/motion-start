@@ -1,34 +1,31 @@
 <script lang="ts">
-    import { motion } from '$lib/motion-start';
-    import { tick } from 'svelte';
+import { motion } from '$lib/motion-start';
+import type { MotionStyle } from '$lib/motion-start';
 
-    let state = $state(true);
+let state = $state(true);
 
-    const box = {
-        position: 'absolute',
-        top: 0,
-        left: 200,
-        width: 100,
-        height: 100,
-        background: 'red',
-    };
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '0px',
+	left: '200px',
+	width: '100px',
+	height: '100px',
+	background: 'red',
+};
 
-    const a = box;
-    const b = { ...box, left: 500 };
+const a = box;
+const b: MotionStyle = { ...box, left: '500px' };
 
-    // Using $effect to simulate useLayoutEffect behavior
-    $effect(() => {
-        if (state === false) {
-            // Schedule the state update on next tick to avoid immediate loop
-            tick().then(() => {
-                state = true;
-            });
-        }
-    });
+// Using $effect to simulate useLayoutEffect behavior
+// Mirrors upstream useLayoutEffect: immediately undo the intermediate layout state.
+$effect.pre(() => {
+	if (state === false) {
+		state = true;
+	}
+});
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
+
 <motion.div
     id="box"
     data-testid="box"

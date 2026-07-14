@@ -1,49 +1,62 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button";
-    import { page } from "$app/state";
+import { resolve } from '$app/paths';
+import { page } from '$app/state';
+import { tick } from 'svelte';
 
-    // Dynamic imports for all test fixtures
-    const fixtures = import.meta.glob("./tests/*.svelte");
+// Dynamic imports for all test fixtures
+const fixtures = import.meta.glob('./tests/*.svelte');
+const fixtureAliases: Record<string, string> = {
+	layout: 'layout-test',
+};
 
-    let Component: any = $state(null);
-    let testName = $state("");
-    let error = $state("");
-    let loading = $state(true);
+function fixtureNameFromPath(path: string) {
+	const name = path.replace('./tests/', '').replace('.svelte', '');
+	return Object.entries(fixtureAliases).find(([, target]) => target === name)?.[0] ?? name;
+}
 
-    // Get test name from URL params
-    $effect(() => {
-        const test = page.url.searchParams.get("test");
-        if (test && test !== testName) {
-            testName = test;
-            loadFixture(test);
-        } else if (!test) {
-            loading = false;
-            Component = null;
-        }
-    });
+let Component: any = $state(null);
+let testName = $state('');
+let error = $state('');
+let loading = $state(true);
 
-    async function loadFixture(name: string) {
-        loading = true;
-        error = "";
-        Component = null;
+// Get test name from URL params
+$effect(() => {
+	const test = page.url.searchParams.get('test');
+	if (test && test !== testName) {
+		testName = test;
+		loadFixture(test);
+	} else if (!test) {
+		loading = false;
+		Component = null;
+	}
+});
 
-        const path = `./tests/${name}.svelte`;
-        const loader = fixtures[path];
+async function loadFixture(name: string) {
+	delete document.documentElement.dataset.fixtureReady;
+	loading = true;
+	error = '';
+	Component = null;
 
-        if (!loader) {
-            error = `Test fixture not found: ${name}`;
-            loading = false;
-            return;
-        }
+	const fixtureName = fixtureAliases[name] ?? name;
+	const path = `./tests/${fixtureName}.svelte`;
+	const loader = fixtures[path];
 
-        try {
-            const module = (await loader()) as { default: any };
-            Component = module.default;
-        } catch (e) {
-            error = `Failed to load fixture: ${e}`;
-        }
-        loading = false;
-    }
+	if (!loader) {
+		error = `Test fixture not found: ${name}`;
+		loading = false;
+		return;
+	}
+
+	try {
+		const module = (await loader()) as { default: any };
+		Component = module.default;
+	} catch (e) {
+		error = `Failed to load fixture: ${e}`;
+	}
+	loading = false;
+	await tick();
+	document.documentElement.dataset.fixtureReady = name;
+}
 </script>
 
 {#if loading}
@@ -58,12 +71,10 @@
             <h1>Test Fixtures</h1>
             <p>Available fixtures:</p>
             <ul>
-                {#each Object.keys(fixtures).sort() as path}
-                    {@const name = path
-                        .replace("./tests/", "")
-                        .replace(".svelte", "")}
+                {#each Object.keys(fixtures).sort() as path (path)}
+                    {@const name = fixtureNameFromPath(path)}
                     <li>
-                        <a href="?test={name}">{name}</a>
+                        <a href={resolve(`/?test=${encodeURIComponent(name)}` as `/?test=${string}`, {})}>{name}</a>
                     </li>
                 {/each}
             </ul>

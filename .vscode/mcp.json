@@ -1,7 +1,18 @@
 {
 	"servers": {
 		"svelte": {
-			"url": "https://mcp.svelte.dev/mcp"
+			"type": "stdio",
+			"command": "npx",
+			"args": ["@sveltejs/mcp"],
+			"cwd": "${input:cwd}",
+			"env": {}
 		}
-	}
+	},
+	"inputs": [
+		{
+			"id": "cwd",
+			"type": "promptString",
+			"description": "Working Directory"
+		}
+	]
 }

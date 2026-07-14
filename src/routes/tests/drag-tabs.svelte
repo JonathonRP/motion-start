@@ -1,72 +1,79 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
-    import { AnimatePresence, LayoutGroup, motion, MotionConfig, Reorder } from '$lib/motion-start';
-    import { onMount } from 'svelte';
+import { AnimatePresence, LayoutGroup, motion, MotionConfig, Reorder } from '$lib/motion-start';
+import { onDestroy } from 'svelte';
 
-    interface Ingredient {
-        icon: string;
-        label: string;
-    }
+interface Ingredient {
+	icon: string;
+	label: string;
+}
 
-    const allIngredients: Ingredient[] = [
-        { icon: '🍅', label: 'Tomato' },
-        { icon: '🥬', label: 'Lettuce' },
-        { icon: '🧀', label: 'Cheese' },
-        { icon: '🥕', label: 'Carrot' },
-        { icon: '🍌', label: 'Banana' },
-        { icon: '🫐', label: 'Blueberries' },
-        { icon: '🥂', label: 'Champers?' },
-    ];
+const allIngredients: Ingredient[] = [
+	{ icon: '🍅', label: 'Tomato' },
+	{ icon: '🥬', label: 'Lettuce' },
+	{ icon: '🧀', label: 'Cheese' },
+	{ icon: '🥕', label: 'Carrot' },
+	{ icon: '🍌', label: 'Banana' },
+	{ icon: '🫐', label: 'Blueberries' },
+	{ icon: '🥂', label: 'Champers?' },
+];
 
-    const [tomato, lettuce, cheese] = allIngredients;
-    const initialTabs = [tomato, lettuce, cheese];
+const [tomato, lettuce, cheese] = allIngredients;
+const initialTabs = [tomato, lettuce, cheese];
 
-    let tabs = $state<Ingredient[]>([...initialTabs]);
-    let selectedTab = $state<Ingredient>(tabs[0]);
+let tabs = $state<Ingredient[]>([...initialTabs]);
+let selectedTab = $state<Ingredient>(initialTabs[0]);
 
-    function removeItem<T>(arr: T[], item: T): T[] {
-        const newArr = [...arr];
-        const index = newArr.indexOf(item);
-        if (index > -1) newArr.splice(index, 1);
-        return newArr;
-    }
+function removeItem<T>(arr: T[], item: T): T[] {
+	const newArr = [...arr];
+	const index = newArr.indexOf(item);
+	if (index > -1) newArr.splice(index, 1);
+	return newArr;
+}
 
-    function closestItem<T>(arr: T[], item: T): T {
-        const index = arr.indexOf(item);
-        if (index === -1) return arr[0];
-        if (index === arr.length - 1) return arr[arr.length - 2];
-        return arr[index + 1];
-    }
+function closestItem<T>(arr: T[], item: T): T {
+	const index = arr.indexOf(item);
+	if (index === -1) return arr[0];
+	if (index === arr.length - 1) return arr[arr.length - 2];
+	return arr[index + 1];
+}
 
-    function getNextIngredient(ingredients: Ingredient[]): Ingredient | undefined {
-        const existing = new Set(ingredients);
-        return allIngredients.find((ingredient) => !existing.has(ingredient));
-    }
+function getNextIngredient(ingredients: Ingredient[]): Ingredient | undefined {
+	const existing = new Set(ingredients.map((ingredient) => ingredient.label));
+	return allIngredients.find((ingredient) => !existing.has(ingredient.label));
+}
 
-    function remove(item: Ingredient) {
-        if (item === selectedTab) {
-            selectedTab = closestItem(tabs, item);
-        }
-        tabs = removeItem(tabs, item);
-    }
+let repopulateTimer: ReturnType<typeof setTimeout> | null = null;
 
-    function add() {
-        const nextItem = getNextIngredient(tabs);
-        if (nextItem) {
-            tabs = [...tabs, nextItem];
-            selectedTab = nextItem;
-        }
-    }
+function scheduleRepopulateIfEmpty() {
+	if (tabs.length || repopulateTimer) return;
+	repopulateTimer = setTimeout(() => {
+		tabs = [...initialTabs];
+		selectedTab = initialTabs[0];
+		repopulateTimer = null;
+	}, 2000);
+}
 
-    // Automatically repopulate tabs when they all close
-    $effect(() => {
-        if (!tabs.length) {
-            const timer = setTimeout(() => {
-                tabs = [...initialTabs];
-                selectedTab = initialTabs[0];
-            }, 2000);
-            return () => clearTimeout(timer);
-        }
-    });
+function remove(item: Ingredient) {
+	if (item === selectedTab) {
+		selectedTab = closestItem(tabs, item);
+	}
+	tabs = removeItem(tabs, item);
+	scheduleRepopulateIfEmpty();
+}
+
+function add() {
+	const nextItem = getNextIngredient(tabs);
+	if (nextItem) {
+		tabs = [...tabs, nextItem];
+		selectedTab = nextItem;
+	}
+}
+
+onDestroy(() => {
+	if (repopulateTimer) clearTimeout(repopulateTimer);
+});
 </script>
 
 <style>
@@ -80,6 +87,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    :global(.window *),
+    :global(.window *::before),
+    :global(.window *::after) {
+        box-sizing: content-box;
     }
 
     .window {
@@ -196,7 +209,7 @@
         flex-shrink: 0;
     }
 
-    .add-item {
+    :global(.add-item) {
         width: 30px;
         height: 30px;
         background: #eee;
@@ -206,14 +219,14 @@
         align-self: center;
     }
 
-    .add-item:disabled {
+    :global(.add-item:disabled) {
         opacity: 0.4;
         cursor: default;
         pointer-events: none;
     }
 </style>
 
-<MotionConfig transition={{ duration: 0.1 }}>
+<MotionConfig transition={{ duration: 0.1 }} isStatic={false} transformPagePoint={(point) => point}>
     <div class="window">
         <nav>
             <LayoutGroup>
@@ -224,11 +237,11 @@
                     class="tabs"
                     values={tabs}
                 >
-                    {#snippet children(item)}
+                    {#snippet children({ item })}
                         <Reorder.Item
                             value={item}
                             id={item.label + '-tab'}
-                            initial={{ opacity: 0, y: 30, transition: { duration: 0.15 } }}
+                            initial={{ opacity: 0, y: 30 }}
                             animate={{
                                 backgroundColor: selectedTab === item ? '#f3f3f3' : '#fff',
                                 opacity: 1,
@@ -238,7 +251,7 @@
                             exit={{ opacity: 0, y: 20, transition: { duration: 0.3 } }}
                             whileDrag={{ backgroundColor: '#e3e3e3' }}
                             class="tab {selectedTab === item ? 'selected' : ''}"
-                            onPointerDown={() => selectedTab = item}
+                            onpointerdown={() => (selectedTab = item)}
                             dragTransition={{ bounceStiffness: 10000, bounceDamping: 10000 }}
                         >
                             <motion.span layout="position" id={item.label + '-label'}>
@@ -247,7 +260,7 @@
                             <motion.div layout class="close">
                                 <motion.button
                                     id={item.label + '-remove'}
-                                    onPointerDown={(event) => {
+                                    onpointerdown={(event: PointerEvent) => {
                                         event.stopPropagation();
                                         remove(item);
                                     }}
@@ -290,8 +303,8 @@
             </LayoutGroup>
         </nav>
         <main>
-            <AnimatePresence mode="wait" initial={false} show={!!selectedTab}>
-                {#snippet children()}
+            <AnimatePresence mode="wait" initial={false}>
+                {#if selectedTab}
                     <motion.div
                         id={`${selectedTab ? selectedTab.label : 'empty'}-content`}
                         animate={{ opacity: 1, y: 0 }}
@@ -301,7 +314,7 @@
                     >
                         {selectedTab ? selectedTab.icon : '😋'}
                     </motion.div>
-                {/snippet}
+                {/if}
             </AnimatePresence>
         </main>
     </div>

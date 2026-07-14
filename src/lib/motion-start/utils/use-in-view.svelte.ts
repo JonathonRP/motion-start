@@ -12,7 +12,10 @@ export interface UseInViewOptions extends Omit<InViewOptions, 'root' | 'amount'>
 	amount?: 'some' | 'all' | number;
 }
 
-export function useInView(ref: RefObject<Element>, { root, margin, amount, once = false }: UseInViewOptions = {}) {
+export function useInView(
+	ref: RefObject<Element>,
+	{ root, margin, amount, once = false }: UseInViewOptions = {}
+): () => boolean {
 	let isInView = $state(false);
 
 	$effect(() => {
@@ -33,5 +36,5 @@ export function useInView(ref: RefObject<Element>, { root, margin, amount, once 
 		return inView(ref.current, onEnter, options);
 	});
 
-	return isInView;
+	return () => isInView;
 }

@@ -952,17 +952,20 @@ export type Transition = (Orchestration & Repeat & TransitionDefinition) | (Orch
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type CSSPropertiesWithoutTransitionOrSingleTransforms = Omit<
 	Properties,
-	| 'transition'
-	| 'rotate'
-	| 'scale'
-	| 'perspective'
-	| 'x'
-	| 'y'
-	| 'z'
-	| 'translate'
-	| 'translateX'
-	| 'translateY'
-	| 'translateZ'
+	Extract<
+		| 'transition'
+		| 'rotate'
+		| 'scale'
+		| 'perspective'
+		| 'x'
+		| 'y'
+		| 'z'
+		| 'translate'
+		| 'translateX'
+		| 'translateY'
+		| 'translateZ',
+		keyof Properties
+	>
 >;
 
 type SVGTransformAttributes = {

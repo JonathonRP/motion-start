@@ -1,41 +1,62 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
-    /**
-     * Drag ref constraints test fixture - ported from motiondivision/motion v11.11.11
-     * Tests drag constraints using a ref to a container element
-     */
-    import { motion } from '$lib/motion-start';
-    import { onMount } from 'svelte';
+import { motion, useMotionValue } from '$lib/motion-start';
+import { ref as createRef } from '$lib/motion-start/utils/ref.svelte';
+import { page } from '$app/state';
+import { onMount } from 'svelte';
 
-    // Ref to the constraints container (wrapped in {current} for framer-motion compat)
-    let constraintsElement: HTMLDivElement | null = $state(null);
-    let constraintsRef = $derived({ current: constraintsElement });
+const containerRef = createRef<HTMLDivElement | null>(null);
+const layout = $derived.by(() => {
+	const value = page.url.searchParams.get('layout');
+	if (value === 'true') return true;
+	return value === 'position' || value === 'size' || value === 'preserve-aspect' ? value : undefined;
+});
+const x = useMotionValue('100%');
 
-    onMount(() => {
-        (window as any).__testReady = true;
-    });
+let dragging = $state(false);
+let siblingShifted = $state(false);
+
+onMount(() => {
+	window.scrollTo(0, 100);
+	const timer = setInterval(() => {
+		siblingShifted = !siblingShifted;
+	}, 200);
+
+	return () => clearInterval(timer);
+});
 </script>
 
-<div
-    id="constraints"
-    bind:this={constraintsElement}
-    style="width: 300px; height: 300px; background: #eee;"
->
-    {#if constraintsElement}
+<div style="height: 2000px; padding-top: 100px;">
+    <motion.div data-testid="constraint" style={{ width: '200px', height: '200px', background: 'blue' }} ref={containerRef}>
         <motion.div
             id="box"
+            data-testid="draggable"
             drag
-            dragConstraints={constraintsRef}
+            dragElastic={0}
+            dragMomentum={false}
             style={{
-                width: '100px',
-                height: '100px',
-                background: 'red',
+                width: '50px',
+                height: '50px',
+                background: dragging ? 'yellow' : 'red',
+                x,
             }}
+            dragConstraints={containerRef}
+            layout={layout}
+            onDragStart={() => (dragging = true)}
+            onDragEnd={() => (dragging = false)}
         />
-    {/if}
+    </motion.div>
 </div>
 
-<style>
-    #constraints {
-        position: relative;
-    }
-</style>
+<motion.div
+    layout
+    style={{
+        width: '200px',
+        height: '200px',
+        borderRadius: '20px',
+        background: 'blue',
+        position: 'relative',
+        left: siblingShifted ? '100px' : '0',
+    }}
+/>

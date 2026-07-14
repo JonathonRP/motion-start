@@ -8,7 +8,7 @@ import { tick, type Component } from 'svelte';
 import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
 import { useLazyContext } from '../../context/LazyContext';
 import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte';
-import { useMotionContext } from '../../context/MotionContext';
+import { useMotionContext, type MotionContext } from '../../context/MotionContext';
 import { usePresenceContext } from '../../context/PresenceContext.svelte';
 import { useSwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
 import { microtask } from '../../frameloop/microtask';
@@ -20,28 +20,33 @@ import type { MotionProps } from '../types';
 import type { VisualState } from './use-visual-state.svelte';
 
 export function useVisualElement<Instance, RenderState>(
-	Component: string | Component,
+	Component: string | Component<any>,
 	visualState: () => VisualState<Instance, RenderState>,
 	props: () => MotionProps,
 	createVisualElement: CreateVisualElement<Instance> | undefined,
-	ProjectionNodeConstructor: () => (new (...args: any[]) => IProjectionNode<unknown>) | undefined
+	ProjectionNodeConstructor: () => (new (...args: any[]) => IProjectionNode<unknown>) | undefined,
+	parentContext: MotionContext = useMotionContext()
 ): () => VisualElement<Instance> | null {
-	const { visualElement: parent } = $derived(useMotionContext());
+	const parent = $derived(parentContext.visualElement);
 
 	const presenceContext = usePresenceContext();
 	const isPresent = $derived(presenceContext?.isPresent);
-	const reducedMotionContext = $derived(useMotionConfigContext().reducedMotion);
+	const motionConfigContext = useMotionConfigContext();
+	const reducedMotionContext = $derived(motionConfigContext.reducedMotion);
 	const initialLayoutGroupConfig = $derived(useSwitchLayoutGroupContext());
 
 	let visualElement = $state<VisualElement<Instance> | null>(null);
 
-	createVisualElement = createVisualElement || useLazyContext().renderer;
+	const lazyContext = useLazyContext();
+	const getCreateVisualElement = () => createVisualElement || lazyContext.renderer;
 
 	const getPresenceContextSnapshot = () => (presenceContext ? { ...presenceContext } : null);
 
-	if (!visualElement && createVisualElement) {
+	function createInitialVisualElement(renderer: CreateVisualElement<Instance> | undefined) {
+		if (visualElement || !renderer) return;
+
 		visualElement =
-			createVisualElement(Component, {
+			renderer(Component, {
 				visualState: visualState(),
 				parent,
 				props: props(),
@@ -50,6 +55,8 @@ export function useVisualElement<Instance, RenderState>(
 				reducedMotionConfig: reducedMotionContext,
 			}) ?? null;
 	}
+
+	createInitialVisualElement(getCreateVisualElement());
 
 	$effect.pre(() => {
 		const ProjectionNode = ProjectionNodeConstructor();
@@ -85,27 +92,29 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 
 	watch.pre([() => visualElement, () => commitVersion], () => {
-		if (!visualElement) return;
+		const element = visualElement;
+		if (!element) return;
 
 		isMounted = true;
 		window.MotionIsMounted = true;
 
 		tick().then(() => {
-			visualElement.updateFeatures();
-			microtask.render(visualElement.render);
+			element.updateFeatures();
+			microtask.render(element.render);
 
-			if (wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
+			if (wantsHandoff && element.animationState) {
+				element.animationState.animateChanges();
 			}
 		});
 	});
 
 	watch.pre([() => visualElement, () => commitVersion], () => {
-		if (!visualElement) return;
+		const element = visualElement;
+		if (!element) return;
 
 		tick().then(() => {
-			if (!wantsHandoff && visualElement.animationState) {
-				visualElement.animationState.animateChanges();
+			if (!wantsHandoff && element.animationState) {
+				element.animationState.animateChanges();
 			}
 		});
 		if (wantsHandoff) {
@@ -129,7 +138,7 @@ function createProjectionNode(
 
 	visualElement.projection = new ProjectionNodeConstructor(
 		visualElement.latestValues,
-		props['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent)
+		props['data-framer-portal-id'] ? undefined : getClosestProjectingNode(visualElement.parent, layoutId)
 	) as IProjectionNode<unknown>;
 
 	visualElement.projection.setOptions({
@@ -147,11 +156,13 @@ function createProjectionNode(
 }
 
 function getClosestProjectingNode(
-	visualElement: VisualElement<unknown, unknown, { allowProjection?: boolean }> | null | undefined
+	visualElement: VisualElement<unknown, unknown, { allowProjection?: boolean }> | null | undefined,
+	layoutId?: string
 ): IProjectionNode<unknown> | undefined {
 	if (!visualElement) return undefined;
 
-	return visualElement.options.allowProjection !== false
-		? visualElement.projection
-		: getClosestProjectingNode(visualElement.parent);
+	const projection = visualElement.options.allowProjection !== false ? visualElement.projection : undefined;
+	return projection && (layoutId === undefined || projection.options.layoutId !== layoutId)
+		? projection
+		: getClosestProjectingNode(visualElement.parent, layoutId);
 }

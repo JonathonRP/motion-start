@@ -1,29 +1,37 @@
 <script lang="ts">
-    import { motion } from '$lib/motion-start';
-    import { page } from '$app/state';
+import { page } from '$app/state';
+import { motion, type LayoutProps } from '$lib/motion-start';
 
-    const axis = $derived(page.url.searchParams.get('axis'));
-    const lock = $derived(page.url.searchParams.get('lock'));
-    const top = $derived(parseFloat(page.url.searchParams.get('top') || '') || undefined);
-    const left = $derived(parseFloat(page.url.searchParams.get('left') || '') || undefined);
-    const right = $derived(parseFloat(page.url.searchParams.get('right') || '') || undefined);
-    const bottom = $derived(parseFloat(page.url.searchParams.get('bottom') || '') || undefined);
-    const layout = $derived(page.url.searchParams.get('layout') || undefined);
+type DragAxis = boolean | 'x' | 'y';
+
+const axis = $derived.by<DragAxis>(() => {
+	const value = page.url.searchParams.get('axis');
+	return value === 'x' || value === 'y' ? value : true;
+});
+const lock = $derived(page.url.searchParams.get('lock'));
+const top = $derived(parseFloat(page.url.searchParams.get('top') || '') || undefined);
+const left = $derived(parseFloat(page.url.searchParams.get('left') || '') || undefined);
+const right = $derived(parseFloat(page.url.searchParams.get('right') || '') || undefined);
+const bottom = $derived(parseFloat(page.url.searchParams.get('bottom') || '') || undefined);
+const layout = $derived.by<LayoutProps['layout']>(() => {
+	const value = page.url.searchParams.get('layout');
+	return value === 'position' || value === 'size' || value === 'preserve-aspect' ? value : undefined;
+});
 </script>
 
 <svg style="width: 500px; height: 500px;">
-    <motion.circle
-        id="box"
-        data-testid="draggable"
-        drag={axis ? axis : true}
-        dragElastic={0}
-        dragMomentum={false}
-        dragConstraints={{ top, left, right, bottom }}
-        dragDirectionLock={!!lock}
-        fill="red"
-        cx={50}
-        cy={50}
-        r={20}
-        {layout}
-    />
+	<motion.circle
+		id="box"
+		data-testid="draggable"
+		drag={axis}
+		dragElastic={0}
+		dragMomentum={false}
+		dragConstraints={{ top, left, right, bottom }}
+		dragDirectionLock={!!lock}
+		fill="red"
+		cx={50}
+		cy={50}
+		r={20}
+		{layout}
+	/>
 </svg>

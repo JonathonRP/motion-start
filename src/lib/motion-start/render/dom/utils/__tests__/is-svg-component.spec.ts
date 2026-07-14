@@ -1,4 +1,5 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/dom/utils/__tests__/is-svg-component.test.ts */
+import type { Component } from 'svelte';
 import { describe, test, expect } from 'vitest';
 import { isSVGComponent } from '../is-svg-component';
 
@@ -8,6 +9,7 @@ describe('isSVGComponent', () => {
 		expect(isSVGComponent('div')).toBe(false);
 		expect(isSVGComponent('feGaussian')).toBe(true);
 		expect(isSVGComponent('test-element')).toBe(false);
-		expect(isSVGComponent(() => null)).toBe(false);
+		const Component = (() => ({})) as Component;
+		expect(isSVGComponent(Component)).toBe(false);
 	});
 });

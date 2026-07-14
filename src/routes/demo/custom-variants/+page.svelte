@@ -121,7 +121,8 @@
             Toggle Simple
         </button>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showSimple}>
+            <AnimatePresence>
+                {#if showSimple}
                 <motion.div
                     id="simple-box"
                     initial={{ x: 0, opacity: 1 }}
@@ -131,6 +132,7 @@
                 >
                     Simple
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
     </section>
@@ -149,7 +151,8 @@
             Toggle Static Custom
         </button>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showStaticCustom}>
+            <AnimatePresence>
+                {#if showStaticCustom}
                 <motion.div
                     id="static-custom-box"
                     variants={staticVariants}
@@ -161,6 +164,7 @@
                 >
                     Static
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
     </section>
@@ -200,7 +204,8 @@
             </button>
         </div>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showDynamicCustom}>
+            <AnimatePresence>
+                {#if showDynamicCustom}
                 <motion.div
                     id="dynamic-custom-box"
                     variants={dynamicVariants}
@@ -212,6 +217,7 @@
                 >
                     Dynamic
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
         <p class="text-sm text-gray-500 mt-2">exitDirection: {exitDirection}</p>
@@ -229,7 +235,8 @@
             Toggle Object Custom
         </button>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showObjectCustom}>
+            <AnimatePresence>
+                {#if showObjectCustom}
                 <motion.div
                     id="object-custom-box"
                     variants={objectVariants}
@@ -241,6 +248,7 @@
                 >
                     Object
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
     </section>
@@ -259,7 +267,8 @@
             Toggle Negative Custom
         </button>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showNegativeCustom}>
+            <AnimatePresence>
+                {#if showNegativeCustom}
                 <motion.div
                     id="negative-custom-box"
                     variants={negativeVariants}
@@ -271,6 +280,7 @@
                 >
                     Negative
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
     </section>
@@ -289,7 +299,8 @@
             Toggle Variant Only
         </button>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showVariantOnly}>
+            <AnimatePresence>
+                {#if showVariantOnly}
                 <motion.div
                     id="variant-only-box"
                     variants={variantOnlyVariants}
@@ -300,6 +311,7 @@
                 >
                     Variant
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
     </section>
@@ -319,7 +331,8 @@
             Toggle Variant Function
         </button>
         <div class="h-24 mt-4 relative">
-            <AnimatePresence show={showVariantFunctionNoCustom}>
+            <AnimatePresence>
+                {#if showVariantFunctionNoCustom}
                 <motion.div
                     id="variant-function-no-custom-box"
                     variants={variantFunctionNoCustomVariants}
@@ -330,6 +343,7 @@
                 >
                     Fn No Custom
                 </motion.div>
+                {/if}
             </AnimatePresence>
         </div>
     </section>

@@ -1,35 +1,27 @@
 <script lang="ts">
-    import { AnimatePresence, motion } from '$lib/motion-start';
+import { AnimatePresence, motion, type MotionStyle } from '$lib/motion-start';
 
-    let range = $state([0, 1, 2]);
+let range = $state([0, 1, 2]);
 
-    const containerStyles = {
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '100px',
-    };
+const boxStyles: MotionStyle = {
+	width: '100px',
+	height: '100px',
+	backgroundColor: 'red',
+};
 
-    const boxStyles = {
-        width: '100px',
-        height: '100px',
-        backgroundColor: 'red',
-    };
+function removeItem() {
+	range = range.slice(0, -1);
+}
 
-    function removeItem() {
-        range = range.slice(0, -1);
-    }
-
-    // Map range to items with keys for AnimatePresence
-    const items = $derived(range.map(i => ({ key: i, id: i })));
+const items = $derived(range.map((id) => ({ key: id, id })));
 </script>
 
 <div style="position: relative; display: flex; flex-direction: column; padding: 100px;">
     <button id="remove" onclick={removeItem}>
         Remove
     </button>
-    <AnimatePresence values={items}>
-        {#snippet children({ item })}
+    <AnimatePresence>
+        {#each items as item (item.key)}
             <motion.div
                 id="box-{item.id}"
                 class="box"
@@ -37,6 +29,6 @@
                 transition={{ duration: 0.5 }}
                 exit={{ opacity: 0.5 }}
             />
-        {/snippet}
+        {/each}
     </AnimatePresence>
 </div>

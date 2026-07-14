@@ -1,12 +1,10 @@
 <script lang="ts">
-    import { m, LazyMotion, domMax } from '$lib/motion-start';
+import { m, LazyMotion, domMax } from '$lib/motion-start';
 
-    let state = $state(true);
-    let frameCount = 0;
+let state = $state(true);
+let frameCount = 0;
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <LazyMotion features={domMax}>
     <m.div
         id="parent"
@@ -14,10 +12,10 @@
         layout
         style={{
             position: 'absolute',
-            top: state ? 0 : 200,
-            left: state ? 0 : 200,
-            width: state ? 200 : 400,
-            height: 200,
+            top: state ? '0px' : '200px',
+            left: state ? '0px' : '200px',
+            width: state ? '200px' : '400px',
+            height: '200px',
             background: 'red',
         }}
         transition={{
@@ -33,8 +31,8 @@
             id="child"
             layout
             style={{
-                width: state ? 100 : 200,
-                height: 100,
+                width: state ? '100px' : '200px',
+                height: '100px',
                 background: 'blue',
             }}
             transition={{

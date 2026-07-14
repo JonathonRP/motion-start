@@ -1,68 +1,75 @@
 <script lang="ts">
-    import { motion, AnimatePresence } from '$lib/motion-start';
-    import { page } from '$app/state';
+import { motion, AnimatePresence, type LayoutProps, type MotionStyle } from '$lib/motion-start';
+import { page } from '$app/state';
 
-    const type = $derived(page.url.searchParams.get('type') || true);
-    let state = $state(true);
+function parseLayoutProp(value: string | null): LayoutProps['layout'] {
+	if (!value || value === 'true') return true;
+	if (value === 'false') return false;
+	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
+	return true;
+}
 
-    const transition = { duration: 1, ease: () => 0.5 };
+const type = $derived(parseLayoutProp(page.url.searchParams.get('type')));
+let state = $state(true);
 
-    const box = {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        background: 'red',
-    };
+const transition = { duration: 1, ease: () => 0.5 };
 
-    const a = {
-        ...box,
-        width: 100,
-        height: 200,
-        top: 100,
-        left: 200,
-    };
+const box: MotionStyle = {
+	position: 'absolute',
+	top: '0px',
+	left: '0px',
+	background: 'red',
+};
 
-    const b = {
-        ...box,
-        top: 300,
-        left: 200,
-        width: 300,
-        height: 300,
-    };
+const a: MotionStyle = {
+	...box,
+	width: '100px',
+	height: '200px',
+	top: '100px',
+	left: '200px',
+};
 
-    const childA = {
-        width: 100,
-        height: 100,
-        background: 'blue',
-    };
+const b: MotionStyle = {
+	...box,
+	top: '300px',
+	left: '200px',
+	width: '300px',
+	height: '300px',
+};
 
-    const childB = {
-        width: 100,
-        height: 100,
-        background: 'blue',
-    };
+const childA: MotionStyle = {
+	width: '100px',
+	height: '100px',
+	background: 'blue',
+};
 
-    const items = $derived([{
-        key: state ? 'a' : 'b',
-        id: state ? 'a' : 'b',
-        style: state ? a : b,
-        backgroundColor: state ? '#f00' : '#0f0',
-        borderRadius: state ? 0 : 20,
-        childStyle: state ? childA : childB,
-    }]);
+const childB: MotionStyle = {
+	width: '100px',
+	height: '100px',
+	background: 'blue',
+};
+
+const items = $derived([
+	{
+		key: state ? 'a' : 'b',
+		id: state ? 'a' : 'b',
+		style: state ? a : b,
+		backgroundColor: state ? '#f00' : '#0f0',
+		borderRadius: state ? '0px' : '20px',
+		childStyle: state ? childA : childB,
+	},
+]);
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<AnimatePresence values={items}>
-    {#snippet children({ item })}
+<AnimatePresence>
+    {#each items as item (item.key)}
         <motion.div
             style={{
                 position: 'absolute',
-                top: 0,
-                left: 0,
-                width: 500,
-                height: 400,
+                top: '0px',
+                left: '0px',
+                width: '500px',
+                height: '400px',
             }}
         >
             <motion.div
@@ -76,7 +83,7 @@
                     borderRadius: item.borderRadius,
                 }}
                 transition={transition}
-                onclick={() => state = !state}
+                onclick={() => (state = !state)}
             >
                 <motion.div
                     id="child"
@@ -86,5 +93,5 @@
                 />
             </motion.div>
         </motion.div>
-    {/snippet}
+    {/each}
 </AnimatePresence>

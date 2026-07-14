@@ -15,8 +15,8 @@
     </button>
 
     <div class="relative h-32 bg-gray-200 rounded">
-        <AnimatePresence initial={false} values={[{ key: index }]}>
-            {#snippet children({ item })}
+        <AnimatePresence initial={false}>
+            {#key index}
                 <motion.div
                     class="absolute inset-0 flex items-center justify-center bg-blue-500 text-white rounded"
                     initial={{ opacity: 0, x: 100 }}
@@ -24,9 +24,9 @@
                     exit={{ opacity: 0, x: -100 }}
                     transition={{ duration: 0.3 }}
                 >
-                    Item {item.key}
+                    Item {index}
                 </motion.div>
-            {/snippet}
+            {/key}
         </AnimatePresence>
     </div>
 

@@ -7,9 +7,9 @@ import type { Box } from '../../geometry/types';
 import { createProjectionNode } from '../create-projection-node.svelte';
 import type { IProjectionNode, ProjectionNodeOptions } from '../types';
 
-let rootNode: IProjectionNode<unknown>;
+let rootNode: IProjectionNode<Window>;
 
-export const TestRootNode = createProjectionNode<{}>({
+export const TestRootNode = createProjectionNode<Window>({
 	measureScroll: (_instance) => ({ x: 0, y: 0 }),
 	checkIsScrollRoot: () => true,
 });
@@ -23,7 +23,7 @@ export const TestProjectionNode = createProjectionNode<TestInstance>({
 	measureScroll: (_instance) => ({ x: 0, y: 0 }),
 	defaultParent: () => {
 		if (!rootNode) {
-			rootNode = new TestRootNode() as any;
+			rootNode = new TestRootNode() as IProjectionNode<Window>;
 		}
 
 		return rootNode;

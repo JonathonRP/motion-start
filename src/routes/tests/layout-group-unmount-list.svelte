@@ -1,53 +1,49 @@
 <script lang="ts">
-    import { motion, LayoutGroup } from '$lib/motion-start';
+import { LayoutGroup, motion, type MotionStyle } from '$lib/motion-start';
 
-    const style = {
-        width: 100,
-        height: 100,
-        opacity: 1,
-        borderRadius: 20,
-        margin: 20,
-    };
+const style: MotionStyle = {
+	width: '100px',
+	height: '100px',
+	opacity: 1,
+	borderRadius: '20px',
+	margin: '20px',
+};
 
-    const containerStyle = {
-        display: 'block',
-        width: 'min-content',
-        height: 'min-content',
-    };
+const containerStyle: MotionStyle = {
+	display: 'block',
+	width: 'min-content',
+	height: 'min-content',
+};
 
-    const stackStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        padding: 20,
-        width: 'auto',
-        height: 'auto',
-        backgroundColor: 'blue',
-    };
+const stackStyle: MotionStyle = {
+	display: 'flex',
+	flexDirection: 'column',
+	justifyContent: 'flex-start',
+	alignItems: 'center',
+	padding: '20px',
+	width: 'auto',
+	height: 'auto',
+	backgroundColor: 'blue',
+};
 
-    interface ItemState {
-        id: string;
-        visible: boolean;
-        backgroundColor: string;
-    }
+interface ItemState {
+	id: string;
+	visible: boolean;
+	backgroundColor: string;
+}
 
-    let items = $state<ItemState[]>([
-        { id: 'a', visible: true, backgroundColor: 'red' },
-        { id: 'b', visible: true, backgroundColor: 'yellow' },
-    ]);
+let items = $state<ItemState[]>([
+	{ id: 'a', visible: true, backgroundColor: 'red' },
+	{ id: 'b', visible: true, backgroundColor: 'yellow' },
+]);
 
-    function hideItem(id: string) {
-        items = items.map(item =>
-            item.id === id ? { ...item, visible: false } : item
-        );
-    }
+function hideItem(id: string) {
+	items = items.map((item) => (item.id === id ? { ...item, visible: false } : item));
+}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <LayoutGroup id="group-1">
-    <motion.div style={{ position: 'absolute', left: 100, bottom: 100 }}>
+    <motion.div style={{ position: 'absolute', left: '100px', bottom: '100px' }}>
         <LayoutGroup id="list">
             <motion.div style={{ display: 'contents' }}>
                 <motion.div
@@ -65,7 +61,10 @@
                                             <motion.div
                                                 id={item.id}
                                                 layoutId={item.id}
-                                                style={{ ...style, backgroundColor: item.backgroundColor }}
+                                                style={{
+                                                    ...style,
+                                                    backgroundColor: item.backgroundColor,
+                                                }}
                                                 onclick={() => hideItem(item.id)}
                                                 transition={{ duration: 10, ease: () => 0.5 }}
                                             />

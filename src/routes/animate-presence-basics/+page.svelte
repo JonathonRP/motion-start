@@ -35,7 +35,8 @@
             Toggle Item
         </button>
 
-        <AnimatePresence show={showItem}>
+        <AnimatePresence>
+            {#if showItem}
             <motion.div
                 id="animated-item"
                 class="animated-box"
@@ -45,6 +46,7 @@
             >
                 I should fade out!
             </motion.div>
+            {/if}
         </AnimatePresence>
     </section>
 
@@ -59,8 +61,8 @@
             Toggle Wait Mode
         </button>
 
-        <AnimatePresence mode="wait" values={waitItems}>
-            {#snippet children({ item })}
+        <AnimatePresence mode="wait">
+            {#each waitItems as item (item.key)}
                 {#if item.key === "wait1"}
                     <motion.div
                         id="wait-item-1"
@@ -82,7 +84,7 @@
                         Wait Item 2
                     </motion.div>
                 {/if}
-            {/snippet}
+            {/each}
         </AnimatePresence>
     </section>
 
@@ -97,8 +99,8 @@
             Toggle Conditional
         </button>
 
-        <AnimatePresence values={conditionalItems}>
-            {#snippet children({ item })}
+        <AnimatePresence>
+            {#each conditionalItems as item (item.key)}
                 <motion.div
                     id="conditional-item"
                     class="animated-box"
@@ -108,7 +110,7 @@
                 >
                     Conditional Item
                 </motion.div>
-            {/snippet}
+            {/each}
         </AnimatePresence>
     </section>
 </div>
@@ -124,15 +126,6 @@
         font-size: 24px;
         font-weight: bold;
         margin-bottom: 20px;
-    }
-
-    .warning {
-        color: #dc2626;
-        background: #fef2f2;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        font-weight: 500;
     }
 
     .success {
@@ -172,7 +165,7 @@
         background: #2563eb;
     }
 
-    .animated-box {
+    :global(.animated-box) {
         width: 200px;
         height: 100px;
         background: #10b981;
