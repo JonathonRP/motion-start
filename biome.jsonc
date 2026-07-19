@@ -98,8 +98,7 @@
 			"!**/package/**",
 			"!**/.env",
 			"!**/.env.*",
-			"!**/!.env.example",
-			"!**/!*.cjs",
+			"**/.env.example",
 			"!**/*.cjs",
 			"!**/pnpm-lock.yaml",
 			"!**/package-lock.json",
@@ -107,7 +106,9 @@
 			"!**/node_modules",
 			"!**/dist",
 			"!**/build",
-			"!**/*.{svelte,svelte-kit,pnpm-store,vercel_build_output}",
+			"!**/.svelte/**",
+			"!**/.pnpm-store/**",
+			"!**/.vercel_build_output/**",
 			"!**/svelte.config.js",
 			"!**/static/**/*.{js,ts,css}"
 		]

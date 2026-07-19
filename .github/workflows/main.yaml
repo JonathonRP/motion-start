@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - "**"
-    pull_request:
+  pull_request:
+    branches:
       - main
 
 concurrency:
@@ -54,5 +55,17 @@ jobs:
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
-      - name: Run tests
-        run: bun --bun run test:suite
+      - name: Run unit tests
+        run: bun --bun vitest --run
+
+      - name: Run type tests
+        run: bun --bun vitest --typecheck.only
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          start: bun --bun run dev -- --host 0.0.0.0 --port 5000
+          wait-on: http://localhost:5000
+          wait-on-timeout: 120
+          command: ./node_modules/.bin/cypress run
