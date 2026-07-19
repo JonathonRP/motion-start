@@ -18,3 +18,5 @@ reviews:
     - "**/*.md"
     - "/*.json"
     - "dist/**/*"
+    - "src/lib/components/*"
+    - "src/lib/hooks/*"
