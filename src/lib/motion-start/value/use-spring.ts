@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { SpringOptions } from '../animation/types';
-import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation';
-import { useMotionConfigContext } from '../context/MotionConfigContext.svelte';
-import { frame } from '../frameloop';
+import type { SpringOptions } from '../animation/types.js';
+import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation.js';
+import { useMotionConfigContext } from '../context/MotionConfigContext.svelte.js';
+import { frame } from '../frameloop/index.js';
 import type { MotionValue } from './index.js';
-import { useMotionValue } from './use-motion-value.svelte';
-import { isMotionValue } from './utils/is-motion-value';
-import { noop } from '../utils/noop';
+import { useMotionValue } from './use-motion-value.svelte.js';
+import { isMotionValue } from './utils/is-motion-value.js';
+import { noop } from '../utils/noop.js';
 import { extract, watch, type MaybeGetter } from 'runed';
 
 function toNumber(v: string | number) {

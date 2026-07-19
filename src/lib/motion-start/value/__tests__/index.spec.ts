@@ -6,14 +6,10 @@
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { motionValue } from '../';
-import { frame, frameData } from '../../frameloop';
-import { time } from '../../frameloop/sync-time';
-import { MotionGlobalConfig } from '../../utils/GlobalConfig';
-
-// Note: Tests that use animate() are skipped because the animation module
-// imports supports-waapi.ts which accesses Element.prototype at module load time,
-// causing "Element is not defined" errors in the happy-dom test environment.
-// These tests should be run in a browser environment (e.g., Cypress E2E tests).
+import { animate } from '../../animation/animate/index.js';
+import { frame, frameData } from '../../frameloop/index.js';
+import { time } from '../../frameloop/sync-time.js';
+import { MotionGlobalConfig } from '../../utils/GlobalConfig.js';
 
 describe('motionValue', () => {
 	test('change event is type-inferred', () => {
@@ -46,9 +42,7 @@ describe('motionValue', () => {
 		expect(callback).toBeCalledTimes(1);
 	});
 
-	// Skipped: requires animate() which depends on DOM Element at module load time
-	test.skip('animationStart event fires', async () => {
-		const { animate } = await import('../../animation/animate');
+	test('animationStart event fires', () => {
 		const value = motionValue(0);
 		const callback = vi.fn();
 
@@ -61,9 +55,7 @@ describe('motionValue', () => {
 		expect(callback).toBeCalledTimes(1);
 	});
 
-	// Skipped: requires animate() which depends on DOM Element at module load time
-	test.skip('animationCancel event fires', async () => {
-		const { animate } = await import('../../animation/animate');
+	test('animationCancel event fires', () => {
 		const value = motionValue(0);
 		const callback = vi.fn();
 
@@ -77,9 +69,7 @@ describe('motionValue', () => {
 		expect(callback).toBeCalledTimes(1);
 	});
 
-	// Skipped: requires animate() which depends on DOM Element at module load time
-	test.skip('animationComplete event fires', async () => {
-		const { animate } = await import('../../animation/animate');
+	test('animationComplete event fires', async () => {
 		const value = motionValue(0);
 		const callback = vi.fn();
 
@@ -97,9 +87,7 @@ describe('motionValue', () => {
 		});
 	});
 
-	// Skipped: requires animate() which depends on DOM Element at module load time
-	test.skip('When all change listeners removed, stop animation', async () => {
-		const { animate } = await import('../../animation/animate');
+	test('When all change listeners removed, stop animation', async () => {
 		const value = motionValue(0);
 
 		const unsubscribeA = value.on('change', (latest) => latest);

@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import type { MotionValue } from '../index.js';
 import { isCustomValue } from '../../utils/resolve-value.js';
-import type { CustomValueType } from '../../types';
+import type { CustomValueType } from '../../types.js';
 import { isMotionValue } from './is-motion-value.js';
 
 /**

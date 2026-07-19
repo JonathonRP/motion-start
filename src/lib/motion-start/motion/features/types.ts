@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps } from '../types';
-import type { VisualState } from '../utils/use-visual-state.svelte';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { CreateVisualElement } from '../../render/types';
-import type { Feature } from './Feature';
+import type { MotionProps } from '../types.js';
+import type { VisualState } from '../utils/use-visual-state.svelte.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import type { CreateVisualElement } from '../../render/types.js';
+import type { Feature } from './Feature.js';
 import type MeasureLayout from './layout/MeasureLayout.svelte';
-import type { Ref } from '../../utils/safe-react-types';
+import type { Ref } from '../../utils/safe-react-types.js';
 import type { Component } from 'svelte';
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;

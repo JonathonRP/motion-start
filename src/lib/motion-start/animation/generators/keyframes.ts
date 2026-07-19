@@ -3,15 +3,15 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { easeInOut } from '../../easing/ease';
-import type { EasingFunction } from '../../easing/types';
-import { isEasingArray } from '../../easing/utils/is-easing-array';
-import { easingDefinitionToFunction } from '../../easing/utils/map';
-import { interpolate } from '../../utils/interpolate';
-import { defaultOffset } from '../../utils/offsets/default';
-import { convertOffsetToTimes } from '../../utils/offsets/time';
-import type { ValueAnimationOptions } from '../types';
-import type { AnimationState, KeyframeGenerator } from './types';
+import { easeInOut } from '../../easing/ease.js';
+import type { EasingFunction } from '../../easing/types.js';
+import { isEasingArray } from '../../easing/utils/is-easing-array.js';
+import { easingDefinitionToFunction } from '../../easing/utils/map.js';
+import { interpolate } from '../../utils/interpolate.js';
+import { defaultOffset } from '../../utils/offsets/default.js';
+import { convertOffsetToTimes } from '../../utils/offsets/time.js';
+import type { ValueAnimationOptions } from '../types.js';
+import type { AnimationState, KeyframeGenerator } from './types.js';
 
 export function defaultEasing(values: any[], easing?: EasingFunction): EasingFunction[] {
 	return values.map(() => easing || easeInOut).splice(0, values.length - 1);

@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/svg/utils/__tests__/scrape-motion-values.test.ts */
 import { describe, test, expect } from 'vitest';
-import { motionValue } from '../../../../value';
-import { scrapeMotionValuesFromProps } from '../scrape-motion-values.svelte';
+import { motionValue } from '../../../../value/index.js';
+import { scrapeMotionValuesFromProps } from '../scrape-motion-values.svelte.js';
 
 describe('SVG scrapeMotionValuesFromProps', () => {
 	test('correctly scrapes motion values from props', () => {

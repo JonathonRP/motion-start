@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { TargetAndTransition, TargetResolver } from '../../types';
-import { resolveFinalValueInKeyframes } from '../../utils/resolve-value';
-import { motionValue } from '../../value';
-import type { VisualElement } from '../VisualElement.svelte';
-import { resolveVariant } from './resolve-dynamic-variants';
+import type { TargetAndTransition, TargetResolver } from '../../types.js';
+import { resolveFinalValueInKeyframes } from '../../utils/resolve-value.js';
+import { motionValue } from '../../value/index.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import { resolveVariant } from './resolve-dynamic-variants.js';
 
 /**
  * Set VisualElement's MotionValue, creating a new MotionValue for it if

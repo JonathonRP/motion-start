@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Batcher } from '../../frameloop/types';
-import { appearAnimationStore } from './store';
-import { appearStoreId } from './store-id';
+import type { Batcher } from '../../frameloop/types.js';
+import { appearAnimationStore } from './store.js';
+import { appearStoreId } from './store-id.js';
 
 export function handoffOptimizedAppearAnimation(elementId: string, valueName: string, frame: Batcher): number | null {
 	const storeId = appearStoreId(elementId, valueName);

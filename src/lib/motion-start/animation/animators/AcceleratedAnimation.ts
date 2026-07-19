@@ -3,26 +3,26 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { anticipate } from '../../easing/anticipate';
-import { backInOut } from '../../easing/back';
-import { circInOut } from '../../easing/circ';
-import type { EasingDefinition } from '../../easing/types';
-import { DOMKeyframesResolver } from '../../render/dom/DOMKeyframesResolver';
-import type { ResolvedKeyframes } from '../../render/utils/KeyframesResolver';
-import { noop } from '../../utils/noop';
-import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
-import type { MotionValue } from '../../value';
-import { isGenerator } from '../generators/utils/is-generator';
-import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
-import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation';
-import { MainThreadAnimation } from './MainThreadAnimation';
-import { acceleratedValues } from './utils/accelerated-values';
-import { startWaapiAnimation } from './waapi';
-import { isWaapiSupportedEasing } from './waapi/easing';
-import { attachTimeline } from './waapi/utils/attach-timeline';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
-import { supportsLinearEasing } from './waapi/utils/supports-linear-easing';
-import { supportsWaapi } from './waapi/utils/supports-waapi';
+import { anticipate } from '../../easing/anticipate.js';
+import { backInOut } from '../../easing/back.js';
+import { circInOut } from '../../easing/circ.js';
+import type { EasingDefinition } from '../../easing/types.js';
+import { DOMKeyframesResolver } from '../../render/dom/DOMKeyframesResolver.js';
+import type { ResolvedKeyframes } from '../../render/utils/KeyframesResolver.js';
+import { noop } from '../../utils/noop.js';
+import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion.js';
+import type { MotionValue } from '../../value/index.js';
+import { isGenerator } from '../generators/utils/is-generator.js';
+import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types.js';
+import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation.js';
+import { MainThreadAnimation } from './MainThreadAnimation.js';
+import { acceleratedValues } from './utils/accelerated-values.js';
+import { startWaapiAnimation } from './waapi/index.js';
+import { isWaapiSupportedEasing } from './waapi/easing.js';
+import { attachTimeline } from './waapi/utils/attach-timeline.js';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.js';
+import { supportsLinearEasing } from './waapi/utils/supports-linear-easing.js';
+import { supportsWaapi } from './waapi/utils/supports-waapi.js';
 
 /**
  * Type guard to validate that an object is a valid MotionValue

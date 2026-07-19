@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { px } from '../../../value/types/numbers/units';
-import type { SVGDimensions } from '../types';
+import { px } from '../../../value/types/numbers/units.js';
+import type { SVGDimensions } from '../types.js';
 
 function calcOrigin(origin: number | string, offset: number, size: number) {
 	return typeof origin === 'string' ? origin : px.transform(offset + size * origin);

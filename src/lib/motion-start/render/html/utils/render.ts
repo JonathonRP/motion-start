@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionStyle } from '../../..';
-import type { IProjectionNode } from '../../../projection/node/types';
-import type { HTMLRenderState } from '../types';
+import type { MotionStyle } from '../../../index.js';
+import type { IProjectionNode } from '../../../projection/node/types.js';
+import type { HTMLRenderState } from '../types.js';
 
 export function renderHTML(
 	element: HTMLElement,

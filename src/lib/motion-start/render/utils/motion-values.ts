@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionStyle } from '../../motion/types';
-import { warnOnce } from '../../utils/warn-once';
-import { motionValue } from '../../value';
-import { isMotionValue } from '../../value/utils/is-motion-value';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { MotionStyle } from '../../motion/types.js';
+import { warnOnce } from '../../utils/warn-once.js';
+import { motionValue } from '../../value/index.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
 
 export function updateMotionValuesFromProps<I>(element: VisualElement<I>, next: MotionStyle, prev: MotionStyle) {
 	for (const key in next) {

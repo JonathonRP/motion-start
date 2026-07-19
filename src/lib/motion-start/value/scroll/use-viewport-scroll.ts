@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { warnOnce } from '../../utils/warn-once';
-import { useScroll } from '../use-scroll.svelte';
+import { warnOnce } from '../../utils/warn-once.js';
+import { useScroll } from '../use-scroll.svelte.js';
 
 /**
  * @deprecated useViewportScroll is deprecated. Convert to useScroll()

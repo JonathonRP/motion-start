@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { AnimatePresence, motion, useMotionValue } from '$lib/motion-start';
+import { AnimatePresence, motion, useMotionValue } from '$lib/motion-start';
 
-    const count = useMotionValue(0);
-    let state = $state(0);
-
-    const items = $derived([{ key: state, id: state.toString() }]);
+const count = useMotionValue(0);
+let state = $state(0);
 </script>
 
 <button
@@ -17,9 +15,9 @@
     Animation count: <motion.span id="count">{count.get()}</motion.span>
 </div>
 <AnimatePresence initial={false}>
-    {#each items as item (item.key)}
+    {#key state}
         <motion.div
-            id={item.id}
+            id={state.toString()}
             class="item"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -27,7 +25,7 @@
             transition={{ duration: 0.2 }}
             onAnimationStart={() => count.set(count.get() + 1)}
         >
-            {item.key}
+            {state}
         </motion.div>
-    {/each}
+    {/key}
 </AnimatePresence>

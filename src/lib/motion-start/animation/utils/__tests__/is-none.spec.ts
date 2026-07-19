@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/utils/__tests__/is-none.test.ts */
 import { describe, test, expect } from 'vitest';
-import { isNone } from '../is-none';
+import { isNone } from '../is-none.js';
 
 describe('isNone', () => {
 	test('Detects zero/none values', () => {

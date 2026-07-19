@@ -3,16 +3,16 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { addPointerEvent } from '../events/add-pointer-event';
-import { type EventListenerWithPointInfo, extractEventInfo } from '../events/event-info';
-import type { EventInfo } from '../events/types';
-import { frame } from '../frameloop';
-import { Feature } from '../motion/features/Feature';
-import { noop } from '../utils/noop';
-import { pipe } from '../utils/pipe';
-import { isDragActive } from './drag/utils/lock';
-import { isNodeOrChild } from './utils/is-node-or-child';
-// import { Gesture } from './Gesture';
+import { addPointerEvent } from '../events/add-pointer-event.js';
+import { type EventListenerWithPointInfo, extractEventInfo } from '../events/event-info.js';
+import type { EventInfo } from '../events/types.js';
+import { frame } from '../frameloop/index.js';
+import { Feature } from '../motion/features/Feature.js';
+import { noop } from '../utils/noop.js';
+import { pipe } from '../utils/pipe.js';
+import { isDragActive } from './drag/utils/lock.js';
+import { isNodeOrChild } from './utils/is-node-or-child.js';
+// import { Gesture } from './Gesture.js';
 
 function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPointInfo) {
 	if (!handler) return;

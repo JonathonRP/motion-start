@@ -60,15 +60,15 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 <script lang="ts" generics="V">
 	import { tick, type Component, type Snippet } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
-	import { setReorderContext } from "../../context/ReorderContext";
-	import { motion } from "../../render/components/motion/proxy";
-	import type { HTMLMotionProps } from "../../render/html/types";
-	import { invariant } from "../../utils/errors";
-	import type { Ref } from "../../utils/safe-react-types";
+	import { setReorderContext } from "../../context/ReorderContext.js";
+	import { motion } from "../../render/components/motion/proxy.js";
+	import type { HTMLMotionProps } from "../../render/html/types.js";
+	import { invariant } from "../../utils/errors.js";
+	import type { Ref } from "../../utils/safe-react-types.js";
 
-	import type { PropsWithChildren } from "../../utils/types";
-	import { type ReorderContext, type ItemData } from "./types";
-	import { checkReorder } from "./utils/check-reorder.svelte";
+	import type { PropsWithChildren } from "../../utils/types.js";
+	import { type ReorderContext, type ItemData } from "./types.js";
+	import { checkReorder } from "./utils/check-reorder.svelte.js";
 
 	let {
 		as = "ul",

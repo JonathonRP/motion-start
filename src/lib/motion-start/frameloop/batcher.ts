@@ -1,6 +1,6 @@
-import { MotionGlobalConfig } from '../utils/GlobalConfig';
-import { createRenderStep } from './render-step';
-import type { Batcher, Process, StepId, Steps, FrameData } from './types';
+import { MotionGlobalConfig } from '../utils/GlobalConfig.js';
+import { createRenderStep } from './render-step.js';
+import type { Batcher, Process, StepId, Steps, FrameData } from './types.js';
 
 export const stepsOrder: StepId[] = [
 	'read', // Read

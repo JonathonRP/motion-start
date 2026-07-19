@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { createBox } from '../../projection/geometry/models';
-import type { ResolvedValues } from '../types';
-import { VisualElement } from '../VisualElement.svelte';
+import { createBox } from '../../projection/geometry/models.js';
+import type { ResolvedValues } from '../types.js';
+import { VisualElement } from '../VisualElement.svelte.js';
 
 interface ObjectRenderState {
 	output: ResolvedValues;

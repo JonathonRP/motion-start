@@ -3,15 +3,15 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Transition } from '../../types';
-import type { ResolvedValues } from '../../render/types';
-import type { Point, Box, Delta } from '../geometry/types';
-import type { NodeStack } from '../shared/stack';
-import type { AnimationPlaybackControls } from '../../animation/types';
-import type { FlatTree } from '../../render/utils/flat-tree';
-import type { InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
-import type { MotionStyle } from '../../motion/types';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { Transition } from '../../types.js';
+import type { ResolvedValues } from '../../render/types.js';
+import type { Point, Box, Delta } from '../geometry/types.js';
+import type { NodeStack } from '../shared/stack.js';
+import type { AnimationPlaybackControls } from '../../animation/types.js';
+import type { FlatTree } from '../../render/utils/flat-tree.js';
+import type { InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext.js';
+import type { MotionStyle } from '../../motion/types.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
 
 export interface Measurements {
 	animationId: number;

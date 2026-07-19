@@ -4,8 +4,8 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { cubicBezier } from '../cubic-bezier';
-import { easeIn, easeOut, easeInOut } from '../ease';
+import { cubicBezier } from '../cubic-bezier.js';
+import { easeIn, easeOut, easeInOut } from '../ease.js';
 
 describe('cubicBezier', () => {
 	test('returns identity function for linear bezier', () => {

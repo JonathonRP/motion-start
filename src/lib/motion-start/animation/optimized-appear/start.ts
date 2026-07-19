@@ -3,18 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { appearStoreId } from './store-id';
-import { startWaapiAnimation } from '../animators/waapi';
-import type { NativeAnimationOptions } from '../animators/waapi/types';
-import { optimizedAppearDataId } from './data-id';
-import { handoffOptimizedAppearAnimation } from './handoff';
-import { appearAnimationStore, type AppearStoreEntry, appearComplete } from './store';
-import { noop } from '../../utils/noop';
-import './types';
-import { getOptimisedAppearId } from './get-appear-id';
-import type { MotionValue } from '../../value';
-import type { WithAppearProps } from './types';
-import type { Batcher } from '../../frameloop/types';
+import { appearStoreId } from './store-id.js';
+import { startWaapiAnimation } from '../animators/waapi/index.js';
+import type { NativeAnimationOptions } from '../animators/waapi/types.js';
+import { optimizedAppearDataId } from './data-id.js';
+import { handoffOptimizedAppearAnimation } from './handoff.js';
+import { appearAnimationStore, type AppearStoreEntry, appearComplete } from './store.js';
+import { noop } from '../../utils/noop.js';
+import './types.js';
+import { getOptimisedAppearId } from './get-appear-id.js';
+import type { MotionValue } from '../../value/index.js';
+import type { WithAppearProps } from './types.js';
+import type { Batcher } from '../../frameloop/types.js';
 
 /**
  * A single time to use across all animations to manually set startTime

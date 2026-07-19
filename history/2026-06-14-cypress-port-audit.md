@@ -1174,3 +1174,24 @@ The full Vitest run exposed type errors in the newly ported `animate-style.spec.
 The same Vitest typecheck also surfaced an unrelated implicit-`any` SvelteKit server hook; annotating it with the official `Handle` type fixed the harness-wide source check without changing behavior.
 
 Verification: `npx vitest --run` reports 107 files passed, 2 skipped; 500 tests passed, 8 skipped; no type errors. `npx sv check --output machine --threshold error` reports 0 errors and 0 warnings. The existing Cypress audit remains green, and its pending tests match upstream Framer Motion v11.11.11 skip markers. No test was removed because the audit found no active test asserting behavior unsupported by both upstream v11.11.11 and this repository's documented extensions.
+
+## 2026-07-16 Svelte lifecycle parity coverage
+
+Closed the highest-risk Svelte harness gaps that remained after the pure animation/math ports. The new component tests use Svelte's browser runtime and cover behavior that React supplies through insertion/layout effects and provider rerenders:
+
+- DOM event attachment, teardown, target replacement, and latest-handler behavior;
+- MotionValue event subscription teardown and reactive MotionValue replacement;
+- PresenceChild ownership of multiple registered exit participants, repeated exit cycles, and the no-exit-work completion path;
+- the four upstream LayoutGroup ID composition cases, including nested groups and undefined IDs;
+- motion initial/update/unmount timing, current animation callbacks, and tap/hover feature attachment cleanup.
+
+The red tests exposed two Svelte-port defects. `useDomEvent` was a plain `.ts` module containing a rune and returned its setup function as effect cleanup, so the listener was never attached. It is now a `.svelte.ts` lifecycle helper that attaches inside `$effect.pre` and returns the actual listener cleanup. `useMotionValueEvent` now accepts either the upstream-style direct MotionValue or a Svelte getter, allowing a reactive source change to unsubscribe the old value and subscribe the new one.
+
+Real-browser coverage was also added for custom motion component roots and nested `afterChildren` exits. Svelte asks the outro bridge for its retention duration before an `afterChildren` parent animation starts, so inspecting only running animations removed the block before the parent phase. The bridge now combines the running descendant duration with the resolved numeric parent exit transition. The interrupted single-child WAAPI fixture now uses Svelte's keyed-block primitive, the direct equivalent of React keyed replacement, instead of representing one keyed child as an artificial one-item list.
+
+Verification:
+
+- `npx vitest --run`: 116 files passed, 1 skipped; 530 tests passed, 1 skipped; no type errors.
+- `npx sv check`: 0 errors, 0 warnings.
+- affected Cypress presence/outro/layout batch: 5 specs passed; 18 tests passed.
+- temporary-output `svelte-package`: completed, and the generated root entrypoint exports `useDomEvent` from `events/use-dom-event.svelte.js` with matching declarations.

@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { EventInfo } from '../events/types';
-import { frame } from '../frameloop';
-import { Feature } from '../motion/features/Feature';
-import { isDragActive } from './drag/utils/lock';
+import type { EventInfo } from '../events/types.js';
+import { frame } from '../frameloop/index.js';
+import { Feature } from '../motion/features/Feature.js';
+import { isDragActive } from './drag/utils/lock.js';
 
 export class HoverGesture extends Feature<Element> {
 	mount() {

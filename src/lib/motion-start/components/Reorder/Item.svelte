@@ -11,16 +11,16 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 	import type { SvelteHTMLElements } from "svelte/elements";
 
 	import { type Component, onDestroy } from "svelte";
-	import { useReorderContext } from "../../context/ReorderContext";
-	import { motion } from "../../render/components/motion/proxy";
-	import { useMotionValue } from "../../value/use-motion-value.svelte";
+	import { useReorderContext } from "../../context/ReorderContext.js";
+	import { motion } from "../../render/components/motion/proxy.js";
+	import { useMotionValue } from "../../value/use-motion-value.svelte.js";
 
-	import type { HTMLMotionProps } from "../../render/html/types";
-	import { invariant } from "../../utils/errors";
-	import type { Ref } from "../../utils/safe-react-types";
-	import type { PropsWithChildren } from "../../utils/types";
-	import { useTransform } from "../../value/use-transform";
-	import { isMotionValue } from "../../value/utils/is-motion-value";
+	import type { HTMLMotionProps } from "../../render/html/types.js";
+	import { invariant } from "../../utils/errors.js";
+	import type { Ref } from "../../utils/safe-react-types.js";
+	import type { PropsWithChildren } from "../../utils/types.js";
+	import { useTransform } from "../../value/use-transform.js";
+	import { isMotionValue } from "../../value/utils/is-motion-value.js";
 
 	type Props<V> = {
 		/**

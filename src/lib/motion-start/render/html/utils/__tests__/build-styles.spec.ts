@@ -1,10 +1,10 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/html/utils/__tests__/build-styles.test.ts */
 import { describe, test, expect } from 'vitest';
-import { buildHTMLStyles } from '../build-styles';
-import type { DOMVisualElementOptions } from '../../../dom/types';
-import type { ResolvedValues } from '../../../types';
-import type { TransformOrigin } from '../../types';
-import { createHtmlRenderState } from '../create-render-state';
+import { buildHTMLStyles } from '../build-styles.js';
+import type { DOMVisualElementOptions } from '../../../dom/types.js';
+import type { ResolvedValues } from '../../../types.js';
+import type { TransformOrigin } from '../../types.js';
+import { createHtmlRenderState } from '../create-render-state.js';
 
 describe('buildHTMLStyles', () => {
 	test('Builds basic styles', () => {

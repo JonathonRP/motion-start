@@ -4,12 +4,12 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Snippet, Component } from 'svelte';
-import type { MotionProps } from '../../motion/types';
-import { copyRawValuesOnly } from '../html/use-props.svelte';
-import type { ResolvedValues } from '../types';
-import { buildSVGAttrs } from './utils/build-attrs';
-import { createSvgRenderState } from './utils/create-render-state';
-import { isSVGTag } from './utils/is-svg-tag';
+import type { MotionProps } from '../../motion/types.js';
+import { copyRawValuesOnly } from '../html/use-props.svelte.js';
+import type { ResolvedValues } from '../types.js';
+import { buildSVGAttrs } from './utils/build-attrs.js';
+import { createSvgRenderState } from './utils/create-render-state.js';
+import { isSVGTag } from './utils/is-svg-tag.js';
 
 export function useSvgProps(
 	props: () => MotionProps,

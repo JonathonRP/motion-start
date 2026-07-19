@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/components/Reorder/utils/__tests__/check-reorder.test.ts */
 import { describe, test, expect } from 'vitest';
-import { checkReorder } from '../check-reorder.svelte';
+import { checkReorder } from '../check-reorder.svelte.js';
 
 describe('checkReorder', () => {
 	const order = [

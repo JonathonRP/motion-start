@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { NodeGroup } from '../projection/node/group';
+import type { NodeGroup } from '../projection/node/group.js';
 
 export interface LayoutGroupContext {
 	id?: string;

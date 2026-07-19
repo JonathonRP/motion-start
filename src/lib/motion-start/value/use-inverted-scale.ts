@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { useTransform } from './use-transform';
+import { useTransform } from './use-transform.js';
 import type { MotionValue } from './index.js';
-import { invariant, warning } from '../utils/errors';
-import { useMotionValue } from './use-motion-value.svelte';
-import { useMotionContext } from '../context/MotionContext';
+import { invariant, warning } from '../utils/errors.js';
+import { useMotionValue } from './use-motion-value.svelte.js';
+import { useMotionContext } from '../context/MotionContext/index.js';
 
 interface ScaleMotionValues {
 	scaleX: MotionValue<number>;

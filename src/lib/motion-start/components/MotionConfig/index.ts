@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionConfigContext } from '../../context/MotionConfigContext.svelte';
-import type { IsValidProp } from '../../render/dom/utils/filter-props';
+import type { MotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
+import type { IsValidProp } from '../../render/dom/utils/filter-props.js';
 
 export interface MotionConfigProps extends Partial<MotionConfigContext> {
 	isValidProp?: IsValidProp;

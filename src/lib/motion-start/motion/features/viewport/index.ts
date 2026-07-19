@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps } from '../../types';
-import { Feature } from '../Feature';
-import { observeIntersection } from './observers';
+import type { MotionProps } from '../../types.js';
+import { Feature } from '../Feature.js';
+import { observeIntersection } from './observers.js';
 
 const thresholdNames = {
 	some: 0,

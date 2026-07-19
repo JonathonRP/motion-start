@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Axis, AxisDelta, Box, Delta } from './types';
+import type { Axis, AxisDelta, Box, Delta } from './types.js';
 
 export const createAxisDelta = (): AxisDelta => ({
 	translate: 0,

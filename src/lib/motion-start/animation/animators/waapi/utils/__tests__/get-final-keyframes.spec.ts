@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/animators/waapi/utils/__tests__/get-final-keyframes.test.ts */
 import { describe, test, expect } from 'vitest';
-import { getFinalKeyframe } from '../get-final-keyframe';
+import { getFinalKeyframe } from '../get-final-keyframe.js';
 
 describe('getFinalKeyframe', () => {
 	test('returns final keyframe', () => {

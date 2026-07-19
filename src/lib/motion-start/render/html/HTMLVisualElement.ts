@@ -3,22 +3,22 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { HTMLRenderState } from './types';
-import type { DOMVisualElementOptions } from '../dom/types';
-import { buildHTMLStyles } from './utils/build-styles';
-import { isCSSVariableName } from '../dom/utils/is-css-variable';
-import { transformProps } from './utils/transform';
-import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.svelte';
-import { renderHTML } from './utils/render';
-import { getDefaultValueType } from '../dom/value-types/defaults';
-import { measureViewportBox } from '../../projection/utils/measure';
-import type { MotionProps } from '../../motion/types';
-import type { Box } from '../../projection/geometry/types';
-import { DOMVisualElement } from '../dom/DOMVisualElement';
-import type { MotionConfigContext } from '../../context/MotionConfigContext.svelte';
-import { isMotionValue } from '../../value/utils/is-motion-value';
-import type { ResolvedValues } from '../types';
-import type { VisualElement } from '../VisualElement.svelte';
+import type { HTMLRenderState } from './types.js';
+import type { DOMVisualElementOptions } from '../dom/types.js';
+import { buildHTMLStyles } from './utils/build-styles.js';
+import { isCSSVariableName } from '../dom/utils/is-css-variable.js';
+import { transformProps } from './utils/transform.js';
+import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.svelte.js';
+import { renderHTML } from './utils/render.js';
+import { getDefaultValueType } from '../dom/value-types/defaults.js';
+import { measureViewportBox } from '../../projection/utils/measure.js';
+import type { MotionProps } from '../../motion/types.js';
+import type { Box } from '../../projection/geometry/types.js';
+import { DOMVisualElement } from '../dom/DOMVisualElement.js';
+import type { MotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
+import type { ResolvedValues } from '../types.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
 
 export function getComputedStyle(element: HTMLElement) {
 	return window.getComputedStyle(element);

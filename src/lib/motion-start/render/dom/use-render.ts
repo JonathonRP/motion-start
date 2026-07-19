@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { RenderComponent } from '../../motion/features/types';
-import type { HTMLRenderState } from '../html/types';
-import type { SVGRenderState } from '../svg/types';
+import type { RenderComponent } from '../../motion/features/types.js';
+import type { HTMLRenderState } from '../html/types.js';
+import type { SVGRenderState } from '../svg/types.js';
 import UseRender from './UseRender.svelte';
 
 export function createUseRender(forwardMotionProps = false) {

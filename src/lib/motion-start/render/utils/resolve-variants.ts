@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps } from '../../motion/types';
-import type { TargetAndTransition, TargetResolver } from '../../types';
-import type { VisualElement } from '../VisualElement.svelte';
-import type { ResolvedValues } from '../types';
+import type { MotionProps } from '../../motion/types.js';
+import type { TargetAndTransition, TargetResolver } from '../../types.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import type { ResolvedValues } from '../types.js';
 
 function getValueState<I>(visualElement?: VisualElement<I>): [ResolvedValues, ResolvedValues] {
 	const state: [ResolvedValues, ResolvedValues] = [{}, {}];

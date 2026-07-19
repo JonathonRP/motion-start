@@ -3,18 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { transformProps } from '../../render/html/utils/transform';
-import type { AnimationTypeState } from '../../render/utils/animation-state';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { TargetAndTransition } from '../../types';
-import type { VisualElementAnimationOptions } from './types';
-import { animateMotionValue } from './motion-value';
-import { setTarget } from '../../render/utils/setters';
-import type { AnimationPlaybackControls } from '../types';
-import { getValueTransition } from '../utils/get-value-transition';
-import { frame } from '../../frameloop';
-import { getOptimisedAppearId } from '../optimized-appear/get-appear-id';
-import { addValueToWillChange } from '../../value/use-will-change/add-will-change';
+import { transformProps } from '../../render/html/utils/transform.js';
+import type { AnimationTypeState } from '../../render/utils/animation-state.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import type { TargetAndTransition } from '../../types.js';
+import type { VisualElementAnimationOptions } from './types.js';
+import { animateMotionValue } from './motion-value.js';
+import { setTarget } from '../../render/utils/setters.js';
+import type { AnimationPlaybackControls } from '../types.js';
+import { getValueTransition } from '../utils/get-value-transition.js';
+import { frame } from '../../frameloop/index.js';
+import { getOptimisedAppearId } from '../optimized-appear/get-appear-id.js';
+import { addValueToWillChange } from '../../value/use-will-change/add-will-change.js';
 
 /**
  * Decide whether we should block this animation. Previously, we achieved this

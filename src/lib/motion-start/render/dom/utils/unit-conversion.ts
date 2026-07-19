@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionValue } from '../../../value';
-import { transformPropOrder } from '../../html/utils/transform';
-import type { Box } from '../../../projection/geometry/types';
-import type { VisualElement } from '../../VisualElement.svelte';
-import type { ValueType } from '../../../value/types/types';
-import { number } from '../../../value/types/numbers';
-import { px } from '../../../value/types/numbers/units';
+import type { MotionValue } from '../../../value/index.js';
+import { transformPropOrder } from '../../html/utils/transform.js';
+import type { Box } from '../../../projection/geometry/types.js';
+import type { VisualElement } from '../../VisualElement.svelte.js';
+import type { ValueType } from '../../../value/types/types.js';
+import { number } from '../../../value/types/numbers/index.js';
+import { px } from '../../../value/types/numbers/units.js';
 
 export const positionalKeys = new Set([
 	'width',

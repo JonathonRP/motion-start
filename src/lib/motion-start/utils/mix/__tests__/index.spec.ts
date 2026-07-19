@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { mix } from '../index';
+import { mix } from '../index.js';
 
 describe('mix', () => {
 	describe('immediate form (with progress)', () => {

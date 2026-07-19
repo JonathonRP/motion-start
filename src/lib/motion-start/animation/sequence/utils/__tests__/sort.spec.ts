@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/sequence/utils/__tests__/sort.test.ts */
 import { describe, test, expect } from 'vitest';
-import type { ValueSequence } from '../../types';
-import { compareByTime } from '../sort';
+import type { ValueSequence } from '../../types.js';
+import { compareByTime } from '../sort.js';
 
 describe('compareByTime', () => {
 	test('Can be used to sort values by at time', () => {

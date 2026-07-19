@@ -3,17 +3,17 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Easing } from '../../easing/types';
-import type { GenericKeyframesTarget } from '../../types';
-import type { MotionValue } from '../../value';
-import type { DynamicAnimationOptions } from '../types';
+import type { Easing } from '../../easing/types.js';
+import type { GenericKeyframesTarget } from '../../types.js';
+import type { MotionValue } from '../../value/index.js';
+import type { DynamicAnimationOptions } from '../types.js';
 import type {
 	DOMKeyframesDefinition,
 	ElementOrSelector,
 	Transition,
 	AnimationPlaybackOptions,
 	UnresolvedValueKeyframe,
-} from '../types';
+} from '../types.js';
 
 export type ObjectTarget<O> = {
 	[K in keyof O]?: O[K] | GenericKeyframesTarget<O[K]>;

@@ -3,16 +3,16 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mixNumber as mixNumberImmediate } from './number';
-import { mixColor } from './color';
-import { pipe } from '../pipe';
-import { warning } from '../errors';
-import type { HSLA, RGBA } from '../../value/types/types';
-import { color } from '../../value/types/color';
-import { type ComplexValueInfo, type ComplexValues, analyseComplexValue, complex } from '../../value/types/complex';
-import { isCSSVariableToken } from '../../render/dom/utils/is-css-variable';
-import { invisibleValues, mixVisibility } from './visibility';
-import { mixImmediate } from './immediate';
+import { mixNumber as mixNumberImmediate } from './number.js';
+import { mixColor } from './color.js';
+import { pipe } from '../pipe.js';
+import { warning } from '../errors.js';
+import type { HSLA, RGBA } from '../../value/types/types.js';
+import { color } from '../../value/types/color/index.js';
+import { type ComplexValueInfo, type ComplexValues, analyseComplexValue, complex } from '../../value/types/complex/index.js';
+import { isCSSVariableToken } from '../../render/dom/utils/is-css-variable.js';
+import { invisibleValues, mixVisibility } from './visibility.js';
+import { mixImmediate } from './immediate.js';
 
 type MixableArray = Array<number | RGBA | HSLA | string>;
 type MixableObject = {

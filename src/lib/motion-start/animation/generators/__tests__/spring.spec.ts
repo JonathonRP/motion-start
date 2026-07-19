@@ -4,10 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { describe, test, expect } from 'vitest';
-import type { ValueAnimationOptions } from '../../types';
-import { spring } from '../spring';
-import { animateSync } from './utils';
-import { calcGeneratorDuration } from '../utils/calc-duration';
+import type { ValueAnimationOptions } from '../../types.js';
+import { spring } from '../spring/index.js';
+import { animateSync } from './utils.js';
+import { calcGeneratorDuration } from '../utils/calc-duration.js';
 
 describe('spring', () => {
 	test('Runs animations with default values ', () => {

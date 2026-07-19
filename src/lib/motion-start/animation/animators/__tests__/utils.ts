@@ -4,9 +4,9 @@
  * Ported from packages/framer-motion/src/animation/animators/__tests__/utils.ts
  */
 
-import { frameData } from '../../../frameloop/frame';
-import { time } from '../../../frameloop/sync-time';
-import type { KeyframeGenerator } from '../../generators/types';
+import { frameData } from '../../../frameloop/frame.js';
+import { time } from '../../../frameloop/sync-time.js';
+import type { KeyframeGenerator } from '../../generators/types.js';
 
 export const syncDriver = (interval = 10) => {
 	time.set(0);

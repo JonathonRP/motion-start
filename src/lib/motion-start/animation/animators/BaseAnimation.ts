@@ -3,21 +3,21 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { time } from '../../frameloop/sync-time';
+import { time } from '../../frameloop/sync-time.js';
 import {
 	type KeyframeResolver,
 	type ResolvedKeyframes,
 	flushKeyframeResolvers,
-} from '../../render/utils/KeyframesResolver';
-import { instantAnimationState } from '../../utils/use-instant-transition-state';
+} from '../../render/utils/KeyframesResolver.js';
+import { instantAnimationState } from '../../utils/use-instant-transition-state.js';
 import type {
 	AnimationPlaybackControls,
 	RepeatType,
 	ValueAnimationOptions,
 	ValueAnimationOptionsWithRenderContext,
-} from '../types';
-import { canAnimate } from './utils/can-animate';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
+} from '../types.js';
+import { canAnimate } from './utils/can-animate.js';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.js';
 
 /**
  * Maximum time allowed between an animation being created and it being

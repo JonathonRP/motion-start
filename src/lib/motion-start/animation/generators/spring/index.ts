@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { millisecondsToSeconds, secondsToMilliseconds } from '../../../utils/time-conversion';
-import type { ValueAnimationOptions, SpringOptions } from '../../types';
-import type { AnimationState, KeyframeGenerator } from '../types';
-import { calcGeneratorVelocity } from '../utils/velocity';
-import { calcAngularFreq, findSpring } from './find';
+import { millisecondsToSeconds, secondsToMilliseconds } from '../../../utils/time-conversion.js';
+import type { ValueAnimationOptions, SpringOptions } from '../../types.js';
+import type { AnimationState, KeyframeGenerator } from '../types.js';
+import { calcGeneratorVelocity } from '../utils/velocity.js';
+import { calcAngularFreq, findSpring } from './find.js';
 
 const durationKeys = ['duration', 'bounce'];
 const physicsKeys = ['stiffness', 'damping', 'mass'];

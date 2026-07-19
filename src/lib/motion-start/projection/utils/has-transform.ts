@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues } from '../../render/types';
+import type { ResolvedValues } from '../../render/types.js';
 
 function isIdentityScale(scale: string | number | undefined) {
 	return scale === undefined || scale === 1;

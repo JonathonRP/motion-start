@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Repeat } from '../../../../types';
+import type { Repeat } from '../../../../types.js';
 
 const isNotNull = (value: unknown) => value !== null;
 

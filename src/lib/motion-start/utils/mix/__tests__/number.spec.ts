@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { mixNumber } from '../number';
+import { mixNumber } from '../number.js';
 
 describe('mixNumber', () => {
 	test('mixes between two numbers', () => {

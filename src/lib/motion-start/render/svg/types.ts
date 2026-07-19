@@ -4,10 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { SvelteHTMLElements, SVGAttributes } from 'svelte/elements';
-import type { MakeMotion, MotionProps } from '../../motion/types';
-import type { ForwardRefComponent, HTMLRenderState } from '../html/types';
-import type { ResolvedValues } from '../types';
-import type { SVGElements } from './supported-elements';
+import type { MakeMotion, MotionProps } from '../../motion/types.js';
+import type { ForwardRefComponent, HTMLRenderState } from '../html/types.js';
+import type { ResolvedValues } from '../types.js';
+import type { SVGElements } from './supported-elements.js';
 export interface SVGRenderState extends HTMLRenderState {
 	/**
 	 * Measured dimensions of the SVG element to be used to calculate a transform-origin.

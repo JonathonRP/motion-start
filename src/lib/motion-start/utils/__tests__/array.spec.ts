@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { addUniqueItem, removeItem } from '../array';
+import { addUniqueItem, removeItem } from '../array.js';
 
 describe('addUniqueItem', () => {
 	test('Adds a unique item', () => {

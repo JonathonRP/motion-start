@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { ReorderContext as ReorderContextProps } from '../components/Reorder/types';
+import type { ReorderContext as ReorderContextProps } from '../components/Reorder/types.js';
 
 interface ReorderContext<T> extends ReorderContextProps<T> {}
 

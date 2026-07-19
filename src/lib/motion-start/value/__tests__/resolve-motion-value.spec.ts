@@ -4,8 +4,8 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { motionValue } from '../index';
-import { resolveMotionValue } from '../utils/resolve-motion-value';
+import { motionValue } from '../index.js';
+import { resolveMotionValue } from '../utils/resolve-motion-value.js';
 
 describe('resolveMotionValue', () => {
 	test('should leave non-motion values alone', () => {

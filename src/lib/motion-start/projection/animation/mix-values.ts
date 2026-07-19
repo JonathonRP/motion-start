@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { circOut } from '../../easing/circ';
-import type { EasingFunction } from '../../easing/types';
-import type { ResolvedValues } from '../../render/types';
-import { progress as calcProgress } from '../../utils/progress';
-import { mixNumber } from '../../utils/mix/number';
-import { noop } from '../../utils/noop';
-import { percent, px } from '../../value/types/numbers/units';
+import { circOut } from '../../easing/circ.js';
+import type { EasingFunction } from '../../easing/types.js';
+import type { ResolvedValues } from '../../render/types.js';
+import { progress as calcProgress } from '../../utils/progress.js';
+import { mixNumber } from '../../utils/mix/number.js';
+import { noop } from '../../utils/noop.js';
+import { percent, px } from '../../value/types/numbers/units.js';
 
 const borders = ['TopLeft', 'TopRight', 'BottomLeft', 'BottomRight'];
 const numBorders = borders.length;

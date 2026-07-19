@@ -3,10 +3,10 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-import type { LayoutGroupContext } from '../../../context/LayoutGroupContext.svelte';
-import type { SwitchLayoutGroupContext } from '../../../context/SwitchLayoutGroupContext';
-import type { VisualElement } from '../../../render/VisualElement.svelte';
-import type { MotionProps } from '../../types';
+import type { LayoutGroupContext } from '../../../context/LayoutGroupContext.svelte.js';
+import type { SwitchLayoutGroupContext } from '../../../context/SwitchLayoutGroupContext.js';
+import type { VisualElement } from '../../../render/VisualElement.svelte.js';
+import type { MotionProps } from '../../types.js';
 
 interface MeasureContextProps {
 	layoutGroup: LayoutGroupContext;
@@ -28,9 +28,9 @@ export const animateLayout = {
 </script>
 
 <script lang="ts">
-	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte";
-	import { useLayoutGroupContext } from "../../../context/LayoutGroupContext.svelte";
-	import { useSwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext";
+	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte.js";
+	import { useLayoutGroupContext } from "../../../context/LayoutGroupContext.svelte.js";
+	import { useSwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext.js";
 	import MeasureLayoutWithContext from "./MeasureLayoutWithContext.svelte";
 	import { usePresenceContext } from "$lib/motion-start/context/PresenceContext.svelte";
 	import { useReorderContext } from "$lib/motion-start/context/ReorderContext";

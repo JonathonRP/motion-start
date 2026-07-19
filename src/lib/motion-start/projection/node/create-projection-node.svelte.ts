@@ -3,25 +3,25 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { frame, cancelFrame } from '../../frameloop';
-import type { AnimationPlaybackControls } from '../../animation/types';
-import type { ResolvedValues } from '../../render/types';
-import { SubscriptionManager } from '../../utils/subscription-manager';
-import { mixValues } from '../animation/mix-values';
-import { copyAxisDeltaInto, copyBoxInto } from '../geometry/copy';
-import { applyBoxDelta, applyTreeDeltas } from '../geometry/delta-apply';
-import { calcBoxDelta, calcLength, calcRelativeBox, calcRelativePosition, isNear } from '../geometry/delta-calc';
-import { removeBoxTransforms } from '../geometry/delta-remove';
-import type { Axis, AxisDelta, Box, Delta } from '../geometry/types';
-import { transformBox, translateAxis } from '../geometry/delta-apply';
-import type { Point } from '../geometry/types';
-import { getValueTransition } from '../../animation/utils/get-value-transition';
-import { aspectRatio, axisDeltaEquals, boxEquals, boxEqualsRounded, isDeltaZero } from '../geometry/utils';
-import { NodeStack } from '../shared/stack';
-import { scaleCorrectors } from '../styles/scale-correction';
-import { buildProjectionTransform } from '../styles/transform';
-import { eachAxis } from '../utils/each-axis';
-import { has2DTranslate, hasScale, hasTransform } from '../utils/has-transform';
+import { frame, cancelFrame } from '../../frameloop/index.js';
+import type { AnimationPlaybackControls } from '../../animation/types.js';
+import type { ResolvedValues } from '../../render/types.js';
+import { SubscriptionManager } from '../../utils/subscription-manager.js';
+import { mixValues } from '../animation/mix-values.js';
+import { copyAxisDeltaInto, copyBoxInto } from '../geometry/copy.js';
+import { applyBoxDelta, applyTreeDeltas } from '../geometry/delta-apply.js';
+import { calcBoxDelta, calcLength, calcRelativeBox, calcRelativePosition, isNear } from '../geometry/delta-calc.js';
+import { removeBoxTransforms } from '../geometry/delta-remove.js';
+import type { Axis, AxisDelta, Box, Delta } from '../geometry/types.js';
+import { transformBox, translateAxis } from '../geometry/delta-apply.js';
+import type { Point } from '../geometry/types.js';
+import { getValueTransition } from '../../animation/utils/get-value-transition.js';
+import { aspectRatio, axisDeltaEquals, boxEquals, boxEqualsRounded, isDeltaZero } from '../geometry/utils.js';
+import { NodeStack } from '../shared/stack.js';
+import { scaleCorrectors } from '../styles/scale-correction.js';
+import { buildProjectionTransform } from '../styles/transform.js';
+import { eachAxis } from '../utils/each-axis.js';
+import { has2DTranslate, hasScale, hasTransform } from '../utils/has-transform.js';
 import type {
 	IProjectionNode,
 	LayoutEvents,
@@ -31,27 +31,27 @@ import type {
 	Measurements,
 	ScrollMeasurements,
 	Phase,
-} from './types';
-import { FlatTree } from '../../render/utils/flat-tree';
-import type { Transition } from '../../types';
-import { resolveMotionValue } from '../../value/utils/resolve-motion-value';
-import type { MotionStyle } from '../../motion/types';
-import { globalProjectionState } from './state';
-import { delay } from '../../utils/delay';
-import { mixNumber } from '../../utils/mix/number';
-import type { Process } from '../../frameloop/types';
-import type { ValueAnimationOptions } from '../../animation/types';
-import { frameData } from '../../dom';
-import { isSVGElement } from '../../render/dom/utils/is-svg-element';
-import { animateSingleValue } from '../../animation/animate/single-value';
-import { clamp } from '../../utils/clamp';
-import { frameSteps } from '../../frameloop/frame';
-import { noop } from '../../utils/noop';
-import { time } from '../../frameloop/sync-time';
-import { microtask } from '../../frameloop/microtask';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import { getOptimisedAppearId } from '../../animation/optimized-appear/get-appear-id';
-import { createBox, createDelta } from '../geometry/models';
+} from './types.js';
+import { FlatTree } from '../../render/utils/flat-tree.js';
+import type { Transition } from '../../types.js';
+import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
+import type { MotionStyle } from '../../motion/types.js';
+import { globalProjectionState } from './state.js';
+import { delay } from '../../utils/delay.js';
+import { mixNumber } from '../../utils/mix/number.js';
+import type { Process } from '../../frameloop/types.js';
+import type { ValueAnimationOptions } from '../../animation/types.js';
+import { frameData } from '../../dom.js';
+import { isSVGElement } from '../../render/dom/utils/is-svg-element.js';
+import { animateSingleValue } from '../../animation/animate/single-value.js';
+import { clamp } from '../../utils/clamp.js';
+import { frameSteps } from '../../frameloop/frame.js';
+import { noop } from '../../utils/noop.js';
+import { time } from '../../frameloop/sync-time.js';
+import { microtask } from '../../frameloop/microtask.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import { getOptimisedAppearId } from '../../animation/optimized-appear/get-appear-id.js';
+import { createBox, createDelta } from '../geometry/models.js';
 
 const metrics = {
 	type: 'projectionFrame',

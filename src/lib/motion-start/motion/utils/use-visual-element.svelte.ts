@@ -4,20 +4,21 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { watch } from 'runed';
-import { tick, type Component } from 'svelte';
-import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id';
-import { useLazyContext } from '../../context/LazyContext';
-import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte';
-import { useMotionContext, type MotionContext } from '../../context/MotionContext';
-import { usePresenceContext } from '../../context/PresenceContext.svelte';
-import { useSwitchLayoutGroupContext, type InitialPromotionConfig } from '../../context/SwitchLayoutGroupContext';
-import { microtask } from '../../frameloop/microtask';
-import type { IProjectionNode } from '../../projection/node/types';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { CreateVisualElement } from '../../render/types';
+import { type Component, tick } from 'svelte';
+import { optimizedAppearDataAttribute } from '../../animation/optimized-appear/data-id.js';
+import { useLazyContext } from '../../context/LazyContext.js';
+import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
+import { type MotionContext, useMotionContext } from '../../context/MotionContext/index.js';
+import { useMotionOutroContext } from '../../context/OutroContext.svelte.js';
+import { usePresenceContext } from '../../context/PresenceContext.svelte.js';
+import { type InitialPromotionConfig, useSwitchLayoutGroupContext } from '../../context/SwitchLayoutGroupContext.js';
+import { microtask } from '../../frameloop/microtask.js';
+import type { IProjectionNode } from '../../projection/node/types.js';
+import type { CreateVisualElement } from '../../render/types.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
 import { isRefObject } from '../../utils/is-ref-object.js';
-import type { MotionProps } from '../types';
-import type { VisualState } from './use-visual-state.svelte';
+import type { MotionProps } from '../types.js';
+import type { VisualState } from './use-visual-state.svelte.js';
 
 export function useVisualElement<Instance, RenderState>(
 	Component: string | Component<any>,
@@ -32,6 +33,7 @@ export function useVisualElement<Instance, RenderState>(
 	const presenceContext = usePresenceContext();
 	const isPresent = $derived(presenceContext?.isPresent);
 	const motionConfigContext = useMotionConfigContext();
+	const motionOutroContext = useMotionOutroContext();
 	const reducedMotionContext = $derived(motionConfigContext.reducedMotion);
 	const initialLayoutGroupConfig = $derived(useSwitchLayoutGroupContext());
 
@@ -90,6 +92,18 @@ export function useVisualElement<Instance, RenderState>(
 		Boolean(optimisedAppearId) &&
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
+	let hasStartedAnimation = false;
+
+	async function animateChanges(element: VisualElement<Instance>) {
+		if (!hasStartedAnimation && motionOutroContext?.mode === 'wait') {
+			// Let Svelte initialise sibling outros before checking the shared
+			// counter. A replacement's visual element can otherwise mount first.
+			await tick();
+			await motionOutroContext.waitForExit();
+		}
+		hasStartedAnimation = true;
+		return element.animationState?.animateChanges();
+	}
 
 	watch.pre([() => visualElement, () => commitVersion], () => {
 		const element = visualElement;
@@ -103,7 +117,7 @@ export function useVisualElement<Instance, RenderState>(
 			microtask.render(element.render);
 
 			if (wantsHandoff && element.animationState) {
-				element.animationState.animateChanges();
+				animateChanges(element);
 			}
 		});
 	});
@@ -114,7 +128,7 @@ export function useVisualElement<Instance, RenderState>(
 
 		tick().then(() => {
 			if (!wantsHandoff && element.animationState) {
-				element.animationState.animateChanges();
+				animateChanges(element);
 			}
 		});
 		if (wantsHandoff) {

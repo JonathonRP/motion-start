@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { isZeroValueString } from '../../utils/is-zero-value-string';
+import { isZeroValueString } from '../../utils/is-zero-value-string.js';
 
 export function isNone(value: string | number | null) {
 	if (typeof value === 'number') {

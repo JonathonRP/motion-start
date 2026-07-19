@@ -4,26 +4,26 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { startWaapiAnimation } from './index.js';
-import { createGeneratorEasing } from '../../../easing/utils/create-generator-easing';
-import type { ProgressTimeline } from '../../../render/dom/scroll/observe';
-import { browserNumberValueTypes } from '../../../render/dom/value-types/number-browser';
-import { invariant } from '../../../utils/errors';
-import { noop } from '../../../utils/noop';
-import { millisecondsToSeconds, secondsToMilliseconds } from '../../../utils/time-conversion';
-import { isGenerator } from '../../generators/utils/is-generator';
+import { createGeneratorEasing } from '../../../easing/utils/create-generator-easing.js';
+import type { ProgressTimeline } from '../../../render/dom/scroll/observe.js';
+import { browserNumberValueTypes } from '../../../render/dom/value-types/number-browser.js';
+import { invariant } from '../../../utils/errors.js';
+import { noop } from '../../../utils/noop.js';
+import { millisecondsToSeconds, secondsToMilliseconds } from '../../../utils/time-conversion.js';
+import { isGenerator } from '../../generators/utils/is-generator.js';
 import type {
 	AnimationPlaybackControls,
 	UnresolvedValueKeyframe,
 	ValueAnimationOptions,
 	ValueKeyframe,
 	ValueKeyframesDefinition,
-} from '../../types';
-import { attachTimeline } from './utils/attach-timeline';
-import { getFinalKeyframe } from './utils/get-final-keyframe';
-import { setCSSVar, setStyle } from './utils/style';
-import { supportsLinearEasing } from './utils/supports-linear-easing';
-import { supportsPartialKeyframes } from './utils/supports-partial-keyframes';
-import { supportsWaapi } from './utils/supports-waapi';
+} from '../../types.js';
+import { attachTimeline } from './utils/attach-timeline.js';
+import { getFinalKeyframe } from './utils/get-final-keyframe.js';
+import { setCSSVar, setStyle } from './utils/style.js';
+import { supportsLinearEasing } from './utils/supports-linear-easing.js';
+import { supportsPartialKeyframes } from './utils/supports-partial-keyframes.js';
+import { supportsWaapi } from './utils/supports-waapi.js';
 
 const state = new WeakMap<Element, Map<string, NativeAnimation>>();
 

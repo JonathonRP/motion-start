@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { RefObject } from '../../utils/safe-react-types';
-import type { PanInfo } from '../pan/PanSession';
-import type { Inertia, TargetAndTransition } from '../../types';
-import type { DragControls } from './use-drag-controls';
-import type { MotionValue } from '../../value';
-import type { VariantLabels } from '../../motion/types';
-import type { Axis, BoundingBox } from '../../projection/geometry/types';
+import type { RefObject } from '../../utils/safe-react-types.js';
+import type { PanInfo } from '../pan/PanSession.js';
+import type { Inertia, TargetAndTransition } from '../../types.js';
+import type { DragControls } from './use-drag-controls.js';
+import type { MotionValue } from '../../value/index.js';
+import type { VariantLabels } from '../../motion/types.js';
+import type { Axis, BoundingBox } from '../../projection/geometry/types.js';
 
 export type DragHandler = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
 

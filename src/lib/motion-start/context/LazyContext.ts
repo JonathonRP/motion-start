@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { CreateVisualElement } from '../render/types';
+import type { CreateVisualElement } from '../render/types.js';
 
 export interface LazyContext {
 	renderer?: CreateVisualElement<any>;

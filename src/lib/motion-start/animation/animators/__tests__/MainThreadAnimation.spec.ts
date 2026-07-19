@@ -5,12 +5,12 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { MainThreadAnimation, animateValue } from '../MainThreadAnimation';
-import { reverseEasing } from '../../../easing/modifiers/reverse';
-import { noop } from '../../../utils/noop';
-import type { ValueAnimationOptions } from '../../types';
-import { syncDriver } from './utils';
-import { KeyframeResolver } from '../../../render/utils/KeyframesResolver';
+import { MainThreadAnimation, animateValue } from '../MainThreadAnimation.js';
+import { reverseEasing } from '../../../easing/modifiers/reverse.js';
+import { noop } from '../../../utils/noop.js';
+import type { ValueAnimationOptions } from '../../types.js';
+import { syncDriver } from './utils.js';
+import { KeyframeResolver } from '../../../render/utils/KeyframesResolver.js';
 
 /**
  * Test-friendly nextFrame implementation using setTimeout

@@ -3,16 +3,16 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { TargetAndTransition, TargetResolver } from '../types';
-import type { VisualElement } from '../render/VisualElement.svelte';
-import type { Easing } from '../easing/types';
-import type { Driver } from './animators/drivers/types';
-import type { SVGPathProperties, VariantLabels } from '../motion/types';
-import type { SVGAttributes } from '../render/svg/types-attributes';
-import type { ProgressTimeline } from '../render/dom/scroll/observe';
-import type { MotionValue } from '../value';
-import type { KeyframeResolver, OnKeyframesResolved } from '../render/utils/KeyframesResolver';
-import type { KeyframeGenerator } from './generators/types';
+import type { TargetAndTransition, TargetResolver } from '../types.js';
+import type { VisualElement } from '../render/VisualElement.svelte.js';
+import type { Easing } from '../easing/types.js';
+import type { Driver } from './animators/drivers/types.js';
+import type { SVGPathProperties, VariantLabels } from '../motion/types.js';
+import type { SVGAttributes } from '../render/svg/types-attributes.js';
+import type { ProgressTimeline } from '../render/dom/scroll/observe.js';
+import type { MotionValue } from '../value/index.js';
+import type { KeyframeResolver, OnKeyframesResolved } from '../render/utils/KeyframesResolver.js';
+import type { KeyframeGenerator } from './generators/types.js';
 
 export interface AnimationPlaybackLifecycles<V> {
 	onUpdate?: (latest: V) => void;

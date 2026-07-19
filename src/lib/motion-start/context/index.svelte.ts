@@ -4,9 +4,9 @@ export {
 	type MotionConfigContextType,
 	defaultMotionConfig,
 	MOTION_CONFIG_CONTEXT_KEY,
-} from './MotionConfigContext.svelte';
+} from './MotionConfigContext.svelte.js';
 export {
 	createLayoutGroupContext,
 	type LayoutGroupContextType,
 	LAYOUT_GROUP_CONTEXT_KEY,
-} from './LayoutGroupContext.svelte';
+} from './LayoutGroupContext.svelte.js';

@@ -3,27 +3,37 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { TargetAndTransition } from '../../types';
-import type { ResolvedValues } from '../../render/types';
-import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
-import { createBox } from '../../projection/geometry/models';
-import { VisualElement } from '../../render/VisualElement.svelte';
-import { animateVisualElement } from '../interfaces/visual-element';
+import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte.js';
+import { createBox } from '../../projection/geometry/models.js';
+import type { ResolvedValues } from '../../render/types.js';
+import { VisualElement } from '../../render/VisualElement.svelte.js';
+import type { TargetAndTransition } from '../../types.js';
+import { animateVisualElement } from '../interfaces/visual-element.js';
 
 interface AnimatedStateOptions {
 	initialState: ResolvedValues;
 }
 
-const createObject = () => ({}) as any;
+const createObject = () => ({});
 
-class StateVisualElement extends VisualElement<ResolvedValues, {}, AnimatedStateOptions> {
+class StateVisualElement extends VisualElement<ResolvedValues, Record<string, never>, AnimatedStateOptions> {
 	type = 'state';
-	build() {}
+	build() {
+		// State visual elements have no render target.
+	}
 	measureInstanceViewportBox = createBox;
-	resetTransform() {}
-	restoreTransform() {}
-	removeValueFromRenderState() {}
-	renderInstance() {}
+	resetTransform() {
+		// State visual elements have no transform to reset.
+	}
+	restoreTransform() {
+		// State visual elements have no transform to restore.
+	}
+	removeValueFromRenderState() {
+		// State visual elements don't maintain a render state.
+	}
+	renderInstance() {
+		// State visual elements publish updates through onUpdate.
+	}
 	scrapeMotionValuesFromProps() {
 		return createObject();
 	}
@@ -49,8 +59,8 @@ const useVisualState = makeUseVisualState({
  * This is not an officially supported API and may be removed
  * on any version.
  */
-export function useAnimatedState(initialState: any) {
-	let animationState = initialState;
+export function useAnimatedState(initialState: ResolvedValues) {
+	let animationState = $state<ResolvedValues>({ ...initialState });
 	const visualState = useVisualState(
 		() => ({}),
 		() => false
@@ -73,12 +83,12 @@ export function useAnimatedState(initialState: any) {
 
 	$effect(() => {
 		element.mount({});
-		return element.unmount;
+		return () => element.unmount();
 	});
 
-	const startAnimation = () => (animationDefinition: TargetAndTransition) => {
+	const startAnimation = (animationDefinition: TargetAndTransition) => {
 		return animateVisualElement(element, animationDefinition);
 	};
 
-	return () => [animationState, startAnimation];
+	return () => [animationState, startAnimation] as const;
 }

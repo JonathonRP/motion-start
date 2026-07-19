@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/easing/utils/__tests__/is-bezier-definition.test.ts */
 import { test, expect } from 'vitest';
-import { isBezierDefinition } from '../is-bezier-definition';
+import { isBezierDefinition } from '../is-bezier-definition.js';
 
 test('isBezierDefinition', () => {
 	expect(isBezierDefinition('linear')).toEqual(false);

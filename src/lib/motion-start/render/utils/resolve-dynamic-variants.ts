@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { TargetAndTransition, TargetResolver } from '../../types';
-import type { VisualElement } from '../VisualElement.svelte';
-import { resolveVariantFromProps } from './resolve-variants';
+import type { TargetAndTransition, TargetResolver } from '../../types.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import { resolveVariantFromProps } from './resolve-variants.js';
 
 /**
  * Resovles a variant if it's a variant resolver

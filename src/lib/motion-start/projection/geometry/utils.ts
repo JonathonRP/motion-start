@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { calcLength } from './delta-calc';
-import type { Axis, AxisDelta, Box, Delta } from './types';
+import { calcLength } from './delta-calc.js';
+import type { Axis, AxisDelta, Box, Delta } from './types.js';
 
 function isAxisDeltaZero(delta: AxisDelta) {
 	return delta.translate === 0 && delta.scale === 1;

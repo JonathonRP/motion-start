@@ -3,16 +3,16 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionComponentConfig } from '../../motion/index.svelte';
-import type { SVGRenderState } from './types';
-import { renderSVG } from './utils/render';
-import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values.svelte';
-import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
-import { createSvgRenderState } from './utils/create-render-state';
-import { buildSVGAttrs } from './utils/build-attrs';
-import { isSVGTag } from './utils/is-svg-tag';
-import { frame } from '../../frameloop/frame';
-import type { ScrapeMotionValuesFromProps } from '../types';
+import type { MotionComponentConfig } from '../../motion/index.svelte.js';
+import type { SVGRenderState } from './types.js';
+import { renderSVG } from './utils/render.js';
+import { scrapeMotionValuesFromProps as scrapeSVGProps } from './utils/scrape-motion-values.svelte.js';
+import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte.js';
+import { createSvgRenderState } from './utils/create-render-state.js';
+import { buildSVGAttrs } from './utils/build-attrs.js';
+import { isSVGTag } from './utils/is-svg-tag.js';
+import { frame } from '../../frameloop/frame.js';
+import type { ScrapeMotionValuesFromProps } from '../types.js';
 
 export const svgMotionConfig: Partial<MotionComponentConfig<SVGElement, SVGRenderState>> = {
 	useVisualState: makeUseVisualState({

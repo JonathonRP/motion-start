@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { shallowCompare } from '../shallow-compare';
+import { shallowCompare } from '../shallow-compare.js';
 
 describe('shallowCompare', () => {
 	test('returns false if args are different', () => {

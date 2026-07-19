@@ -3,8 +3,8 @@
  * Copyright (c) 2018 Framer B.V.
  */
 import { describe, test, expect } from 'vitest';
-import { reverseEasing } from '../reverse';
-import { easeOut } from '../../ease';
+import { reverseEasing } from '../reverse.js';
+import { easeOut } from '../../ease.js';
 
 describe('reverseEasing', () => {
 	test('correctly reverses an easing curve', () => {

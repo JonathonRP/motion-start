@@ -5,8 +5,8 @@
  */
 
 import { describe, test, expect, vi } from 'vitest';
-import { GroupPlaybackControls } from '../GroupPlaybackControls';
-import type { AnimationPlaybackControls } from '../types';
+import { GroupPlaybackControls } from '../GroupPlaybackControls.js';
+import type { AnimationPlaybackControls } from '../types.js';
 
 function createTestAnimationControls(
 	partialControls?: Partial<AnimationPlaybackControls>

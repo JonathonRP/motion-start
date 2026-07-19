@@ -4,10 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Component } from 'svelte';
-import { HTMLVisualElement } from '../html/HTMLVisualElement';
-import { SVGVisualElement } from '../svg/SVGVisualElement';
-import type { CreateVisualElement, VisualElementOptions } from '../types';
-import { isSVGComponent } from './utils/is-svg-component';
+import { HTMLVisualElement } from '../html/HTMLVisualElement.js';
+import { SVGVisualElement } from '../svg/SVGVisualElement.js';
+import type { CreateVisualElement, VisualElementOptions } from '../types.js';
+import { isSVGComponent } from './utils/is-svg-component.js';
 
 export const createDomVisualElement: CreateVisualElement<HTMLElement | SVGElement> = (
 	Component: string | Component<Record<string, unknown>>,

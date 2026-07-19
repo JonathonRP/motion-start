@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte'
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
 
 export interface MotionContext<Instance = unknown> {
 	visualElement?: VisualElement<Instance> | null;

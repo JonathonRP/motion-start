@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/animators/waapi/utils/__tests__/linear.test.ts */
 import { describe, test, expect } from 'vitest';
-import { noop } from '../../../../../utils/noop';
-import { generateLinearEasing } from '../linear.svelte';
+import { noop } from '../../../../../utils/noop.js';
+import { generateLinearEasing } from '../linear.svelte.js';
 
 describe('generateLinearEasing', () => {
 	test('Converts easing function into string of points', () => {

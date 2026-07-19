@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ScrollInfo } from '../types';
-import { calcInset } from './inset';
-import { ScrollOffset } from './presets';
-import type { ScrollInfoOptions } from '../types';
-import { resolveOffset } from './offset';
-import { interpolate } from '../../../../utils/interpolate';
-import { defaultOffset } from '../../../../utils/offsets/default';
+import type { ScrollInfo } from '../types.js';
+import { calcInset } from './inset.js';
+import { ScrollOffset } from './presets.js';
+import type { ScrollInfoOptions } from '../types.js';
+import { resolveOffset } from './offset.js';
+import { interpolate } from '../../../../utils/interpolate.js';
+import { defaultOffset } from '../../../../utils/offsets/default.js';
 
 const point = { x: 0, y: 0 };
 

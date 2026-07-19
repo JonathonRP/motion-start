@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { EventInfo } from './types';
-import { isPrimaryPointer } from './utils/is-primary-pointer';
+import type { EventInfo } from './types.js';
+import { isPrimaryPointer } from './utils/is-primary-pointer.js';
 
 export type EventListenerWithPointInfo = (e: PointerEvent, info: EventInfo) => void;
 

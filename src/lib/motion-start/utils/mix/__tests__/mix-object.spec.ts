@@ -5,7 +5,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { mixObject } from '../complex';
+import { mixObject } from '../complex.js';
 
 describe('mixObject', () => {
 	test('mixObject', () => {

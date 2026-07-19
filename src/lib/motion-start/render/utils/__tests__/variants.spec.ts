@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/utils/__tests__/variants.test.ts */
 import { describe, test, expect } from 'vitest';
-import { resolveVariantFromProps } from '../resolve-variants';
+import { resolveVariantFromProps } from '../resolve-variants.js';
 
 describe('resolveVariantFromProps', () => {
 	test('Resolves string', () => {

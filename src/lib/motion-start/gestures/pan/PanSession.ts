@@ -3,16 +3,16 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { EventInfo } from '../../events/types';
-import { extractEventInfo } from '../../events/event-info';
-import { frame, cancelFrame } from '../../frameloop';
-import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
-import { addPointerEvent } from '../../events/add-pointer-event';
-import type { Point, TransformPoint } from '../../projection/geometry/types';
-import { pipe } from '../../utils/pipe';
-import { distance2D } from '../../utils/distance';
-import { frameData } from '../../frameloop';
-import { isPrimaryPointer } from '../../events/utils/is-primary-pointer';
+import type { EventInfo } from '../../events/types.js';
+import { extractEventInfo } from '../../events/event-info.js';
+import { frame, cancelFrame } from '../../frameloop/index.js';
+import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion.js';
+import { addPointerEvent } from '../../events/add-pointer-event.js';
+import type { Point, TransformPoint } from '../../projection/geometry/types.js';
+import { pipe } from '../../utils/pipe.js';
+import { distance2D } from '../../utils/distance.js';
+import { frameData } from '../../frameloop/index.js';
+import { isPrimaryPointer } from '../../events/utils/is-primary-pointer.js';
 
 /**
  * Passed in to pan event handlers like `onPan` the `PanInfo` object contains

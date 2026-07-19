@@ -3,15 +3,15 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { isNone } from '../../animation/utils/is-none';
-import { getVariableValue } from './utils/css-variables-conversion';
-import { isCSSVariableToken } from './utils/is-css-variable';
-import { isNumOrPxType, positionalKeys, positionalValues } from './utils/unit-conversion';
-import { findDimensionValueType } from './value-types/dimensions';
-import { KeyframeResolver, type OnKeyframesResolved, type UnresolvedKeyframes } from '../utils/KeyframesResolver';
-import { makeNoneKeyframesAnimatable } from '../html/utils/make-none-animatable';
-import type { VisualElement } from '../VisualElement.svelte';
-import type { MotionValue } from '../../value';
+import { isNone } from '../../animation/utils/is-none.js';
+import { getVariableValue } from './utils/css-variables-conversion.js';
+import { isCSSVariableToken } from './utils/is-css-variable.js';
+import { isNumOrPxType, positionalKeys, positionalValues } from './utils/unit-conversion.js';
+import { findDimensionValueType } from './value-types/dimensions.js';
+import { KeyframeResolver, type OnKeyframesResolved, type UnresolvedKeyframes } from '../utils/KeyframesResolver.js';
+import { makeNoneKeyframesAnimatable } from '../html/utils/make-none-animatable.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import type { MotionValue } from '../../value/index.js';
 
 /**
  * Type guard to validate that an object is a valid MotionValue

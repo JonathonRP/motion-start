@@ -3,7 +3,7 @@
  * Copyright (c) 2018 Framer B.V.
  */
 import { describe, test, expect } from 'vitest';
-import { mirrorEasing } from '../mirror';
+import { mirrorEasing } from '../mirror.js';
 
 const testEase = (p: number) => p * p;
 

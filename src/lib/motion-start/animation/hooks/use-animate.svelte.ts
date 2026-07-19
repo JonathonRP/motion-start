@@ -1,5 +1,5 @@
-import type { AnimationScope } from '../types';
-import { createScopedAnimate } from '../animate';
+import type { AnimationScope } from '../types.js';
+import { createScopedAnimate } from '../animate/index.js';
 
 export function useAnimate<T extends Element = Element>() {
 	const scope: AnimationScope<T> = {

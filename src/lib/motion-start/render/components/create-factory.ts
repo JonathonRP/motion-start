@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { createRendererMotionComponent, type MotionComponentProps } from '../../motion/index.svelte';
-import type { DOMMotionComponents } from '../dom/types';
-import type { CreateVisualElement } from '../types';
-import type { FeaturePackages } from '../../motion/features/types';
-import { isSVGComponent } from '../dom/utils/is-svg-component';
-import { svgMotionConfig } from '../svg/config-motion';
-import { htmlMotionConfig } from '../html/config-motion';
-import { createUseRender } from '../dom/use-render';
+import { createRendererMotionComponent, type MotionComponentProps } from '../../motion/index.svelte.js';
+import type { DOMMotionComponents } from '../dom/types.js';
+import type { CreateVisualElement } from '../types.js';
+import type { FeaturePackages } from '../../motion/features/types.js';
+import { isSVGComponent } from '../dom/utils/is-svg-component.js';
+import { svgMotionConfig } from '../svg/config-motion.js';
+import { htmlMotionConfig } from '../html/config-motion.js';
+import { createUseRender } from '../dom/use-render.js';
 import type { Component } from 'svelte';
 
 export function createMotionComponentFactory(

@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ElementOrSelector } from '../../../animation/types';
-import { resolveElements } from '../utils/resolve-element';
+import type { ElementOrSelector } from '../../../animation/types.js';
+import { resolveElements } from '../utils/resolve-element.js';
 
 export type ViewChangeHandler = (entry: IntersectionObserverEntry) => void;
 

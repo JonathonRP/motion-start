@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { clamp } from '../../../utils/clamp';
+import { clamp } from '../../../utils/clamp.js';
 
 export const number = {
 	test: (v: number) => typeof v === 'number',

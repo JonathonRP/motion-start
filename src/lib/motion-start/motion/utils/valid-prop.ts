@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps } from '../types';
+import type { MotionProps } from '../types.js';
 
 /**
  * A list of all valid MotionProps.

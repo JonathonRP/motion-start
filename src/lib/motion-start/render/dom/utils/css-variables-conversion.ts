@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { invariant } from '../../../utils/errors';
-import { isNumericalString } from '../../../utils/is-numerical-string';
-import { isCSSVariableToken, type CSSVariableToken } from './is-css-variable';
+import { invariant } from '../../../utils/errors.js';
+import { isNumericalString } from '../../../utils/is-numerical-string.js';
+import { isCSSVariableToken, type CSSVariableToken } from './is-css-variable.js';
 
 /**
  * Parse Framer's special CSS variable format into a CSS token and a fallback.

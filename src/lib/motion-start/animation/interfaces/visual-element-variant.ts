@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { resolveVariant } from '../../render/utils/resolve-dynamic-variants';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { VisualElementAnimationOptions } from './types';
-import { animateTarget } from './visual-element-target';
+import { resolveVariant } from '../../render/utils/resolve-dynamic-variants.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import type { VisualElementAnimationOptions } from './types.js';
+import { animateTarget } from './visual-element-target.js';
 
 export function animateVariant(
 	visualElement: VisualElement<unknown>,

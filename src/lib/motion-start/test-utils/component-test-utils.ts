@@ -3,7 +3,7 @@
  */
 
 import { tick } from 'svelte';
-import type { MotionValue } from '../value/index';
+import type { MotionValue } from '../value/index.js';
 
 /**
  * Wait for next Svelte tick (reactive updates)

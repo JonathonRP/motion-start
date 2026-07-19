@@ -5,14 +5,14 @@ Copyright (c) 2018 Framer B.V.
 
 import type { Component } from 'svelte';
 
-import type { VisualState } from '../motion/utils/use-visual-state.svelte';
-import type { MotionValue } from '../value';
-import type { Axis, Box } from '../projection/geometry/types';
-import type { VisualElement } from './VisualElement.svelte';
-import type { MotionProps } from '../motion/types';
-import type { AnimationDefinition } from '../animation/types';
-import type { PresenceContext } from '../context/PresenceContext.svelte';
-import type { ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
+import type { VisualState } from '../motion/utils/use-visual-state.svelte.js';
+import type { MotionValue } from '../value/index.js';
+import type { Axis, Box } from '../projection/geometry/types.js';
+import type { VisualElement } from './VisualElement.svelte.js';
+import type { MotionProps } from '../motion/types.js';
+import type { AnimationDefinition } from '../animation/types.js';
+import type { PresenceContext } from '../context/PresenceContext.svelte.js';
+import type { ReducedMotionConfig } from '../context/MotionConfigContext.svelte.js';
 
 export type GenericValues = {
 	[key: string]: string | number;

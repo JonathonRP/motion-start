@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { alpha, scale } from '../../../value/types/numbers';
-import { degrees, progressPercentage, px } from '../../../value/types/numbers/units';
-import type { ValueTypeMap } from './types';
+import { alpha, scale } from '../../../value/types/numbers/index.js';
+import { degrees, progressPercentage, px } from '../../../value/types/numbers/units.js';
+import type { ValueTypeMap } from './types.js';
 
 export const transformValueTypes: ValueTypeMap = {
 	rotate: degrees,

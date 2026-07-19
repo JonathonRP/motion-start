@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { clamp } from '../utils/clamp';
-import type { EasingFunction } from './types';
+import { clamp } from '../utils/clamp.js';
+import type { EasingFunction } from './types.js';
 
 /*
   Create stepped version of 0-1 progress

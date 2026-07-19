@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { resolveElements, type SelectorCache } from '../../render/dom/utils/resolve-element';
-import type { ObjectTarget } from '../sequence/types';
-import type { AnimationScope, DOMKeyframesDefinition } from '../types';
-import { isDOMKeyframes } from '../utils/is-dom-keyframes';
+import { resolveElements, type SelectorCache } from '../../render/dom/utils/resolve-element.js';
+import type { ObjectTarget } from '../sequence/types.js';
+import type { AnimationScope, DOMKeyframesDefinition } from '../types.js';
+import { isDOMKeyframes } from '../utils/is-dom-keyframes.js';
 
 export function resolveSubjects<O extends {}>(
 	subject: string | Element | Element[] | NodeListOf<Element> | O | O[],

@@ -4,14 +4,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { auto } from '../type-auto';
-import { findDimensionValueType } from '../dimensions';
-import { findValueType } from '../find';
-import { getValueAsType } from '../get-as-type';
-import { number } from '../../../../value/types/numbers';
-import { degrees, percent, px, vh, vw } from '../../../../value/types/numbers/units';
-import { color } from '../../../../value/types/color';
-import { complex } from '../../../../value/types/complex';
+import { auto } from '../type-auto.js';
+import { findDimensionValueType } from '../dimensions.js';
+import { findValueType } from '../find.js';
+import { getValueAsType } from '../get-as-type.js';
+import { number } from '../../../../value/types/numbers/index.js';
+import { degrees, percent, px, vh, vw } from '../../../../value/types/numbers/units.js';
+import { color } from '../../../../value/types/color/index.js';
+import { complex } from '../../../../value/types/complex/index.js';
 
 describe('auto ValueType', () => {
 	it('Correctly tests for auto', () => {

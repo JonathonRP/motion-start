@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Feature } from '../Feature';
+import { Feature } from '../Feature.js';
 
 let id = 0;
 

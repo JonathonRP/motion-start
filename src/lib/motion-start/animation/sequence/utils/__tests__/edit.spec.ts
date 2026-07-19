@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/sequence/utils/__tests__/edit.test.ts */
 import { describe, test, expect } from 'vitest';
-import type { ValueSequence } from '../../types';
-import { addKeyframes, eraseKeyframes } from '../edit';
+import type { ValueSequence } from '../../types.js';
+import { addKeyframes, eraseKeyframes } from '../edit.js';
 
 describe('eraseKeyframes', () => {
 	test('Erase keyframes between the specified time range', () => {

@@ -11,14 +11,14 @@ function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is 
 <script lang="ts">
   import { untrack, type Snippet } from "svelte";
 
-  import { setLazyContext } from "../../context/LazyContext";
-  import { loadFeatures } from "../../motion/features/load-features";
+  import { setLazyContext } from "../../context/LazyContext.js";
+  import { loadFeatures } from "../../motion/features/load-features.js";
   import type {
     FeatureBundle,
     LazyFeatureBundle,
-  } from "../../motion/features/types";
-  import type { CreateVisualElement } from "../../render/types";
-  import type { LazyProps } from "./types";
+  } from "../../motion/features/types.js";
+  import type { CreateVisualElement } from "../../render/types.js";
+  import type { LazyProps } from "./types.js";
 
   interface Props extends LazyProps {
     children: Snippet;

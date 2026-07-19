@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues } from '../../render/types';
-import type { Delta, Point } from '../geometry/types';
+import type { ResolvedValues } from '../../render/types.js';
+import type { Delta, Point } from '../geometry/types.js';
 
 export function buildProjectionTransform(delta: Delta, treeScale: Point, latestTransform?: ResolvedValues): string {
 	let transform = '';

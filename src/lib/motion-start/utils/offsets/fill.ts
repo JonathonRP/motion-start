@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mixNumber } from '../mix/number';
-import { progress } from '../progress';
+import { mixNumber } from '../mix/number.js';
+import { progress } from '../progress.js';
 
 export function fillOffset(offset: number[], remaining: number): void {
 	const min = offset[offset.length - 1];

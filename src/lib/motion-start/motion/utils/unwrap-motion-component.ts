@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Component } from 'svelte';
-import { isMotionComponent } from './is-motion-component';
-import { motionComponentSymbol } from './symbol';
+import { isMotionComponent } from './is-motion-component.js';
+import { motionComponentSymbol } from './symbol.js';
 
 /**
  * Unwraps a `motion` component and returns either a string for `motion.div` or

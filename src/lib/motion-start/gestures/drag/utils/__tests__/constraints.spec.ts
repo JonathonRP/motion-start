@@ -8,7 +8,7 @@ import {
 	calcPositionFromProgress,
 	rebaseAxisConstraints,
 	resolveDragElastic,
-} from '../constraints';
+} from '../constraints.js';
 
 describe('resolveDragElastic', () => {
 	test('Resolves false as 0', () => {

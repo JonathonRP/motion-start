@@ -7,6 +7,7 @@ export interface MotionOutroContext {
 	begin: () => (id: string | number, completed?: boolean) => void;
 	reserve: (duration: number) => void;
 	remaining: () => number;
+	waitForExit: () => Promise<void>;
 }
 
 const [getMotionOutroContext, setMotionOutroContext] = createContext<MotionOutroContext | null>();

@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { warning } from '../../../utils/errors';
-import { clamp } from '../../../utils/clamp';
-import type { SpringOptions } from '../../types';
-import { millisecondsToSeconds, secondsToMilliseconds } from '../../../utils/time-conversion';
+import { warning } from '../../../utils/errors.js';
+import { clamp } from '../../../utils/clamp.js';
+import type { SpringOptions } from '../../types.js';
+import { millisecondsToSeconds, secondsToMilliseconds } from '../../../utils/time-conversion.js';
 
 /**
  * This is ported from the Framer implementation of duration-based spring resolution.

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ScaleCorrectorMap } from './types';
+import type { ScaleCorrectorMap } from './types.js';
 
 export const scaleCorrectors: ScaleCorrectorMap = {};
 

@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { isZeroValueString } from '../is-zero-value-string';
+import { isZeroValueString } from '../is-zero-value-string.js';
 
 describe('isZeroValueString', () => {
 	test('should correctly identify numerical strings', () => {

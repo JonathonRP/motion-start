@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { velocityPerSecond } from '../../../utils/velocity-per-second';
+import { velocityPerSecond } from '../../../utils/velocity-per-second.js';
 
 const velocitySampleDuration = 5; // ms
 

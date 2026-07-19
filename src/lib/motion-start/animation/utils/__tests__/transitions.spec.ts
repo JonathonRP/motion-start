@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/utils/__tests__/transitions.test.ts */
 import { describe, test, expect } from 'vitest';
-import { isTransitionDefined } from '../is-transition-defined';
+import { isTransitionDefined } from '../is-transition-defined.js';
 
 describe('isTransitionDefined', () => {
 	test('Detects a transition', () => {

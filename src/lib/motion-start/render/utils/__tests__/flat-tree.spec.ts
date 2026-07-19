@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/utils/__tests__/flat-tree.test.ts */
 import { describe, test, expect } from 'vitest';
-import type { WithDepth } from '../compare-by-depth';
-import { FlatTree } from '../flat-tree';
+import type { WithDepth } from '../compare-by-depth.js';
+import { FlatTree } from '../flat-tree.js';
 
 describe('FlatTree', () => {
 	test('Correctly sorts by depth on iteration', () => {

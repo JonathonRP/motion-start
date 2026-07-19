@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from 'vitest';
-import { velocityPerSecond } from '../velocity-per-second';
+import { velocityPerSecond } from '../velocity-per-second.js';
 
 test('velocityPerSecond', () => {
 	expect(velocityPerSecond(0.835, 16.7)).toBe(50);

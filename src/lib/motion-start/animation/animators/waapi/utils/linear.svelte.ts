@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { EasingFunction } from '../../../../easing/types';
-import { progress } from '../../../../utils/progress';
+import type { EasingFunction } from '../../../../easing/types.js';
+import { progress } from '../../../../utils/progress.js';
 
 // Create a linear easing point for every 10 ms
 const resolution = 10;

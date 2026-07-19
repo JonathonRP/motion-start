@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { transform } from '../transform';
+import { transform } from '../transform.js';
 
 describe('transform', () => {
 	describe('immediate form', () => {

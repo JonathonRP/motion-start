@@ -12,6 +12,7 @@ import path from 'node:path';
 export default defineConfig({
 	resolve: {
 		alias: {},
+		conditions: process.env.VITEST ? ['browser'] : undefined,
 	},
 
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],

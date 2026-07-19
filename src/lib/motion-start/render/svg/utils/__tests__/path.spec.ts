@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/svg/utils/__tests__/path.test.ts */
 import { describe, it, expect } from 'vitest';
-import { buildSVGPath } from '../path';
+import { buildSVGPath } from '../path.js';
 
 describe('buildSVGPath', () => {
 	it('correctly generates SVG path props', () => {

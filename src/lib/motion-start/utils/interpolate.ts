@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { invariant } from '../utils/errors';
-import type { EasingFunction } from '../easing/types';
-import { clamp } from './clamp';
-import { pipe } from './pipe';
-import { progress } from './progress';
-import { noop } from './noop';
-import { mix } from './mix';
+import { invariant } from '../utils/errors.js';
+import type { EasingFunction } from '../easing/types.js';
+import { clamp } from './clamp.js';
+import { pipe } from './pipe.js';
+import { progress } from './progress.js';
+import { noop } from './noop.js';
+import { mix } from './mix/index.js';
 
 type Mix<T> = (v: number) => T;
 export type MixerFactory<T> = (from: T, to: T) => Mix<T>;

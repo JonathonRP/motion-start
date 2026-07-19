@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/dom/utils/__tests__/is-css-variable.test.ts */
 import { describe, test, expect } from 'vitest';
-import { isCSSVariableToken } from '../is-css-variable';
+import { isCSSVariableToken } from '../is-css-variable.js';
 
 describe('isCSSVariableToken', () => {
 	test('returns true for a CSS variable', () => {

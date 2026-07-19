@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { GenericKeyframesTarget } from '../../types';
-import type { MotionValue } from '../../value';
-import { GroupPlaybackControls } from '../GroupPlaybackControls';
-import type { AnimationSequence, ObjectTarget, SequenceOptions } from '../sequence/types';
+import type { GenericKeyframesTarget } from '../../types.js';
+import type { MotionValue } from '../../value/index.js';
+import { GroupPlaybackControls } from '../GroupPlaybackControls.js';
+import type { AnimationSequence, ObjectTarget, SequenceOptions } from '../sequence/types.js';
 import type {
 	AnimationPlaybackControls,
 	AnimationScope,
@@ -14,9 +14,9 @@ import type {
 	DynamicAnimationOptions,
 	ElementOrSelector,
 	ValueAnimationTransition,
-} from '../types';
-import { animateSequence } from './sequence';
-import { animateSubject } from './subject';
+} from '../types.js';
+import { animateSequence } from './sequence.js';
+import { animateSubject } from './subject.js';
 
 function isSequence(value: unknown): value is AnimationSequence {
 	return Array.isArray(value) && Array.isArray(value[0]);

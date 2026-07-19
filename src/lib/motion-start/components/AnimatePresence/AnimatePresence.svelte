@@ -21,6 +21,7 @@ let {
 const motionConfig = useMotionConfigContext();
 let activeOutros = 0;
 let waitUntil = 0;
+const exitWaiters: VoidFunction[] = [];
 let presenceLayoutVersion = $state(0);
 let isInitialRender = $state(true);
 
@@ -48,7 +49,10 @@ setMotionOutroContext({
 			completed = true;
 			activeOutros--;
 			if (presenceAffectsLayout) presenceLayoutVersion++;
-			if (completedExit && activeOutros === 0) onExitComplete?.();
+			if (activeOutros === 0) {
+				for (const resolve of exitWaiters.splice(0)) resolve();
+				if (completedExit) onExitComplete?.();
+			}
 		};
 	},
 	reserve(duration) {
@@ -56,6 +60,9 @@ setMotionOutroContext({
 	},
 	remaining() {
 		return Math.max(0, waitUntil - performance.now());
+	},
+	waitForExit() {
+		return activeOutros === 0 ? Promise.resolve() : new Promise<void>((resolve) => exitWaiters.push(resolve));
 	},
 });
 </script>

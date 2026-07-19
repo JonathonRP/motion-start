@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { RefObject } from '../utils/safe-react-types';
-import type { Point } from '../projection/geometry/types';
+import type { RefObject } from '../utils/safe-react-types.js';
+import type { Point } from '../projection/geometry/types.js';
 
 /** @public */
 export interface EventInfo {

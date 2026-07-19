@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { px } from '../../value/types/numbers/units';
-import type { Axis } from '../geometry/types';
-import type { ScaleCorrectorDefinition } from './types';
+import { px } from '../../value/types/numbers/units.js';
+import type { Axis } from '../geometry/types.js';
+import type { ScaleCorrectorDefinition } from './types.js';
 
 export function pixelsToPercent(pixels: number, axis: Axis): number {
 	if (axis.max === axis.min) return 0;

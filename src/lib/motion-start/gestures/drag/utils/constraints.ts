@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { progress as calcProgress } from '../../../utils/progress';
-import { calcLength } from '../../../projection/geometry/delta-calc';
-import type { Axis, BoundingBox, Box, Point } from '../../../projection/geometry/types';
-import { clamp } from '../../../utils/clamp';
-import { mixNumber } from '../../../utils/mix/number';
-import type { DragElastic, ResolvedConstraints } from '../types';
+import { progress as calcProgress } from '../../../utils/progress.js';
+import { calcLength } from '../../../projection/geometry/delta-calc.js';
+import type { Axis, BoundingBox, Box, Point } from '../../../projection/geometry/types.js';
+import { clamp } from '../../../utils/clamp.js';
+import { mixNumber } from '../../../utils/mix/number.js';
+import type { DragElastic, ResolvedConstraints } from '../types.js';
 
 /**
  * Apply constraints to a point. These constraints are both physical along an

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues } from '../../render/types';
-import { mixNumber } from '../../utils/mix/number';
-import type { Axis, AxisDelta, Box, Delta } from './types';
+import type { ResolvedValues } from '../../render/types.js';
+import { mixNumber } from '../../utils/mix/number.js';
+import type { Axis, AxisDelta, Box, Delta } from './types.js';
 
 const SCALE_PRECISION = 0.0001;
 const SCALE_MIN = 1 - SCALE_PRECISION;

@@ -1,4 +1,4 @@
-import { type MutableRefObject } from './safe-react-types';
+import { type MutableRefObject } from './safe-react-types.js';
 
 export function ref<T>(value: T): MutableRefObject<T> {
 	let current = $state(value);

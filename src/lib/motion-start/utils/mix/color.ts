@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mixNumber } from './number';
-import { warning } from '../errors';
-import { hslaToRgba } from '../hsla-to-rgba';
-import { hex } from '../../value/types/color/hex';
-import { rgba } from '../../value/types/color/rgba';
-import { hsla } from '../../value/types/color/hsla';
-import type { Color, HSLA, RGBA } from '../../value/types/types';
-import { mixImmediate } from './immediate';
+import { mixNumber } from './number.js';
+import { warning } from '../errors.js';
+import { hslaToRgba } from '../hsla-to-rgba.js';
+import { hex } from '../../value/types/color/hex.js';
+import { rgba } from '../../value/types/color/rgba.js';
+import { hsla } from '../../value/types/color/hsla.js';
+import type { Color, HSLA, RGBA } from '../../value/types/types.js';
+import { mixImmediate } from './immediate.js';
 
 // Linear color space blending
 // Explained https://www.youtube.com/watch?v=LKnqECcg6Gw

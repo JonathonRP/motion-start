@@ -1,8 +1,8 @@
 /** Ported from framer-motion/packages/framer-motion/src/value/use-will-change/__tests__/is.test.ts */
 import { describe, test, expect } from 'vitest';
-import { isWillChangeMotionValue } from '../is';
-import { WillChangeMotionValue } from '../WillChangeMotionValue';
-import { MotionValue } from '../..';
+import { isWillChangeMotionValue } from '../is.js';
+import { WillChangeMotionValue } from '../WillChangeMotionValue.js';
+import { MotionValue } from '../../index.js';
 
 describe('isWillChangeMotionValue', () => {
 	test('Correctly detects WillChangeMotionValue', () => {

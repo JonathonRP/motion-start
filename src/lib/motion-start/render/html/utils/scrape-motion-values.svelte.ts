@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps, MotionStyle } from '../../../motion/types';
-import { isForcedMotionValue } from '../../../motion/utils/is-forced-motion-value';
-import { isMotionValue } from '../../../value/utils/is-motion-value';
-import type { VisualElement } from '../../VisualElement.svelte';
+import type { MotionProps, MotionStyle } from '../../../motion/types.js';
+import { isForcedMotionValue } from '../../../motion/utils/is-forced-motion-value.js';
+import { isMotionValue } from '../../../value/utils/is-motion-value.js';
+import type { VisualElement } from '../../VisualElement.svelte.js';
 
 export function scrapeMotionValuesFromProps<I>(
 	props: MotionProps,

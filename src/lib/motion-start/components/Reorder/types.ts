@@ -1,4 +1,4 @@
-import type { Axis, Box } from '../../projection/geometry/types';
+import type { Axis, Box } from '../../projection/geometry/types.js';
 
 export interface ReorderContext<T> {
 	axis: 'x' | 'y';

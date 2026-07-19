@@ -5,9 +5,9 @@
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { animate } from '../animate';
-import { stagger } from '../utils/stagger';
-import { frame } from '../../frameloop';
+import { animate } from '../animate/index.js';
+import { stagger } from '../utils/stagger.js';
+import { frame } from '../../frameloop/index.js';
 
 // Skip in environments without DOM (e.g., Bun test runner)
 const hasDom = typeof document !== 'undefined';

@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { number } from '../../../value/types/numbers';
-import { degrees, percent, px, vh, vw } from '../../../value/types/numbers/units';
-import { testValueType } from './test';
-import { auto } from './type-auto';
+import { number } from '../../../value/types/numbers/index.js';
+import { degrees, percent, px, vh, vw } from '../../../value/types/numbers/units.js';
+import { testValueType } from './test.js';
+import { auto } from './type-auto.js';
 
 /**
  * A list of value types commonly used for dimensions

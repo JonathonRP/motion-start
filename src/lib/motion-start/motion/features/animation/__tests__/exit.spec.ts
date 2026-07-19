@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ExitAnimationFeature } from '../exit';
+import { ExitAnimationFeature } from '../exit.js';
 
 describe('ExitAnimationFeature', () => {
 	it('does not retrigger exit when prevPresenceContext is already false', async () => {

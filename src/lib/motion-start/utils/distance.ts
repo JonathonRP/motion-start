@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Point } from '../projection/geometry/types';
+import type { Point } from '../projection/geometry/types.js';
 
 export const distance = (a: number, b: number) => Math.abs(a - b);
 

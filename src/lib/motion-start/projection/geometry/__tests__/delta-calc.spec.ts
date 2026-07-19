@@ -4,9 +4,9 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { isNear, calcAxisDelta, calcRelativeBox, calcRelativePosition } from '../delta-calc';
-import { applyAxisDelta } from '../delta-apply';
-import { createBox, createDelta } from '../models';
+import { isNear, calcAxisDelta, calcRelativeBox, calcRelativePosition } from '../delta-calc.js';
+import { applyAxisDelta } from '../delta-apply.js';
+import { createBox, createDelta } from '../models.js';
 
 describe('isNear', () => {
 	test('correctly indicates when the provided value is within maxDistance of the provided target', () => {

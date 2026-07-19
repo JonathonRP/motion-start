@@ -4,16 +4,16 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
-import { type MotionContext, useMotionContext } from '../../context/MotionContext';
-import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.svelte';
-import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types';
+import { type MotionContext, useMotionContext } from '../../context/MotionContext/index.js';
+import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.svelte.js';
+import type { ResolvedValues, ScrapeMotionValuesFromProps } from '../../render/types.js';
 import {
 	isControllingVariants as checkIsControllingVariants,
 	isVariantNode as checkIsVariantNode,
 } from '../../render/utils/is-controlling-variants.js';
 import { resolveVariantFromProps } from '../../render/utils/resolve-variants.js';
 import { resolveMotionValue } from '../../value/utils/resolve-motion-value.js';
-import type { MotionProps } from '../types';
+import type { MotionProps } from '../types.js';
 
 export interface VisualState<Instance, RenderState> {
 	renderState: RenderState;

@@ -1,4 +1,4 @@
-import { usePresenceContext } from '../../context/PresenceContext.svelte';
+import { usePresenceContext } from '../../context/PresenceContext.svelte.js';
 
 export function usePresenceData() {
 	const context = usePresenceContext();

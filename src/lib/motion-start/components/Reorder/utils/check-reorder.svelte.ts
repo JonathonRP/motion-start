@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { moveItem } from '../../../utils/array';
-import { mixNumber } from '../../../utils/mix/number';
-import type { ItemData } from '../types';
+import { moveItem } from '../../../utils/array.js';
+import { mixNumber } from '../../../utils/mix/number.js';
+import type { ItemData } from '../types.js';
 
 export function checkReorder<T>(order: ItemData<T>[], value: T, offset: number, velocity: number): ItemData<T>[] {
 	if (!velocity) return order;

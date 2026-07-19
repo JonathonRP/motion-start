@@ -2,8 +2,8 @@
  * Ported from framer-motion/packages/framer-motion/src/context/MotionContext/__tests__/utils.test.ts
  */
 import { describe, test, expect } from 'vitest';
-import { animationControls } from '../../../animation/hooks/animation-controls';
-import { getCurrentTreeVariants } from '../utils.svelte';
+import { animationControls } from '../../../animation/hooks/animation-controls.js';
+import { getCurrentTreeVariants } from '../utils.svelte.js';
 
 describe('getCurrentTreeVariants', () => {
 	test('It returns the correct variant to render currently', () => {

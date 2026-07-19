@@ -4,9 +4,9 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { MotionValue } from './index.js';
-import { transform, type TransformOptions } from '../utils/transform';
-import { useCombineMotionValues } from './use-combine-values.svelte';
-import { useComputed } from './use-computed.svelte';
+import { transform, type TransformOptions } from '../utils/transform.js';
+import { useCombineMotionValues } from './use-combine-values.svelte.js';
+import { useComputed } from './use-computed.svelte.js';
 
 export type InputRange = number[];
 type SingleTransformer<I, O> = (input: I) => O;

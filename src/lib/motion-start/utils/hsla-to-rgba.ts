@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { HSLA, RGBA } from '../value/types/types';
+import type { HSLA, RGBA } from '../value/types/types.js';
 
 // Adapted from https://gist.github.com/mjackson/5311256
 function hueToRgb(p: number, q: number, t: number) {

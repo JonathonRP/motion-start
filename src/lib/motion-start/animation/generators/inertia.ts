@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { AnimationState, KeyframeGenerator } from './types';
-import { spring as createSpring } from './spring';
-import type { ValueAnimationOptions } from '../types';
-import { calcGeneratorVelocity } from './utils/velocity';
+import type { AnimationState, KeyframeGenerator } from './types.js';
+import { spring as createSpring } from './spring/index.js';
+import type { ValueAnimationOptions } from '../types.js';
+import { calcGeneratorVelocity } from './utils/velocity.js';
 
 export function inertia({
 	keyframes,

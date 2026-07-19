@@ -1,5 +1,5 @@
 import type { Attachment } from 'svelte/attachments';
-import { isMotionValue } from '../../../value/utils/is-motion-value';
+import { isMotionValue } from '../../../value/utils/is-motion-value.js';
 
 function isCustomStyleProperty(key: string) {
 	return key.startsWith('--') || key.includes('-');

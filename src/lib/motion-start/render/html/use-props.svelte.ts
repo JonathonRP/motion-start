@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { isForcedMotionValue } from '../../motion/utils/is-forced-motion-value';
-import type { MotionValue } from '../../value';
-import { isMotionValue } from '../../value/utils/is-motion-value';
-import type { MotionProps } from '../../motion/types';
-import type { ResolvedValues } from '../types';
+import { isForcedMotionValue } from '../../motion/utils/is-forced-motion-value.js';
+import type { MotionValue } from '../../value/index.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
+import type { MotionProps } from '../../motion/types.js';
+import type { ResolvedValues } from '../types.js';
 import { buildHTMLStyles } from './utils/build-styles.js';
 import { createHtmlRenderState } from './utils/create-render-state.js';
 import type { HTMLAttributes } from 'svelte/elements';

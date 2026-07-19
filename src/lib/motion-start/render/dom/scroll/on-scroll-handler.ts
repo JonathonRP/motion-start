@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { warnOnce } from '../../../utils/warn-once';
-import { updateScrollInfo } from './info';
-import { resolveOffsets } from './offsets/index';
-import type { OnScrollInfo, OnScrollHandler, ScrollInfo, ScrollInfoOptions } from './types';
+import { warnOnce } from '../../../utils/warn-once.js';
+import { updateScrollInfo } from './info.js';
+import { resolveOffsets } from './offsets/index.js';
+import type { OnScrollInfo, OnScrollHandler, ScrollInfo, ScrollInfoOptions } from './types.js';
 
 function measure(container: HTMLElement, target: Element = container, info: ScrollInfo) {
 	/**

@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { createAxis } from '../models';
-import { translateAxis } from '../delta-apply';
+import { createAxis } from '../models.js';
+import { translateAxis } from '../delta-apply.js';
 
 describe('translateAxis', () => {
 	it('translates by the defined amount', () => {

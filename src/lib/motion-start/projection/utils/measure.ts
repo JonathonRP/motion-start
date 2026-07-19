@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { convertBoundingBoxToBox, transformBoxPoints } from '../geometry/conversion';
-import { translateAxis } from '../geometry/delta-apply';
-import type { TransformPoint } from '../geometry/types';
-import type { IProjectionNode } from '../node/types';
+import { convertBoundingBoxToBox, transformBoxPoints } from '../geometry/conversion.js';
+import { translateAxis } from '../geometry/delta-apply.js';
+import type { TransformPoint } from '../geometry/types.js';
+import type { IProjectionNode } from '../node/types.js';
 
 export function measureViewportBox(instance: HTMLElement, transformPoint?: TransformPoint) {
 	return convertBoundingBoxToBox(transformBoxPoints(instance.getBoundingClientRect(), transformPoint));

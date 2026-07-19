@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { scalePoint, applyPointDelta, applyAxisDelta } from '../delta-apply';
+import { scalePoint, applyPointDelta, applyAxisDelta } from '../delta-apply.js';
 
 describe('scalePoint', () => {
 	test('scales a point relative to an origin point', () => {

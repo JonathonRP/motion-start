@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps } from '../../../motion/types';
-import { isMotionValue } from '../../../value/utils/is-motion-value';
-import type { VisualElement } from '../../VisualElement.svelte';
-import { scrapeMotionValuesFromProps as scrapeHTMLMotionValuesFromProps } from '../../html/utils/scrape-motion-values.svelte';
-import { transformPropOrder } from '../../html/utils/transform';
+import type { MotionProps } from '../../../motion/types.js';
+import { isMotionValue } from '../../../value/utils/is-motion-value.js';
+import type { VisualElement } from '../../VisualElement.svelte.js';
+import { scrapeMotionValuesFromProps as scrapeHTMLMotionValuesFromProps } from '../../html/utils/scrape-motion-values.svelte.js';
+import { transformPropOrder } from '../../html/utils/transform.js';
 
 export function scrapeMotionValuesFromProps<I>(
 	props: MotionProps,

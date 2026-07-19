@@ -7,8 +7,8 @@ import { describe, test } from 'vitest';
 // NOTE: These imports are commented out because the tests are skipped.
 // The createProjectionNode uses Svelte 5 $state rune which cannot be instantiated
 // outside of a Svelte component context in tests.
-// import { createTestNode } from './TestProjectionNode.svelte';
-// import { nodeGroup } from '../group';
+// import { createTestNode } from './TestProjectionNode.svelte.js';
+// import { nodeGroup } from '../group.js';
 
 /**
  * NOTE: These tests are skipped because createProjectionNode uses Svelte 5 $state rune

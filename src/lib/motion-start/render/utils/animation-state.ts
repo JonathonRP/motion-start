@@ -3,21 +3,21 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { isAnimationControls } from '../../animation/utils/is-animation-controls';
-import { isKeyframesTarget } from '../../animation/utils/is-keyframes-target';
-import type { VariantLabels } from '../../motion/types';
-import type { TargetAndTransition } from '../../types';
-import { shallowCompare } from '../../utils/shallow-compare';
-import type { VisualElement } from '../VisualElement.svelte';
-import { isVariantLabel } from './is-variant-label';
-import type { AnimationType } from './types';
-import { resolveVariant } from './resolve-dynamic-variants';
-import { variantPriorityOrder } from './variant-props';
-import type { VisualElementAnimationOptions } from '../../animation/interfaces/types';
-import type { AnimationDefinition } from '../../animation/types';
-import { animateVisualElement } from '../../animation/interfaces/visual-element';
-import type { ResolvedValues } from '../types';
-import { getVariantContext, type VariantStateContext } from './get-variant-context';
+import { isAnimationControls } from '../../animation/utils/is-animation-controls.js';
+import { isKeyframesTarget } from '../../animation/utils/is-keyframes-target.js';
+import type { VariantLabels } from '../../motion/types.js';
+import type { TargetAndTransition } from '../../types.js';
+import { shallowCompare } from '../../utils/shallow-compare.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import { isVariantLabel } from './is-variant-label.js';
+import type { AnimationType } from './types.js';
+import { resolveVariant } from './resolve-dynamic-variants.js';
+import { variantPriorityOrder } from './variant-props.js';
+import type { VisualElementAnimationOptions } from '../../animation/interfaces/types.js';
+import type { AnimationDefinition } from '../../animation/types.js';
+import { animateVisualElement } from '../../animation/interfaces/visual-element.js';
+import type { ResolvedValues } from '../types.js';
+import { getVariantContext, type VariantStateContext } from './get-variant-context.js';
 
 export interface AnimationState {
 	animateChanges: (type?: AnimationType) => Promise<any>;

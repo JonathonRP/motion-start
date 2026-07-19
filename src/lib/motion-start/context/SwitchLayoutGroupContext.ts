@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { IProjectionNode } from '../projection/node/types';
-import type { Transition } from '../types';
+import type { IProjectionNode } from '../projection/node/types.js';
+import type { Transition } from '../types.js';
 
 export interface SwitchLayoutGroup {
 	register?: <I>(member: IProjectionNode<I>) => void;

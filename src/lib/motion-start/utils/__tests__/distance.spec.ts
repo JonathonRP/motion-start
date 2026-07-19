@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { distance, distance2D } from '../distance';
+import { distance, distance2D } from '../distance.js';
 
 describe('distance', () => {
 	test('calculates distance between two numbers', () => {

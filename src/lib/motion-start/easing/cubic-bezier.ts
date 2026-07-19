@@ -21,7 +21,7 @@ Copyright (c) 2018 Framer B.V.
     const x = easeOut(0.5); // returns 0.627...
 */
 
-import { noop } from '../utils/noop';
+import { noop } from '../utils/noop.js';
 
 // Returns x(t) given t, x1, and x2, or y(t) given t, y1, and y2.
 const calcBezier = (t: number, a1: number, a2: number) =>

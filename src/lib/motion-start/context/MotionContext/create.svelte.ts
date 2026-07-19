@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { type MotionContext, useMotionContext } from './index.js';
-import type { MotionProps } from '../../motion/types';
-import { getCurrentTreeVariants } from './utils.svelte';
+import type { MotionProps } from '../../motion/types.js';
+import { getCurrentTreeVariants } from './utils.svelte.js';
 
 export function useCreateMotionContext<Instance>(
 	props: () => MotionProps,

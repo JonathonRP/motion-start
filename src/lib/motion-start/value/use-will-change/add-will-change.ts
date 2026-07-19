@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import { isWillChangeMotionValue } from './is';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import { isWillChangeMotionValue } from './is.js';
 
 export function addValueToWillChange<I>(visualElement: VisualElement<I>, key: string) {
 	const willChange = visualElement.getValue('willChange');

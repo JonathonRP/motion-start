@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { transformPropOrder } from './transform';
-import type { MotionProps } from '../../../motion/types';
-import { getValueAsType } from '../../dom/value-types/get-as-type';
-import { numberValueTypes } from '../../dom/value-types/number';
-import type { ResolvedValues } from '../../types';
-import type { HTMLRenderState } from '../types';
+import { transformPropOrder } from './transform.js';
+import type { MotionProps } from '../../../motion/types.js';
+import { getValueAsType } from '../../dom/value-types/get-as-type.js';
+import { numberValueTypes } from '../../dom/value-types/number.js';
+import type { ResolvedValues } from '../../types.js';
+import type { HTMLRenderState } from '../types.js';
 
 const translateAlias = {
 	x: 'translateX',

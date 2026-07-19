@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 import type { MotionValue } from './index.js';
 
-import { useCombineMotionValues } from './use-combine-values.svelte';
-import { isMotionValue } from './utils/is-motion-value';
+import { useCombineMotionValues } from './use-combine-values.svelte.js';
+import { isMotionValue } from './utils/is-motion-value.js';
 
 /**
  * Combine multiple motion values into a new one using a string template literal.
@@ -48,5 +48,5 @@ export const useMotionTemplate = (fragments: TemplateStringsArray, ...values: Ar
 	};
 	const value = useCombineMotionValues(values.filter(isMotionValue) as MotionValue[], buildValue);
 
-	return { value };
+	return value;
 };

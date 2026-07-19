@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { isNumericalString } from '../is-numerical-string';
+import { isNumericalString } from '../is-numerical-string.js';
 
 describe('isNumericalString', () => {
 	test('should correctly identify numerical strings', () => {

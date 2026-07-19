@@ -1,8 +1,8 @@
 import type { Component } from 'svelte';
 import type { MotionProps } from '../../motion/types.js';
-import { warnOnce } from '../../utils/warn-once';
+import { warnOnce } from '../../utils/warn-once.js';
 import type { DOMMotionComponents } from '../dom/types.js';
-import type { createMotionComponent } from './motion/create';
+import type { createMotionComponent } from './motion/create.js';
 
 /**
  * I'd rather the return type of `custom` to be implicit but this throws

@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/motion/utils/__tests__/should-inherit-variants.test.ts */
 import { describe, test, expect } from 'vitest';
-import { animationControls } from '../../../animation/hooks/animation-controls';
-import { checkShouldInheritVariant } from '../should-inherit-variant';
+import { animationControls } from '../../../animation/hooks/animation-controls.js';
+import { checkShouldInheritVariant } from '../should-inherit-variant.js';
 
 describe('checkShouldInheritVariant', () => {
 	test('Detects when a component should inherit variants', () => {

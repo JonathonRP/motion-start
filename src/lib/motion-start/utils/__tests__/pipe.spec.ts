@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { pipe } from '../pipe';
+import { pipe } from '../pipe.js';
 
 describe('pipe', () => {
 	test('composes functions left to right', () => {

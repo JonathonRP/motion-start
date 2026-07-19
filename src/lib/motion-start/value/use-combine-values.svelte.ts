@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { MotionValue } from './index.js';
-import { cancelFrame, frame } from '../frameloop';
-import { useMotionValue } from './use-motion-value.svelte';
+import { cancelFrame, frame } from '../frameloop/index.js';
+import { useMotionValue } from './use-motion-value.svelte.js';
 
 export const useCombineMotionValues = <R>(values: MotionValue[], combineValues: () => R) => {
 	const value = useMotionValue(combineValues());

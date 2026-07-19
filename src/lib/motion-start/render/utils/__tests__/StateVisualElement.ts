@@ -1,9 +1,9 @@
 /** Helper for animation-state tests, ported from framer-motion */
-import type { ResolvedValues } from '../../types';
-import type { MotionProps, MotionStyle } from '../../../motion/types';
-import { createBox } from '../../../projection/geometry/models';
-import { VisualElement } from '../../VisualElement.svelte';
-import { createHtmlRenderState } from '../../html/utils/create-render-state';
+import type { ResolvedValues } from '../../types.js';
+import type { MotionProps, MotionStyle } from '../../../motion/types.js';
+import { createBox } from '../../../projection/geometry/models.js';
+import { VisualElement } from '../../VisualElement.svelte.js';
+import { createHtmlRenderState } from '../../html/utils/create-render-state.js';
 
 export class StateVisualElement extends VisualElement<
 	ResolvedValues,

@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { untrack } from 'svelte';
-import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.svelte';
+import { usePresenceContext, type PresenceContext } from '../../context/PresenceContext.svelte.js';
 
 let counter = 0;
 const incrementId = () => counter++;

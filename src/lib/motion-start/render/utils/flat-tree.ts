@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { VisualElement } from '../VisualElement.svelte';
-import { addUniqueItem, removeItem } from '../../utils/array';
-import { compareByDepth, type WithDepth } from './compare-by-depth';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import { addUniqueItem, removeItem } from '../../utils/array.js';
+import { compareByDepth, type WithDepth } from './compare-by-depth.js';
 
 export class FlatTree<I = VisualElement<unknown>> {
 	private children: (I & WithDepth)[] = [];

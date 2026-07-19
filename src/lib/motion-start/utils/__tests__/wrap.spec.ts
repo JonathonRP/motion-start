@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from 'vitest';
-import { wrap } from '../wrap';
+import { wrap } from '../wrap.js';
 
 test('wrap', () => {
 	expect(wrap(-100, 100, -100)).toBe(-100);

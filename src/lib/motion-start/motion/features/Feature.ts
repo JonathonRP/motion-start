@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { on } from 'svelte/events';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
 
 export abstract class Feature<I> {
 	isMounted = false;

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mixNumber } from '../../utils/mix/number';
-import { complex } from '../../value/types/complex';
-import type { ScaleCorrectorDefinition } from './types';
+import { mixNumber } from '../../utils/mix/number.js';
+import { complex } from '../../value/types/complex/index.js';
+import type { ScaleCorrectorDefinition } from './types.js';
 
 export const correctBoxShadow: ScaleCorrectorDefinition = {
 	correct: (latest: string | number, { treeScale, projectionDelta }) => {

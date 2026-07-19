@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { RefObject } from '../../../utils/safe-react-types';
-import type { TargetAndTransition } from '../../../types';
-import type { VariantLabels } from '../../types';
+import type { RefObject } from '../../../utils/safe-react-types.js';
+import type { TargetAndTransition } from '../../../types.js';
+import type { VariantLabels } from '../../types.js';
 
 export type ViewportEventHandler = (entry: IntersectionObserverEntry | null) => void;
 

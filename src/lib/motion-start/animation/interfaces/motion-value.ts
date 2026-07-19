@@ -3,22 +3,22 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Transition } from '../../types';
-import { secondsToMilliseconds } from '../../utils/time-conversion';
-import type { MotionValue, StartAnimation } from '../../value';
-import { getDefaultTransition } from '../utils/default-transitions';
-import { getValueTransition } from '../utils/get-value-transition';
-import type { AnimationPlaybackControls, ValueAnimationOptions } from '../types';
-import type { UnresolvedKeyframes } from '../../render/utils/KeyframesResolver';
-import { MotionGlobalConfig } from '../../utils/GlobalConfig';
-import { instantAnimationState } from '../../utils/use-instant-transition-state';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import { getFinalKeyframe } from '../animators/waapi/utils/get-final-keyframe';
-import { frame } from '../../frameloop/frame';
-import { AcceleratedAnimation } from '../animators/AcceleratedAnimation';
-import { MainThreadAnimation } from '../animators/MainThreadAnimation';
-import { GroupPlaybackControls } from '../GroupPlaybackControls';
-import { isTransitionDefined } from '../utils/is-transition-defined';
+import type { Transition } from '../../types.js';
+import { secondsToMilliseconds } from '../../utils/time-conversion.js';
+import type { MotionValue, StartAnimation } from '../../value/index.js';
+import { getDefaultTransition } from '../utils/default-transitions.js';
+import { getValueTransition } from '../utils/get-value-transition.js';
+import type { AnimationPlaybackControls, ValueAnimationOptions } from '../types.js';
+import type { UnresolvedKeyframes } from '../../render/utils/KeyframesResolver.js';
+import { MotionGlobalConfig } from '../../utils/GlobalConfig.js';
+import { instantAnimationState } from '../../utils/use-instant-transition-state.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import { getFinalKeyframe } from '../animators/waapi/utils/get-final-keyframe.js';
+import { frame } from '../../frameloop/frame.js';
+import { AcceleratedAnimation } from '../animators/AcceleratedAnimation.js';
+import { MainThreadAnimation } from '../animators/MainThreadAnimation.js';
+import { GroupPlaybackControls } from '../GroupPlaybackControls.js';
+import { isTransitionDefined } from '../utils/is-transition-defined.js';
 
 export const animateMotionValue =
 	<V extends string | number>(

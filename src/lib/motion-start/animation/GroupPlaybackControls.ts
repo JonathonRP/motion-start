@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ProgressTimeline } from '../render/dom/scroll/observe';
-import { supportsScrollTimeline } from '../render/dom/scroll/supports';
-import type { AnimationPlaybackControls } from './types';
+import type { ProgressTimeline } from '../render/dom/scroll/observe.js';
+import { supportsScrollTimeline } from '../render/dom/scroll/supports.js';
+import type { AnimationPlaybackControls } from './types.js';
 
 type PropNames = 'time' | 'speed' | 'duration' | 'attachTimeline' | 'startTime';
 

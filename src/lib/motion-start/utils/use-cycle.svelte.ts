@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-// import { wrap } from './wrap';
+// import { wrap } from './wrap.js';
 export type Cycle = (i?: number) => void;
 export type CycleState<T> = [() => T, Cycle];
 

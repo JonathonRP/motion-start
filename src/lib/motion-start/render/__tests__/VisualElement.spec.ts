@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { VisualElement } from '../VisualElement.svelte';
-import type { MotionProps } from '../../motion/types';
-import { featureDefinitions } from '../../motion/features/definitions';
-import type { VisualElementOptions } from '../types';
+import { VisualElement } from '../VisualElement.svelte.js';
+import type { MotionProps } from '../../motion/types.js';
+import { featureDefinitions } from '../../motion/features/definitions.js';
+import type { VisualElementOptions } from '../types.js';
 
 class TestVisualElement extends VisualElement<HTMLElement, {}, {}> {
 	type = 'html';

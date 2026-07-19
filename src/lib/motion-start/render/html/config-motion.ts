@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionComponentConfig } from '../../motion/index.svelte';
-import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte';
-import type { HTMLRenderState } from './types';
+import type { MotionComponentConfig } from '../../motion/index.svelte.js';
+import { makeUseVisualState } from '../../motion/utils/use-visual-state.svelte.js';
+import type { HTMLRenderState } from './types.js';
 import { createHtmlRenderState } from './utils/create-render-state.js';
 import { scrapeMotionValuesFromProps } from './utils/scrape-motion-values.svelte.js';
 

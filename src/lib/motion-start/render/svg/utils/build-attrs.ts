@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { buildHTMLStyles } from '../../html/utils/build-styles';
-import type { ResolvedValues } from '../../types';
-import { calcSVGTransformOrigin } from './transform-origin';
-import { buildSVGPath } from './path';
-import type { MotionProps } from '../../../motion/types';
-import type { SVGRenderState } from '../types';
+import { buildHTMLStyles } from '../../html/utils/build-styles.js';
+import type { ResolvedValues } from '../../types.js';
+import { calcSVGTransformOrigin } from './transform-origin.js';
+import { buildSVGPath } from './path.js';
+import type { MotionProps } from '../../../motion/types.js';
+import type { SVGRenderState } from '../types.js';
 
 /**
  * Build SVG visual attrbutes, like cx and style.transform

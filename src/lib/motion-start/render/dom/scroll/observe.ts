@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { cancelFrame, frame } from '../../../frameloop';
+import { cancelFrame, frame } from '../../../frameloop/index.js';
 
 type Update = (progress: number) => void;
 

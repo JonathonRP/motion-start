@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { SequenceTime } from '../types';
+import type { SequenceTime } from '../types.js';
 
 /**
  * Given a absolute or relative time definition and current/prev time state of the sequence,

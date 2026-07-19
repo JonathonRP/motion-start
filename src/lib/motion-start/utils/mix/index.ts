@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { getMixer } from './complex';
-import { mixNumber as mixNumberImmediate } from './number';
-import type { Mixer } from './types';
+import { getMixer } from './complex.js';
+import { mixNumber as mixNumberImmediate } from './number.js';
+import type { Mixer } from './types.js';
 
 export function mix<T>(from: T, to: T): Mixer<T>;
 export function mix(from: number, to: number, p: number): number;

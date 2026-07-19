@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/sequence/utils/__tests__/calc-time.test.ts */
 import { describe, test, expect } from 'vitest';
-import { calcNextTime } from '../calc-time';
+import { calcNextTime } from '../calc-time.js';
 
 describe('calcNextTime', () => {
 	test('Correctly returns a new time based on the past arguments', () => {

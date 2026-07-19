@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedKeyframes } from '../../../render/utils/KeyframesResolver';
-import { warning } from '../../../utils/errors';
-import { isGenerator } from '../../generators/utils/is-generator';
-import type { AnimationGeneratorType } from '../../types';
-import { isAnimatable } from '../../utils/is-animatable';
+import type { ResolvedKeyframes } from '../../../render/utils/KeyframesResolver.js';
+import { warning } from '../../../utils/errors.js';
+import { isGenerator } from '../../generators/utils/is-generator.js';
+import type { AnimationGeneratorType } from '../../types.js';
+import { isAnimatable } from '../../utils/is-animatable.js';
 
 function hasKeyframesChanged(keyframes: ResolvedKeyframes<any>) {
 	const current = keyframes[0];

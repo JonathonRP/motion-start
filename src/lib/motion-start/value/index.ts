@@ -4,12 +4,12 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Writable, Unsubscriber } from 'svelte/store';
-import type { AnimationPlaybackControls } from '../animation/types';
-import { frame } from '../frameloop';
-import { SubscriptionManager } from '../utils/subscription-manager';
-import { velocityPerSecond } from '../utils/velocity-per-second';
-import { warnOnce } from '../utils/warn-once';
-import { time } from '../frameloop/sync-time';
+import type { AnimationPlaybackControls } from '../animation/types.js';
+import { frame } from '../frameloop/index.js';
+import { SubscriptionManager } from '../utils/subscription-manager.js';
+import { velocityPerSecond } from '../utils/velocity-per-second.js';
+import { warnOnce } from '../utils/warn-once.js';
+import { time } from '../frameloop/sync-time.js';
 import { createSubscriber } from 'svelte/reactivity';
 
 export type Transformer<T> = (v: T) => T;

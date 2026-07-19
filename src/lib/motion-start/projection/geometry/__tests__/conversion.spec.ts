@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { convertBoundingBoxToBox } from '../conversion';
+import { convertBoundingBoxToBox } from '../conversion.js';
 
 describe('convertBoundingBoxToBox', () => {
 	it('Correctly converts a bounding box into a box', () => {

@@ -4,8 +4,8 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { motionValue } from '../../../value';
-import { useSvgProps } from '../use-props.svelte';
+import { motionValue } from '../../../value/index.js';
+import { useSvgProps } from '../use-props.svelte.js';
 
 describe('SVG useProps', () => {
 	test('should return correct styles for element', () => {

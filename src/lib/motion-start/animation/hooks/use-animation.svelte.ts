@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { AnimationControls } from '../types';
-import { animationControls } from './animation-controls';
+import type { AnimationControls } from '../types.js';
+import { animationControls } from './animation-controls.js';
 
 /**
  * Creates `AnimationControls`, which can be used to manually start, stop

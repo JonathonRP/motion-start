@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { VisualElement } from '../VisualElement.svelte';
-import { isVariantLabel } from './is-variant-label';
-import { variantProps } from './variant-props';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import { isVariantLabel } from './is-variant-label.js';
+import { variantProps } from './variant-props.js';
 
 const numVariantProps = variantProps.length;
 

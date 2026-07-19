@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { DOMVisualElementOptions } from './types';
-import { VisualElement } from '../VisualElement.svelte';
-import type { MotionProps, MotionStyle } from '../../motion/types';
-import type { MotionValue } from '../../value';
-import type { HTMLRenderState } from '../html/types';
-import { DOMKeyframesResolver } from './DOMKeyframesResolver';
+import type { DOMVisualElementOptions } from './types.js';
+import { VisualElement } from '../VisualElement.svelte.js';
+import type { MotionProps, MotionStyle } from '../../motion/types.js';
+import type { MotionValue } from '../../value/index.js';
+import type { HTMLRenderState } from '../html/types.js';
+import { DOMKeyframesResolver } from './DOMKeyframesResolver.js';
 
 export abstract class DOMVisualElement<
 	Instance extends HTMLElement | SVGElement = HTMLElement,

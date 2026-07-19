@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, test } from 'vitest';
-import { circIn, circInOut, circOut } from '../circ';
+import { circIn, circInOut, circOut } from '../circ.js';
 
 describe('circ easing', () => {
 	test('circInOut is correct', () => {

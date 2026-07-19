@@ -5,9 +5,9 @@ Copyright (c) 2018 Framer B.V.
 
 import type { SVGAttributes } from 'svelte/elements';
 import type { Properties } from 'csstype';
-import type { Easing } from './easing/types';
-import type { TransformProperties, CustomStyles, SVGPathProperties } from './motion/types';
-import type { VariableKeyframesDefinition } from './animation/types';
+import type { Easing } from './easing/types.js';
+import type { TransformProperties, CustomStyles, SVGPathProperties } from './motion/types.js';
+import type { VariableKeyframesDefinition } from './animation/types.js';
 
 export type GenericKeyframesTarget<V> = V[] | Array<null | V>;
 

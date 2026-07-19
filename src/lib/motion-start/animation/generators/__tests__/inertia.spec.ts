@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { describe, test, expect } from 'vitest';
-import { inertia } from '../inertia';
-import { pregenerateKeyframes } from '../utils/pregenerate';
+import { inertia } from '../inertia.js';
+import { pregenerateKeyframes } from '../utils/pregenerate.js';
 
 /**
  * Helper to compare keyframe arrays with floating-point tolerance.

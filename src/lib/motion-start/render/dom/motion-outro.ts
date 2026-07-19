@@ -1,18 +1,17 @@
 import type { TransitionConfig } from 'svelte/transition';
-import { applyPopLayout, removePopLayout } from '../../components/AnimatePresence/PopChild/pop-layout';
-import type { MotionOutroContext } from '../../context/OutroContext.svelte';
-import type { PresenceContext } from '../../context/PresenceContext.svelte';
-import type { MotionProps } from '../../motion/types';
-import type { Box } from '../../projection/geometry/types';
-import type { IProjectionNode, Measurements } from '../../projection/node/types';
-import type { VisualElement } from '../VisualElement.svelte';
+import { applyPopLayout, removePopLayout } from '../../components/AnimatePresence/PopChild/pop-layout.js';
+import type { MotionOutroContext } from '../../context/OutroContext.svelte.js';
+import type { PresenceContext } from '../../context/PresenceContext.svelte.js';
+import type { Box } from '../../projection/geometry/types.js';
+import type { IProjectionNode, Measurements } from '../../projection/node/types.js';
+import { resolveVariant } from '../utils/resolve-dynamic-variants.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
 
 interface MotionOutroParams {
 	context: MotionOutroContext | null;
 	visualElement?: VisualElement<HTMLElement | SVGElement | unknown>;
 }
 
-const defaultExitDuration = 500;
 let presenceChildId = 0;
 const pendingLayoutUpdates = new WeakMap<Element, IProjectionNode<unknown>>();
 
@@ -59,32 +58,74 @@ function flushPopLayout(node: Element) {
 	node.parentElement?.getBoundingClientRect();
 }
 
-function secondsToMilliseconds(value: unknown) {
-	return typeof value === 'number' && Number.isFinite(value) ? value * 1000 : undefined;
-}
-
-function getTransitionDuration(transition: unknown) {
-	if (!transition || typeof transition !== 'object') return undefined;
-
-	const { duration, delay } = transition as {
-		duration?: unknown;
-		delay?: unknown;
+interface AnimationWithOptions {
+	duration: number;
+	options?: {
+		delay?: number;
+		repeat?: number;
+		repeatDelay?: number;
 	};
-	const resolvedDuration = secondsToMilliseconds(duration);
-	const resolvedDelay = secondsToMilliseconds(delay) ?? 0;
-
-	return resolvedDuration === undefined ? undefined : resolvedDelay + resolvedDuration;
 }
 
-function getExitDuration(props: MotionProps) {
-	const exit = props.exit;
-	const exitTransition =
-		exit && typeof exit === 'object' && !Array.isArray(exit) ? getTransitionDuration(exit.transition) : undefined;
+function getRunningAnimationDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	let longest = 0;
 
-	const transitionDuration = getTransitionDuration(props.transition);
-	const duration = exitTransition ?? transitionDuration ?? (exit ? defaultExitDuration : 0);
+	for (const value of visualElement.values.values()) {
+		const animation = value.animation as AnimationWithOptions | undefined;
+		if (!animation) continue;
 
-	return Math.max(0, Math.min(duration, 5000));
+		// Reading duration synchronously flushes Motion's keyframe resolver, so
+		// Svelte retains the block for the resolved tween/spring rather than a
+		// timeout guessed from the public props.
+		const { delay = 0, repeat = 0, repeatDelay = 0 } = animation.options ?? {};
+		const total = Math.max(0, delay) / 1000 + animation.duration * (repeat + 1) + (repeatDelay / 1000) * repeat;
+		longest = Math.max(longest, total * 1000);
+	}
+
+	return longest;
+}
+
+function getRunningTreeDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	let longest = getRunningAnimationDuration(visualElement);
+
+	for (const child of visualElement.children) {
+		longest = Math.max(longest, getRunningTreeDuration(child as VisualElement<HTMLElement | SVGElement | unknown>));
+	}
+
+	return longest;
+}
+
+function getConfiguredExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	const exit = visualElement.getProps().exit;
+	if (!exit || Array.isArray(exit)) return { duration: 0, afterChildren: false };
+
+	const resolved = resolveVariant(visualElement, exit, visualElement.presenceContext?.custom);
+	const transition = resolved?.transition ?? visualElement.getDefaultTransition();
+	if (!transition) return { duration: 0, afterChildren: false };
+	const duration = 'duration' in transition ? transition.duration : undefined;
+	if (typeof duration !== 'number') return { duration: 0, afterChildren: false };
+
+	const delay = typeof transition.delay === 'number' ? transition.delay : 0;
+	const repeat = typeof transition.repeat === 'number' ? transition.repeat : 0;
+	const repeatDelay = typeof transition.repeatDelay === 'number' ? transition.repeatDelay : 0;
+
+	return {
+		duration: Math.max(0, delay + duration * (repeat + 1) + repeatDelay * repeat) * 1000,
+		afterChildren: transition.when === 'afterChildren',
+	};
+}
+
+function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	const runningDuration = getRunningTreeDuration(visualElement);
+	const configured = getConfiguredExitDuration(visualElement);
+
+	return configured.afterChildren
+		? runningDuration + configured.duration
+		: Math.max(runningDuration, configured.duration);
+}
+
+function getMotionNode(node: Element, visualElement: VisualElement<HTMLElement | SVGElement | unknown> | undefined) {
+	return visualElement?.current instanceof Element ? visualElement.current : node;
 }
 
 function makePresenceContext(
@@ -140,18 +181,26 @@ function markProjectionWillUpdate(visualElement: VisualElement<HTMLElement | SVG
 	return root;
 }
 
-export function motionEnterIntro(node: Element, { context, visualElement }: MotionOutroParams): TransitionConfig {
-	pendingLayoutUpdates.delete(node);
-	removePopLayout(node);
-	if (node instanceof HTMLElement && node.dataset.motionPrevPointerEvents !== undefined) {
-		node.style.pointerEvents = node.dataset.motionPrevPointerEvents;
-		delete node.dataset.motionPrevPointerEvents;
+export function motionEnterIntro(
+	node: Element,
+	{ context, visualElement }: MotionOutroParams
+): TransitionConfig | (() => TransitionConfig) {
+	const motionNode = getMotionNode(node, visualElement);
+	pendingLayoutUpdates.delete(motionNode);
+	removePopLayout(motionNode);
+	if (motionNode instanceof HTMLElement && motionNode.dataset.motionPrevPointerEvents !== undefined) {
+		motionNode.style.pointerEvents = motionNode.dataset.motionPrevPointerEvents;
+		delete motionNode.dataset.motionPrevPointerEvents;
 	}
 	visualElement?.animationState?.setActive('exit', false);
 
-	return {
-		delay: context?.mode === 'wait' ? context.remaining() : 0,
-		duration: 0,
+	return () => {
+		const delay = context?.mode === 'wait' ? context.remaining() : 0;
+		return {
+			delay,
+			duration: 0,
+			css: delay > 0 ? (t) => (t < 1 ? 'display: none' : '') : undefined,
+		};
 	};
 }
 
@@ -159,7 +208,7 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	if (!context || !visualElement) return { duration: 0 };
 
 	const element = visualElement;
-	const duration = getExitDuration(element.props);
+	const motionNode = getMotionNode(node, element);
 	const complete = context.begin();
 	let removePopLayout: VoidFunction | undefined;
 	let previousPointerEvents = '';
@@ -176,21 +225,22 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	if (element.projection) {
 		element.projection.isPresent = false;
 	}
-	if (node instanceof HTMLElement) {
-		previousPointerEvents = node.style.pointerEvents;
-		node.dataset.motionPrevPointerEvents = previousPointerEvents;
-		node.style.pointerEvents = 'none';
+	if (motionNode instanceof HTMLElement) {
+		previousPointerEvents = motionNode.style.pointerEvents;
+		motionNode.dataset.motionPrevPointerEvents = previousPointerEvents;
+		motionNode.style.pointerEvents = 'none';
 	}
 
 	const previousLayoutBox: Box | undefined = element.projection?.layout?.layoutBox;
 	const projectionRoot = markProjectionWillUpdate(element);
 	if (context.mode === 'popLayout') {
-		removePopLayout = applyPopLayout(node as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
-		flushPopLayout(node);
+		removePopLayout = applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
+		flushPopLayout(motionNode);
 		(projectionRoot as { update?: VoidFunction } | undefined)?.update?.();
 	}
 
 	const exitAnimation = element.animationState?.setActive('exit', true) ?? Promise.resolve();
+	const duration = getExitDuration(element);
 	exitAnimation.then(
 		() => finish(),
 		() => finish(false)
@@ -205,14 +255,14 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 		tick(t) {
 			if (t === 0) {
 				removePopLayout?.();
-				if (node instanceof HTMLElement) {
-					node.style.pointerEvents = previousPointerEvents;
-					delete node.dataset.motionPrevPointerEvents;
+				if (motionNode instanceof HTMLElement) {
+					motionNode.style.pointerEvents = previousPointerEvents;
+					delete motionNode.dataset.motionPrevPointerEvents;
 				}
 				if (context.mode !== 'popLayout') {
 					const finalProjectionRoot = markProjectionWillUpdate(element) ?? projectionRoot;
 					if (finalProjectionRoot) {
-						pendingLayoutUpdates.set(node, finalProjectionRoot);
+						pendingLayoutUpdates.set(motionNode, finalProjectionRoot);
 					}
 				}
 				finish();

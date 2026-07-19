@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/events/utils/__tests__/is-primary-pointer.test.ts */
 import { describe, test, expect } from 'vitest';
-import { isPrimaryPointer } from '../is-primary-pointer';
+import { isPrimaryPointer } from '../is-primary-pointer.js';
 
 describe('isPrimaryPointer', () => {
 	test('Identifies primary pointer', () => {

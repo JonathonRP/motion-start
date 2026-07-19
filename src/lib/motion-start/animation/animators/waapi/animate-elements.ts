@@ -3,18 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { resolveElements } from '../../../render/dom/utils/resolve-element';
-import { invariant } from '../../../utils/errors';
-import { secondsToMilliseconds } from '../../../utils/time-conversion';
+import { resolveElements } from '../../../render/dom/utils/resolve-element.js';
+import { invariant } from '../../../utils/errors.js';
+import { secondsToMilliseconds } from '../../../utils/time-conversion.js';
 import type {
 	AnimationPlaybackControls,
 	AnimationScope,
 	DOMKeyframesDefinition,
 	DynamicAnimationOptions,
 	ElementOrSelector,
-} from '../../types';
-import { getValueTransition } from '../../utils/get-value-transition';
-import { NativeAnimation } from './NativeAnimation';
+} from '../../types.js';
+import { getValueTransition } from '../../utils/get-value-transition.js';
+import { NativeAnimation } from './NativeAnimation.js';
 
 export function animateElements(
 	elementOrSelector: ElementOrSelector,
@@ -31,19 +31,15 @@ export function animateElements(
 
 	for (let i = 0; i < numElements; i++) {
 		const element = elements[i];
-		const elementTransition = { ...options };
-
-		/**
-		 * Resolve stagger function if provided.
-		 */
-		if (typeof elementTransition.delay === 'function') {
-			elementTransition.delay = elementTransition.delay(i, numElements);
-		}
+		const elementTransition = {
+			...options,
+			delay: typeof options?.delay === 'function' ? options.delay(i, numElements) : options?.delay,
+		};
 
 		for (const valueName in keyframes) {
 			const valueKeyframes = keyframes[valueName as keyof typeof keyframes]!;
 			const valueOptions = {
-				...getValueTransition(options as any, valueName),
+				...getValueTransition(elementTransition, valueName),
 			};
 
 			valueOptions.duration = valueOptions.duration

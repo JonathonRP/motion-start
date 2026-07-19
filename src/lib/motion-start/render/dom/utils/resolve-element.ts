@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { AnimationScope, ElementOrSelector } from '../../../animation/types';
-import { invariant } from '../../../utils/errors';
+import type { AnimationScope, ElementOrSelector } from '../../../animation/types.js';
+import { invariant } from '../../../utils/errors.js';
 
 export interface WithQuerySelectorAll {
 	querySelectorAll: Element['querySelectorAll'];

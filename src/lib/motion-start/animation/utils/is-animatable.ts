@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { complex } from '../../value/types/complex';
-import type { ValueKeyframesDefinition } from '../types';
+import { complex } from '../../value/types/complex/index.js';
+import type { ValueKeyframesDefinition } from '../types.js';
 
 /**
  * Check if a value is animatable. Examples:

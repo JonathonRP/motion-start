@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues } from '../../render/types';
-import { mixNumber } from '../../utils/mix/number';
-import type { IProjectionNode } from '../node/types';
-import { hasTransform } from '../utils/has-transform';
-import type { Axis, Box, Delta, Point } from './types';
+import type { ResolvedValues } from '../../render/types.js';
+import { mixNumber } from '../../utils/mix/number.js';
+import type { IProjectionNode } from '../node/types.js';
+import { hasTransform } from '../utils/has-transform.js';
+import type { Axis, Box, Delta, Point } from './types.js';
 
 /**
  * Scales a point based on a factor and an originPoint

@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { millisecondsToSeconds } from '../../../utils/time-conversion';
-import type { KeyframeGenerator } from '../types';
+import { millisecondsToSeconds } from '../../../utils/time-conversion.js';
+import type { KeyframeGenerator } from '../types.js';
 
 export interface KeyframesMetadata {
 	keyframes: Array<string | number>;

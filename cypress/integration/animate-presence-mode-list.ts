@@ -43,7 +43,8 @@ describe('AnimatePresence mode list layout', () => {
 		cy.get('#mode-item-2').then(([$element]) => initialTops.push($element.getBoundingClientRect().top));
 		cy.get('#mode-item-3').then(([$element]) => initialTops.push($element.getBoundingClientRect().top));
 		cy.get('#remove-first').click();
-		cy.wait(550);
+		cy.get('#mode-item-0').should('not.exist');
+		cy.wait(16);
 
 		cy.then(() => {
 			const samples = [readTop('#mode-item-1'), readTop('#mode-item-2'), readTop('#mode-item-3')];
@@ -60,7 +61,8 @@ describe('AnimatePresence mode list layout', () => {
 		cy.get('#mode-item-2').then(([$element]) => initialTops.push($element.getBoundingClientRect().top));
 		cy.get('#mode-item-3').then(([$element]) => initialTops.push($element.getBoundingClientRect().top));
 		cy.get('#mode-item-1').click();
-		cy.wait(550);
+		cy.get('#mode-item-1').should('not.exist');
+		cy.wait(16);
 
 		cy.then(() => {
 			const samples = [readTop('#mode-item-2'), readTop('#mode-item-3')];

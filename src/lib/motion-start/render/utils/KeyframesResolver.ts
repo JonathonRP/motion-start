@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { frame } from '../../frameloop';
-import type { MotionValue } from '../../value';
-import type { VisualElement } from '../VisualElement.svelte';
-import { removeNonTranslationalTransform } from '../dom/utils/unit-conversion';
+import { frame } from '../../frameloop/index.js';
+import type { MotionValue } from '../../value/index.js';
+import type { VisualElement } from '../VisualElement.svelte.js';
+import { removeNonTranslationalTransform } from '../dom/utils/unit-conversion.js';
 
 export type UnresolvedKeyframes<T extends string | number> = Array<T | null>;
 

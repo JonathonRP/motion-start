@@ -1,6 +1,6 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/dom/utils/__tests__/unit-conversion.test.ts */
 import { describe, test, expect } from 'vitest';
-import { positionalValues } from '../unit-conversion';
+import { positionalValues } from '../unit-conversion.js';
 
 describe('positionalValues', () => {
 	test('Correctly factors in padding when measuring width/height', () => {

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { scaleCorrectors } from '../../projection/styles/scale-correction';
-import type { MotionProps } from '../..';
-import { transformProps } from '../../render/html/utils/transform';
+import { scaleCorrectors } from '../../projection/styles/scale-correction.js';
+import type { MotionProps } from '../../index.js';
+import { transformProps } from '../../render/html/utils/transform.js';
 
 export function isForcedMotionValue(key: string, { layout, layoutId }: MotionProps) {
 	return (

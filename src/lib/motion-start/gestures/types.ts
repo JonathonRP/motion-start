@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { EventInfo } from '../events/types';
-import type { VariantLabels } from '../motion/types';
-import type { Point } from '../projection/geometry/types';
-import type { TargetAndTransition } from '../types';
-import type { PanInfo } from './pan/PanSession';
+import type { EventInfo } from '../events/types.js';
+import type { VariantLabels } from '../motion/types.js';
+import type { Point } from '../projection/geometry/types.js';
+import type { TargetAndTransition } from '../types.js';
+import type { PanInfo } from './pan/PanSession.js';
 
 export type RemoveEvent = () => void;
 

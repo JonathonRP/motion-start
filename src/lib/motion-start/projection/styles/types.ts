@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { IProjectionNode } from '../node/types';
+import type { IProjectionNode } from '../node/types.js';
 
 export type ScaleCorrector = <I>(latest: string | number, node: IProjectionNode<I>) => string | number;
 

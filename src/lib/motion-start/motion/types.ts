@@ -4,14 +4,14 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Properties } from 'csstype';
-import type { MotionValue } from '../value';
-import type { AnimationControls } from '../animation/types';
-import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from '../types';
-import type { DraggableProps } from '../gestures/drag/types';
-import type { LayoutProps } from './features/layout/types';
-import type { EventProps } from '../render/types';
-import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from '../gestures/types';
-import type { ViewportProps } from './features/viewport/types';
+import type { MotionValue } from '../value/index.js';
+import type { AnimationControls } from '../animation/types.js';
+import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from '../types.js';
+import type { DraggableProps } from '../gestures/drag/types.js';
+import type { LayoutProps } from './features/layout/types.js';
+import type { EventProps } from '../render/types.js';
+import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from '../gestures/types.js';
+import type { ViewportProps } from './features/viewport/types.js';
 import type { Snippet } from 'svelte';
 
 /**

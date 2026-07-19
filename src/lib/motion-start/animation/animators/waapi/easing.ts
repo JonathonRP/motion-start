@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { BezierDefinition, Easing } from '../../../easing/types';
-import { isBezierDefinition } from '../../../easing/utils/is-bezier-definition';
-import { generateLinearEasing } from './utils/linear.svelte';
-import { supportsLinearEasing } from './utils/supports-linear-easing';
+import type { BezierDefinition, Easing } from '../../../easing/types.js';
+import { isBezierDefinition } from '../../../easing/utils/is-bezier-definition.js';
+import { generateLinearEasing } from './utils/linear.svelte.js';
+import { supportsLinearEasing } from './utils/supports-linear-easing.js';
 
 export function isWaapiSupportedEasing(easing?: Easing | Easing[]): boolean {
 	return Boolean(

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Edge, NamedEdges } from '../types';
+import type { Edge, NamedEdges } from '../types.js';
 
 export const namedEdges: Record<NamedEdges, number> = {
 	start: 0,

@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Edge, EdgeString, Intersection, ProgressIntersection } from '../types';
-import { namedEdges, resolveEdge } from './edge';
+import type { Edge, EdgeString, Intersection, ProgressIntersection } from '../types.js';
+import { namedEdges, resolveEdge } from './edge.js';
 
 const defaultOffset: ProgressIntersection = [0, 0];
 

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Feature } from '../motion/features/Feature';
+import { Feature } from '../motion/features/Feature.js';
 
 export class FocusGesture extends Feature<Element> {
 	private isActive = false;

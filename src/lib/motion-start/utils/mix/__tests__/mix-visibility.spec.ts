@@ -5,7 +5,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { mixVisibility } from '../visibility';
+import { mixVisibility } from '../visibility.js';
 
 describe('mixVisibility', () => {
 	test('mixes binary visibility', () => {

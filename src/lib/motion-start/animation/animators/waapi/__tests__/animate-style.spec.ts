@@ -4,10 +4,12 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { stagger } from '../../../utils/stagger.js';
 import { animateMini } from '../animate-style.js';
 
 const duration = 0.001;
-const originalAnimate = typeof Element !== 'undefined' ? Element.prototype.animate : undefined;
+const originalAnimateDescriptor =
+	typeof Element !== 'undefined' ? Object.getOwnPropertyDescriptor(Element.prototype, 'animate') : undefined;
 
 type MockAnimation = Omit<Animation, 'playState'> & {
 	playState: AnimationPlayState;
@@ -64,10 +66,10 @@ function setupWaapi() {
 function restoreWaapi() {
 	vi.restoreAllMocks();
 
-	if (originalAnimate) {
-		Element.prototype.animate = originalAnimate;
+	if (originalAnimateDescriptor) {
+		Object.defineProperty(Element.prototype, 'animate', originalAnimateDescriptor);
 	} else {
-		Element.prototype.animate = undefined as unknown as typeof Element.prototype.animate;
+		Reflect.deleteProperty(Element.prototype, 'animate');
 	}
 }
 
@@ -91,6 +93,19 @@ describe.skipIf(typeof Element === 'undefined')('animateMini', () => {
 				times: [0],
 			}
 		);
+
+		animation.cancel();
+	});
+
+	test('resolves a dynamic delay for each animated element', () => {
+		const first = document.createElement('div');
+		const second = document.createElement('div');
+
+		const animation = animateMini([first, second], { opacity: [0.2, 0.5] }, { delay: stagger(0.2) });
+		const animate = vi.mocked(Element.prototype.animate);
+
+		expect(animate.mock.calls[0]?.[1]).toMatchObject({ delay: 0 });
+		expect(animate.mock.calls[1]?.[1]).toMatchObject({ delay: 200 });
 
 		animation.cancel();
 	});

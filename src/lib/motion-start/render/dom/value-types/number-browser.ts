@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { px } from '../../../value/types/numbers/units';
-import type { ValueTypeMap } from './types';
+import { px } from '../../../value/types/numbers/units.js';
+import type { ValueTypeMap } from './types.js';
 
 export const browserNumberValueTypes: ValueTypeMap = {
 	// Border props

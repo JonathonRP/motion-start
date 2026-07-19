@@ -3,18 +3,18 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Easing } from '../../easing/types';
-import { createGeneratorEasing } from '../../easing/utils/create-generator-easing';
-import { defaultOffset } from '../../utils/offsets/default';
-import { fillOffset } from '../../utils/offsets/fill';
-import { progress } from '../../utils/progress';
-import { secondsToMilliseconds } from '../../utils/time-conversion';
-import type { MotionValue } from '../../value';
-import { isMotionValue } from '../../value/utils/is-motion-value';
-import { resolveSubjects } from '../animate/resolve-subjects';
-import { isGenerator } from '../generators/utils/is-generator';
-import type { DynamicAnimationOptions, GeneratorFactory } from '../types';
-import type { AnimationScope, DOMKeyframesDefinition, Transition, UnresolvedValueKeyframe } from '../types';
+import type { Easing } from '../../easing/types.js';
+import { createGeneratorEasing } from '../../easing/utils/create-generator-easing.js';
+import { defaultOffset } from '../../utils/offsets/default.js';
+import { fillOffset } from '../../utils/offsets/fill.js';
+import { progress } from '../../utils/progress.js';
+import { secondsToMilliseconds } from '../../utils/time-conversion.js';
+import type { MotionValue } from '../../value/index.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
+import { resolveSubjects } from '../animate/resolve-subjects.js';
+import { isGenerator } from '../generators/utils/is-generator.js';
+import type { DynamicAnimationOptions, GeneratorFactory } from '../types.js';
+import type { AnimationScope, DOMKeyframesDefinition, Transition, UnresolvedValueKeyframe } from '../types.js';
 import type {
 	AnimationSequence,
 	At,
@@ -22,10 +22,10 @@ import type {
 	ResolvedAnimationDefinitions,
 	SequenceOptions,
 	ValueSequence,
-} from './types';
-import { calcNextTime } from './utils/calc-time';
-import { addKeyframes } from './utils/edit';
-import { compareByTime } from './utils/sort';
+} from './types.js';
+import { calcNextTime } from './utils/calc-time.js';
+import { addKeyframes } from './utils/edit.js';
+import { compareByTime } from './utils/sort.js';
 
 const defaultSegmentEasing = 'easeInOut';
 

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { resolveMotionValue } from '../utils/resolve-motion-value';
+import { resolveMotionValue } from '../utils/resolve-motion-value.js';
 import { MotionValue } from '../';
 
 class Test {

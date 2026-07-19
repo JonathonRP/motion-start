@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createContext } from 'svelte';
-import type { TransformPoint } from '../projection/geometry/types';
-import type { Transition } from '../types';
+import type { TransformPoint } from '../projection/geometry/types.js';
+import type { Transition } from '../types.js';
 
 export type ReducedMotionConfig = 'always' | 'never' | 'user';
 

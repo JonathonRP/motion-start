@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { mixColor, mixLinearColor } from '../color';
+import { mixColor, mixLinearColor } from '../color.js';
 
 describe('mixLinearColor', () => {
 	test('mixes color component values in linear color space', () => {

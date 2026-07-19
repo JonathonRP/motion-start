@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { clamp } from '../../../utils/clamp';
-import { alpha as alphaType, number } from '../numbers';
-import type { RGBA } from '../types';
-import { sanitize } from '../utils/sanitize';
-import { isColorString, splitColor } from './utils';
+import { clamp } from '../../../utils/clamp.js';
+import { alpha as alphaType, number } from '../numbers/index.js';
+import type { RGBA } from '../types.js';
+import { sanitize } from '../utils/sanitize.js';
+import { isColorString, splitColor } from './utils.js';
 
 const clampRgbUnit = (v: number) => clamp(0, 255, v);
 export const rgbUnit = {

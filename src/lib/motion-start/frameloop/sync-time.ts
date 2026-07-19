@@ -1,5 +1,5 @@
-import { MotionGlobalConfig } from '../utils/GlobalConfig';
-import { frameData } from './frame';
+import { MotionGlobalConfig } from '../utils/GlobalConfig.js';
+import { frameData } from './frame.js';
 
 let now: number | undefined;
 

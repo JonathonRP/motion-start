@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { RGBA } from '../types';
-import { rgba } from './rgba';
-import { isColorString } from './utils';
+import type { RGBA } from '../types.js';
+import { rgba } from './rgba.js';
+import { isColorString } from './utils.js';
 
 function parseHex(v: string): RGBA {
 	let r = '';

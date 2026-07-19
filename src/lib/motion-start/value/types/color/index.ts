@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { HSLA, RGBA } from '../types';
-import { hex } from './hex';
-import { hsla } from './hsla';
-import { rgba } from './rgba';
+import type { HSLA, RGBA } from '../types.js';
+import { hex } from './hex.js';
+import { hsla } from './hsla.js';
+import { rgba } from './rgba.js';
 
 export const color = {
 	test: (v: any) => rgba.test(v) || hex.test(v) || hsla.test(v),

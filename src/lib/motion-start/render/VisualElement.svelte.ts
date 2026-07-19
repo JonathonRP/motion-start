@@ -3,39 +3,39 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { frame, cancelFrame } from '../frameloop';
-import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext.svelte';
-import { featureDefinitions } from '../motion/features/definitions';
-import type { FeatureDefinitions } from '../motion/features/types';
-import type { MotionProps, MotionStyle } from '../motion/types';
-import type { Box } from '../projection/geometry/types';
-import type { IProjectionNode } from '../projection/node/types';
-import { prefersReducedMotion } from '../utils/reduced-motion/state';
-import { SubscriptionManager } from '../utils/subscription-manager';
-import { motionValue, type MotionValue } from '../value';
-import { isMotionValue } from '../value/utils/is-motion-value';
-import { transformProps } from './html/utils/transform';
-import type { ResolvedValues, VisualElementEventCallbacks, VisualElementOptions } from './types';
-import type { AnimationState } from './utils/animation-state';
+import { frame, cancelFrame } from '../frameloop/index.js';
+import type { MotionConfigContext, ReducedMotionConfig } from '../context/MotionConfigContext.svelte.js';
+import { featureDefinitions } from '../motion/features/definitions.js';
+import type { FeatureDefinitions } from '../motion/features/types.js';
+import type { MotionProps, MotionStyle } from '../motion/types.js';
+import type { Box } from '../projection/geometry/types.js';
+import type { IProjectionNode } from '../projection/node/types.js';
+import { prefersReducedMotion } from '../utils/reduced-motion/state.js';
+import { SubscriptionManager } from '../utils/subscription-manager.js';
+import { motionValue, type MotionValue } from '../value/index.js';
+import { isMotionValue } from '../value/utils/is-motion-value.js';
+import { transformProps } from './html/utils/transform.js';
+import type { ResolvedValues, VisualElementEventCallbacks, VisualElementOptions } from './types.js';
+import type { AnimationState } from './utils/animation-state.js';
 import {
 	isControllingVariants as checkIsControllingVariants,
 	isVariantNode as checkIsVariantNode,
-} from './utils/is-controlling-variants';
-import { updateMotionValuesFromProps } from './utils/motion-values';
-import { resolveVariantFromProps } from './utils/resolve-variants';
-import { warnOnce } from '../utils/warn-once';
-import type { PresenceContext } from '../context/PresenceContext.svelte';
-import { visualElementStore } from './store';
-import { KeyframeResolver } from './utils/KeyframesResolver';
-import { isNumericalString } from '../utils/is-numerical-string';
-import { isZeroValueString } from '../utils/is-zero-value-string';
-import { findValueType } from './dom/value-types/find';
-import { complex } from '../value/types/complex';
-import { getAnimatableNone } from './dom/value-types/animatable-none';
-import { createBox } from '../projection/geometry/models';
-import { time } from '../frameloop/sync-time';
-import type { HTMLRenderState } from './html/types';
-import type { SVGRenderState } from './svg/types';
+} from './utils/is-controlling-variants.js';
+import { updateMotionValuesFromProps } from './utils/motion-values.js';
+import { resolveVariantFromProps } from './utils/resolve-variants.js';
+import { warnOnce } from '../utils/warn-once.js';
+import type { PresenceContext } from '../context/PresenceContext.svelte.js';
+import { visualElementStore } from './store.js';
+import { KeyframeResolver } from './utils/KeyframesResolver.js';
+import { isNumericalString } from '../utils/is-numerical-string.js';
+import { isZeroValueString } from '../utils/is-zero-value-string.js';
+import { findValueType } from './dom/value-types/find.js';
+import { complex } from '../value/types/complex/index.js';
+import { getAnimatableNone } from './dom/value-types/animatable-none.js';
+import { createBox } from '../projection/geometry/models.js';
+import { time } from '../frameloop/sync-time.js';
+import type { HTMLRenderState } from './html/types.js';
+import type { SVGRenderState } from './svg/types.js';
 
 const propEventHandlers = [
 	'AnimationStart',

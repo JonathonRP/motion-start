@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { memoSupports } from './memo-supports';
+import { memoSupports } from './memo-supports.js';
 
 export const supportsLinearEasing = /*@__PURE__*/ memoSupports(() => {
 	try {

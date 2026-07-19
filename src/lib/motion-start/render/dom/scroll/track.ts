@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { frame, cancelFrame, frameData } from '../../../frameloop';
-import { resize } from '../resize';
-import { createScrollInfo } from './info';
-import { createOnScrollHandler } from './on-scroll-handler';
-import type { OnScrollInfo, OnScrollHandler, ScrollInfoOptions } from './types';
+import { frame, cancelFrame, frameData } from '../../../frameloop/index.js';
+import { resize } from '../resize/index.js';
+import { createScrollInfo } from './info.js';
+import { createOnScrollHandler } from './on-scroll-handler.js';
+import type { OnScrollInfo, OnScrollHandler, ScrollInfoOptions } from './types.js';
 
 const scrollListeners = new WeakMap<Element, VoidFunction>();
 const resizeListeners = new WeakMap<Element, VoidFunction>();

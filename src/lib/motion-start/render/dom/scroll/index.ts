@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ScrollOptions, OnScroll, OnScrollWithInfo } from './types';
-import { scrollInfo } from './track';
-import type { GroupPlaybackControls } from '../../../animation/GroupPlaybackControls';
-import { type ProgressTimeline, observeTimeline } from './observe';
-import { supportsScrollTimeline } from './supports';
+import type { ScrollOptions, OnScroll, OnScrollWithInfo } from './types.js';
+import { scrollInfo } from './track.js';
+import type { GroupPlaybackControls } from '../../../animation/GroupPlaybackControls.js';
+import { type ProgressTimeline, observeTimeline } from './observe.js';
+import { supportsScrollTimeline } from './supports.js';
 
 declare class ScrollTimeline implements ProgressTimeline {
 	constructor(options: ScrollOptions);

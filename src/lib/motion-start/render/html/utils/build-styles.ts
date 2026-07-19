@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionProps } from '../../../motion/types';
-import type { HTMLRenderState } from '../types';
-import type { ResolvedValues } from '../../types';
-import { buildTransform } from './build-transform';
-import { isCSSVariableName } from '../../dom/utils/is-css-variable';
-import { transformProps } from './transform';
-import { getValueAsType } from '../../dom/value-types/get-as-type';
-import { numberValueTypes } from '../../dom/value-types/number';
+import type { MotionProps } from '../../../motion/types.js';
+import type { HTMLRenderState } from '../types.js';
+import type { ResolvedValues } from '../../types.js';
+import { buildTransform } from './build-transform.js';
+import { isCSSVariableName } from '../../dom/utils/is-css-variable.js';
+import { transformProps } from './transform.js';
+import { getValueAsType } from '../../dom/value-types/get-as-type.js';
+import { numberValueTypes } from '../../dom/value-types/number.js';
 
 export function buildHTMLStyles(
 	state: HTMLRenderState,

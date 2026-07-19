@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { calcGeneratorDuration, maxGeneratorDuration } from '../../animation/generators/utils/calc-duration';
-import type { GeneratorFactory, Transition } from '../../animation/types';
-import { millisecondsToSeconds } from '../../utils/time-conversion';
+import { calcGeneratorDuration, maxGeneratorDuration } from '../../animation/generators/utils/calc-duration.js';
+import type { GeneratorFactory, Transition } from '../../animation/types.js';
+import { millisecondsToSeconds } from '../../utils/time-conversion.js';
 
 /**
  * Create a progress => progress easing function from a generator.

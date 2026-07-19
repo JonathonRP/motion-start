@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { mapEasingToNativeEasing } from './easing';
-import type { NativeAnimationOptions } from './types';
+import { mapEasingToNativeEasing } from './easing.js';
+import type { NativeAnimationOptions } from './types.js';
 
 export function startWaapiAnimation(
 	element: Element,

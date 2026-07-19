@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Batcher } from '../../frameloop/types';
-import type { MotionValue } from '../../value';
-import { optimizedAppearDataAttribute } from './data-id';
+import type { Batcher } from '../../frameloop/types.js';
+import type { MotionValue } from '../../value/index.js';
+import { optimizedAppearDataAttribute } from './data-id.js';
 
 /**
  * Expose only the needed part of the VisualElement interface to

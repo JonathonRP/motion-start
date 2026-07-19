@@ -4,11 +4,11 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { HTMLAttributes, SvelteHTMLElements } from 'svelte/elements';
-import type { MotionProps } from '../../motion/types';
-import type { ResolvedValues } from '../types';
-import type { HTMLElements } from './supported-elements';
+import type { MotionProps } from '../../motion/types.js';
+import type { ResolvedValues } from '../types.js';
+import type { HTMLElements } from './supported-elements.js';
 import type { Component } from 'svelte';
-import type { PropsWithoutRef, RefAttributes } from '../../utils/safe-react-types';
+import type { PropsWithoutRef, RefAttributes } from '../../utils/safe-react-types.js';
 
 export interface TransformOrigin {
 	originX?: number | string;

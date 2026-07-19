@@ -4,7 +4,7 @@
  */
 
 import { expect, test } from 'vitest';
-import { steps } from '../steps';
+import { steps } from '../steps.js';
 
 test('steps', () => {
 	const stepEnd = steps(4);

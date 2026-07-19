@@ -3,9 +3,9 @@
  * Copyright (c) 2018 Framer B.V.
  */
 
-import type { Box } from '../../geometry/types';
-import { createProjectionNode } from '../create-projection-node.svelte';
-import type { IProjectionNode, ProjectionNodeOptions } from '../types';
+import type { Box } from '../../geometry/types.js';
+import { createProjectionNode } from '../create-projection-node.svelte.js';
+import type { IProjectionNode, ProjectionNodeOptions } from '../types.js';
 
 let rootNode: IProjectionNode<Window>;
 

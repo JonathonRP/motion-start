@@ -4,12 +4,12 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { describe, test, expect } from 'vitest';
-import { noop } from '../../../utils/noop';
-import { easeInOut } from '../../../easing/ease';
-import { defaultOffset } from '../../../utils/offsets/default';
-import { convertOffsetToTimes } from '../../../utils/offsets/time';
-import { defaultEasing, keyframes } from '../keyframes';
-import { animateSync } from './utils';
+import { noop } from '../../../utils/noop.js';
+import { easeInOut } from '../../../easing/ease.js';
+import { defaultOffset } from '../../../utils/offsets/default.js';
+import { convertOffsetToTimes } from '../../../utils/offsets/time.js';
+import { defaultEasing, keyframes } from '../keyframes.js';
+import { animateSync } from './utils.js';
 
 const linear = noop;
 

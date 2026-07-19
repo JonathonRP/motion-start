@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { progress } from '../../../utils/progress';
-import { velocityPerSecond } from '../../../utils/velocity-per-second';
-import type { AxisScrollInfo, ScrollInfo } from './types';
+import { progress } from '../../../utils/progress.js';
+import { velocityPerSecond } from '../../../utils/velocity-per-second.js';
+import type { AxisScrollInfo, ScrollInfo } from './types.js';
 
 /**
  * A time in milliseconds, beyond which we consider the scroll velocity to be 0.

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { noop } from './noop';
+import { noop } from './noop.js';
 
 export type DevMessage = (check: boolean, message: string) => void;
 

@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { isSVGElement } from '../../render/dom/utils/is-svg-element';
-import { SVGVisualElement } from '../../render/svg/SVGVisualElement';
-import { HTMLVisualElement } from '../../render/html/HTMLVisualElement';
-import { visualElementStore } from '../../render/store';
-import { ObjectVisualElement } from '../../render/object/ObjectVisualElement';
-import type { VisualElementOptions } from '../../render/types';
-import type { SVGRenderState } from '../../render/svg/types';
-import type { HTMLRenderState } from '../../render/html/types';
+import { isSVGElement } from '../../render/dom/utils/is-svg-element.js';
+import { SVGVisualElement } from '../../render/svg/SVGVisualElement.js';
+import { HTMLVisualElement } from '../../render/html/HTMLVisualElement.js';
+import { visualElementStore } from '../../render/store.js';
+import { ObjectVisualElement } from '../../render/object/ObjectVisualElement.js';
+import type { VisualElementOptions } from '../../render/types.js';
+import type { SVGRenderState } from '../../render/svg/types.js';
+import type { HTMLRenderState } from '../../render/html/types.js';
 
 export function createDOMVisualElement(element: HTMLElement | SVGElement) {
 	const options = {

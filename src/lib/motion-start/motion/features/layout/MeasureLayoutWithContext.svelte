@@ -5,12 +5,12 @@ Copyright (c) 2018 Framer B.V. -->
 <script lang="ts">
 import { watch } from 'runed';
 import { onDestroy, onMount, tick } from 'svelte';
-import { frame } from '../../../frameloop';
-import { microtask } from '../../../frameloop/microtask';
-import { globalProjectionState } from '../../../projection/node/state';
-import { correctBorderRadius } from '../../../projection/styles/scale-border-radius';
-import { correctBoxShadow } from '../../../projection/styles/scale-box-shadow';
-import { addScaleCorrector } from '../../../projection/styles/scale-correction';
+import { frame } from '../../../frameloop/index.js';
+import { microtask } from '../../../frameloop/microtask.js';
+import { globalProjectionState } from '../../../projection/node/state.js';
+import { correctBorderRadius } from '../../../projection/styles/scale-border-radius.js';
+import { correctBoxShadow } from '../../../projection/styles/scale-box-shadow.js';
+import { addScaleCorrector } from '../../../projection/styles/scale-correction.js';
 import type { MeasureProps } from './MeasureLayout.svelte';
 
 const defaultScaleCorrectors = {

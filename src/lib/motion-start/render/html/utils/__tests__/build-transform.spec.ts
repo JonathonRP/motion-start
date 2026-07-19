@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/html/utils/__tests__/build-transform.test.ts */
 import { describe, it, expect } from 'vitest';
-import { buildTransform } from '../build-transform';
-import { transformProps } from '../transform';
+import { buildTransform } from '../build-transform.js';
+import { transformProps } from '../transform.js';
 
 describe('transformProps.has', () => {
 	it('Correctly identifies only transformPerspective as a transform prop', () => {

@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { createScrollMotionValues } from './scroll/utils';
-import type { RefObject } from '../utils/safe-react-types';
-import { warning } from '../utils/errors';
-import { scroll } from '../render/dom/scroll';
-import type { ScrollInfoOptions } from '../render/dom/scroll/types';
+import { createScrollMotionValues } from './scroll/utils.js';
+import type { RefObject } from '../utils/safe-react-types.js';
+import { warning } from '../utils/errors.js';
+import { scroll } from '../render/dom/scroll/index.js';
+import type { ScrollInfoOptions } from '../render/dom/scroll/types.js';
 
 export interface UseScrollOptions extends Omit<ScrollInfoOptions, 'container' | 'target'> {
 	container?: RefObject<HTMLElement>;

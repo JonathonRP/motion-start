@@ -4,9 +4,9 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { MotionContext } from './index.js';
-import type { MotionProps } from '../../motion/types';
-import { isVariantLabel } from '../../render/utils/is-variant-label';
-import { isControllingVariants } from '../../render/utils/is-controlling-variants';
+import type { MotionProps } from '../../motion/types.js';
+import { isVariantLabel } from '../../render/utils/is-variant-label.js';
+import { isControllingVariants } from '../../render/utils/is-controlling-variants.js';
 
 export function getCurrentTreeVariants(props: MotionProps, context: MotionContext): MotionContext {
 	if (isControllingVariants(props)) {

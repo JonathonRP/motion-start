@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { frame } from '../frameloop';
+import { frame } from '../frameloop/index.js';
 
 export function useForceUpdate(): [VoidFunction, () => number] {
 	let forcedRenderCount = $state(0);

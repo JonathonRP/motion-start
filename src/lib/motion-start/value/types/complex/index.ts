@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { CSSVariableToken } from '../../../render/dom/utils/is-css-variable';
-import { color } from '../color';
-import type { Color } from '../types';
-import { colorRegex } from '../utils/color-regex';
-import { floatRegex } from '../utils/float-regex';
-import { sanitize } from '../utils/sanitize';
+import type { CSSVariableToken } from '../../../render/dom/utils/is-css-variable.js';
+import { color } from '../color/index.js';
+import type { Color } from '../types.js';
+import { colorRegex } from '../utils/color-regex.js';
+import { floatRegex } from '../utils/float-regex.js';
+import { sanitize } from '../utils/sanitize.js';
 
 function test(v: any) {
 	return (

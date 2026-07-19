@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { CustomValueType, ValueTarget, SingleTarget } from '../types';
-import { isKeyframesTarget } from '../animation/utils/is-keyframes-target';
+import type { CustomValueType, ValueTarget, SingleTarget } from '../types.js';
+import { isKeyframesTarget } from '../animation/utils/is-keyframes-target.js';
 
 export const isCustomValue = (v: any): v is CustomValueType => {
 	return Boolean(v && typeof v === 'object' && v.mix && v.toValue);

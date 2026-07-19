@@ -1,7 +1,7 @@
-import { frame } from '../frameloop';
-import { useInstantLayoutTransition } from '../projection/use-instant-layout-transition';
-import { useForceUpdate } from './use-force-update.svelte';
-import { instantAnimationState } from './use-instant-transition-state';
+import { frame } from '../frameloop/index.js';
+import { useInstantLayoutTransition } from '../projection/use-instant-layout-transition.js';
+import { useForceUpdate } from './use-force-update.svelte.js';
+import { instantAnimationState } from './use-instant-transition-state.js';
 
 export function useInstantTransition() {
 	const [forceUpdate, forcedRenderCount] = $derived.by(useForceUpdate);

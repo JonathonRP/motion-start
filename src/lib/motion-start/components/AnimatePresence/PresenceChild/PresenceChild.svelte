@@ -12,7 +12,7 @@ function newChildrenMap(): Map<string | number, boolean> {
 	import {
 		type PresenceContext,
 		setPresenceContext,
-	} from "../../../context/PresenceContext.svelte";
+	} from "../../../context/PresenceContext.svelte.js";
 	import PopChild from "../PopChild/PopChild.svelte";
 	import type { PresenceChildProps } from "./index.js";
 

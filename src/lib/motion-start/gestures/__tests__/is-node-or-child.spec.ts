@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect, beforeEach, afterEach } from "vitest";
-import { isNodeOrChild } from "../utils/is-node-or-child";
+import { isNodeOrChild } from "../utils/is-node-or-child.js";
 
 // Skip in environments without DOM (e.g., Bun test runner)
 const hasDom = typeof document !== "undefined";

@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ProgressIntersection } from '../types';
+import type { ProgressIntersection } from '../types.js';
 
 export const ScrollOffset: Record<string, ProgressIntersection[]> = {
 	Enter: [

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ElementOrSelector } from '../../../animation/types';
-import { resolveElements } from '../utils/resolve-element';
-import type { ResizeHandler } from './types';
+import type { ElementOrSelector } from '../../../animation/types.js';
+import { resolveElements } from '../utils/resolve-element.js';
+import type { ResizeHandler } from './types.js';
 
 const resizeHandlers = new WeakMap<Element, Set<ResizeHandler<Element>>>();
 

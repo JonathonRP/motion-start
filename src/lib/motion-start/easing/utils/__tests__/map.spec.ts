@@ -1,10 +1,10 @@
 /** Ported from framer-motion/packages/framer-motion/src/easing/utils/__tests__/map.test.ts */
 import { describe, test, expect } from 'vitest';
-import { backIn } from '../../back';
-import { cubicBezier } from '../../cubic-bezier';
-import { easeInOut } from '../../ease';
-import { noop } from '../../../utils/noop';
-import { easingDefinitionToFunction } from '../map';
+import { backIn } from '../../back.js';
+import { cubicBezier } from '../../cubic-bezier.js';
+import { easeInOut } from '../../ease.js';
+import { noop } from '../../../utils/noop.js';
+import { easingDefinitionToFunction } from '../map.js';
 
 describe('easingDefinitionToFunction', () => {
 	test('Maps easing to lookup', () => {

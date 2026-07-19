@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { HTMLMotionComponents } from '../html/types';
-import type { SVGMotionComponents } from '../svg/types';
+import type { HTMLMotionComponents } from '../html/types.js';
+import type { SVGMotionComponents } from '../svg/types.js';
 
 export interface DOMVisualElementOptions {
 	/**

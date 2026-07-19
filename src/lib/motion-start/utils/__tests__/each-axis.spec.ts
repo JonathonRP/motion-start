@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { eachAxis } from '../each-axis';
+import { eachAxis } from '../each-axis.js';
 
 describe('eachAxis', () => {
 	test('fires the callback once for each axis and returns an array with the results', () => {

@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { alpha as alphaType } from '../numbers';
-import { percent } from '../numbers/units';
-import type { HSLA } from '../types';
-import { sanitize } from '../utils/sanitize';
-import { isColorString, splitColor } from './utils';
+import { alpha as alphaType } from '../numbers/index.js';
+import { percent } from '../numbers/units.js';
+import type { HSLA } from '../types.js';
+import { sanitize } from '../utils/sanitize.js';
+import { isColorString, splitColor } from './utils.js';
 
 export const hsla = {
 	test: /*@__PURE__*/ isColorString('hsl', 'hue'),

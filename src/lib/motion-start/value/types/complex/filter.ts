@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { complex } from './index.js';
-import { floatRegex } from '../utils/float-regex';
+import { floatRegex } from '../utils/float-regex.js';
 
 /**
  * Properties that should default to 1 or 100%

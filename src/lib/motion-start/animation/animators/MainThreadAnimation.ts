@@ -6,23 +6,23 @@ Copyright (c) 2018 Framer B.V.
 import {
 	KeyframeResolver as DefaultKeyframeResolver,
 	type ResolvedKeyframes,
-} from '../../render/utils/KeyframesResolver';
-import { spring } from '../generators/spring';
-import { inertia } from '../generators/inertia';
-import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes';
-import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types';
-import { BaseAnimation } from './BaseAnimation';
-import type { AnimationState, KeyframeGenerator } from '../generators/types';
-import { pipe } from '../../utils/pipe';
-import { mix } from '../../utils/mix';
-import { calcGeneratorDuration } from '../generators/utils/calc-duration';
-import type { DriverControls } from './drivers/types';
-import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion';
-import { clamp } from '../../utils/clamp';
-import { invariant } from '../../utils/errors';
-import { frameloopDriver } from './drivers/driver-frameloop';
-import { getFinalKeyframe } from './waapi/utils/get-final-keyframe';
-import { isGenerator } from '../generators/utils/is-generator';
+} from '../../render/utils/KeyframesResolver.js';
+import { spring } from '../generators/spring/index.js';
+import { inertia } from '../generators/inertia.js';
+import { keyframes as keyframesGeneratorFactory } from '../generators/keyframes.js';
+import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } from '../types.js';
+import { BaseAnimation } from './BaseAnimation.js';
+import type { AnimationState, KeyframeGenerator } from '../generators/types.js';
+import { pipe } from '../../utils/pipe.js';
+import { mix } from '../../utils/mix/index.js';
+import { calcGeneratorDuration } from '../generators/utils/calc-duration.js';
+import type { DriverControls } from './drivers/types.js';
+import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-conversion.js';
+import { clamp } from '../../utils/clamp.js';
+import { invariant } from '../../utils/errors.js';
+import { frameloopDriver } from './drivers/driver-frameloop.js';
+import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.js';
+import { isGenerator } from '../generators/utils/is-generator.js';
 
 type GeneratorFactory = (options: ValueAnimationOptions<any>) => KeyframeGenerator<any>;
 

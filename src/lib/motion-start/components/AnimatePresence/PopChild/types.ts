@@ -1,4 +1,4 @@
-import type { MutableRefObject, RefObject } from '../../../utils/safe-react-types';
+import type { MutableRefObject, RefObject } from '../../../utils/safe-react-types.js';
 import type { Snippet } from 'svelte';
 import type { Attachment } from 'svelte/attachments';
 

@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/dom/utils/__tests__/is-svg-component.test.ts */
 import type { Component } from 'svelte';
 import { describe, test, expect } from 'vitest';
-import { isSVGComponent } from '../is-svg-component';
+import { isSVGComponent } from '../is-svg-component.js';
 
 describe('isSVGComponent', () => {
 	test('Correctly identifies SVG components', () => {

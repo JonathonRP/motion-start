@@ -1,6 +1,6 @@
 import { frame, cancelFrame } from './index.js';
-import { stepsOrder } from './batcher';
-import type { Process } from './types';
+import { stepsOrder } from './batcher.js';
+import type { Process } from './types.js';
 
 /**
  * @deprecated

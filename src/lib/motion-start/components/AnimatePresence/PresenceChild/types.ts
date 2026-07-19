@@ -1,4 +1,4 @@
-import type { VariantLabels } from '../../../motion/types';
+import type { VariantLabels } from '../../../motion/types.js';
 import type { Snippet } from 'svelte';
 
 export interface PresenceChildProps {

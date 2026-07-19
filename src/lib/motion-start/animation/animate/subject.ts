@@ -3,13 +3,13 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { visualElementStore } from '../../render/store';
-import type { GenericKeyframesTarget, TargetAndTransition } from '../../types';
-import { invariant } from '../../utils/errors';
-import type { MotionValue } from '../../value';
-import { isMotionValue } from '../../value/utils/is-motion-value';
-import { animateTarget } from '../interfaces/visual-element-target';
-import type { ObjectTarget } from '../sequence/types';
+import { visualElementStore } from '../../render/store.js';
+import type { GenericKeyframesTarget, TargetAndTransition } from '../../types.js';
+import { invariant } from '../../utils/errors.js';
+import type { MotionValue } from '../../value/index.js';
+import { isMotionValue } from '../../value/utils/is-motion-value.js';
+import { animateTarget } from '../interfaces/visual-element-target.js';
+import type { ObjectTarget } from '../sequence/types.js';
 import type {
 	AnimationPlaybackControls,
 	AnimationScope,
@@ -17,11 +17,11 @@ import type {
 	DynamicAnimationOptions,
 	ElementOrSelector,
 	ValueAnimationTransition,
-} from '../types';
-import { createDOMVisualElement, createObjectVisualElement } from '../utils/create-visual-element';
-import { isDOMKeyframes } from '../utils/is-dom-keyframes';
-import { resolveSubjects } from './resolve-subjects';
-import { animateSingleValue } from './single-value';
+} from '../types.js';
+import { createDOMVisualElement, createObjectVisualElement } from '../utils/create-visual-element.js';
+import { isDOMKeyframes } from '../utils/is-dom-keyframes.js';
+import { resolveSubjects } from './resolve-subjects.js';
+import { animateSingleValue } from './single-value.js';
 
 export type AnimationSubject = Element | MotionValue<any> | any;
 

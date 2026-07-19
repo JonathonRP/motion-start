@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { BoundingBox, Box, TransformPoint } from './types';
+import type { BoundingBox, Box, TransformPoint } from './types.js';
 
 /**
  * Bounding boxes tend to be defined as top, left, right, bottom. For various operations

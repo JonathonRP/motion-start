@@ -1,4 +1,4 @@
-import { Feature } from '../motion/features/Feature';
+import { Feature } from '../motion/features/Feature.js';
 
 export abstract class Gesture<T extends Element | HTMLElement = Element> extends Feature<T> {
 	constructor(node: Feature<T>['node'], event: string) {

@@ -4,8 +4,8 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { createAttachmentKey } from 'svelte/attachments';
-import type { MotionProps } from '../../../motion/types';
-import { isValidMotionProp } from '../../../motion/utils/valid-prop';
+import type { MotionProps } from '../../../motion/types.js';
+import { isValidMotionProp } from '../../../motion/utils/valid-prop.js';
 
 let shouldForward = (key: string) => !isValidMotionProp(key);
 

@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { invariant } from '../../utils/errors';
-import { PanSession, type PanInfo } from '../pan/PanSession';
-import type { ResolvedConstraints } from './types';
-import { type Lock, getGlobalLock } from './utils/lock';
-import { isRefObject } from '../../utils/is-ref-object';
+import { invariant } from '../../utils/errors.js';
+import { PanSession, type PanInfo } from '../pan/PanSession.js';
+import type { ResolvedConstraints } from './types.js';
+import { type Lock, getGlobalLock } from './utils/lock.js';
+import { isRefObject } from '../../utils/is-ref-object.js';
 import {
 	calcRelativeConstraints,
 	calcViewportConstraints,
@@ -16,25 +16,25 @@ import {
 	resolveDragElastic,
 	defaultElastic,
 	calcOrigin,
-} from './utils/constraints';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { MotionProps } from '../../motion/types';
-import type { Axis, Point } from '../../projection/geometry/types';
-import { createBox } from '../../projection/geometry/models';
-import { eachAxis } from '../../projection/utils/each-axis';
-import { measurePageBox } from '../../projection/utils/measure';
-import { extractEventInfo } from '../../events/event-info';
-import type { Transition } from '../../types';
-import { convertBoundingBoxToBox, convertBoxToBoundingBox } from '../../projection/geometry/conversion';
-import type { LayoutUpdateData } from '../../projection/node/types';
-import { addDomEvent } from '../../events/add-dom-event';
-import { calcLength } from '../../projection/geometry/delta-calc';
-import { mixNumber } from '../../utils/mix/number';
-import { percent } from '../../value/types/numbers/units';
-import { animateMotionValue } from '../../animation/interfaces/motion-value';
-import { getContextWindow } from '../../utils/get-context-window';
-import { frame } from '../../frameloop';
-import { addValueToWillChange } from '../../value/use-will-change/add-will-change';
+} from './utils/constraints.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import type { MotionProps } from '../../motion/types.js';
+import type { Axis, Point } from '../../projection/geometry/types.js';
+import { createBox } from '../../projection/geometry/models.js';
+import { eachAxis } from '../../projection/utils/each-axis.js';
+import { measurePageBox } from '../../projection/utils/measure.js';
+import { extractEventInfo } from '../../events/event-info.js';
+import type { Transition } from '../../types.js';
+import { convertBoundingBoxToBox, convertBoxToBoundingBox } from '../../projection/geometry/conversion.js';
+import type { LayoutUpdateData } from '../../projection/node/types.js';
+import { addDomEvent } from '../../events/add-dom-event.js';
+import { calcLength } from '../../projection/geometry/delta-calc.js';
+import { mixNumber } from '../../utils/mix/number.js';
+import { percent } from '../../value/types/numbers/units.js';
+import { animateMotionValue } from '../../animation/interfaces/motion-value.js';
+import { getContextWindow } from '../../utils/get-context-window.js';
+import { frame } from '../../frameloop/index.js';
+import { addValueToWillChange } from '../../value/use-will-change/add-will-change.js';
 
 export const elementDragControls = new WeakMap<VisualElement<unknown>, VisualElementDragControls>();
 

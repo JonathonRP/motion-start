@@ -3,11 +3,11 @@
  * Copyright (c) 2018 Framer B.V.
  */
 import { describe, test, expect } from 'vitest';
-import type { Easing } from '../../../easing/types';
-import { motionValue } from '../../../value';
-import { stagger } from '../../utils/stagger';
-import { createAnimationsFromSequence } from '../create';
-import { spring } from '../../generators/spring';
+import type { Easing } from '../../../easing/types.js';
+import { motionValue } from '../../../value/index.js';
+import { stagger } from '../../utils/stagger.js';
+import { createAnimationsFromSequence } from '../create.js';
+import { spring } from '../../generators/spring/index.js';
 
 describe('createAnimationsFromSequence', () => {
 	const a = document.createElement('div');

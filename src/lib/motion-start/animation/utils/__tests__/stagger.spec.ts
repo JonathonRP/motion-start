@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/utils/__tests__/stagger.test.ts */
 import { describe, test, expect } from 'vitest';
-import { easingDefinitionToFunction } from '../../../easing/utils/map';
-import { stagger, getOriginIndex } from '../stagger';
+import { easingDefinitionToFunction } from '../../../easing/utils/map.js';
+import { stagger, getOriginIndex } from '../stagger.js';
 
 describe('stagger', () => {
 	test('Creates a stagger function', () => {

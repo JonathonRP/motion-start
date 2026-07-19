@@ -3,9 +3,9 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-import { useMotionConfigContext } from '../../../context/MotionConfigContext.svelte';
-import type { Props } from './types';
-import { usePresenceContext } from '../../../context/PresenceContext.svelte';
+import { useMotionConfigContext } from '../../../context/MotionConfigContext.svelte.js';
+import type { Props } from './types.js';
+import { usePresenceContext } from '../../../context/PresenceContext.svelte.js';
 import { applyPopLayout } from './pop-layout.js';
 
 let { isPresent, children }: Props = $props();

@@ -4,8 +4,8 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { copyBoxInto, copyAxisInto, copyAxisDeltaInto } from '../copy';
-import { createBox, createAxisDelta } from '../models';
+import { copyBoxInto, copyAxisInto, copyAxisDeltaInto } from '../copy.js';
+import { createBox, createAxisDelta } from '../models.js';
 
 describe('copyAxisInto', () => {
 	test('copies one axis into an existing axis', () => {

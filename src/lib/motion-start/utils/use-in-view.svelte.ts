@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { RefObject } from './safe-react-types';
-import { inView, type InViewOptions } from '../render/dom/viewport';
+import type { RefObject } from './safe-react-types.js';
+import { inView, type InViewOptions } from '../render/dom/viewport/index.js';
 
 export interface UseInViewOptions extends Omit<InViewOptions, 'root' | 'amount'> {
 	root?: RefObject<Element>;

@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { isAnimationControls } from '../../../animation/utils/is-animation-controls';
-import { createAnimationState } from '../../../render/utils/animation-state';
-import type { VisualElement } from '../../../render/VisualElement.svelte';
-import { Feature } from '../Feature';
+import { isAnimationControls } from '../../../animation/utils/is-animation-controls.js';
+import { createAnimationState } from '../../../render/utils/animation-state.js';
+import type { VisualElement } from '../../../render/VisualElement.svelte.js';
+import { Feature } from '../Feature.js';
 
 export class AnimationFeature extends Feature<unknown> {
 	unmountControls?: () => void;

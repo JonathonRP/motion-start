@@ -3,8 +3,8 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { transformProps } from '../../render/html/utils/transform';
-import type { ValueAnimationOptions } from '../types';
+import { transformProps } from '../../render/html/utils/transform.js';
+import type { ValueAnimationOptions } from '../types.js';
 
 const underDampedSpring: Partial<ValueAnimationOptions> = {
 	type: 'spring',

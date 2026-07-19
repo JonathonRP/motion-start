@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { MotionStyle } from '../../../motion/types';
-import type { IProjectionNode } from '../../../projection/node/types';
-import { camelToDash } from '../../dom/utils/camel-to-dash';
-import { renderHTML } from '../../html/utils/render';
-import type { SVGRenderState } from '../types';
-import { camelCaseAttributes } from './camel-case-attrs';
+import type { MotionStyle } from '../../../motion/types.js';
+import type { IProjectionNode } from '../../../projection/node/types.js';
+import { camelToDash } from '../../dom/utils/camel-to-dash.js';
+import { renderHTML } from '../../html/utils/render.js';
+import type { SVGRenderState } from '../types.js';
+import { camelCaseAttributes } from './camel-case-attrs.js';
 
 export function renderSVG(
 	element: SVGElement,

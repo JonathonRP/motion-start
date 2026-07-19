@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/value/utils/__tests__/is-motion-value.test.ts */
 import { describe, test, expect } from 'vitest';
-import { motionValue } from '../..';
-import { isMotionValue } from '../is-motion-value';
+import { motionValue } from '../../index.js';
+import { isMotionValue } from '../is-motion-value.js';
 
 describe('isMotionValue', () => {
 	test('correctly detects motion values', () => {

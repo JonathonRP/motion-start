@@ -5,7 +5,7 @@ Copyright (c) 2018 Framer B.V.
 
 import { createContext } from 'svelte';
 import type { Attachment } from 'svelte/attachments';
-import type { VariantLabels } from '../motion/types';
+import type { VariantLabels } from '../motion/types.js';
 
 /**
  * @public

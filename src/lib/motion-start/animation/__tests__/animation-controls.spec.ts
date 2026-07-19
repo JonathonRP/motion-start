@@ -11,8 +11,8 @@
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { animationControls, setValues } from '../hooks/animation-controls';
-import type { VisualElement } from '../../render/VisualElement.svelte';
+import { animationControls, setValues } from '../hooks/animation-controls.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
 
 // Create a mock VisualElement for testing
 function createMockVisualElement(options?: {

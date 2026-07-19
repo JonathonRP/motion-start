@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues } from '../../render/types';
-import { addUniqueItem, removeItem } from '../../utils/array';
-import { copyBoxInto } from '../geometry/copy';
-import { createBox } from '../geometry/models';
-import type { IProjectionNode, Measurements } from '../node/types';
+import type { ResolvedValues } from '../../render/types.js';
+import { addUniqueItem, removeItem } from '../../utils/array.js';
+import { copyBoxInto } from '../geometry/copy.js';
+import { createBox } from '../geometry/models.js';
+import type { IProjectionNode, Measurements } from '../node/types.js';
 
 export class NodeStack<I> {
 	lead?: IProjectionNode<I>;

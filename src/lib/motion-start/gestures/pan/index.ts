@@ -3,10 +3,10 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { Feature } from '../../motion/features/Feature';
-import { getContextWindow } from '../../utils/get-context-window';
-import { frame } from '../../frameloop';
-import { type PanInfo, PanSession } from './PanSession';
+import { Feature } from '../../motion/features/Feature.js';
+import { getContextWindow } from '../../utils/get-context-window.js';
+import { frame } from '../../frameloop/index.js';
+import { type PanInfo, PanSession } from './PanSession.js';
 
 type PanEventHandler = (event: PointerEvent, info: PanInfo) => void;
 const asyncHandler = (handler?: PanEventHandler) => (event: PointerEvent, info: PanInfo) => {

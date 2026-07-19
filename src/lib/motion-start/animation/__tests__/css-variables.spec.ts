@@ -10,10 +10,10 @@
  */
 
 import { describe, test, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
-import { parseCSSVariable } from '../../render/dom/utils/css-variables-conversion';
+import { parseCSSVariable } from '../../render/dom/utils/css-variables-conversion.js';
 // Import directly from animate module to avoid dependency chain issues
-import { animate } from '../animate';
-import { animateMini } from '../../animation/animators/waapi/animate-style';
+import { animate } from '../animate/index.js';
+import { animateMini } from '../../animation/animators/waapi/animate-style.js';
 
 const fromName = '--from';
 const toName = '--to';

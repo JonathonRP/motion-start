@@ -6,11 +6,11 @@ Copyright (c) 2018 Framer B.V.
 // TODO: would love to use svelte Easing here instead. and maybe interpolate?
 // import type { Easing } from 'popmotion';
 // import { interpolate } from 'popmotion';
-// import type { CustomValueType } from '../types';
+// import type { CustomValueType } from '../types.js';
 
-import type { EasingFunction } from '../easing/types';
-import type { CustomValueType } from '../types';
-import { interpolate } from './interpolate';
+import type { EasingFunction } from '../easing/types.js';
+import type { CustomValueType } from '../types.js';
+import { interpolate } from './interpolate.js';
 
 /**
  * @public

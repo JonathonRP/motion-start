@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResizeHandler } from './types';
+import type { ResizeHandler } from './types.js';
 
 const windowCallbacks = new Set<ResizeHandler<Window>>();
 

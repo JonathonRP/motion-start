@@ -1,8 +1,8 @@
 /** Ported from framer-motion/packages/framer-motion/src/projection/styles/__tests__/scale-correction.test.ts */
 import { describe, test, expect, beforeEach } from 'vitest';
-import { createTestNode } from '../../node/__tests__/TestProjectionNode.svelte';
-import { correctBorderRadius, pixelsToPercent } from '../scale-border-radius';
-import { correctBoxShadow } from '../scale-box-shadow';
+import { createTestNode } from '../../node/__tests__/TestProjectionNode.svelte.js';
+import { correctBorderRadius, pixelsToPercent } from '../scale-border-radius.js';
+import { correctBoxShadow } from '../scale-box-shadow.js';
 
 describe('pixelsToPercent', () => {
 	test('Correctly converts pixels to percent', () => {

@@ -1,4 +1,4 @@
-import type { Step, Process, FrameData } from './types';
+import type { Step, Process, FrameData } from './types.js';
 
 export function createRenderStep(runNextFrame: () => void): Step {
 	/**

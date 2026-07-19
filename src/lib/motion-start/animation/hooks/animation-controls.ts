@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { invariant } from '../../utils/errors';
-import { setTarget } from '../../render/utils/setters';
-import type { VisualElement } from '../../render/VisualElement.svelte';
-import type { AnimationControls, AnimationDefinition } from '../types';
-import { animateVisualElement } from '../interfaces/visual-element';
+import { invariant } from '../../utils/errors.js';
+import { setTarget } from '../../render/utils/setters.js';
+import type { VisualElement } from '../../render/VisualElement.svelte.js';
+import type { AnimationControls, AnimationDefinition } from '../types.js';
+import { animateVisualElement } from '../interfaces/visual-element.js';
 
 function stopAnimation(visualElement: VisualElement<unknown>) {
 	visualElement.values.forEach((value) => value.stop());

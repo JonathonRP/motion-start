@@ -1,11 +1,11 @@
 /** Ported from framer-motion/packages/framer-motion/src/render/utils/__tests__/animation-state.test.ts */
 import { describe, test, expect, vi } from 'vitest';
-import { createAnimationState } from '../animation-state';
-import type { AnimationState } from '../animation-state';
-import type { MotionProps } from '../../../motion/types';
-import { createHtmlRenderState } from '../../html/utils/create-render-state';
-import type { VisualElement } from '../../VisualElement.svelte';
-import { StateVisualElement } from './StateVisualElement';
+import { createAnimationState } from '../animation-state.js';
+import type { AnimationState } from '../animation-state.js';
+import type { MotionProps } from '../../../motion/types.js';
+import { createHtmlRenderState } from '../../html/utils/create-render-state.js';
+import type { VisualElement } from '../../VisualElement.svelte.js';
+import { StateVisualElement } from './StateVisualElement.js';
 
 function createTest(
 	props: MotionProps = {},

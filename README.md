@@ -20,6 +20,10 @@ An animation library inspired by [framer-motion](https://www.framer.com/motion/)
 
 Work in progress.
 
+Compatibility with the target upstream release and intentional Svelte API
+differences are documented in
+[Framer Motion 11.11.11 compatibility](./docs/FRAMER_MOTION_V11_COMPATIBILITY.md).
+
 > [!WARNING]
 > **Note:** 🚧 This library is currently in alpha. Features and APIs may change. expect bugs and please report or make PRs to fix bugs.
 

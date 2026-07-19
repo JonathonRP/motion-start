@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { complex } from '../../../value/types/complex';
-import { filter } from '../../../value/types/complex/filter';
-import { getDefaultValueType } from './defaults';
+import { complex } from '../../../value/types/complex/index.js';
+import { filter } from '../../../value/types/complex/filter.js';
+import { getDefaultValueType } from './defaults.js';
 
 export function getAnimatableNone(key: string, value: string) {
 	let defaultValueType = getDefaultValueType(key);

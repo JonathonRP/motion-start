@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { progress } from '../progress';
+import { progress } from '../progress.js';
 
 describe('progress', () => {
 	test('returns progress of value within range', () => {

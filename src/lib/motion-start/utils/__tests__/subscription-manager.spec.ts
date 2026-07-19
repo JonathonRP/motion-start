@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect, vi } from 'vitest';
-import { SubscriptionManager } from '../subscription-manager';
+import { SubscriptionManager } from '../subscription-manager.js';
 
 describe('SubscriptionManager', () => {
 	test('Adds a subscription', () => {

@@ -63,10 +63,10 @@ function getGroup(props: LayoutGroupProps, parentGroup: LayoutGroupContext | nul
 		type LayoutGroupContext,
 		setLayoutGroupContext,
 		useLayoutGroupContext,
-	} from "../../context/LayoutGroupContext.svelte";
-	import { useDeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext";
-	import { nodeGroup } from "../../projection/node/group";
-	import { useForceUpdate } from "../../utils/use-force-update.svelte";
+	} from "../../context/LayoutGroupContext.svelte.js";
+	import { useDeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext.js";
+	import { nodeGroup } from "../../projection/node/group.js";
+	import { useForceUpdate } from "../../utils/use-force-update.svelte.js";
 	import { type Snippet } from "svelte";
 
 	interface Props extends LayoutGroupProps {

@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { ResolvedValues } from '../../render/types';
-import { mixNumber } from '../../utils/mix/number';
-import { percent } from '../../value/types/numbers/units';
-import { scalePoint } from './delta-apply';
-import type { Axis, Box } from './types';
+import type { ResolvedValues } from '../../render/types.js';
+import { mixNumber } from '../../utils/mix/number.js';
+import { percent } from '../../value/types/numbers/units.js';
+import { scalePoint } from './delta-apply.js';
+import type { Axis, Box } from './types.js';
 
 /**
  * Remove a delta from a point. This is essentially the steps of applyPointDelta in reverse

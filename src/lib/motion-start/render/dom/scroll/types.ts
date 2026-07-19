@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { EasingFunction } from '../../../easing/types';
+import type { EasingFunction } from '../../../easing/types.js';
 
 export interface ScrollOptions {
 	source?: HTMLElement;

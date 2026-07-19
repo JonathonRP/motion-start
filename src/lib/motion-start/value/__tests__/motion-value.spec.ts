@@ -4,8 +4,8 @@
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { motionValue, MotionValue } from '../index';
-import { frame } from '../../frameloop';
+import { motionValue, MotionValue } from '../index.js';
+import { frame } from '../../frameloop/index.js';
 
 describe('MotionValue', () => {
 	test('can create a motion value', () => {

@@ -1,5 +1,5 @@
 import { collectMotionValues } from './index.js';
-import { useCombineMotionValues } from './use-combine-values.svelte';
+import { useCombineMotionValues } from './use-combine-values.svelte.js';
 
 export function useComputed<O>(compute: () => O) {
 	/**

@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Easing } from '../../easing/types';
-import { easingDefinitionToFunction } from '../../easing/utils/map';
-import type { DynamicOption } from '../types';
+import type { Easing } from '../../easing/types.js';
+import { easingDefinitionToFunction } from '../../easing/utils/map.js';
+import type { DynamicOption } from '../types.js';
 
 export type StaggerOrigin = 'first' | 'last' | 'center' | number;
 

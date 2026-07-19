@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/projection/styles/__tests__/transform.test.ts */
 import { describe, it, expect } from 'vitest';
-import { buildProjectionTransform } from '../transform';
-import { createDelta } from '../../geometry/models';
+import { buildProjectionTransform } from '../transform.js';
+import { createDelta } from '../../geometry/models.js';
 
 describe('buildProjectionTransform', () => {
 	it("Returns 'none' when no transform required", () => {

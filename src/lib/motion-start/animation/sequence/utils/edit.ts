@@ -3,12 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Easing } from '../../../easing/types';
-import { getEasingForSegment } from '../../../easing/utils/get-easing-for-segment';
-import { removeItem } from '../../../utils/array';
-import { mixNumber } from '../../../utils/mix/number';
-import type { UnresolvedValueKeyframe } from '../../types';
-import type { ValueSequence } from '../types';
+import type { Easing } from '../../../easing/types.js';
+import { getEasingForSegment } from '../../../easing/utils/get-easing-for-segment.js';
+import { removeItem } from '../../../utils/array.js';
+import { mixNumber } from '../../../utils/mix/number.js';
+import type { UnresolvedValueKeyframe } from '../../types.js';
+import type { ValueSequence } from '../types.js';
 
 export function eraseKeyframes(sequence: ValueSequence, startTime: number, endTime: number): void {
 	for (let i = 0; i < sequence.length; i++) {

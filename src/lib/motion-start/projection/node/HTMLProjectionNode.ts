@@ -3,9 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { createProjectionNode } from './create-projection-node.svelte';
-import { DocumentProjectionNode } from './DocumentProjectionNode';
-import type { IProjectionNode } from './types';
+import { createProjectionNode } from './create-projection-node.svelte.js';
+import { DocumentProjectionNode } from './DocumentProjectionNode.js';
+import type { IProjectionNode } from './types.js';
 
 export const rootProjectionNode: { current: IProjectionNode<Window> | undefined } = {
 	current: undefined,

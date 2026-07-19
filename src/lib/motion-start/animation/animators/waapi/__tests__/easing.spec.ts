@@ -1,7 +1,7 @@
 /** Ported from framer-motion/packages/framer-motion/src/animation/animators/waapi/__tests__/easing.test.ts */
 import { test, expect } from 'vitest';
-import { isWaapiSupportedEasing } from '../easing';
-import { supportsFlags } from '../utils/supports-flags';
+import { isWaapiSupportedEasing } from '../easing.js';
+import { supportsFlags } from '../utils/supports-flags.js';
 
 test('isWaapiSupportedEasing', () => {
 	expect(isWaapiSupportedEasing()).toEqual(true);

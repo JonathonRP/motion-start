@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { motionValue } from '../../../../value';
-import { createStyleAttachment } from '../create-style-attachment';
+import { motionValue } from '../../../../value/index.js';
+import { createStyleAttachment } from '../create-style-attachment.js';
 
 describe('createStyleAttachment', () => {
 	test('applies plain styles without taking ownership of MotionValue-managed keys', () => {

@@ -4,9 +4,9 @@
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { delay } from '../delay';
-import { MotionGlobalConfig } from '../GlobalConfig';
-import { frameData, frameSteps } from '../../frameloop';
+import { delay } from '../delay.js';
+import { MotionGlobalConfig } from '../GlobalConfig.js';
+import { frameData, frameSteps } from '../../frameloop/index.js';
 
 describe('delay', () => {
 	beforeEach(() => {
