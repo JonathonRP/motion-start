@@ -4,6 +4,12 @@ function readTopAt(index: number) {
 	return element.getBoundingClientRect().top;
 }
 
+function readWidth(label: string) {
+	const element = Cypress.$(`ul li[aria-label="${label}"]`)[0] as HTMLElement | undefined;
+	if (!element) throw new Error(`Missing item: ${label}`);
+	return element.getBoundingClientRect().width;
+}
+
 function expectAnimating(value: number, initial: number, final: number) {
 	expect(Math.abs(value - initial)).to.be.greaterThan(1);
 	expect(Math.abs(value - final)).to.be.greaterThan(1);
@@ -30,6 +36,25 @@ describe('AnimatePresenceMode demo', () => {
 		cy.then(() => {
 			expectAnimating(readTopAt(1), initial2, initial2 - 100);
 			expectAnimating(readTopAt(2), initial3, initial3 - 100);
+		});
+	});
+
+	it('keeps the fixed list viewport from clipping spring travel at its top edge', () => {
+		const initialWidth = readWidth('Remove item 2');
+
+		cy.get('ul[aria-label="Animated items"]').then(([$list]) => {
+			const style = getComputedStyle($list);
+			expect(style.overflowY).to.equal('visible');
+			expect($list.clientHeight).to.equal(300);
+			expect($list.scrollHeight).to.be.greaterThan($list.clientHeight);
+		});
+
+		cy.get('ul li[aria-label="Remove item 1"]').click();
+		cy.get('ul li').should('have.length', 3);
+		cy.wait(900);
+
+		cy.then(() => {
+			expect(readWidth('Remove item 2')).to.be.closeTo(initialWidth, 0.5);
 		});
 	});
 });

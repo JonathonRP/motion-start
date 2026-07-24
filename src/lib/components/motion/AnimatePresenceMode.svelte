@@ -21,7 +21,7 @@ function handleItemKeydown(event: KeyboardEvent, item: number) {
 }
 </script>
 
-<Box>
+<Box cls="overflow-hidden">
     <div class="flex flex-col items-center">
         <div class="flex flex-col p-0 pb-[50px] items-center">
             <label class="flex flex-col items-center my-[20px] mx-0">
@@ -48,7 +48,7 @@ function handleItemKeydown(event: KeyboardEvent, item: number) {
         </div>
         <ul
             aria-label="Animated items"
-            class="relative flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 pr-2 list-none overflow-y-auto"
+            class="relative flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 list-none"
         >
             <AnimatePresence {mode}>
                 {#each items as item (item)}
