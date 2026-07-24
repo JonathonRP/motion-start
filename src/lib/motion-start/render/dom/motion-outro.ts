@@ -1,4 +1,5 @@
 import type { TransitionConfig } from 'svelte/transition';
+import { getValueTransition } from '../../animation/utils/get-value-transition.js';
 import { applyPopLayout, removePopLayout } from '../../components/AnimatePresence/PopChild/pop-layout.js';
 import type { MotionOutroContext } from '../../context/OutroContext.svelte.js';
 import type { PresenceContext } from '../../context/PresenceContext.svelte.js';
@@ -24,11 +25,11 @@ function cloneBox(box: LayoutBox): LayoutBox {
 	};
 }
 
-function cloneMeasurements(measurements: Measurements): Measurements {
+function cloneMeasurements(measurements: Measurements, layoutBox = measurements.layoutBox): Measurements {
 	return {
 		...measurements,
-		measuredBox: cloneBox(measurements.measuredBox),
-		layoutBox: cloneBox(measurements.layoutBox),
+		measuredBox: cloneBox(layoutBox),
+		layoutBox: cloneBox(layoutBox),
 		latestValues: { ...measurements.latestValues },
 	};
 }
@@ -48,6 +49,15 @@ function seedLateSnapshot(node: IProjectionNode<unknown>) {
 	const instance = node.instance as Element | undefined;
 	if (instance && !instance.isConnected) return;
 
+	// An interrupted shared-layout animation is visually at `target`, not at
+	// the static DOM layout. React captures this through its pre-commit
+	// lifecycle; the Svelte outro starts before keyed teardown, so preserve the
+	// same visual origin explicitly.
+	if (node.currentAnimation && node.target) {
+		node.snapshot = cloneMeasurements(node.layout, node.target);
+		return;
+	}
+
 	const measured = node.measure(false);
 	if (boxesDiffer(measured.layoutBox, node.layout.layoutBox)) {
 		node.snapshot = cloneMeasurements(node.layout);
@@ -65,6 +75,22 @@ interface AnimationWithOptions {
 		repeat?: number;
 		repeatDelay?: number;
 	};
+}
+
+const defaultLayoutTransition = {
+	duration: 0.45,
+	ease: [0.4, 0, 0.1, 1],
+};
+
+function getTransitionDuration(transition: Record<string, unknown> | undefined) {
+	if (!transition) return 0;
+
+	const duration = typeof transition.duration === 'number' ? transition.duration : 0;
+	const delay = typeof transition.delay === 'number' ? transition.delay : 0;
+	const repeat = typeof transition.repeat === 'number' ? transition.repeat : 0;
+	const repeatDelay = typeof transition.repeatDelay === 'number' ? transition.repeatDelay : 0;
+
+	return Math.max(0, delay + duration * (repeat + 1) + repeatDelay * repeat) * 1000;
 }
 
 function getRunningAnimationDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
@@ -102,26 +128,40 @@ function getConfiguredExitDuration(visualElement: VisualElement<HTMLElement | SV
 	const resolved = resolveVariant(visualElement, exit, visualElement.presenceContext?.custom);
 	const transition = resolved?.transition ?? visualElement.getDefaultTransition();
 	if (!transition) return { duration: 0, afterChildren: false };
-	const duration = 'duration' in transition ? transition.duration : undefined;
-	if (typeof duration !== 'number') return { duration: 0, afterChildren: false };
-
-	const delay = typeof transition.delay === 'number' ? transition.delay : 0;
-	const repeat = typeof transition.repeat === 'number' ? transition.repeat : 0;
-	const repeatDelay = typeof transition.repeatDelay === 'number' ? transition.repeatDelay : 0;
 
 	return {
-		duration: Math.max(0, delay + duration * (repeat + 1) + repeatDelay * repeat) * 1000,
+		duration: getTransitionDuration(transition as Record<string, unknown>),
 		afterChildren: transition.when === 'afterChildren',
 	};
+}
+
+function getConfiguredLayoutDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	const projection = visualElement.projection;
+	if (!projection || (!projection.options.layout && !projection.options.layoutId)) return 0;
+
+	const transition = projection.options.transition || visualElement.getDefaultTransition() || defaultLayoutTransition;
+	const layoutTransition = transition ? getValueTransition(transition, 'layout') : undefined;
+	return getTransitionDuration(layoutTransition as Record<string, unknown> | undefined);
 }
 
 function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
 	const runningDuration = getRunningTreeDuration(visualElement);
 	const configured = getConfiguredExitDuration(visualElement);
+	const layoutDuration = getConfiguredLayoutDuration(visualElement);
 
 	return configured.afterChildren
-		? runningDuration + configured.duration
-		: Math.max(runningDuration, configured.duration);
+		? Math.max(layoutDuration, runningDuration + configured.duration)
+		: Math.max(layoutDuration, runningDuration, configured.duration);
+}
+
+/**
+ * Motion and Svelte both finish animations from a requestAnimationFrame. A
+ * one-millisecond duration margin guarantees Svelte removes the retained block
+ * on the frame after Motion has committed its final value and completion
+ * callbacks, rather than racing them on the same frame.
+ */
+function retainThroughCompletion(duration: number) {
+	return duration > 0 ? duration + 1 : 0;
 }
 
 function getMotionNode(node: Element, visualElement: VisualElement<HTMLElement | SVGElement | unknown> | undefined) {
@@ -188,6 +228,21 @@ export function motionEnterIntro(
 	const motionNode = getMotionNode(node, visualElement);
 	pendingLayoutUpdates.delete(motionNode);
 	removePopLayout(motionNode);
+	if (visualElement?.presenceContext?.isPresent === false) {
+		visualElement.presenceContext = visualElement.prevPresenceContext ?? null;
+		visualElement.prevPresenceContext = undefined;
+		if (visualElement.projection) {
+			const projection = visualElement.projection;
+			projection.isPresent = true;
+			projection.willUpdate();
+			projection.promote();
+			queueMicrotask(() => {
+				if (visualElement.projection === projection && motionNode.isConnected) {
+					projection.root?.didUpdate();
+				}
+			});
+		}
+	}
 	if (motionNode instanceof HTMLElement && motionNode.dataset.motionPrevPointerEvents !== undefined) {
 		motionNode.style.pointerEvents = motionNode.dataset.motionPrevPointerEvents;
 		delete motionNode.dataset.motionPrevPointerEvents;
@@ -240,10 +295,17 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	}
 
 	const exitAnimation = element.animationState?.setActive('exit', true) ?? Promise.resolve();
-	const duration = getExitDuration(element);
+	const layoutDuration = getConfiguredLayoutDuration(element);
+	const duration = retainThroughCompletion(getExitDuration(element));
+	let completedExit = true;
 	exitAnimation.then(
-		() => finish(),
-		() => finish(false)
+		() => {
+			if (layoutDuration === 0) finish();
+		},
+		() => {
+			completedExit = false;
+			if (layoutDuration === 0) finish(false);
+		}
 	);
 
 	if (duration > 0) {
@@ -265,7 +327,7 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 						pendingLayoutUpdates.set(motionNode, finalProjectionRoot);
 					}
 				}
-				finish();
+				finish(completedExit);
 			}
 		},
 	};
@@ -276,5 +338,11 @@ export function flushPendingMotionExitLayout(node: Element) {
 	if (!projectionRoot) return;
 
 	pendingLayoutUpdates.delete(node);
-	(projectionRoot as { update?: VoidFunction }).update?.();
+	// Svelte runs attachment teardown before detaching the DOM node. Defer the
+	// final projection read until teardown has completed so the outgoing node
+	// can't receive a reset render and siblings are measured without it. This
+	// mirrors Framer Motion's scheduleCheckAfterUnmount post-render phase.
+	queueMicrotask(() => {
+		(projectionRoot as { update?: VoidFunction }).update?.();
+	});
 }

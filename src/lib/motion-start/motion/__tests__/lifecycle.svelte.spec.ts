@@ -1,7 +1,10 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { nextFrame, waitFor } from '../../test-utils/component-test-utils.js';
+import { visualElementStore } from '../../render/store.js';
 import GestureLifecycleFixture from './GestureLifecycleFixture.svelte';
+import MeasureLayoutCommitFixture from './MeasureLayoutCommitFixture.svelte';
+import MeasureLayoutListFixture from './MeasureLayoutListFixture.svelte';
 import MotionLifecycleFixture from './MotionLifecycleFixture.svelte';
 
 let instance: ReturnType<typeof mount> | undefined;
@@ -22,6 +25,75 @@ afterEach(async () => {
 });
 
 describe('motion component commit lifecycle', () => {
+	it('snapshots layout before a reactive style commit', async () => {
+		instance = mount(MeasureLayoutCommitFixture, { target: document.body });
+		flushSync();
+
+		const target = document.querySelector('#layout-target') as HTMLElement;
+		const mountedVisualElement = visualElementStore.get(target);
+		expect(mountedVisualElement?.getProps().style?.overflow).toBe('scroll');
+		expect(target.style.width).toBe('100px');
+		await Promise.resolve();
+		expect(target.style.overflow).toBe('scroll');
+
+		await nextFrame();
+
+		const projection = visualElementStore.get(target)?.projection;
+		expect(projection).toBeDefined();
+		expect(target.style.width).toBe('100px');
+		expect(target.style.overflow).toBe('scroll');
+
+		const widthsAtSnapshot: string[] = [];
+		const originalWillUpdate = projection!.willUpdate.bind(projection);
+		const willUpdate = vi.spyOn(projection!, 'willUpdate').mockImplementation((...args) => {
+			widthsAtSnapshot.push(target.style.width);
+			return originalWillUpdate(...args);
+		});
+		click('#resize-layout-target');
+
+		expect(willUpdate).toHaveBeenCalledTimes(1);
+		expect(widthsAtSnapshot).toEqual(['100px']);
+		expect(target.style.width).toBe('200px');
+	});
+
+	it('does not clear the final inline style during retained-node teardown', async () => {
+		instance = mount(MeasureLayoutCommitFixture, { target: document.body });
+		flushSync();
+
+		const target = document.querySelector('#layout-target') as HTMLElement;
+		expect(target.style.width).toBe('100px');
+
+		await unmount(instance);
+		instance = undefined;
+
+		// Svelte runs attachment cleanup before physically discarding retained
+		// outro nodes. Clearing here produces a visible final-frame flash.
+		expect(target.style.width).toBe('100px');
+	});
+
+	it('snapshots reused keyed children before a sibling is inserted', async () => {
+		instance = mount(MeasureLayoutListFixture, { target: document.body });
+		flushSync();
+		await nextFrame();
+
+		const target = document.querySelector('#layout-item-0') as HTMLElement;
+		const list = document.querySelector('#layout-list') as HTMLElement;
+		const projection = visualElementStore.get(target)?.projection;
+		expect(projection).toBeDefined();
+
+		const childCountsAtSnapshot: number[] = [];
+		const originalWillUpdate = projection!.willUpdate.bind(projection);
+		vi.spyOn(projection!, 'willUpdate').mockImplementation((...args) => {
+			childCountsAtSnapshot.push(list.children.length);
+			return originalWillUpdate(...args);
+		});
+
+		click('#add-layout-item');
+
+		expect(childCountsAtSnapshot[0]).toBe(1);
+		expect(list.children.length).toBe(2);
+	});
+
 	it('suppresses the initial animation and animates subsequent prop commits', async () => {
 		instance = mount(MotionLifecycleFixture, { target: document.body });
 		flushSync();

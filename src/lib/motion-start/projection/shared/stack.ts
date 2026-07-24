@@ -78,7 +78,15 @@ export class NodeStack<I> {
 			if (prevLead.snapshot) {
 				node.snapshot = prevLead.snapshot;
 				node.snapshot.latestValues = prevLead.animationValues || prevLead.latestValues;
-			} else if (prevLead.layout) {
+			} else if (prevLead.isPresent !== false && prevLead.layout) {
+				/**
+				 * React rerenders an existing shared element before mounting its new
+				 * sibling, giving MeasureLayout a pre-commit snapshot. Svelte doesn't
+				 * rerun an unchanged sibling when a neighbouring branch mounts, so
+				 * seed that equivalent snapshot here. Exiting leads must use the real
+				 * snapshot captured by the outro bridge, particularly when reversing
+				 * an interrupted projection animation.
+				 */
 				node.snapshot = cloneMeasurements(prevLead.layout, prevLead.animationValues || prevLead.latestValues);
 			}
 

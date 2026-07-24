@@ -10,12 +10,14 @@ describe('createStyleAttachment', () => {
 		const cleanup =
 			createStyleAttachment({
 				position: 'absolute',
+				overflow: 'scroll',
 				backgroundColor: 'red',
 				width: motionValue('20px'),
 				'--progress': 0.5,
 			})(element) ?? (() => {});
 
 		expect(element.style.position).toBe('absolute');
+		expect(element.style.overflow).toBe('scroll');
 		expect(element.style.backgroundColor).toBe('red');
 		expect(element.style.width).toBe('10px');
 		expect(element.style.getPropertyValue('--progress')).toBe('0.5');
@@ -23,6 +25,7 @@ describe('createStyleAttachment', () => {
 		cleanup();
 
 		expect(element.style.position).toBe('');
+		expect(element.style.overflow).toBe('');
 		expect(element.style.backgroundColor).toBe('');
 		expect(element.style.width).toBe('10px');
 		expect(element.style.getPropertyValue('--progress')).toBe('');

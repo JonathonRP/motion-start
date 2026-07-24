@@ -1,12 +1,13 @@
 <script lang="ts" generics="MeasureProps extends Record<string, unknown>">
 import type { Component } from 'svelte';
 
-interface Props {
+let {
+	MeasureLayout,
+	measureProps,
+}: {
 	MeasureLayout?: Component<MeasureProps>;
 	measureProps: MeasureProps;
-}
-
-let { MeasureLayout, measureProps }: Props = $props();
+} = $props();
 </script>
 
 {#if MeasureLayout}

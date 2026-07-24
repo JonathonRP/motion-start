@@ -57,4 +57,49 @@ describe('AnimatePresenceMode demo', () => {
 			expect(readWidth('Remove item 2')).to.be.closeTo(initialWidth, 0.5);
 		});
 	});
+
+	it('does not restore an exiting item styles before removing it', () => {
+		let reachedExitFrame = false;
+		let reboundedBeforeRemoval = false;
+		let clearedFinalOpacity = false;
+
+		cy.get('ul li[aria-label="Remove item 1"]').then(([$item]) => {
+			const item = $item as HTMLElement;
+			const observer = new MutationObserver(() => {
+				const opacity = Number.parseFloat(item.style.opacity);
+				if (Number.isFinite(opacity) && opacity < 0.1) {
+					reachedExitFrame = true;
+				} else if (reachedExitFrame && item.style.opacity === '') {
+					clearedFinalOpacity = true;
+				}
+			});
+			observer.observe(item, { attributeFilter: ['style'] });
+
+			const sampleFrame = () => {
+				if (!item.isConnected) {
+					observer.disconnect();
+					return;
+				}
+
+				const opacity = Number.parseFloat(getComputedStyle(item).opacity);
+				if (opacity < 0.1) {
+					reachedExitFrame = true;
+				} else if (reachedExitFrame && opacity > 0.5) {
+					reboundedBeforeRemoval = true;
+				}
+
+				requestAnimationFrame(sampleFrame);
+			};
+
+			requestAnimationFrame(sampleFrame);
+		});
+
+		cy.get('ul li[aria-label="Remove item 1"]').click();
+		cy.get('ul li[aria-label="Remove item 1"]', { timeout: 3000 }).should('not.exist');
+		cy.then(() => {
+			expect(reachedExitFrame).to.equal(true);
+			expect(reboundedBeforeRemoval).to.equal(false);
+			expect(clearedFinalOpacity).to.equal(false);
+		});
+	});
 });

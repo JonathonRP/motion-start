@@ -19,6 +19,7 @@ const right = $derived(parseConstraint(page.url.searchParams.get('right')));
 const bottom = $derived(parseConstraint(page.url.searchParams.get('bottom')));
 const layout = $derived.by<LayoutProps['layout']>(() => {
 	const value = page.url.searchParams.get('layout');
+	if (value === 'true') return true;
 	return value === 'position' || value === 'size' || value === 'preserve-aspect' ? value : undefined;
 });
 </script>

@@ -59,7 +59,7 @@ function handleItemKeydown(event: KeyboardEvent, item: number) {
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring" }}
                         role="button"
-                        tabindex="0"
+                        tabindex={0}
                         aria-label={`Remove item ${item}`}
                         onclick={() => removeItem(item)}
                         onkeydown={(event) => handleItemKeydown(event, item)}

@@ -341,7 +341,7 @@
 									aria-roledescription="draggable card"
 									aria-label={`${card.title}, position ${card.order + 1} in ${COL_LABELS[card.column]}`}
 									aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
-									onkeydown={(event) => handleCardKeydown(event, card)}
+									onkeydown={(event: KeyboardEvent) => handleCardKeydown(event, card)}
 									whileDrag={{
 										scale: 1.05,
 										rotate: 3,
