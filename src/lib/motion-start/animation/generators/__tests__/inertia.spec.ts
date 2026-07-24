@@ -87,7 +87,7 @@ describe('inertia', () => {
 
 	test('Negative velocity produces negative keyframes', () => {
 		const positiveGenerator = inertia({ keyframes: [0], velocity: 100 });
-		const negativeGenerator = inertia({ keyframes: [0], velocity: 100 });
+		const negativeGenerator = inertia({ keyframes: [0], velocity: -100 });
 		expect(pregenerateKeyframes(positiveGenerator).keyframes).toEqual(
 			pregenerateKeyframes(negativeGenerator).keyframes.map((value) =>
 				typeof value === 'string' ? value : Math.abs(value)

@@ -116,7 +116,7 @@ describe('node', () => {
 
 		const c = createTestNode(b);
 		const cInstance = createInstance('c', 50);
-		c.mount(bInstance);
+		c.mount(cInstance);
 
 		const d = createTestNode(c);
 		const dInstance = createInstance('d', 50);

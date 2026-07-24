@@ -2,7 +2,6 @@
 based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import { toStore } from 'svelte/store';
 import { prefersReducedMotion } from 'svelte/motion';
 
 // Does this device prefer reduced motion? Returns `null` server-side.
@@ -34,21 +33,25 @@ import { prefersReducedMotion } from 'svelte/motion';
  *
  * It will actively respond to changes and re-render your components with the latest setting.
  *
- * ```jsx
- * export function Sidebar({ isOpen }) {
- *   const shouldReduceMotion = useReducedMotion()
- *   const closedX = shouldReduceMotion ? 0 : "-100%"
+ * The returned getter must be called from reactive Svelte code so reads of
+ * `prefersReducedMotion.current` remain tracked.
  *
- *   return (
- *     <MotionDiv animate={{
- *       opacity: isOpen ? 1 : 0,
- *       x: isOpen ? 0 : closedX
- *     }} />
- *   )
- * }
+ * ```svelte
+ * <script>
+ *   import { motion, useReducedMotion } from 'motion-start'
+ *
+ *   let { isOpen } = $props()
+ *   const shouldReduceMotion = useReducedMotion()
+ *   const closedX = $derived(shouldReduceMotion() ? 0 : '-100%')
+ * </script>
+ *
+ * <motion.div animate={{
+ *   opacity: isOpen ? 1 : 0,
+ *   x: isOpen ? 0 : closedX
+ * }} />
  * ```
  *
- * @return boolean
+ * @returns A reactive getter for the current reduced-motion preference.
  *
  * @public
  */

@@ -1,5 +1,26 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": [
+			"**",
+			"!**/.env",
+			"!**/.env.*",
+			"**/.env.example",
+			"!!**/.svelte",
+			"!!**/.svelte-kit",
+			"!!**/.vercel_build_output",
+			"!!**/.pnpm-store",
+			"!!**/build",
+			"!!**/dist",
+			"!!**/node_modules",
+			"!!**/package"
+		]
+	},
 	"formatter": {
 		"enabled": true,
 		"formatWithErrors": false,
@@ -8,22 +29,13 @@
 		"lineEnding": "lf",
 		"lineWidth": 120,
 		"attributePosition": "auto",
-		"includes": [
-			"**",
-			"!**/.svelte/**",
-			"!**/.svelte-kit/**",
-			"!**/.vercel_build_output/**",
-			"!**/static/**",
-			"!**/build/**",
-			"!**/node_modules/**",
-			"!**/.pnpm-store/**"
-		]
+		"includes": ["**", "!**/static/**"]
 	},
 	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"complexity": {
 				"noExtraBooleanCast": "error",
 				"noUselessCatch": "error",
@@ -89,29 +101,7 @@
 				"noWith": "error"
 			}
 		},
-		"includes": [
-			"**",
-			"!**/.DS_Store/**",
-			"!**/node_modules/**",
-			"!**/build/**",
-			"!**/.svelte-kit/**",
-			"!**/package/**",
-			"!**/.env",
-			"!**/.env.*",
-			"**/.env.example",
-			"!**/*.cjs",
-			"!**/pnpm-lock.yaml",
-			"!**/package-lock.json",
-			"!**/yarn.lock",
-			"!**/node_modules",
-			"!**/dist",
-			"!**/build",
-			"!**/.svelte/**",
-			"!**/.pnpm-store/**",
-			"!**/.vercel_build_output/**",
-			"!**/svelte.config.js",
-			"!**/static/**/*.{js,ts,css}"
-		]
+		"includes": ["**", "!**/*.cjs", "!**/svelte.config.js", "!**/static/**/*.{js,ts,css}"]
 	},
 	"javascript": {
 		"formatter": {

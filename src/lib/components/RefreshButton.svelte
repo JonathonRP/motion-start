@@ -1,14 +1,38 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
     import { Button } from "./ui/button";
     import { motion, type Variants } from "$lib/motion-start";
 
+    interface Props {
+        id?: string;
+        onclick?: () => void;
+    }
+
     const MotionButton = motion.create(Button);
 
-    let isRefreshing = false;
+    let isRefreshing = $state(false);
+    let resetTimer: ReturnType<typeof setTimeout> | undefined;
     // let isPressing = false;
 
-    export let id = null;
-    export let onclick = () => {};
+    let { id, onclick = () => {} }: Props = $props();
+
+	function resetRefresh(delay = 0) {
+		if (resetTimer !== undefined) clearTimeout(resetTimer);
+		if (delay === 0) {
+			isRefreshing = false;
+			resetTimer = undefined;
+			return;
+		}
+
+		resetTimer = setTimeout(() => {
+			isRefreshing = false;
+			resetTimer = undefined;
+		}, delay);
+	}
+
+	onDestroy(() => {
+		if (resetTimer !== undefined) clearTimeout(resetTimer);
+	});
 
     const variants: Variants = {
         initial: { scale: 1 },
@@ -28,16 +52,18 @@
 
 <MotionButton
     {id}
-    onpointerdown={async () => {
+    onpointerdown={(event: PointerEvent) => {
+        if (event.currentTarget instanceof Element) {
+            event.currentTarget.setPointerCapture(event.pointerId);
+        }
         // isPressing = true;
         isRefreshing = true;
     }}
     onpointerup={() => {
         // isPressing = false;
-        new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
-            isRefreshing = false;
-        });
+        resetRefresh(1000);
     }}
+	onpointercancel={() => resetRefresh()}
     whileTap="pressed"
     {variants}
     transition={{ duration: 0.2 }}

@@ -3,9 +3,8 @@ import { motion } from '$lib/motion-start';
 
 let count = $state(0);
 
-// Note: Svelte doesn't have React Suspense. This is a simplified version
-// that demonstrates the animation behavior without actual suspension.
-// The test verifies animation initial/animate states work correctly.
+// Svelte doesn't have React Suspense. This fixture verifies that keyed
+// remounts replay initial and animate states without testing suspension.
 </script>
 
 <button onclick={() => count++}>Re-mount components</button>
@@ -18,15 +17,9 @@ let count = $state(0);
 				animate={{ opacity: 1, scale: 2 }}
 				transition={{ duration: 2 }}
 			>
-				With suspense
+				Keyed remount animation
 			</motion.div>
 		</div>
 	{/key}
 </div>
-<p>
-	The above animation is the same for both components. One
-	suspends halfway through and the other does not. Click "Re-mount
-	components" to run the animations again. Notice how the scale
-	animation is stuck half way and the opacity animation is reset
-	in the suspended component.
-</p>
+<p>Click "Re-mount components" to replay the initial-to-animate transition.</p>

@@ -49,7 +49,7 @@ describe('applyAxisDelta', () => {
 		const axis = { min: 100, max: 200 };
 
 		// translate 0, scale 1 (defaults), origin 150
-		applyAxisDelta(axis, 0, 1, 150);
+		applyAxisDelta(axis, undefined, undefined, 150);
 
 		// No change expected
 		expect(axis).toEqual({ min: 100, max: 200 });

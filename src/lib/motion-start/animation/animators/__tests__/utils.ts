@@ -14,6 +14,7 @@ export const syncDriver = (interval = 10) => {
 	const driver = (update: (v: number) => void) => {
 		let isRunning = true;
 		let elapsed = 0;
+		let pendingUpdate: ReturnType<typeof setTimeout> | undefined;
 
 		frameData.isProcessing = true;
 		frameData.delta = interval;
@@ -22,7 +23,9 @@ export const syncDriver = (interval = 10) => {
 		return {
 			start: () => {
 				isRunning = true;
-				setTimeout(() => {
+				pendingUpdate = setTimeout(() => {
+					pendingUpdate = undefined;
+					if (!isRunning) return;
 					time.set(elapsed);
 					update(elapsed);
 					while (isRunning) {
@@ -35,6 +38,10 @@ export const syncDriver = (interval = 10) => {
 			stop: () => {
 				frameData.isProcessing = false;
 				isRunning = false;
+				if (pendingUpdate !== undefined) {
+					clearTimeout(pendingUpdate);
+					pendingUpdate = undefined;
+				}
 			},
 			now: () => elapsed,
 		};

@@ -19,20 +19,18 @@ export function useSvgProps(
 ) {
 	const visualProps = () => {
 		const state = createSvgRenderState();
+		const rawStyles: ResolvedValues = {};
 
 		buildSVGAttrs(state, visualState(), isSVGTag(Component), props().transformTemplate);
+		if (props().style) {
+			copyRawValuesOnly(rawStyles, props().style as any, props());
+		}
 
 		return {
 			...state.attrs,
-			style: { ...state.style },
+			style: { ...rawStyles, ...state.style },
 		};
 	};
-
-	if (props().style) {
-		const rawStyles = {};
-		copyRawValuesOnly(rawStyles, props().style as any, props());
-		visualProps().style = { ...rawStyles, ...visualProps().style };
-	}
 
 	return visualProps;
 }

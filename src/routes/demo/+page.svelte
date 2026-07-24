@@ -301,7 +301,7 @@
         <!-- End -->
         <Card.Root>
             <Card.Header>
-                <Card.Title>Color Interpolation</Card.Title>
+				<Card.Title>Color Interpolation</Card.Title>
                 <Card.Description>
                     Drag the circle visualize the effect
                 </Card.Description>
@@ -320,7 +320,7 @@
         <!-- Start -->
         <Card.Root>
             <Card.Header>
-                <Card.Title>Color Interpolation</Card.Title>
+                <Card.Title>Morph SVG</Card.Title>
                 <Card.Description>Just visualize the effect</Card.Description>
             </Card.Header>
             <Card.Content>

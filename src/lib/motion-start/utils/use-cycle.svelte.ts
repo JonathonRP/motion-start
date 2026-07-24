@@ -3,26 +3,9 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-// import { wrap } from './wrap.js';
+import { wrap } from './wrap.js';
 export type Cycle = (i?: number) => void;
 export type CycleState<T> = [() => T, Cycle];
-
-function wrap<T>(params: T[]) {
-	let i = 0;
-	return {
-		set(n: number) {
-			i = n;
-		},
-		next() {
-			return this[Symbol.iterator]().next();
-		},
-		*[Symbol.iterator]() {
-			while (true) {
-				yield params[i++ % params.length];
-			}
-		},
-	};
-}
 
 /**
  * Cycles through a series of visual properties. Can be used to toggle between or cycle through animations. It works similar to `useState` in React. It is provided an initial array of possible states, and returns an array of two arguments.
@@ -51,13 +34,12 @@ function wrap<T>(params: T[]) {
  * @public
  */
 export function useCycle<T>(...items: T[]): CycleState<T> {
-	const carousel = wrap(items);
-	const nextItem = () => carousel.next().value;
-	let item = $derived.by(nextItem);
+	let index = 0;
+	let item = $state(items[index]);
 
 	const cycle = (next?: number) => {
-		next && carousel.set(next);
-		item = nextItem();
+		index = typeof next === 'number' ? next : wrap(0, items.length, index + 1);
+		item = items[index];
 	};
 
 	// The array will change on each call, but by putting items.length at

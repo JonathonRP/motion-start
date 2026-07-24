@@ -8,6 +8,12 @@
 	import { onMount } from 'svelte';
 
 	let boxRef: HTMLDivElement | undefined = $state();
+	const attachBox = (node: HTMLDivElement) => {
+		boxRef = node;
+		return () => {
+			if (boxRef === node) boxRef = undefined;
+		};
+	};
 
 	onMount(() => {
 		if (!boxRef) return;
@@ -15,14 +21,15 @@
 		const controls = animateMini(boxRef, { width: '200px' }, { duration: 1 });
 
 		// Pause the animation midway
-		setTimeout(() => {
+		const pauseTimer = setTimeout(() => {
 			controls.pause();
 		}, 100);
+
+		return () => {
+			clearTimeout(pauseTimer);
+			controls.cancel();
+		};
 	});
 </script>
 
-<div
-	bind:this={boxRef}
-	id="box"
-	style="width: 100px; height: 100px; background: red;"
-></div>
+<div {@attach attachBox} id="box" style="width: 100px; height: 100px; background: red;"></div>

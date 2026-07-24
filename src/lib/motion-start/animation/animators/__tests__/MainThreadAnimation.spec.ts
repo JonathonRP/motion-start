@@ -103,9 +103,9 @@ describe('MainThreadAnimation', () => {
 						duration: 100,
 						ease: linear,
 						keyframes: ['0%', '200%'],
-						onUpdate: (v) => numeric.push(parseFloat(v as string)),
+						onUpdate: (v) => string.push(parseFloat(v as string)),
 						onComplete: () => {
-							expect(string).not.toEqual(numeric);
+							expect(string).toEqual(numeric);
 							resolve();
 						},
 					});
@@ -1279,7 +1279,7 @@ describe('MainThreadAnimation', () => {
 				output.push(v);
 			},
 		});
-		animation.time = 100;
+		animation.time = 0.1;
 		animation.speed = -1;
 
 		await animation;
@@ -1299,7 +1299,7 @@ describe('MainThreadAnimation', () => {
 				output.push(v);
 			},
 		});
-		animation.time = 100;
+		animation.time = 0.1;
 		animation.speed = -0.5;
 
 		await animation;

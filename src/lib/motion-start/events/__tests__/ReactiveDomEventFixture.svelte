@@ -28,10 +28,14 @@ const ref: RefObject<EventTarget> = {
 	},
 };
 
-useDomEvent(ref, 'pointerdown', () => {
-	if (useSecondHandler) secondCalls++;
-	else firstCalls++;
-});
+const firstHandler = () => firstCalls++;
+const secondHandler = () => secondCalls++;
+
+useDomEvent(() => ({
+	ref,
+	eventName: 'pointerdown',
+	handler: useSecondHandler ? secondHandler : firstHandler,
+}));
 </script>
 
 <button id="replace-dom-handler" onclick={() => (useSecondHandler = true)}>replace</button>

@@ -16,7 +16,7 @@ import { isPrimaryPointer } from '../../events/utils/is-primary-pointer.js';
 
 /**
  * Passed in to pan event handlers like `onPan` the `PanInfo` object contains
- * information about the current state of the tap gesture such as its
+ * information about the current state of the pan gesture such as its
  * `point`, `delta`, `offset` and `velocity`.
  *
  * ```jsx
@@ -74,7 +74,7 @@ export interface PanInfo {
 	 */
 	offset: Point;
 	/**
-	 * Contains `x` and `y` values for the current velocity of the pointer, in px/ms.
+	 * Contains `x` and `y` values for the current velocity of the pointer, in px/s.
 	 *
 	 * ```jsx
 	 * function onPan(event, info) {

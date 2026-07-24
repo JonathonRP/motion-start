@@ -1,9 +1,10 @@
-import type { Component } from 'svelte';
+import type { ComponentProps } from 'svelte';
 import LayoutGroup from './LayoutGroup.svelte';
+import type { LayoutGroupProps } from './types.js';
 
 describe('test components type - svelte 5', () => {
 	it('should have Svelte component type for LayoutGroup', () => {
-		// Type-only assertion; no runtime expect in dts tests
-		assertType<Component>(LayoutGroup as unknown as Component);
+		assertType<LayoutGroupProps>({} as ComponentProps<typeof LayoutGroup>);
+		assertType<ComponentProps<typeof LayoutGroup>>({} as LayoutGroupProps);
 	});
 });

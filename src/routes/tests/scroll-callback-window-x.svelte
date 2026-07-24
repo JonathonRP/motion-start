@@ -5,7 +5,17 @@
     let progress = $state(0);
 
     onMount(() => {
-        return scroll((p: number) => progress = p, { axis: 'x' });
+        const previousOverflowX = document.body.style.overflowX;
+        const previousOverflowY = document.body.style.overflowY;
+        document.body.style.overflowX = 'scroll';
+        document.body.style.overflowY = 'hidden';
+        const stopScroll = scroll((p: number) => progress = p, { axis: 'x' });
+
+        return () => {
+            stopScroll();
+            document.body.style.overflowX = previousOverflowX;
+            document.body.style.overflowY = previousOverflowY;
+        };
     });
 </script>
 
@@ -18,10 +28,3 @@
 <div id="progress" style="position: fixed; top: 0; left: 0;">
     {progress}
 </div>
-
-<style>
-	:global(body) {
-		overflow-x: scroll !important;
-		overflow-y: hidden;
-	}
-</style>

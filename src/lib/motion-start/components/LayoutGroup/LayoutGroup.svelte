@@ -3,13 +3,17 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
-type InheritOption = boolean | 'id' | 'group';
+import {
+	type LayoutGroupContext,
+	setLayoutGroupContext,
+	useLayoutGroupContext,
+} from "../../context/LayoutGroupContext.svelte.js";
+import { useDeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext.js";
+import { nodeGroup } from "../../projection/node/group.js";
+import { useForceUpdate } from "../../utils/use-force-update.svelte.js";
+import type { LayoutGroupProps } from './types.js';
 
-export interface LayoutGroupProps {
-	id?: string;
-	inherit?: InheritOption;
-	children?: any;
-}
+export type { LayoutGroupProps } from './types.js';
 
 /**
  * Hook to create and manage a layout group
@@ -59,28 +63,7 @@ function getGroup(props: LayoutGroupProps, parentGroup: LayoutGroupContext | nul
 </script>
 
 <script lang="ts">
-	import {
-		type LayoutGroupContext,
-		setLayoutGroupContext,
-		useLayoutGroupContext,
-	} from "../../context/LayoutGroupContext.svelte.js";
-	import { useDeprecatedLayoutGroupContext } from "../../context/DeprecatedLayoutGroupContext.js";
-	import { nodeGroup } from "../../projection/node/group.js";
-	import { useForceUpdate } from "../../utils/use-force-update.svelte.js";
-	import { type Snippet } from "svelte";
-
-	interface Props extends LayoutGroupProps {
-		children: Snippet<
-			[
-				props: {
-					forceRender: VoidFunction;
-					key: number;
-				},
-			]
-		>;
-	}
-
-	let { id, inherit = true, children }: Props = $props();
+	let { id, inherit = true, children }: LayoutGroupProps = $props();
 
 	const layoutGroup = $derived.by(
 		useLayoutGroupProvider({
@@ -96,4 +79,4 @@ function getGroup(props: LayoutGroupProps, parentGroup: LayoutGroupContext | nul
 	const key = $derived(layoutGroup.key ?? 0);
 </script>
 
-{@render children({ forceRender, key })}
+{@render children?.({ forceRender, key })}

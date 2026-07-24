@@ -289,7 +289,7 @@ describe("Shared layout: 0 -> A -> B -> 0 transition", () => {
 
 describe("Shared layout: 0 -> A -> AB -> A -> 0 transition", () => {
     it("Correctly fires layout={true} animations", () => {
-        cy.visit("?test=layout-shared-switch-0-a-b-0")
+        cy.visit("?test=layout-shared-switch-0-a-ab-0")
             .wait(50)
             .get("#trigger")
             .trigger("click")
@@ -826,7 +826,7 @@ describe("Shared layout: 0 -> A -> B -> 0 crossfade transition", () => {
 
 describe("Shared layout:  0 -> A -> AB -> A -> 0 crossfade transition", () => {
     it("Correctly fires layout={true} animations", () => {
-        cy.visit("?test=layout-shared-switch-0-a-b-0")
+        cy.visit("?test=layout-shared-switch-0-a-ab-0")
             .wait(50)
             .get("#trigger")
             .trigger("click")

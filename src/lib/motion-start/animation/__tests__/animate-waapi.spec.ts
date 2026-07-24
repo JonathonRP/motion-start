@@ -11,6 +11,8 @@ import { frame } from '../../frameloop/index.js';
 
 // Skip in environments without DOM (e.g., Bun test runner)
 const hasDom = typeof document !== 'undefined';
+const originalAnimateDescriptor =
+	typeof Element !== 'undefined' ? Object.getOwnPropertyDescriptor(Element.prototype, 'animate') : undefined;
 
 // Setup and restore WAAPI mocks
 function setupWaapi() {
@@ -46,8 +48,12 @@ function setupWaapi() {
 function restoreWaapi() {
 	if (typeof Element === 'undefined') return;
 
-	Element.prototype.animate = undefined as any;
 	vi.restoreAllMocks();
+	if (originalAnimateDescriptor) {
+		Object.defineProperty(Element.prototype, 'animate', originalAnimateDescriptor);
+	} else {
+		delete (Element.prototype as Partial<Element>).animate;
+	}
 }
 
 const defaultOptions = {

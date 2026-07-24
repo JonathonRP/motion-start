@@ -25,4 +25,4 @@ export interface DOMVisualElementOptions {
 	enableHardwareAcceleration?: boolean;
 }
 
-export interface DOMMotionComponents extends HTMLMotionComponents, SVGMotionComponents {}
+export type DOMMotionComponents = HTMLMotionComponents & SVGMotionComponents;

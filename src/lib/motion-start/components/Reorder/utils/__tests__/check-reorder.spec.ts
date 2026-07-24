@@ -11,22 +11,22 @@ describe('checkReorder', () => {
 
 	test('Return same array if velocity is 0', () => {
 		const newOrder = checkReorder(order, 'a', 116, 0);
-		expect(newOrder).toEqual(order);
+		expect(newOrder).toBe(order);
 	});
 
 	test('Return same array if value not found', () => {
 		const newOrder = checkReorder(order, 'd', 116, 0);
-		expect(newOrder).toEqual(order);
+		expect(newOrder).toBe(order);
 	});
 
 	test('Return same array if nextItem not found', () => {
 		const newOrder = checkReorder(order, 'c', 300, 1);
-		expect(newOrder).toEqual(order);
+		expect(newOrder).toBe(order);
 	});
 
 	test('Return same array if item has not moved', () => {
 		const newOrder = checkReorder(order, 'a', 14, 1);
-		expect(newOrder).toEqual(order);
+		expect(newOrder).toBe(order);
 	});
 
 	test('Return reordered array if item has moved right', () => {

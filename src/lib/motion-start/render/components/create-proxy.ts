@@ -11,9 +11,7 @@ import type { createMotionComponent } from './motion/create.js';
  *
  * @internal
  */
-export type CustomDomComponent<Props extends Record<string, any>> = Component<
-	(Props & MotionProps) | (SVGElement | HTMLElement)
->;
+export type CustomDomComponent<Props extends Record<string, unknown>> = Component<Props & MotionProps>;
 
 type MotionProxy = typeof createMotionComponent &
 	DOMMotionComponents & {

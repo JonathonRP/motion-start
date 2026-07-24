@@ -3,42 +3,32 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts">
-import { setMotionConfigContext, useMotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
+import { watch } from 'runed';
+import {
+	createMotionConfigContext,
+	setMotionConfigContext,
+	useMotionConfigContext,
+} from '../../context/MotionConfigContext.svelte.js';
 import type { MotionConfigProps } from './index.js';
 import { loadExternalIsValidProp } from '../../render/dom/utils/filter-props.js';
-import type { Snippet } from 'svelte';
 
-interface Props extends MotionConfigProps {
-	children: Snippet;
-}
-
-let { isValidProp, children, ...config }: Props = $props();
+let { isValidProp, children, ...config }: MotionConfigProps = $props();
 const parentConfig = useMotionConfigContext();
 
-$effect(() => {
-	if (isValidProp) loadExternalIsValidProp(isValidProp);
+watch([() => isValidProp], ([nextIsValidProp]) => {
+	if (nextIsValidProp) loadExternalIsValidProp(nextIsValidProp);
 });
 
 /**
  * Inherit props from any parent MotionConfig components.
  */
-const context = {
-	get transformPagePoint() {
-		return config.transformPagePoint ?? parentConfig.transformPagePoint;
-	},
-	get isStatic() {
-		return config.isStatic ?? parentConfig.isStatic ?? false;
-	},
-	get transition() {
-		return config.transition ?? parentConfig.transition;
-	},
-	get reducedMotion() {
-		return config.reducedMotion ?? parentConfig.reducedMotion;
-	},
-	get nonce() {
-		return config.nonce ?? parentConfig.nonce;
-	},
-};
+const context = createMotionConfigContext(parentConfig.config, () => ({
+	transformPagePoint: config.transformPagePoint ?? parentConfig.transformPagePoint,
+	isStatic: config.isStatic ?? parentConfig.isStatic ?? false,
+	transition: config.transition ?? parentConfig.transition,
+	reducedMotion: config.reducedMotion ?? parentConfig.reducedMotion,
+	nonce: config.nonce ?? parentConfig.nonce,
+}));
 
 setMotionConfigContext(context);
 </script>

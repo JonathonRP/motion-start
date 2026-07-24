@@ -125,6 +125,7 @@ describe('MotionValue velocity calculations', () => {
 	});
 	afterEach(() => {
 		MotionGlobalConfig.useManualTiming = false;
+		frameData.isProcessing = false;
 	});
 
 	test('Velocity is correct when value changes each animation frame', () => {

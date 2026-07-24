@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { createContext } from 'svelte';
+import { getContext, setContext } from 'svelte';
 import type { TransformPoint } from '../projection/geometry/types.js';
 import type { Transition } from '../types.js';
 
@@ -52,30 +52,47 @@ export interface MotionConfigContext {
 /**
  * Reactive motion config context using Svelte 5 runes
  */
-export interface MotionConfigContextType {
-	config: MotionConfigContext;
+export interface MotionConfigContextType extends MotionConfigContext {
+	readonly config: MotionConfigContext;
 	setConfig: (config: Partial<MotionConfigContext>) => void;
 	updateConfig: (fn: (config: MotionConfigContext) => MotionConfigContext) => void;
 }
 
-export const defaultMotionConfig: MotionConfigContext = {
+export const defaultMotionConfig: MotionConfigContext = Object.freeze({
 	reducedMotion: 'never',
-	transformPagePoint: (p) => p,
+	transformPagePoint: (p: Parameters<TransformPoint>[0]) => p,
 	isStatic: false,
-};
+});
 
 /**
  * Create a reactive motion config context with $state runes.
  * Must be called within a component or .svelte.ts file.
  */
 export function createMotionConfigContext(
-	initialConfig: MotionConfigContext = defaultMotionConfig
+	initialConfig: MotionConfigContext = defaultMotionConfig,
+	getConfig?: () => MotionConfigContext
 ): MotionConfigContextType {
-	let config = $state<MotionConfigContext>(initialConfig);
+	let config = $state<MotionConfigContext>({ ...defaultMotionConfig, ...initialConfig });
+	const readConfig = () => getConfig?.() ?? config;
 
 	return {
 		get config() {
-			return config;
+			return readConfig();
+		},
+		get transformPagePoint() {
+			return readConfig().transformPagePoint;
+		},
+		get isStatic() {
+			return readConfig().isStatic;
+		},
+		get transition() {
+			return readConfig().transition;
+		},
+		get reducedMotion() {
+			return readConfig().reducedMotion;
+		},
+		get nonce() {
+			return readConfig().nonce;
 		},
 
 		setConfig: (newConfig: Partial<MotionConfigContext>) => {
@@ -91,17 +108,21 @@ export function createMotionConfigContext(
 // Context key
 export const MOTION_CONFIG_CONTEXT_KEY = Symbol('MotionConfigContext');
 
-/**
- * @public
- */
-const [getMotionConfigContext, setMotionConfigContext] = createContext<MotionConfigContext>();
+function createDefaultMotionConfigContext(): MotionConfigContextType {
+	return {
+		...defaultMotionConfig,
+		config: defaultMotionConfig,
+		setConfig: () => {},
+		updateConfig: () => {},
+	};
+}
 
-function useMotionConfigContext() {
-	try {
-		return getMotionConfigContext();
-	} catch {
-		return defaultMotionConfig;
-	}
+function useMotionConfigContext(): MotionConfigContextType {
+	return getContext<MotionConfigContextType>(MOTION_CONFIG_CONTEXT_KEY) ?? createDefaultMotionConfigContext();
+}
+
+function setMotionConfigContext(context: MotionConfigContextType): MotionConfigContextType {
+	return setContext(MOTION_CONFIG_CONTEXT_KEY, context);
 }
 
 export { useMotionConfigContext, setMotionConfigContext };

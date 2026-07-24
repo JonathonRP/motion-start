@@ -124,6 +124,7 @@ describe('animationControls', () => {
 
 		// Should throw after unmount
 		expect(() => controls.start({ x: 100 })).toThrow();
+		expect(() => controls.set({ x: 100 })).toThrow();
 	});
 
 	test('start returns a promise', async () => {

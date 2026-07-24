@@ -2,7 +2,7 @@ import { onDestroy } from 'svelte';
 import type { AnimationScope } from '../types.js';
 import { createScopedWaapiAnimate } from '../animators/waapi/animate-style.js';
 
-export function useAnimateMini<T extends Element = any>() {
+export function useAnimateMini<T extends Element = Element>() {
 	const scope: AnimationScope<T> = {
 		current: null! as T,
 		animations: [],

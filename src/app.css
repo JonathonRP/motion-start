@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
 
-@variant dark (&:is(dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 .theme-scaled {
 	@media (min-width: 1024px) {
@@ -105,11 +105,11 @@
 
 	@font-face {
 		font-family: "Geist Sans";
-		src: url("/fonts/Geist/geist-sans.ttf") format("ttf");
+		src: url("/fonts/Geist/geist-sans.ttf") format("truetype");
 		font-display: swap;
 
 		font-family: "Geist Mono";
-		src: url("/fonts/Geist/geist-mono.ttf") format("ttf");
+		src: url("/fonts/Geist/geist-mono.ttf") format("truetype");
 		font-display: swap;
 	}
 

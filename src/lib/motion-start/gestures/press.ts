@@ -12,7 +12,6 @@ import { noop } from '../utils/noop.js';
 import { pipe } from '../utils/pipe.js';
 import { isDragActive } from './drag/utils/lock.js';
 import { isNodeOrChild } from './utils/is-node-or-child.js';
-// import { Gesture } from './Gesture.js';
 
 function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPointInfo) {
 	if (!handler) return;

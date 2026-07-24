@@ -61,6 +61,10 @@ export function useVisualElement<Instance, RenderState>(
 	createInitialVisualElement(getCreateVisualElement());
 
 	$effect.pre(() => {
+		createInitialVisualElement(getCreateVisualElement());
+	});
+
+	$effect.pre(() => {
 		const ProjectionNode = ProjectionNodeConstructor();
 		if (
 			visualElement &&
@@ -90,6 +94,7 @@ export function useVisualElement<Instance, RenderState>(
 	const optimisedAppearId = props()[optimizedAppearDataAttribute as keyof ReturnType<typeof props>];
 	let wantsHandoff =
 		Boolean(optimisedAppearId) &&
+		typeof window !== 'undefined' &&
 		!window.MotionHandoffIsComplete?.(optimisedAppearId) &&
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 	let hasStartedAnimation = false;
@@ -108,15 +113,18 @@ export function useVisualElement<Instance, RenderState>(
 	watch.pre([() => visualElement, () => commitVersion], () => {
 		const element = visualElement;
 		if (!element) return;
+		const shouldHandoff = wantsHandoff;
 
 		isMounted = true;
-		window.MotionIsMounted = true;
+		if (typeof window !== 'undefined') {
+			window.MotionIsMounted = true;
+		}
 
 		tick().then(() => {
 			element.updateFeatures();
 			microtask.render(element.render);
 
-			if (wantsHandoff && element.animationState) {
+			if (shouldHandoff && element.animationState) {
 				animateChanges(element);
 			}
 		});
@@ -125,15 +133,18 @@ export function useVisualElement<Instance, RenderState>(
 	watch.pre([() => visualElement, () => commitVersion], () => {
 		const element = visualElement;
 		if (!element) return;
+		const shouldHandoff = wantsHandoff;
 
 		tick().then(() => {
-			if (!wantsHandoff && element.animationState) {
+			if (!shouldHandoff && element.animationState) {
 				animateChanges(element);
 			}
 		});
-		if (wantsHandoff) {
+		if (shouldHandoff) {
 			queueMicrotask(() => {
-				window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
+				if (typeof window !== 'undefined') {
+					window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
+				}
 			});
 			wantsHandoff = false;
 		}

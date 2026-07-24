@@ -124,6 +124,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
 				isReordering = true;
+				order = newOrder;
 				orderVersion++;
 				const reordered = newOrder
 					.map(getValue)

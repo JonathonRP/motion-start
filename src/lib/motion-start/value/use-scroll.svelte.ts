@@ -25,7 +25,7 @@ function refWarning<T extends Element>(name: string, ref?: RefObject<T>) {
 export function useScroll({ container, target, layoutEffect = true, ...options }: UseScrollOptions = {}) {
 	const values = createScrollMotionValues();
 
-	$effect.pre(() => {
+	const setup = () => {
 		refWarning('target', target);
 		refWarning('container', container);
 
@@ -42,7 +42,13 @@ export function useScroll({ container, target, layoutEffect = true, ...options }
 				target: target?.current || undefined,
 			}
 		);
-	});
+	};
+
+	if (layoutEffect) {
+		$effect.pre(setup);
+	} else {
+		$effect(setup);
+	}
 
 	return values;
 }

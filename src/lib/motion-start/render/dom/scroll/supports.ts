@@ -5,4 +5,6 @@ Copyright (c) 2018 Framer B.V.
 
 import { memo } from '../../../utils/memo.js';
 
-export const supportsScrollTimeline = memo(() => window.ScrollTimeline !== undefined);
+export const supportsScrollTimeline = memo(
+	() => typeof window !== 'undefined' && window.ScrollTimeline !== undefined
+);

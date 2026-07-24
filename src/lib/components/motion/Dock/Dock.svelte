@@ -24,7 +24,7 @@ const dockVariants = cva(
 
 let mouseX = Number.POSITIVE_INFINITY;
 function handleMouseMove(e: MouseEvent) {
-	mouseX = e.pageX;
+	mouseX = e.clientX;
 }
 
 function handleMouseLeave() {
@@ -38,7 +38,6 @@ let dockClass = cn(dockVariants({ className }), {
 });
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
 <motion.div
     onmousemove={(e) => handleMouseMove(e)}
     onmouseleave={handleMouseLeave}

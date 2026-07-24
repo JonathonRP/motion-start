@@ -1,5 +1,6 @@
 <script lang="ts">
 import { resolve } from '$app/paths';
+import { afterNavigate } from '$app/navigation';
 import { page } from '$app/state';
 import { tick } from 'svelte';
 
@@ -20,12 +21,13 @@ let error = $state('');
 let loading = $state(true);
 
 // Get test name from URL params
-$effect(() => {
+afterNavigate(() => {
 	const test = page.url.searchParams.get('test');
 	if (test && test !== testName) {
 		testName = test;
 		loadFixture(test);
 	} else if (!test) {
+		testName = '';
 		loading = false;
 		Component = null;
 	}

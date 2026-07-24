@@ -11,7 +11,7 @@ function handleClick() {
 		ease: 'linear',
 		onUpdate: (value: number) => output.push(value),
 		onComplete: () => {
-			result = output[1] !== 100 && output.length !== 2 ? 'Success' : 'Fail';
+			result = output.length > 2 && output.at(-1) === 100 ? 'Success' : 'Fail';
 		},
 	});
 }

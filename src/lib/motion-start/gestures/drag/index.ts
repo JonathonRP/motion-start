@@ -6,7 +6,6 @@ Copyright (c) 2018 Framer B.V.
 import { Feature } from '../../motion/features/Feature.js';
 import type { VisualElement } from '../../render/VisualElement.svelte.js';
 import { noop } from '../../utils/noop.js';
-// import { Gesture } from '../Gesture.js';
 import { VisualElementDragControls } from './VisualElementDragControls.js';
 
 export class DragGesture extends Feature<HTMLElement> {

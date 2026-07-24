@@ -19,6 +19,8 @@ const fromName = '--from';
 const toName = '--to';
 const fromValue = '#09F';
 const toValue = '#F00';
+const originalAnimateDescriptor =
+	typeof Element !== 'undefined' ? Object.getOwnPropertyDescriptor(Element.prototype, 'animate') : undefined;
 
 // Stub getPropertyValue because CSS variables aren't supported by happy-dom/jsdom
 
@@ -77,8 +79,12 @@ function setupWaapi() {
 
 function restoreWaapi() {
 	if (typeof Element === 'undefined') return;
-	Element.prototype.animate = undefined as any;
 	vi.restoreAllMocks();
+	if (originalAnimateDescriptor) {
+		Object.defineProperty(Element.prototype, 'animate', originalAnimateDescriptor);
+	} else {
+		delete (Element.prototype as Partial<Element>).animate;
+	}
 }
 
 describe('css variables', () => {

@@ -161,27 +161,26 @@ export interface DraggableProps extends DragHandlers {
 	 * It can accept an object of optional `top`, `left`, `right`, and `bottom` values, measured in pixels.
 	 * This will define a distance the named edge of the draggable component.
 	 *
-	 * Alternatively, it can accept a `ref` to another component created with React's `useRef` hook.
+	 * Alternatively, it can accept a Svelte-compatible `RefObject` for another element.
 	 * This `ref` should be passed both to the draggable component's `dragConstraints` prop, and the `ref`
 	 * of the component you want to use as constraints.
 	 *
-	 * ```jsx
+	 * ```svelte
 	 * // In pixels
 	 * <motion.div
 	 *   drag="x"
 	 *   dragConstraints={{ left: 0, right: 300 }}
 	 * />
 	 *
-	 * // As a ref to another component
-	 * const MyComponent = () => {
-	 *   const constraintsRef = useRef(null)
+	 * // As a ref to another element
+	 * <script lang="ts">
+	 *   import { ref } from 'motion-start/utils/ref.svelte'
+	 *   const constraintsRef = ref<HTMLElement | null>(null)
+	 * </script>
 	 *
-	 *   return (
-	 *      <motion.div ref={constraintsRef}>
-	 *          <motion.div drag dragConstraints={constraintsRef} />
-	 *      </motion.div>
-	 *   )
-	 * }
+	 * <motion.div ref={constraintsRef}>
+	 *   <motion.div drag dragConstraints={constraintsRef} />
+	 * </motion.div>
 	 * ```
 	 */
 	dragConstraints?: false | Partial<BoundingBox> | RefObject<Element>;
@@ -190,7 +189,7 @@ export interface DraggableProps extends DragHandlers {
 	 * The degree of movement allowed outside constraints. 0 = no movement, 1 =
 	 * full movement.
 	 *
-	 * Set to `0.5` by default. Can also be set as `false` to disable movement.
+	 * Set to `0.35` by default. Can also be set as `false` to disable movement.
 	 *
 	 * By passing an object of `top`/`right`/`bottom`/`left`, individual values can be set
 	 * per constraint. Any missing values will be set to `0`.
@@ -297,7 +296,7 @@ export interface DraggableProps extends DragHandlers {
 	dragListener?: boolean;
 
 	/**
-	 * If `dragConstraints` is set to a React ref, this callback will call with the measured drag constraints.
+	 * If `dragConstraints` is set to a `RefObject`, this callback receives the measured drag constraints.
 	 *
 	 * @public
 	 */

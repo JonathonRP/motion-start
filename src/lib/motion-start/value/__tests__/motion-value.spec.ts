@@ -6,6 +6,7 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { motionValue, MotionValue } from '../index.js';
 import { frame } from '../../frameloop/index.js';
+import { resolveMotionValue } from '../utils/resolve-motion-value.js';
 
 describe('MotionValue', () => {
 	test('can create a motion value', () => {
@@ -95,17 +96,17 @@ describe('MotionValue', () => {
 describe('resolveMotionValue', () => {
 	test('returns the unwrapped value from a MotionValue', () => {
 		const mv = motionValue(42);
-		expect(mv.get()).toBe(42);
+		expect(resolveMotionValue(mv)).toBe(42);
 	});
 
 	test('handles string values', () => {
 		const mv = motionValue('test');
-		expect(mv.get()).toBe('test');
+		expect(resolveMotionValue(mv)).toBe('test');
 	});
 
 	test('handles object values', () => {
 		const obj = { test: 'value' };
 		const mv = motionValue(obj);
-		expect(mv.get()).toBe(obj);
+		expect(resolveMotionValue(mv)).toBe(obj);
 	});
 });

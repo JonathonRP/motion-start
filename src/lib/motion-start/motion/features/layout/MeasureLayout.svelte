@@ -28,12 +28,12 @@ export const animateLayout = {
 </script>
 
 <script lang="ts">
-	import { usePresence } from "../../../components/AnimatePresence/use-presence.svelte.js";
-	import { useLayoutGroupContext } from "../../../context/LayoutGroupContext.svelte.js";
-	import { useSwitchLayoutGroupContext } from "../../../context/SwitchLayoutGroupContext.js";
-	import MeasureLayoutWithContext from "./MeasureLayoutWithContext.svelte";
-	import { usePresenceContext } from "$lib/motion-start/context/PresenceContext.svelte";
-	import { useReorderContext } from "$lib/motion-start/context/ReorderContext";
+	import { usePresence } from '../../../components/AnimatePresence/use-presence.svelte.js';
+	import { useLayoutGroupContext } from '../../../context/LayoutGroupContext.svelte.js';
+	import { usePresenceContext } from '../../../context/PresenceContext.svelte.js';
+	import { useReorderContext } from '../../../context/ReorderContext.js';
+	import { useSwitchLayoutGroupContext } from '../../../context/SwitchLayoutGroupContext.js';
+	import MeasureLayoutWithContext from './MeasureLayoutWithContext.svelte';
 
 	interface MeasureLayoutProps extends MotionProps {
 		visualElement: VisualElement<unknown>;

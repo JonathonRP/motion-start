@@ -4,9 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { MotionValue } from './index.js';
-import { frame } from '../frameloop/index.js';
+import { cancelFrame, frame } from '../frameloop/index.js';
 import { useMotionValueEvent } from '../utils/use-motion-value-event.svelte.js';
 import { useMotionValue } from './use-motion-value.svelte.js';
+import { onDestroy } from 'svelte';
 
 /**
  * Creates a `MotionValue` that updates when the velocity of the provided `MotionValue` changes.
@@ -37,6 +38,7 @@ export const useVelocity = (value: MotionValue<number>) => {
 		// Schedule an update to this value at the end of the current frame.
 		frame.update(updateVelocity, false, true);
 	});
+	onDestroy(() => cancelFrame(updateVelocity));
 
 	return velocity;
 };

@@ -39,6 +39,7 @@ const visualProps = $derived.by(() =>
 const filteredProps = $derived(filterProps(() => props, typeof Component === 'string', forwardMotionProps));
 
 const styleAttachmentKey = createAttachmentKey();
+const listenerAttachmentKeys = new Map<symbol, symbol>();
 
 function isCustomStyleProperty(key: string) {
 	return key.startsWith('--') || key.includes('-');
@@ -105,7 +106,12 @@ const elementProps = $derived.by(() => {
 
 	const listeners = visualElement?.listeners ?? {};
 	for (const key of Object.getOwnPropertySymbols(listeners)) {
-		withAttachments[createAttachmentKey()] = listeners[key];
+		let attachmentKey = listenerAttachmentKeys.get(key);
+		if (!attachmentKey) {
+			attachmentKey = createAttachmentKey();
+			listenerAttachmentKeys.set(key, attachmentKey);
+		}
+		withAttachments[attachmentKey] = listeners[key];
 	}
 
 	return withAttachments;

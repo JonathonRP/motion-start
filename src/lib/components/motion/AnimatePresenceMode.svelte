@@ -8,9 +8,20 @@ let count = $state(0);
 let items = $state<number[]>([0]);
 let popLayout = $state(false);
 let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
+
+function removeItem(item: number) {
+    items = items.filter((value) => value !== item);
+}
+
+function handleItemKeydown(event: KeyboardEvent, item: number) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    removeItem(item);
+}
 </script>
 
-<Box cls="overflow-hidden">
+<Box>
     <div class="flex flex-col items-center">
         <div class="flex flex-col p-0 pb-[50px] items-center">
             <label class="flex flex-col items-center my-[20px] mx-0">
@@ -36,7 +47,8 @@ let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
             </motion.button>
         </div>
         <ul
-            class="relative flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 list-none"
+            aria-label="Animated items"
+            class="relative flex w-[300px] h-[300px] flex-col gap-[20px] m-0 p-0 pr-2 list-none overflow-y-auto"
         >
             <AnimatePresence {mode}>
                 {#each items as item (item)}
@@ -46,9 +58,11 @@ let mode: 'popLayout' | 'sync' = $derived(popLayout ? 'popLayout' : 'sync');
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         transition={{ type: "spring" }}
-                        onclick={() => {
-                            items = items.filter((value) => value !== item);
-                        }}
+                        role="button"
+                        tabindex="0"
+                        aria-label={`Remove item ${item}`}
+                        onclick={() => removeItem(item)}
+                        onkeydown={(event) => handleItemKeydown(event, item)}
                     />
                 {/each}
             </AnimatePresence>

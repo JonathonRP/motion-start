@@ -93,6 +93,9 @@ function newChildrenMap(): Map<string | number, boolean> {
 	// If no descendants registered exit work, we can complete removal on the
 	// next tick once the parent has had a chance to mount everything.
 	$effect(() => {
+		const isExiting = !isPresent;
+		if (!isExiting) return;
+
 		tick().then(() => {
 			if (!isPresent && !presenceChildren.size) {
 				onExitComplete?.();

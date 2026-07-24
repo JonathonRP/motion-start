@@ -1,11 +1,8 @@
-interface BoundingBox {
-    top: number
+interface ExpectedBoundingBox {
     left: number
-    width: number
-    height: number
 }
 
-function expectBbox(element: HTMLElement, expectedBbox: BoundingBox) {
+function expectBbox(element: HTMLElement, expectedBbox: ExpectedBoundingBox) {
     const bbox = element.getBoundingClientRect()
     expect(Math.round(bbox.left)).to.equal(expectedBbox.left)
 }

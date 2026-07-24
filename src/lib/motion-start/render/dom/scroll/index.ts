@@ -19,7 +19,7 @@ declare class ScrollTimeline implements ProgressTimeline {
 
 declare global {
 	interface Window {
-		ScrollTimeline: ScrollTimeline;
+		ScrollTimeline: typeof ScrollTimeline;
 	}
 }
 

@@ -4,5 +4,5 @@ Copyright (c) 2018 Framer B.V.
 */
 
 export function isSVGElement(element: unknown): element is SVGElement {
-	return element instanceof SVGElement && element.tagName !== 'svg';
+	return typeof SVGElement !== 'undefined' && element instanceof SVGElement && element.tagName !== 'svg';
 }

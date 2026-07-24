@@ -5,6 +5,7 @@ import { AnimatePresence, motion, type MotionStyle } from '$lib/motion-start';
 type LayoutType = boolean | 'position' | 'size' | 'preserve-aspect';
 
 const toLayoutType = (value: string | null): LayoutType => {
+	if (value === 'false') return false;
 	if (value === 'position' || value === 'size' || value === 'preserve-aspect') return value;
 	return true;
 };

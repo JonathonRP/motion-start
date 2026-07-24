@@ -21,6 +21,7 @@ import { useMotionRef } from './utils/use-motion-ref.svelte.js';
 import type { UseVisualState } from './utils/use-visual-state.svelte.js';
 import { motionComponentSymbol } from './utils/symbol.js';
 import { useVisualElement } from './utils/use-visual-element.svelte.js';
+import MeasureLayoutRenderer from './MeasureLayoutRenderer.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -126,7 +127,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		// 	};
 		// });
 
-		let _measureInstance: Record<string, any> | null = null;
 		let rendererInstance: Record<string, any> | null = null;
 
 		rendererInstance = useRender(anchor, {
@@ -150,25 +150,20 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			},
 		});
 
-		const measureProps = $derived.by(() => {
-			const measureState = $state({
+		const measureProps = $derived.by(() => ({
 				...configAndProps,
 				visualElement: context.visualElement ?? undefined,
-			});
-			return measureState;
-		});
+			}));
 
-		// Mount/unmount the imperative MeasureLayout helper only when the feature
-		// becomes available or disappears. Ordinary prop changes flow through the
-		// stable measureProps object and should not recreate the helper.
-		// if (!measureLayoutComponent || _measureInstance || !context.visualElement) return;
-		watch.pre([() => context.visualElement, () => MeasureLayout], () => {
-			if (MeasureLayout && context.visualElement && !_measureInstance) {
-				_measureInstance = MeasureLayout(
-					anchor,
-					new Proxy(measureProps, { get: (_target, key) => measureProps[key as keyof typeof measureProps] })
-				);
-			}
+		// Let Svelte own the dynamic component branch so its lifecycle is torn
+		// down when layout/drag features disappear and recreated on replacement.
+		MeasureLayoutRenderer(anchor, {
+			get MeasureLayout() {
+				return MeasureLayout;
+			},
+			get measureProps() {
+				return measureProps;
+			},
 		});
 
 		return rendererInstance;

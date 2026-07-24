@@ -27,7 +27,7 @@ export interface FocusHandlers {
 
 /**
  * Passed in to tap event handlers like `onTap` the `TapInfo` object contains
- * information about the tap gesture such as it‘s location.
+ * information about the tap gesture such as its location.
  *
  * ```jsx
  * function onTap(event, info) {
@@ -121,7 +121,7 @@ export interface TapHandlers {
 	/**
 	 * If `true`, the tap gesture will attach its start listener to window.
 	 *
-	 * Note: This is not supported publically.
+	 * Note: This is not supported publicly.
 	 */
 	globalTapTarget?: boolean;
 }

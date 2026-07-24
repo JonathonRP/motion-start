@@ -61,7 +61,7 @@ export function animationControls(): AnimationControls {
 		start(definition, transitionOverride) {
 			invariant(
 				hasMounted,
-				'controls.start() should only be called after a component has mounted. Consider calling within a useEffect hook.'
+				'controls.start() should only be called after a component has mounted. Consider calling it from a Svelte $effect.'
 			);
 
 			const animations: Array<Promise<any>> = [];
@@ -79,7 +79,7 @@ export function animationControls(): AnimationControls {
 		set(definition) {
 			invariant(
 				hasMounted,
-				'controls.set() should only be called after a component has mounted. Consider calling within a useEffect hook.'
+				'controls.set() should only be called after a component has mounted. Consider calling it from a Svelte $effect.'
 			);
 
 			return subscribers.forEach((visualElement) => {

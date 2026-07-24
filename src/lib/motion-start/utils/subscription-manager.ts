@@ -14,7 +14,11 @@ export class SubscriptionManager<Handler extends GenericHandler> {
 			return removeItem(this.subscriptions, handler);
 		};
 	};
-	notify = (...[a, b, c]: Parameters<Handler>) => {
+	notify = (
+		a?: Parameters<Handler>[0],
+		b?: Parameters<Handler>[1],
+		c?: Parameters<Handler>[2]
+	) => {
 		const numSubscriptions = this.subscriptions.length;
 		if (!numSubscriptions) return;
 		if (numSubscriptions === 1) {

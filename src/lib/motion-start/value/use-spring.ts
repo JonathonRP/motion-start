@@ -12,6 +12,7 @@ import { useMotionValue } from './use-motion-value.svelte.js';
 import { isMotionValue } from './utils/is-motion-value.js';
 import { noop } from '../utils/noop.js';
 import { extract, watch, type MaybeGetter } from 'runed';
+import { onDestroy } from 'svelte';
 
 function toNumber(v: string | number) {
 	if (typeof v === 'number') return v;
@@ -58,7 +59,7 @@ export const useSpring = (source: MotionValue | number, config: MaybeGetter<Spri
 			type: 'spring',
 			restDelta: 0.001,
 			restSpeed: 0.01,
-			...config,
+			...extract(config),
 			onUpdate: latestSetter,
 		});
 	};
@@ -91,7 +92,8 @@ export const useSpring = (source: MotionValue | number, config: MaybeGetter<Spri
 	);
 
 	if (isMotionValue(source)) {
-		source.on('change', (v) => value.set(Number.parseFloat(v)));
+		const unsubscribe = source.on('change', (v) => value.set(Number.parseFloat(v)));
+		onDestroy(unsubscribe);
 	}
 
 	return value;

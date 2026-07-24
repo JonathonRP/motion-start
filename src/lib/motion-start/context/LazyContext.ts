@@ -11,15 +11,13 @@ export interface LazyContext {
 	strict: boolean;
 }
 
-const defaultLazyContext: LazyContext = { strict: false };
-
 const [getLazyContext, setLazyContext] = createContext<LazyContext>();
 
 function useLazyContext() {
 	try {
 		return getLazyContext();
 	} catch {
-		return defaultLazyContext;
+		return { strict: false };
 	}
 }
 

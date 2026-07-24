@@ -3,20 +3,21 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes />
 
 <script lang="ts" module>
+import type {
+  FeatureBundle,
+  LazyFeatureBundle,
+} from "../../motion/features/types.js";
+
 function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is LazyFeatureBundle {
 	return typeof features === 'function';
 }
 </script>
 
 <script lang="ts">
-  import { untrack, type Snippet } from "svelte";
+  import { onMount, type Snippet } from "svelte";
 
   import { setLazyContext } from "../../context/LazyContext.js";
   import { loadFeatures } from "../../motion/features/load-features.js";
-  import type {
-    FeatureBundle,
-    LazyFeatureBundle,
-  } from "../../motion/features/types.js";
   import type { CreateVisualElement } from "../../render/types.js";
   import type { LazyProps } from "./types.js";
 
@@ -61,7 +62,7 @@ function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is 
    */
   let { features, strict = false, children }: Props = $props();
 
-  let loadedRenderer: CreateVisualElement<any> | undefined = undefined;
+  let loadedRenderer = $state<CreateVisualElement<any> | undefined>(undefined);
 
   function loadInitialFeatures() {
     if (!isLazyBundle(features)) {
@@ -72,6 +73,23 @@ function isLazyBundle(features: FeatureBundle | LazyFeatureBundle): features is 
   }
 
   loadInitialFeatures();
+
+  onMount(() => {
+    if (!isLazyBundle(features)) return;
+
+    let isActive = true;
+
+    features().then(({ renderer, ...loadedFeatures }) => {
+      if (!isActive) return;
+
+      loadFeatures(loadedFeatures);
+      loadedRenderer = renderer;
+    });
+
+    return () => {
+      isActive = false;
+    };
+  });
 
   setLazyContext({
     get renderer() {

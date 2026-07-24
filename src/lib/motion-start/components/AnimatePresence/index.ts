@@ -4,6 +4,10 @@ Copyright (c) 2018 Framer B.V.
 */
 export type { AnimatePresenceProps } from './types.js';
 /**
+ * Framer Motion removed the legacy ConditionalGeneric helper before v11.11.11.
+ * Motion Start intentionally follows that public API.
+ */
+/**
  * `AnimatePresence` enables the animation of components that have been removed from the tree.
  *
  * Use Svelte's keyed `{#each}` and `{#if}` blocks to express child identity and

@@ -22,6 +22,9 @@ export class AnimationFeature extends Feature<unknown> {
 	}
 
 	updateAnimationControlsSubscription() {
+		this.unmountControls?.();
+		this.unmountControls = undefined;
+
 		const { animate } = this.node.getProps();
 		if (isAnimationControls(animate)) {
 			this.unmountControls = animate.subscribe(this.node);
@@ -46,5 +49,6 @@ export class AnimationFeature extends Feature<unknown> {
 	unmount() {
 		this.node.animationState!.reset();
 		this.unmountControls?.();
+		this.unmountControls = undefined;
 	}
 }

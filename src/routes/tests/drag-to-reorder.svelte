@@ -3,7 +3,7 @@
     import DragToReorderItem from './drag-to-reorder-item.svelte';
     import { page } from '$app/state';
 
-    const axis = $derived((page.url.searchParams.get('axis') || 'y') as 'x' | 'y');
+    const axis = $derived.by<'x' | 'y'>(() => page.url.searchParams.get('axis') === 'x' ? 'x' : 'y');
 
     const initialItems = ['Tomato', 'Cucumber', 'Mustard', 'Chicken'];
     let items = $state([...initialItems]);

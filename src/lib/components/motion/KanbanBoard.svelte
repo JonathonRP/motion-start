@@ -3,6 +3,8 @@
 <script lang="ts">
 	import { LayoutGroup, Reorder } from '$lib/motion-start';
 	import type { PanInfo } from '$lib/motion-start/gestures/pan/PanSession';
+	import { tick } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import Box from '../Box.svelte';
 
 	const COLUMN_IDS = ['todo', 'inprogress', 'done'] as const;
@@ -58,6 +60,23 @@
 	let ghostVisible = $state(false);
 	let ghostTop = $state(0);
 	let ghostLeft = $state(0);
+	let announcement = $state('');
+
+	const captureBoard: Attachment<HTMLElement> = (element) => {
+		boardRef = element;
+		return () => {
+			if (boardRef === element) boardRef = null;
+		};
+	};
+
+	function captureColumn(column: ColumnId): Attachment<HTMLElement> {
+		return (element) => {
+			colRefs[column] = element;
+			return () => {
+				if (colRefs[column] === element) colRefs[column] = null;
+			};
+		};
+	}
 
 	function sortByOrder(a: Card, b: Card) {
 		return a.order - b.order;
@@ -176,7 +195,7 @@
 
 		if (slots.length > 0) {
 			if (idx < slots.length) {
-				top = slots[idx].rect.top - draggingCardHeight - 10;
+				top = slots[idx].rect.top;
 			} else {
 				top = slots[slots.length - 1].rect.bottom + 10;
 			}
@@ -228,6 +247,39 @@
 		ghostVisible = false;
 	}
 
+	async function handleCardKeydown(event: KeyboardEvent, card: Card) {
+		if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+
+		event.preventDefault();
+		const currentCards = getCommittedColumnCards(card.column);
+		const currentIndex = currentCards.findIndex((item) => item.id === card.id);
+		if (currentIndex === -1) return;
+
+		if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+			const offset = event.key === 'ArrowUp' ? -1 : 1;
+			const targetIndex = Math.min(Math.max(currentIndex + offset, 0), currentCards.length - 1);
+			if (targetIndex === currentIndex) return;
+
+			const nextCards = [...currentCards];
+			const [movedCard] = nextCards.splice(currentIndex, 1);
+			nextCards.splice(targetIndex, 0, movedCard);
+			setColumnOrder(card.column, nextCards);
+			announcement = `${card.title} moved to position ${targetIndex + 1} in ${COL_LABELS[card.column]}`;
+		} else {
+			const columnOffset = event.key === 'ArrowLeft' ? -1 : 1;
+			const currentColumnIndex = COLUMN_IDS.indexOf(card.column);
+			const targetColumn = COLUMN_IDS[currentColumnIndex + columnOffset];
+			if (!targetColumn) return;
+
+			const targetIndex = Math.min(currentIndex, getCommittedColumnCards(targetColumn).length);
+			moveCardToColumn(card.id, card.column, targetColumn, targetIndex);
+			announcement = `${card.title} moved to ${COL_LABELS[targetColumn]}, position ${targetIndex + 1}`;
+		}
+
+		await tick();
+		document.getElementById(`kanban-task-${card.id}`)?.focus();
+	}
+
 	// Layout dependency: tracks cross-column preview state so siblings animate
 	let layoutDep = $derived(
 		draggingCardId ? `${draggingCardId}:${preview.col ?? ''}:${preview.index ?? ''}` : ''
@@ -235,7 +287,9 @@
 </script>
 
 <Box>
-	<div class="board-wrapper flex gap-3 p-4 items-stretch justify-start overflow-x-auto" bind:this={boardRef}>
+	<div class="board-wrapper flex gap-3 p-4 items-stretch justify-start overflow-x-auto" {@attach captureBoard}>
+		<p class="sr-only" aria-live="polite">{announcement}</p>
+
 		{#if ghostVisible}
 			<div
 				class="drop-ghost"
@@ -245,12 +299,14 @@
 
 		<LayoutGroup>
 			{#each COLUMN_IDS as colId (colId)}
-				<div class="column" style="border-top: 3px solid {COL_ACCENT[colId]}" bind:this={colRefs[colId]}>
+				<div class="column" style="border-top: 3px solid {COL_ACCENT[colId]}" {@attach captureColumn(colId)}>
 					<h3 class="col-title" style="color: {COL_ACCENT[colId]}">
 						{COL_LABELS[colId]}
 					</h3>
 					<Reorder.Group
 						as="div"
+						role="list"
+						aria-label={COL_LABELS[colId]}
 						values={cards}
 						onReorder={(next) => {
 							if (hasCrossColumnPreview()) return;
@@ -280,6 +336,12 @@
 									}}
 									onDrag={(_event, info) => handleDrag(card, info as PanInfo)}
 									onDragEnd={() => handleDrop(card.id)}
+									role="listitem"
+									tabindex="0"
+									aria-roledescription="draggable card"
+									aria-label={`${card.title}, position ${card.order + 1} in ${COL_LABELS[card.column]}`}
+									aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+									onkeydown={(event) => handleCardKeydown(event, card)}
 									whileDrag={{
 										scale: 1.05,
 										rotate: 3,

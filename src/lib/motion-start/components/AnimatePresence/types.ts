@@ -1,3 +1,5 @@
+import type { Snippet } from 'svelte';
+
 /**
  * Configuration for Svelte-native presence coordination.
  *
@@ -6,6 +8,9 @@
  * their block outro into the normal Motion feature lifecycle.
  */
 export interface AnimatePresenceProps {
+	/** Content whose keyed block lifetime is coordinated by this provider. */
+	children?: Snippet;
+
 	/** Disable initial animations for motion children present on first render. */
 	initial?: boolean;
 

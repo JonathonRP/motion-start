@@ -1,6 +1,5 @@
 <script lang="ts">
 import type { RefObject } from '../../utils/safe-react-types.js';
-import { untrack } from 'svelte';
 import { useDomEvent } from '../use-dom-event.svelte.js';
 
 interface Props {
@@ -17,9 +16,5 @@ const ref: RefObject<EventTarget> = {
 	},
 };
 
-useDomEvent(
-	ref,
-	untrack(() => eventName),
-	untrack(() => handler)
-);
+useDomEvent(() => ({ ref, eventName, handler }));
 </script>

@@ -9,7 +9,7 @@ export function useRaisedShadow(value: MotionValue) {
 
 	onMount(() => {
 		let isActive = false;
-		value.on('change', (latest: number) => {
+		return value.on('change', (latest: number) => {
 			const wasActive = isActive;
 			if (latest !== 0) {
 				isActive = true;

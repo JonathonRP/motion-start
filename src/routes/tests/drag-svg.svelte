@@ -9,10 +9,14 @@ const axis = $derived.by<DragAxis>(() => {
 	return value === 'x' || value === 'y' ? value : true;
 });
 const lock = $derived(page.url.searchParams.get('lock'));
-const top = $derived(parseFloat(page.url.searchParams.get('top') || '') || undefined);
-const left = $derived(parseFloat(page.url.searchParams.get('left') || '') || undefined);
-const right = $derived(parseFloat(page.url.searchParams.get('right') || '') || undefined);
-const bottom = $derived(parseFloat(page.url.searchParams.get('bottom') || '') || undefined);
+const parseConstraint = (value: string | null) => {
+	const parsed = Number.parseFloat(value ?? '');
+	return Number.isFinite(parsed) ? parsed : undefined;
+};
+const top = $derived(parseConstraint(page.url.searchParams.get('top')));
+const left = $derived(parseConstraint(page.url.searchParams.get('left')));
+const right = $derived(parseConstraint(page.url.searchParams.get('right')));
+const bottom = $derived(parseConstraint(page.url.searchParams.get('bottom')));
 const layout = $derived.by<LayoutProps['layout']>(() => {
 	const value = page.url.searchParams.get('layout');
 	return value === 'position' || value === 'size' || value === 'preserve-aspect' ? value : undefined;

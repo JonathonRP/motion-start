@@ -19,6 +19,7 @@ describe('SVG useProps', () => {
 					style: {
 						x: 3,
 						scale: 4,
+						opacity: 0.5,
 					},
 				}) as any,
 			() => ({
@@ -38,7 +39,7 @@ describe('SVG useProps', () => {
 			y: 10,
 			scale: 4,
 			cx: 7,
-			style: {},
+			style: { opacity: 0.5 },
 		});
 	});
 

@@ -26,7 +26,6 @@ import { motion } from '$lib/motion-start';
             whileTap={{
                 cursor: "grabbing",
             }}
-            class="box">Smooth Drag</motion.div
-        >
+            class="box">Smooth Drag</motion.div>
     </div>
 </Box>

@@ -541,17 +541,8 @@ export class VisualElementDragControls {
 		 */
 		const stopLayoutUpdateListener = projection!.addEventListener('didUpdate', (({
 			delta,
-			layout,
-			snapshot,
-			layoutDelta,
 			hasLayoutChanged,
 		}: LayoutUpdateData) => {
-			const isReorderItem = Boolean(this.getProps().drag && this.getProps().layout);
-			if (isReorderItem) {
-				console.debug(
-					`[VisualElementDragControls] didUpdate value=${(this.visualElement.current as HTMLElement | null)?.textContent?.trim?.()} isDragging=${this.isDragging} hasLayoutChanged=${hasLayoutChanged} snapshotY=${snapshot.layoutBox.y.min} layoutY=${layout.y.min} layoutDeltaY=${layoutDelta.y.translate} deltaY=${delta.y.translate} y=${this.getAxisMotionValue('y').get()}`
-				);
-			}
 			if (this.isDragging && hasLayoutChanged) {
 				eachAxis((axis) => {
 					const motionValue = this.getAxisMotionValue(axis);
@@ -560,16 +551,6 @@ export class VisualElementDragControls {
 					this.originPoint[axis] += delta[axis].translate;
 					motionValue.set(motionValue.get() + delta[axis].translate);
 				});
-
-				if (isReorderItem) {
-					console.debug('[VisualElementDragControls] compensated', {
-						value: (this.visualElement.current as HTMLElement | null)?.textContent?.trim?.(),
-						x: this.getAxisMotionValue('x').get(),
-						y: this.getAxisMotionValue('y').get(),
-						originX: this.originPoint.x,
-						originY: this.originPoint.y,
-					});
-				}
 
 				this.visualElement.render();
 			}

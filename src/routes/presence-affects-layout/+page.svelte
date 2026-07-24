@@ -2,8 +2,6 @@
 	import { motion, AnimatePresence } from "$lib/motion-start";
 	import Box from "$lib/components/Box.svelte";
 
-	let showWithLayout = true;
-	let showWithoutLayout = true;
 	let count1 = $state(0);
 	let count2 = $state(0);
 
@@ -50,7 +48,7 @@
 				<AnimatePresence>
 					{#each items1 as item (item.key)}
 						<motion.div
-							id="item-with-layout-{item}"
+							id="item-with-layout-{item.key}"
 							class="item-with-layout border px-3 py-2 bg-blue-100 rounded"
 							initial={{ opacity: 0, y: -20 }}
 							animate={{ opacity: 1, y: 0 }}
@@ -95,7 +93,7 @@
 				<AnimatePresence presenceAffectsLayout={false}>
 					{#each items2 as item (item.key)}
 						<motion.div
-							id="item-without-layout-{item}"
+							id="item-without-layout-{item.key}"
 							class="item-without-layout border px-3 py-2 bg-red-100 rounded"
 							initial={{ opacity: 0, y: -20 }}
 							animate={{ opacity: 1, y: 0 }}

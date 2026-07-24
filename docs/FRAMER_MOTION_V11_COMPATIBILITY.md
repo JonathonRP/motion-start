@@ -32,11 +32,26 @@ const [current, cycle] = useCycle('closed', 'open');
 <button onclick={() => cycle()}>{current()}</button>
 ```
 
-Known limitation: `cycle(0)` currently advances instead of selecting index
-zero. Non-zero explicit indices work. Use ordinary `$state` when arbitrary
-indexed selection, including an explicit reset to index zero, is required.
+Explicit indices, including `cycle(0)`, select that index. Calling `cycle()`
+without an index advances to the next value.
 
 ## Deprecated upstream APIs
+
+### `ConditionalGeneric`
+
+Motion Start does not export the legacy `ConditionalGeneric` helper from its
+older list-prop-based `AnimatePresence`. Framer Motion had already removed this
+type before v11.11.11. Svelte block identity replaces that older list contract;
+use keyed `{#each}` blocks and ordinary generic constraints for application
+types.
+
+### `DragControls.updateConstraints`
+
+Motion Start's `DragControls` matches Framer Motion v11.11.11 and exposes
+`start`; it does not expose the older `updateConstraints` method. Pass reactive
+pixel bounds or a Svelte-compatible element ref through `dragConstraints`.
+Ref-based constraints are measured by the drag feature and updated on viewport
+resize.
 
 ### `AnimateSharedLayout`
 

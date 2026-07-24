@@ -3,10 +3,7 @@ describe("Cancelled Animation", () => {
         cy.visit("?test=layout-cancelled-finishes")
             .get("[data-testid='cancellable']")
             .trigger("click")
-            .wait(200)
-            .should(($cancellable: any) => {
-                const cancellable = $cancellable[0] as HTMLDivElement
-                expect(cancellable).to.not.exist
-            })
+
+        cy.get("[data-testid='cancellable']").should("not.exist")
     })
 })

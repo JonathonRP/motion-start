@@ -15,7 +15,7 @@ import { motionComponentSymbol } from './symbol.js';
  */
 export function unwrapMotionComponent(component: Component | string): Component | string | undefined {
 	if (isMotionComponent(component)) {
-		return component[motionComponentSymbol as keyof typeof component];
+		return component[motionComponentSymbol];
 	}
 
 	return undefined;

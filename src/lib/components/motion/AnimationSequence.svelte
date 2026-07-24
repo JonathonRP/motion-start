@@ -24,6 +24,5 @@ let startCode = async () => {
 </script>
 
 <Box>
-    <motion.div animate={controls} onTap={startCode} class="box">Tap</motion.div
-    >
+    <motion.div animate={controls} onTap={startCode} class="box">Tap</motion.div>
 </Box>

@@ -49,10 +49,14 @@ export type ForwardRefComponent<T, P extends Record<string, any>> = Component<Pr
 
 type AttributesWithoutMotionProps<Attributes> = Omit<Attributes, keyof MotionProps>;
 
+type SvelteHTMLAttributes<Tag extends keyof HTMLElements> = Tag extends keyof SvelteHTMLElements
+	? SvelteHTMLElements[Tag]
+	: HTMLAttributes<HTMLElements[Tag]>;
+
 /**
  * @public
  */
-export type HTMLMotionProps<Tag extends keyof HTMLElements> = AttributesWithoutMotionProps<SvelteHTMLElements[Tag]> &
+export type HTMLMotionProps<Tag extends keyof HTMLElements> = AttributesWithoutMotionProps<SvelteHTMLAttributes<Tag>> &
 	MotionProps;
 
 /**
@@ -60,10 +64,7 @@ export type HTMLMotionProps<Tag extends keyof HTMLElements> = AttributesWithoutM
  *
  * @public
  */
-// prettier-ignore
 export type HTMLMotionComponents = {
-	// Split into smaller groups to avoid type complexity
-	// Common elements
 	a: ForwardRefComponent<HTMLElements['a'], HTMLMotionProps<'a'>>;
 	abbr: ForwardRefComponent<HTMLElements['abbr'], HTMLMotionProps<'abbr'>>;
 	address: ForwardRefComponent<HTMLElements['address'], HTMLMotionProps<'address'>>;
@@ -75,12 +76,14 @@ export type HTMLMotionComponents = {
 	base: ForwardRefComponent<HTMLElements['base'], HTMLMotionProps<'base'>>;
 	bdi: ForwardRefComponent<HTMLElements['bdi'], HTMLMotionProps<'bdi'>>;
 	bdo: ForwardRefComponent<HTMLElements['bdo'], HTMLMotionProps<'bdo'>>;
+	big: ForwardRefComponent<HTMLElements['big'], HTMLMotionProps<'big'>>;
 	blockquote: ForwardRefComponent<HTMLElements['blockquote'], HTMLMotionProps<'blockquote'>>;
 	body: ForwardRefComponent<HTMLElements['body'], HTMLMotionProps<'body'>>;
 	br: ForwardRefComponent<HTMLElements['br'], HTMLMotionProps<'br'>>;
 	button: ForwardRefComponent<HTMLElements['button'], HTMLMotionProps<'button'>>;
 	canvas: ForwardRefComponent<HTMLElements['canvas'], HTMLMotionProps<'canvas'>>;
 	caption: ForwardRefComponent<HTMLElements['caption'], HTMLMotionProps<'caption'>>;
+	center: ForwardRefComponent<HTMLElements['center'], HTMLMotionProps<'center'>>;
 	cite: ForwardRefComponent<HTMLElements['cite'], HTMLMotionProps<'cite'>>;
 	code: ForwardRefComponent<HTMLElements['code'], HTMLMotionProps<'code'>>;
 	col: ForwardRefComponent<HTMLElements['col'], HTMLMotionProps<'col'>>;
@@ -119,6 +122,7 @@ export type HTMLMotionComponents = {
 	input: ForwardRefComponent<HTMLElements['input'], HTMLMotionProps<'input'>>;
 	ins: ForwardRefComponent<HTMLElements['ins'], HTMLMotionProps<'ins'>>;
 	kbd: ForwardRefComponent<HTMLElements['kbd'], HTMLMotionProps<'kbd'>>;
+	keygen: ForwardRefComponent<HTMLElements['keygen'], HTMLMotionProps<'keygen'>>;
 	label: ForwardRefComponent<HTMLElements['label'], HTMLMotionProps<'label'>>;
 	legend: ForwardRefComponent<HTMLElements['legend'], HTMLMotionProps<'legend'>>;
 	li: ForwardRefComponent<HTMLElements['li'], HTMLMotionProps<'li'>>;
@@ -127,9 +131,11 @@ export type HTMLMotionComponents = {
 	map: ForwardRefComponent<HTMLElements['map'], HTMLMotionProps<'map'>>;
 	mark: ForwardRefComponent<HTMLElements['mark'], HTMLMotionProps<'mark'>>;
 	menu: ForwardRefComponent<HTMLElements['menu'], HTMLMotionProps<'menu'>>;
+	menuitem: ForwardRefComponent<HTMLElements['menuitem'], HTMLMotionProps<'menuitem'>>;
 	meta: ForwardRefComponent<HTMLElements['meta'], HTMLMotionProps<'meta'>>;
 	meter: ForwardRefComponent<HTMLElements['meter'], HTMLMotionProps<'meter'>>;
 	nav: ForwardRefComponent<HTMLElements['nav'], HTMLMotionProps<'nav'>>;
+	noindex: ForwardRefComponent<HTMLElements['noindex'], HTMLMotionProps<'noindex'>>;
 	noscript: ForwardRefComponent<HTMLElements['noscript'], HTMLMotionProps<'noscript'>>;
 	object: ForwardRefComponent<HTMLElements['object'], HTMLMotionProps<'object'>>;
 	ol: ForwardRefComponent<HTMLElements['ol'], HTMLMotionProps<'ol'>>;
@@ -148,8 +154,10 @@ export type HTMLMotionComponents = {
 	s: ForwardRefComponent<HTMLElements['s'], HTMLMotionProps<'s'>>;
 	samp: ForwardRefComponent<HTMLElements['samp'], HTMLMotionProps<'samp'>>;
 	script: ForwardRefComponent<HTMLElements['script'], HTMLMotionProps<'script'>>;
+	search: ForwardRefComponent<HTMLElements['search'], HTMLMotionProps<'search'>>;
 	section: ForwardRefComponent<HTMLElements['section'], HTMLMotionProps<'section'>>;
 	select: ForwardRefComponent<HTMLElements['select'], HTMLMotionProps<'select'>>;
+	slot: ForwardRefComponent<HTMLElements['slot'], HTMLMotionProps<'slot'>>;
 	small: ForwardRefComponent<HTMLElements['small'], HTMLMotionProps<'small'>>;
 	source: ForwardRefComponent<HTMLElements['source'], HTMLMotionProps<'source'>>;
 	span: ForwardRefComponent<HTMLElements['span'], HTMLMotionProps<'span'>>;
@@ -159,6 +167,7 @@ export type HTMLMotionComponents = {
 	summary: ForwardRefComponent<HTMLElements['summary'], HTMLMotionProps<'summary'>>;
 	sup: ForwardRefComponent<HTMLElements['sup'], HTMLMotionProps<'sup'>>;
 	table: ForwardRefComponent<HTMLElements['table'], HTMLMotionProps<'table'>>;
+	template: ForwardRefComponent<HTMLElements['template'], HTMLMotionProps<'template'>>;
 	tbody: ForwardRefComponent<HTMLElements['tbody'], HTMLMotionProps<'tbody'>>;
 	td: ForwardRefComponent<HTMLElements['td'], HTMLMotionProps<'td'>>;
 	textarea: ForwardRefComponent<HTMLElements['textarea'], HTMLMotionProps<'textarea'>>;

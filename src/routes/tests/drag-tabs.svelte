@@ -23,7 +23,7 @@ const [tomato, lettuce, cheese] = allIngredients;
 const initialTabs = [tomato, lettuce, cheese];
 
 let tabs = $state<Ingredient[]>([...initialTabs]);
-let selectedTab = $state<Ingredient>(initialTabs[0]);
+let selectedTab = $state<Ingredient | undefined>(initialTabs[0]);
 
 function removeItem<T>(arr: T[], item: T): T[] {
 	const newArr = [...arr];
@@ -32,7 +32,7 @@ function removeItem<T>(arr: T[], item: T): T[] {
 	return newArr;
 }
 
-function closestItem<T>(arr: T[], item: T): T {
+function closestItem<T>(arr: T[], item: T): T | undefined {
 	const index = arr.indexOf(item);
 	if (index === -1) return arr[0];
 	if (index === arr.length - 1) return arr[arr.length - 2];

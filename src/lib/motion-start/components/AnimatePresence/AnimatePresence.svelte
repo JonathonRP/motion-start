@@ -3,7 +3,7 @@ Copyright (c) 2018 Framer B.V. -->
 <svelte:options runes={true} />
 
 <script lang="ts">
-import { onMount, type Snippet } from 'svelte';
+import { onMount } from 'svelte';
 import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
 import { setMotionOutroContext } from '../../context/OutroContext.svelte.js';
 import PresenceChild from './PresenceChild/PresenceChild.svelte';
@@ -16,7 +16,7 @@ let {
 	mode = 'sync',
 	presenceAffectsLayout = true,
 	children,
-}: AnimatePresenceProps & { children?: Snippet } = $props();
+}: AnimatePresenceProps = $props();
 
 const motionConfig = useMotionConfigContext();
 let activeOutros = 0;
