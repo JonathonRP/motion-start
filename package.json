@@ -1,6 +1,6 @@
 {
 	"name": "motion-start",
-	"version": "0.1.20",
+	"version": "0.1.21",
 	"description": "Svelte animation library inspired by the React library framer-motion.",
 	"license": "MIT",
 	"author": {
@@ -63,16 +63,6 @@
 			"svelte": "./dist/value/index.js",
 			"import": "./dist/value/index.js",
 			"default": "./dist/value/index.js"
-		},
-		"./src/*.js": {
-			"types": "./dist/*.d.ts",
-			"svelte": "./dist/*.js",
-			"import": "./dist/*.js",
-			"default": "./dist/*.js"
-		},
-		"./src/*.svelte": {
-			"types": "./dist/*.svelte.d.ts",
-			"svelte": "./dist/*.svelte"
 		}
 	},
 	"files": [
@@ -80,8 +70,11 @@
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"browser": "./dist/index.js",
 	"type": "module",
 	"scripts": {
 		"sv": "bunx sv",
@@ -98,7 +91,7 @@
 		"test:ui": "vitest --ui",
 		"test:types:ui": "vitest --ui",
 		"test:suite": "vitest --run && vitest --typecheck.only && cypress run",
-		"release": "bun --bun run build && bun --bun changeset publish"
+		"release": "bun --bun run build && npm publish --access public && npx changeset tag"
 	},
 	"dependencies": {
 		"csstype": "^3.2.3"

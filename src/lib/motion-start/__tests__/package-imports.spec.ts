@@ -28,8 +28,13 @@ describe('package ESM imports', () => {
 		expect(packageJson.exports['.'].default).toBeUndefined();
 		expect(packageJson.exports['./client'].default).toBeUndefined();
 		expect(packageJson.exports['./m'].default).toBeUndefined();
-		expect(packageJson.exports['./src/*.svelte'].default).toBeUndefined();
 		expect(packageJson.exports['./dom'].default).toBe('./dist/dom.js');
+	});
+
+	test('does not expose raw source through wildcard subpaths', () => {
+		const packageJson = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
+		expect(packageJson.exports['./src/*.svelte']).toBeUndefined();
+		expect(packageJson.exports['./src/*.js']).toBeUndefined();
 	});
 
 	test('fully specifies relative JavaScript imports for Node ESM consumers', () => {

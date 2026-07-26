@@ -1,5 +1,31 @@
 # motion-start
 
+## 0.1.21
+
+### Patch Changes
+
+- 39bf8bf: Fix AnimatePresence `presenceAffectsLayout` no-op, `isPresent` race condition with framesync batcher, and double `safeToRemove` guard
+
+## 0.1.20
+
+### Patch Changes
+
+- 84d3657: fix: resolve bare dot and extension-less imports in value/ for Svelte REPL
+
+  The Svelte playground CDN resolves ESM imports without a bundler, requiring explicit file extensions and no bare directory imports. Bare dot imports like `from '.'` compiled to JS caused the REPL to fail resolving `dist/value/` as a directory path.
+
+  Fixed by replacing all `from '.'`, `from '..'`, and extension-less relative imports within the value/ directory with explicit `./index.js` paths and proper `.js` extensions.
+
+## 0.1.19
+
+### Patch Changes
+
+- e036a76: Remove `sideEffects: false` from `package.json` to fix module resolution in the Svelte REPL playground.
+
+  Bundlers honour this flag by tree-shaking modules that are imported only for their side effects. In the Svelte playground this caused the module that resolves the `"."` bare specifier to be dropped entirely, producing:
+
+  > error occurred while trying to resolve `.` within `npm://$/motion-start@0.1.18/dist/value/use-motion-template.js`
+
 ## 0.1.18
 
 ### Patch Changes

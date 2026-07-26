@@ -7,7 +7,7 @@ bun.lockb
 .vercel
 /.svelte-kit
 /build
-/dist
+/dist/*
 /cypress/videos/
 
 # OS
