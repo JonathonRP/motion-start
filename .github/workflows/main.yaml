@@ -3,14 +3,16 @@ name: CI
 on:
   push:
     branches:
-      - "**"
+      - main
   pull_request:
     branches:
       - main
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede stale runs on a PR, but never cancel a `main` run: Publish is
+  # chained off this workflow's completion via `workflow_run`.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   Check:
