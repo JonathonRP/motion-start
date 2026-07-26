@@ -14,7 +14,6 @@
 			"!!**/.svelte",
 			"!!**/.svelte-kit",
 			"!!**/.vercel_build_output",
-			"!!**/.pnpm-store",
 			"!!**/build",
 			"!!**/dist",
 			"!!**/node_modules",
