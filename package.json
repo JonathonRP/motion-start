@@ -162,6 +162,5 @@
 		"sharp",
 		"svelte-preprocess",
 		"workerd"
-	],
-	"private": true
+	]
 }
