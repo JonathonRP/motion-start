@@ -3,14 +3,14 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { Writable, Unsubscriber } from 'svelte/store';
+import { createSubscriber } from 'svelte/reactivity';
+import type { Unsubscriber, Writable } from 'svelte/store';
 import type { AnimationPlaybackControls } from '../animation/types.js';
 import { frame } from '../frameloop/index.js';
+import { time } from '../frameloop/sync-time.js';
 import { SubscriptionManager } from '../utils/subscription-manager.js';
 import { velocityPerSecond } from '../utils/velocity-per-second.js';
 import { warnOnce } from '../utils/warn-once.js';
-import { time } from '../frameloop/sync-time.js';
-import { createSubscriber } from 'svelte/reactivity';
 
 export type Transformer<T> = (v: T) => T;
 /**
@@ -425,17 +425,16 @@ export class MotionValue<V = any> {
 	 */
 	start(startAnimation: StartAnimation) {
 		this.stop();
-		const { promise, resolve } = Promise.withResolvers<void>();
 
-		this.hasAnimated = true;
+		return new Promise<void>((resolve) => {
+			this.hasAnimated = true;
 
-		this.animation = startAnimation(resolve);
+			this.animation = startAnimation(resolve);
 
-		if (this.events.animationStart) {
-			this.events.animationStart.notify();
-		}
-
-		return promise.then(() => {
+			if (this.events.animationStart) {
+				this.events.animationStart.notify();
+			}
+		}).then(() => {
 			if (this.events.animationComplete) {
 				this.events.animationComplete.notify();
 			}

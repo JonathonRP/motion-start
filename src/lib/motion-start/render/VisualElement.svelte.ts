@@ -54,8 +54,7 @@ function findClosestProjectingParent(instance: unknown, layoutId?: string) {
 	while (parent) {
 		const parentVisualElement = visualElementStore.get(parent);
 		const parentOptions = parentVisualElement?.options as { allowProjection?: boolean } | undefined;
-		const projection =
-			parentOptions?.allowProjection !== false ? parentVisualElement?.projection : undefined;
+		const projection = parentOptions?.allowProjection !== false ? parentVisualElement?.projection : undefined;
 
 		if (projection && (layoutId === undefined || projection.options.layoutId !== layoutId)) {
 			return projection;
@@ -75,6 +74,16 @@ function setProjectionParent(projection: IProjectionNode<unknown>, parent: IProj
 }
 
 function syncProjectionParentWithDom(projection: IProjectionNode<unknown>, instance: unknown) {
+	/**
+	 * Upstream constructs portal projection nodes without their React-tree
+	 * parent, which attaches them to the document projection root. The Svelte
+	 * portal fixture mounts in-place before its ref moves the DOM node, so the
+	 * DOM-parent reconciliation below must not undo that explicit boundary.
+	 */
+	if (projection.options.visualElement?.getProps()['data-framer-portal-id']) {
+		return;
+	}
+
 	const actualParent = findClosestProjectingParent(instance, projection.options.layoutId);
 
 	if (actualParent) {

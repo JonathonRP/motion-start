@@ -98,8 +98,58 @@ describe('motionExitOutro', () => {
 
 		const config = motionExitOutro(node, { context, visualElement });
 
-		expect(config.duration).toBe(201);
-		expect(reserve).toHaveBeenCalledWith(201);
+		expect(config.duration).toBe(241);
+		expect(reserve).toHaveBeenCalledWith(241);
+	});
+
+	it('retains an afterChildren parent through a configured child exit variant before it starts running', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context, reserve } = createContext();
+		const child = {
+			children: new Set(),
+			getDefaultTransition: () => undefined,
+			getProps: () => ({
+				variants: {
+					exit: {
+						opacity: 0,
+						transition: { duration: 0.1 },
+					},
+				},
+			}),
+			getVariant: (name: string) =>
+				name === 'exit'
+					? {
+							opacity: 0,
+							transition: { duration: 0.1 },
+						}
+					: undefined,
+			values: new Map(),
+			variantChildren: new Set(),
+		} as unknown as VisualElement<HTMLElement>;
+		const visualElement = {
+			animationState: {
+				setActive: vi.fn(() => new Promise(() => undefined)),
+			},
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({
+				exit: {
+					opacity: 0,
+					transition: { duration: 0.1, when: 'afterChildren' },
+				},
+			}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values: new Map(),
+			variantChildren: new Set([child]),
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(config.duration).toBe(241);
+		expect(reserve).toHaveBeenCalledWith(241);
 	});
 
 	it('retains a layoutId-only node for its configured layout transition', async () => {

@@ -44,7 +44,10 @@ describe('AnimatePresence mode list layout', () => {
 		cy.get('#mode-item-3').then(([$element]) => initialTops.push($element.getBoundingClientRect().top));
 		cy.get('#remove-first').click();
 		cy.get('#mode-item-0').should('not.exist');
-		cy.wait(16);
+		// Svelte removes the keyed outro block before the projection update is
+		// committed. Sample the following layout frame rather than the teardown
+		// frame, which can contain less than one pixel of spring movement.
+		cy.wait(50);
 
 		cy.then(() => {
 			const samples = [readTop('#mode-item-1'), readTop('#mode-item-2'), readTop('#mode-item-3')];
@@ -62,7 +65,7 @@ describe('AnimatePresence mode list layout', () => {
 		cy.get('#mode-item-3').then(([$element]) => initialTops.push($element.getBoundingClientRect().top));
 		cy.get('#mode-item-1').click();
 		cy.get('#mode-item-1').should('not.exist');
-		cy.wait(16);
+		cy.wait(50);
 
 		cy.then(() => {
 			const samples = [readTop('#mode-item-2'), readTop('#mode-item-3')];

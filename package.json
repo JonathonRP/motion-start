@@ -122,7 +122,7 @@
 		"bits-ui": "^2.18.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"cypress": "latest",
+		"cypress": "13.6.0",
 		"cypress-real-events": "^1.15.0",
 		"happy-dom": "^20.10.6",
 		"lucide-svelte": "^0.542.0",

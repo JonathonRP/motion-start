@@ -1,11 +1,12 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { nextFrame, waitFor } from '../../test-utils/component-test-utils.js';
 import { visualElementStore } from '../../render/store.js';
+import { nextFrame, waitFor } from '../../test-utils/component-test-utils.js';
 import GestureLifecycleFixture from './GestureLifecycleFixture.svelte';
 import MeasureLayoutCommitFixture from './MeasureLayoutCommitFixture.svelte';
 import MeasureLayoutListFixture from './MeasureLayoutListFixture.svelte';
 import MotionLifecycleFixture from './MotionLifecycleFixture.svelte';
+import PortalProjectionFixture from './PortalProjectionFixture.svelte';
 
 let instance: ReturnType<typeof mount> | undefined;
 
@@ -92,6 +93,22 @@ describe('motion component commit lifecycle', () => {
 
 		expect(childCountsAtSnapshot[0]).toBe(1);
 		expect(list.children.length).toBe(2);
+	});
+
+	it('keeps a portal layout node on the document projection tree', async () => {
+		instance = mount(PortalProjectionFixture, { target: document.body });
+		flushSync();
+		await nextFrame();
+
+		const parent = document.querySelector('#portal-parent') as HTMLElement;
+		const child = document.querySelector('#portal-child') as HTMLElement;
+		const parentProjection = visualElementStore.get(parent)?.projection;
+		const childProjection = visualElementStore.get(child)?.projection;
+
+		expect(child.parentElement).toBe(document.body);
+		expect(childProjection?.parent).not.toBe(parentProjection);
+		expect(childProjection?.parent?.instance).toBe(window);
+		expect(childProjection?.root).toBe(childProjection?.parent);
 	});
 
 	it('suppresses the initial animation and animates subsequent prop commits', async () => {

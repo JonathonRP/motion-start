@@ -81,6 +81,8 @@ const defaultLayoutTransition = {
 	duration: 0.45,
 	ease: [0.4, 0, 0.1, 1],
 };
+// Matches the frame-delta cap used by Framer Motion's render batcher.
+const maxFrameElapsed = 40;
 
 function getTransitionDuration(transition: Record<string, unknown> | undefined) {
 	if (!transition) return 0;
@@ -121,18 +123,66 @@ function getRunningTreeDuration(visualElement: VisualElement<HTMLElement | SVGEl
 	return longest;
 }
 
-function getConfiguredExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
-	const exit = visualElement.getProps().exit;
-	if (!exit || Array.isArray(exit)) return { duration: 0, afterChildren: false };
+function getConfiguredExitTiming(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	const exit = visualElement.getProps().exit ?? visualElement.getVariant?.('exit');
+	if (!exit || Array.isArray(exit)) {
+		return {
+			duration: 0,
+			delayChildren: 0,
+			staggerChildren: 0,
+			staggerDirection: 1,
+			when: undefined,
+		};
+	}
 
 	const resolved = resolveVariant(visualElement, exit, visualElement.presenceContext?.custom);
 	const transition = resolved?.transition ?? visualElement.getDefaultTransition();
-	if (!transition) return { duration: 0, afterChildren: false };
+	if (!transition) {
+		return {
+			duration: 0,
+			delayChildren: 0,
+			staggerChildren: 0,
+			staggerDirection: 1,
+			when: undefined,
+		};
+	}
 
 	return {
 		duration: getTransitionDuration(transition as Record<string, unknown>),
-		afterChildren: transition.when === 'afterChildren',
+		delayChildren: transition.delayChildren ?? 0,
+		staggerChildren: transition.staggerChildren ?? 0,
+		staggerDirection: transition.staggerDirection ?? 1,
+		when: transition.when,
 	};
+}
+
+/**
+ * Upstream sequences named variants through `variantChildren`. React keeps
+ * the subtree mounted until those animation promises settle, whereas Svelte
+ * needs a transition duration up front to retain an outro block. Mirror the
+ * same before/after/concurrent timing solely for that retention window.
+ */
+function getConfiguredExitTreeDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>): number {
+	const timing = getConfiguredExitTiming(visualElement);
+	const children = Array.from(visualElement.variantChildren ?? []).sort((a, b) => a.sortNodePosition(b));
+	const maxStaggerDuration = Math.max(0, children.length - 1) * timing.staggerChildren;
+	let childrenDuration = 0;
+
+	children.forEach((child, index) => {
+		const staggerDuration =
+			timing.staggerDirection === 1
+				? index * timing.staggerChildren
+				: maxStaggerDuration - index * timing.staggerChildren;
+		const delay = timing.delayChildren + staggerDuration;
+		childrenDuration = Math.max(
+			childrenDuration,
+			delay * 1000 + getConfiguredExitTreeDuration(child as VisualElement<HTMLElement | SVGElement | unknown>)
+		);
+	});
+
+	return (timing.when === 'beforeChildren' || timing.when === 'afterChildren') && childrenDuration
+		? timing.duration + childrenDuration + maxFrameElapsed
+		: Math.max(timing.duration, childrenDuration);
 }
 
 function getConfiguredLayoutDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
@@ -146,12 +196,15 @@ function getConfiguredLayoutDuration(visualElement: VisualElement<HTMLElement | 
 
 function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
 	const runningDuration = getRunningTreeDuration(visualElement);
-	const configured = getConfiguredExitDuration(visualElement);
+	const timing = getConfiguredExitTiming(visualElement);
+	const configuredDuration = getConfiguredExitTreeDuration(visualElement);
 	const layoutDuration = getConfiguredLayoutDuration(visualElement);
+	const runningSequenceDuration =
+		timing.when === 'afterChildren' && runningDuration
+			? runningDuration + timing.duration + maxFrameElapsed
+			: runningDuration;
 
-	return configured.afterChildren
-		? Math.max(layoutDuration, runningDuration + configured.duration)
-		: Math.max(layoutDuration, runningDuration, configured.duration);
+	return Math.max(layoutDuration, runningSequenceDuration, configuredDuration);
 }
 
 /**
