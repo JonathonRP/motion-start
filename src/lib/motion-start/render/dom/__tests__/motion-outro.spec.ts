@@ -234,6 +234,28 @@ describe('motionExitOutro', () => {
 		expect(didUpdate).toHaveBeenCalledTimes(1);
 	});
 
+	it('releases the leaked exit completion when Svelte aborts a layout outro before tick(0)', async () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { complete, context } = createContext();
+		const { visualElement } = createVisualElement(node, { duration: 1 });
+		const originalPresence = {
+			id: 'original',
+			isPresent: true,
+			register: () => () => undefined,
+		};
+		visualElement.presenceContext = originalPresence;
+
+		motionExitOutro(node, { context, visualElement });
+		await Promise.resolve();
+
+		expect(complete).not.toHaveBeenCalled();
+		motionEnterIntro(node, { context, visualElement });
+
+		expect(complete).toHaveBeenCalledTimes(1);
+		expect(complete).toHaveBeenCalledWith(expect.any(String), false);
+	});
+
 	it('flushes the final layout after outro cleanup instead of styling the mounted exit node', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);

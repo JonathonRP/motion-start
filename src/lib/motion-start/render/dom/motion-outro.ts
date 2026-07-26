@@ -15,6 +15,9 @@ interface MotionOutroParams {
 
 let presenceChildId = 0;
 const pendingLayoutUpdates = new WeakMap<Element, IProjectionNode<unknown>>();
+// Retained layout outros rely on tick(0), which Svelte skips when it aborts
+// an outro by re-adding the same keyed node.
+const pendingExitFinish = new WeakMap<Element, VoidFunction>();
 
 type LayoutBox = Measurements['layoutBox'];
 
@@ -282,6 +285,9 @@ export function motionEnterIntro(
 	pendingLayoutUpdates.delete(motionNode);
 	removePopLayout(motionNode);
 	if (visualElement?.presenceContext?.isPresent === false) {
+		const releaseExitFinish = pendingExitFinish.get(motionNode);
+		pendingExitFinish.delete(motionNode);
+		releaseExitFinish?.();
 		visualElement.presenceContext = visualElement.prevPresenceContext ?? null;
 		visualElement.prevPresenceContext = undefined;
 		if (visualElement.projection) {
@@ -318,13 +324,14 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	const element = visualElement;
 	const motionNode = getMotionNode(node, element);
 	const complete = context.begin();
-	let removePopLayout: VoidFunction | undefined;
+	let releasePopLayout: VoidFunction | undefined;
 	let previousPointerEvents = '';
 	let completed = false;
 
 	function finish(completedExit = true) {
 		if (completed) return;
 		completed = true;
+		pendingExitFinish.delete(motionNode);
 		complete(element.presenceContext?.id ?? 'outro', completedExit);
 	}
 
@@ -342,7 +349,7 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	const previousLayoutBox: Box | undefined = element.projection?.layout?.layoutBox;
 	const projectionRoot = markProjectionWillUpdate(element);
 	if (context.mode === 'popLayout') {
-		removePopLayout = applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
+		releasePopLayout = applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
 		flushPopLayout(motionNode);
 		(projectionRoot as { update?: VoidFunction } | undefined)?.update?.();
 	}
@@ -351,6 +358,7 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	const layoutDuration = getConfiguredLayoutDuration(element);
 	const duration = retainThroughCompletion(getExitDuration(element));
 	let completedExit = true;
+	pendingExitFinish.set(motionNode, () => finish(false));
 	exitAnimation.then(
 		() => {
 			if (layoutDuration === 0) finish();
@@ -369,7 +377,7 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 		duration,
 		tick(t) {
 			if (t === 0) {
-				removePopLayout?.();
+				releasePopLayout?.();
 				if (motionNode instanceof HTMLElement) {
 					motionNode.style.pointerEvents = previousPointerEvents;
 					delete motionNode.dataset.motionPrevPointerEvents;
