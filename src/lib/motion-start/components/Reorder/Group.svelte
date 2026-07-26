@@ -103,6 +103,16 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 	// Guard against multiple onReorder calls in the same render cycle.
 	let isReordering = false;
 
+	// Items register themselves on layout measure but are never deregistered,
+	// and `order` lives for the lifetime of the group. Drop entries whose value
+	// is no longer rendered so removed items can't be picked as reorder targets.
+	function reconcileOrder() {
+		const present = new Set(values);
+		if (order.some((entry) => !present.has(entry.value))) {
+			order = order.filter((entry) => present.has(entry.value));
+		}
+	}
+
 	const context = $state<ReorderContext<V>>({
 		get axis() {
 			return axis;
@@ -121,6 +131,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 		},
 		updateOrder: (item, offset, velocity) => {
 			if (isReordering) return;
+			reconcileOrder();
 			const newOrder = checkReorder(order, item, offset, velocity);
 			if (order !== newOrder) {
 				isReordering = true;
