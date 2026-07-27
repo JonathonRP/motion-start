@@ -5,14 +5,14 @@
 	/**
 	 * Landing hero.
 	 *
-	 * Layout follows the reference design — logo and wordmark side by side, a
-	 * small bold tagline, and a lavender CTA pill — combined with the richer
-	 * atmosphere of the earlier pass: a soft radial glow behind the lockup, a
-	 * bloom on the logo, and a quiet set of footer links.
+	 * The logo lockup and its motion are the original pre-mockup treatment:
+	 * an 88px mark drifting above a large monospace wordmark, over a soft
+	 * radial glow. The tagline and CTA pill keep the reference design's
+	 * styling.
 	 */
 
 	const time = useTime();
-	// Previous pass's drift: wider travel, slightly quicker cycle.
+	// Original drift: wide travel, quick cycle.
 	const drift = useTransform(time, (t: number) => Math.sin(t / 1400) * 10);
 
 	const container = {
@@ -45,22 +45,27 @@
 		initial="hidden"
 		animate="visible"
 	>
-		<!-- Logo and wordmark share a row, as in the design. -->
-		<motion.div variants={rise} class="flex items-center gap-3.5" style={{ y: drift }}>
+		<!-- Logo sits above the wordmark, drifting on its own, as it did before
+		     the mockup-driven rewrite. -->
+		<motion.div variants={rise} style={{ y: drift }} class="mb-7">
 			<motion.img
 				src="/logo.webp"
-				alt=""
-				width="60"
-				height="60"
-				class="size-15 rounded-2xl shadow-[0_0_60px_-12px_var(--ms-glow)]"
+				alt="Motion Start"
+				width="88"
+				height="88"
+				class="size-22 rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
 				whileHover={{ scale: 1.06, rotate: -4 }}
 				transition={{ type: "spring", stiffness: 320, damping: 18 }}
 			/>
-			<span class="text-left font-mono text-2xl leading-[1.1] font-normal tracking-tight">
-				<span class="block">motion</span>
-				<span class="block">start</span>
-			</span>
 		</motion.div>
+
+		<motion.h1
+			variants={rise}
+			class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl"
+		>
+			<span class="block">motion</span>
+			<span class="block">start</span>
+		</motion.h1>
 
 		<motion.p variants={rise} class="mt-7 max-w-[19rem] text-[13px] leading-snug font-bold">
 			A production-ready declarative motion library for Svelte.
@@ -100,7 +105,7 @@
 		translate: -50% 0;
 		background: radial-gradient(
 			circle at 50% 45%,
-			color-mix(in oklab, var(--ms-glow) 40%, transparent),
+			color-mix(in oklab, var(--ms-glow) 45%, transparent),
 			transparent 65%
 		);
 		filter: blur(20px);
