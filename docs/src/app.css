@@ -124,20 +124,10 @@ main:has(> #content) > footer {
 	gap: var(--ms-space-md);
 }
 
-/* AnimatePresence briefly keeps the outgoing and incoming pages mounted at the
- * same time. As flex items they'd sit side by side and halve the article's
- * width, which is the jump you see on every navigation. A single-cell grid
- * makes them stack in the same place instead, so the article never moves and
- * the two pages cross over each other as intended. */
-#content {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	align-items: start;
-}
-
-#content > * {
-	grid-area: 1 / 1;
-}
+/* One child at a time: `AnimatePresence mode="wait"` keeps the outgoing page
+ * out of flow once its exit finishes, so the article never has to share the
+ * row. This needs motion-start >= 0.2.0-next.2 (the wait-mode serialisation
+ * fix); before that both pages tiled here and the column visibly halved. */
 
 /* The reading column is phi^2 times the sidebar, which sets the two columns
  * in a golden relationship instead of a round 640px. */
