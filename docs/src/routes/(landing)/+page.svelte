@@ -63,8 +63,7 @@
 			variants={rise}
 			class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl"
 		>
-			<span class="block">motion</span>
-			<span class="block">start</span>
+			motion start
 		</motion.h1>
 
 		<motion.p variants={rise} class="mt-7 max-w-[19rem] text-[13px] leading-snug font-bold">
