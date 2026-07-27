@@ -130,6 +130,27 @@ main:has(> #content) > footer {
 	max-width: calc(var(--sidebar-width, 16rem) * var(--ms-phi-2));
 }
 
+/* The table-of-contents column sizes to its own text, so a page with longer
+ * headings would widen it and shove the article sideways. Pin it to the nav
+ * sidebar's width so both flanks match and the article never moves. */
+#content aside.sticky {
+	flex: 0 0 auto;
+	width: var(--sidebar-width, 16rem);
+}
+
+/* The article wrapper takes the rest, rather than shrink-wrapping. */
+#content aside.sticky + div {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+@media (max-width: 1279px) {
+	/* The kit hides the TOC's inner block below xl; drop the column too. */
+	#content aside.sticky {
+		width: 0;
+	}
+}
+
 /* -------------------------------------------------------------- sidebar -- */
 
 /* The kit puts `border-r` on the fixed sidebar column wrapper, which draws a

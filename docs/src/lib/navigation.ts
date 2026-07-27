@@ -25,6 +25,7 @@ export const navigation = defineNavigation({
 			items: [
 				{ title: "Introduction", href: "/docs" },
 				{ title: "Installation", href: "/docs/getting-started" },
+				{ title: "Examples", href: "/docs/examples" },
 			],
 		},
 		{

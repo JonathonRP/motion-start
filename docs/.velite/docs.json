@@ -1,5 +1,62 @@
 [
   {
+    "title": "Examples",
+    "description": "A gallery of everything Motion Start can do, in one scroll.",
+    "path": "examples",
+    "content": "<script>\n\timport { Callout, DemoContainer } from \"@svecodocs/kit\";\n\timport TransitionDemo from \"$lib/components/demos/transition-demo.svelte\";\n\timport StaggerDemo from \"$lib/components/demos/stagger-demo.svelte\";\n\timport GestureDemo from \"$lib/components/demos/gesture-demo.svelte\";\n\timport DragDemo from \"$lib/components/demos/drag-demo.svelte\";\n\timport LayoutDemo from \"$lib/components/demos/layout-demo.svelte\";\n\timport SharedLayoutDemo from \"$lib/components/demos/shared-layout-demo.svelte\";\n\timport PresenceDemo from \"$lib/components/demos/presence-demo.svelte\";\n\timport ReorderDemo from \"$lib/components/demos/reorder-demo.svelte\";\n\timport MotionValueDemo from \"$lib/components/demos/motion-value-demo.svelte\";\n</script>\n<p>Every demo below is live — the same components used throughout the rest of these docs, collected\r\nin one place. Each links to the page that explains it.</p>\n<h2>Transitions</h2>\n<p>Springs are the default for transforms. Everything else eases.</p>\n<democontainer class=\"flex justify-center py-10\">\n\t<transitiondemo>\n</transitiondemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;motion.div animate={{ x: 100 }} transition={{ type: \"spring\", stiffness: 300 }} />\n</code></pre>\n<p>Read more in <a href=\"/docs/animation/transitions\">Transitions</a>.</p>\n<h2>Variants and stagger</h2>\n<p>Variants let a parent orchestrate its children, so a list can cascade without any per-item timing.</p>\n<democontainer class=\"py-10\">\n\t<staggerdemo>\n</staggerdemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;motion.ul variants={container} initial=\"hidden\" animate=\"visible\">\r\n\t{#each items as item (item)}\r\n\t\t&#x3C;motion.li variants={child} />\r\n\t{/each}\r\n&#x3C;/motion.ul>\n</code></pre>\n<p>Read more in <a href=\"/docs/animation/overview\">Animation overview</a>.</p>\n<h2>Gestures</h2>\n<p><code>whileHover</code> and <code>whileTap</code> are transient states — release the gesture and the element returns to\r\nwhatever <code>animate</code> says, with no bookkeeping.</p>\n<democontainer class=\"flex justify-center py-10\">\n\t<gesturedemo>\n</gesturedemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.96 }} />\n</code></pre>\n<h2>Drag</h2>\n<democontainer class=\"flex justify-center py-10\">\n\t<dragdemo>\n</dragdemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;motion.div drag dragConstraints={{ left: -80, right: 80 }} dragElastic={0.2} />\n</code></pre>\n<p>Read more in <a href=\"/docs/animation/gestures\">Gestures</a>.</p>\n<h2>Layout animations</h2>\n<p><code>layout</code> measures the element before and after a change and animates the difference with\r\ntransforms, so you can animate properties that are otherwise far too expensive.</p>\n<democontainer class=\"py-8\">\n\t<layoutdemo>\n</layoutdemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;motion.div layout />\n</code></pre>\n<h2>Shared layout</h2>\n<p>A <code>layoutId</code> moves a single element between positions — the classic animated tab indicator.</p>\n<democontainer class=\"flex justify-center py-10\">\n\t<sharedlayoutdemo>\n</sharedlayoutdemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;motion.span layoutId=\"tab-pill\" />\n</code></pre>\n<p>Read more in <a href=\"/docs/animation/layout\">Layout animations</a>.</p>\n<h2>Exit animations</h2>\n<p><code>AnimatePresence</code> keeps an element in the DOM long enough to animate out.</p>\n<democontainer class=\"flex justify-center py-10\">\n\t<presencedemo>\n</presencedemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;AnimatePresence>\r\n\t{#if visible}\r\n\t\t&#x3C;motion.div exit={{ opacity: 0, scale: 0.9 }} />\r\n\t{/if}\r\n&#x3C;/AnimatePresence>\n</code></pre>\n<p>Read more in <a href=\"/docs/components/animate-presence\">AnimatePresence</a>.</p>\n<h2>Reorder</h2>\n<democontainer class=\"py-8\">\n\t<reorderdemo>\n</reorderdemo></democontainer>\n<pre><code class=\"language-svelte\">&#x3C;Reorder.Group axis=\"y\" bind:values={items}>\r\n\t{#each items as item (item)}\r\n\t\t&#x3C;Reorder.Item value={item} />\r\n\t{/each}\r\n&#x3C;/Reorder.Group>\n</code></pre>\n<p>Read more in <a href=\"/docs/components/reorder\">Reorder</a>.</p>\n<h2>Motion values</h2>\n<p>A motion value updates outside the component lifecycle, so you can drive an animation every frame\r\nwithout re-rendering.</p>\n<democontainer class=\"py-10\">\n\t<motionvaluedemo>\n</motionvaluedemo></democontainer>\n<pre><code class=\"language-svelte\">const x = useMotionValue(0);\r\nconst opacity = useTransform(x, [-100, 0, 100], [0, 1, 0]);\n</code></pre>\n<p>Read more in <a href=\"/docs/motion-values/overview\">Motion values</a>.</p>\n<callout type=\"tip\">\nEvery demo on this page is a plain Svelte component in\n<code>src/lib/components/demos</code> — copy one and start editing.\n</callout>",
+    "raw": "<script>\r\n\timport { Callout, DemoContainer } from \"@svecodocs/kit\";\r\n\timport TransitionDemo from \"$lib/components/demos/transition-demo.svelte\";\r\n\timport StaggerDemo from \"$lib/components/demos/stagger-demo.svelte\";\r\n\timport GestureDemo from \"$lib/components/demos/gesture-demo.svelte\";\r\n\timport DragDemo from \"$lib/components/demos/drag-demo.svelte\";\r\n\timport LayoutDemo from \"$lib/components/demos/layout-demo.svelte\";\r\n\timport SharedLayoutDemo from \"$lib/components/demos/shared-layout-demo.svelte\";\r\n\timport PresenceDemo from \"$lib/components/demos/presence-demo.svelte\";\r\n\timport ReorderDemo from \"$lib/components/demos/reorder-demo.svelte\";\r\n\timport MotionValueDemo from \"$lib/components/demos/motion-value-demo.svelte\";\r\n</script>\r\n\r\nEvery demo below is live — the same components used throughout the rest of these docs, collected\r\nin one place. Each links to the page that explains it.\r\n\r\n## Transitions\r\n\r\nSprings are the default for transforms. Everything else eases.\r\n\r\n<DemoContainer class=\"flex justify-center py-10\">\r\n\t<TransitionDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<motion.div animate={{ x: 100 }} transition={{ type: \"spring\", stiffness: 300 }} />\r\n```\r\n\r\nRead more in [Transitions](/docs/animation/transitions).\r\n\r\n## Variants and stagger\r\n\r\nVariants let a parent orchestrate its children, so a list can cascade without any per-item timing.\r\n\r\n<DemoContainer class=\"py-10\">\r\n\t<StaggerDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<motion.ul variants={container} initial=\"hidden\" animate=\"visible\">\r\n\t{#each items as item (item)}\r\n\t\t<motion.li variants={child} />\r\n\t{/each}\r\n</motion.ul>\r\n```\r\n\r\nRead more in [Animation overview](/docs/animation/overview).\r\n\r\n## Gestures\r\n\r\n`whileHover` and `whileTap` are transient states — release the gesture and the element returns to\r\nwhatever `animate` says, with no bookkeeping.\r\n\r\n<DemoContainer class=\"flex justify-center py-10\">\r\n\t<GestureDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.96 }} />\r\n```\r\n\r\n## Drag\r\n\r\n<DemoContainer class=\"flex justify-center py-10\">\r\n\t<DragDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<motion.div drag dragConstraints={{ left: -80, right: 80 }} dragElastic={0.2} />\r\n```\r\n\r\nRead more in [Gestures](/docs/animation/gestures).\r\n\r\n## Layout animations\r\n\r\n`layout` measures the element before and after a change and animates the difference with\r\ntransforms, so you can animate properties that are otherwise far too expensive.\r\n\r\n<DemoContainer class=\"py-8\">\r\n\t<LayoutDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<motion.div layout />\r\n```\r\n\r\n## Shared layout\r\n\r\nA `layoutId` moves a single element between positions — the classic animated tab indicator.\r\n\r\n<DemoContainer class=\"flex justify-center py-10\">\r\n\t<SharedLayoutDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<motion.span layoutId=\"tab-pill\" />\r\n```\r\n\r\nRead more in [Layout animations](/docs/animation/layout).\r\n\r\n## Exit animations\r\n\r\n`AnimatePresence` keeps an element in the DOM long enough to animate out.\r\n\r\n<DemoContainer class=\"flex justify-center py-10\">\r\n\t<PresenceDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<AnimatePresence>\r\n\t{#if visible}\r\n\t\t<motion.div exit={{ opacity: 0, scale: 0.9 }} />\r\n\t{/if}\r\n</AnimatePresence>\r\n```\r\n\r\nRead more in [AnimatePresence](/docs/components/animate-presence).\r\n\r\n## Reorder\r\n\r\n<DemoContainer class=\"py-8\">\r\n\t<ReorderDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\n<Reorder.Group axis=\"y\" bind:values={items}>\r\n\t{#each items as item (item)}\r\n\t\t<Reorder.Item value={item} />\r\n\t{/each}\r\n</Reorder.Group>\r\n```\r\n\r\nRead more in [Reorder](/docs/components/reorder).\r\n\r\n## Motion values\r\n\r\nA motion value updates outside the component lifecycle, so you can drive an animation every frame\r\nwithout re-rendering.\r\n\r\n<DemoContainer class=\"py-10\">\r\n\t<MotionValueDemo />\r\n</DemoContainer>\r\n\r\n```svelte\r\nconst x = useMotionValue(0);\r\nconst opacity = useTransform(x, [-100, 0, 100], [0, 1, 0]);\r\n```\r\n\r\nRead more in [Motion values](/docs/motion-values/overview).\r\n\r\n<Callout type=\"tip\">\r\nEvery demo on this page is a plain Svelte component in\r\n<code>src/lib/components/demos</code> — copy one and start editing.\r\n</Callout>",
+    "toc": [
+      {
+        "title": "Transitions",
+        "url": "#transitions",
+        "items": []
+      },
+      {
+        "title": "Variants and stagger",
+        "url": "#variants-and-stagger",
+        "items": []
+      },
+      {
+        "title": "Gestures",
+        "url": "#gestures",
+        "items": []
+      },
+      {
+        "title": "Drag",
+        "url": "#drag",
+        "items": []
+      },
+      {
+        "title": "Layout animations",
+        "url": "#layout-animations",
+        "items": []
+      },
+      {
+        "title": "Shared layout",
+        "url": "#shared-layout",
+        "items": []
+      },
+      {
+        "title": "Exit animations",
+        "url": "#exit-animations",
+        "items": []
+      },
+      {
+        "title": "Reorder",
+        "url": "#reorder",
+        "items": []
+      },
+      {
+        "title": "Motion values",
+        "url": "#motion-values",
+        "items": []
+      }
+    ],
+    "section": "Getting Started",
+    "slug": "examples",
+    "slugFull": "/examples"
+  },
+  {
     "title": "Getting Started",
     "description": "Install Motion Start and write your first animation.",
     "path": "getting-started",

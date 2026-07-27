@@ -27,7 +27,13 @@
 
 	<AnimatePresence mode="wait">
 		{#key page.url.pathname}
+			<!-- DocPage emits the TOC <aside> and the article as siblings that the
+			     kit expects to be direct flex children of #content. This wrapper
+			     has to reproduce that row, or the two stack and the column's width
+			     shrink-wraps its content — which, in a row-reverse flex, shifts the
+			     left edge on every navigation. -->
 			<motion.div
+				class="flex w-full flex-row-reverse xl:gap-4"
 				initial={{ opacity: 0, y: 12 }}
 				animate={{ opacity: 1, y: 0 }}
 				exit={{ opacity: 0, y: -8 }}
