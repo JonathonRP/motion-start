@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 /**
  * Opens a Svelte component context for a motion component.
