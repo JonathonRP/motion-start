@@ -60,6 +60,13 @@ export const animateLayout = {
 
 	const reorderLayoutDependency = $derived(reorderContext?.orderVersion);
 
+	// Both contexts can be active at once (a reordered list inside an
+	// AnimatePresence), so combine them into a single comparable token rather
+	// than letting one mask updates from the other.
+	const ambientLayoutVersion = $derived(
+		`${String(reorderLayoutDependency)}:${String(presenceLayoutDependency)}`,
+	);
+
 	// custom can still serve as a local layout dependency when no explicit
 	// layoutDependency is provided.
 	const layoutGroup = $derived(
@@ -70,7 +77,7 @@ export const animateLayout = {
 <MeasureLayoutWithContext
 	{...props}
 	layoutDependency={props.layoutDependency ?? props.custom}
-	ambientLayoutVersion={reorderLayoutDependency ?? presenceLayoutDependency}
+	{ambientLayoutVersion}
 	measurePop={presenceMeasurePop}
 	{layoutGroup}
 	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}

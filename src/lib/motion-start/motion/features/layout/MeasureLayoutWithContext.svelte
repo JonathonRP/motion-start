@@ -93,7 +93,7 @@ watch.pre(
 		() => props.visualElement?.projection,
 		() => props.isPresent,
 	],
-	([], [, prevLayoutDependency, prevAmbientLayoutVersion, , , prevIsPresent]) => {
+	(_currentValues, [, prevLayoutDependency, prevAmbientLayoutVersion, , , prevIsPresent]) => {
 		const { layoutDependency, ambientLayoutVersion, visualElement, isPresent } = props;
 		const projection = visualElement?.projection;
 		const shouldSnapshot =
