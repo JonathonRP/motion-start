@@ -60,12 +60,12 @@
 	:global(.ms-footer) {
 		display: flex;
 		align-items: baseline;
-		gap: 0.875rem;
-		margin: 4rem 2rem 0;
-		padding: 1.25rem 0 2rem;
+		gap: var(--ms-space-sm);
+		margin: var(--ms-space-xl) var(--ms-space-md) 0;
+		padding: var(--ms-space-sm) 0 var(--ms-space-lg);
 		border-top: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: var(--ms-text-nudge);
 		letter-spacing: -0.01em;
 	}
 
@@ -80,7 +80,7 @@
 
 	:global(.ms-footer-links) {
 		display: flex;
-		gap: 1.25rem;
+		gap: var(--ms-space-md);
 		margin-left: auto;
 	}
 
