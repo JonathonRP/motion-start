@@ -1,4 +1,51 @@
-@import "@svecodocs/kit/theme-blue.css";
+@import "@svecodocs/kit/theme-fuchsia.css";
 @import "@svecodocs/kit/globals.css";
 
 @source "../node_modules/@svecodocs/kit";
+
+/*
+ * Motion Start docs theme.
+ *
+ * Near-black surfaces with a soft fuchsia glow, a monospaced navigation and
+ * wordmark, and gradient accents lifted from the logo.
+ */
+
+:root {
+	--ms-glow: oklch(70% 0.24 328 / 0.55);
+}
+
+.dark {
+	--theme-color-background: #08080a;
+	--theme-color-background-secondary: #000;
+	--theme-color-border: oklch(28% 0.008 300);
+}
+
+/* Monospaced sidebar navigation, matching the design. */
+aside a,
+aside button,
+aside h4 {
+	font-family: var(--font-mono, ui-monospace, monospace);
+	letter-spacing: -0.01em;
+}
+
+/* Gradient page titles, echoing the logo. */
+.dark main h1 {
+	background: linear-gradient(
+		100deg,
+		oklch(97% 0.02 300),
+		oklch(88% 0.09 330) 55%,
+		oklch(85% 0.11 265)
+	);
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

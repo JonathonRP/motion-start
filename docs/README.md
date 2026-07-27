@@ -1,38 +1,74 @@
-# sv
+# motion-start docs
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+The documentation site for [motion-start](https://github.com/JonathonRP/motion-start), built with
+[SvelteKit](https://svelte.dev/docs/kit), [`@svecodocs/kit`](https://github.com/svecosystem/svecodocs)
+and [velite](https://velite.js.org).
 
-## Creating a project
+The site consumes the **local build** of the library (via a Vite alias to `../dist/index.js`) so the
+live demos always reflect the code in this repo.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Prerequisites
+
+Build the library from the repo root first:
 
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+cd ..
+bun install
+bun run package
 ```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+```bash
+bun install
+bun run dev
+```
+
+This runs velite in watch mode alongside `vite dev` at http://localhost:5173.
+
+To run just one half:
 
 ```bash
-npm run dev
+bun run dev:content   # velite --watch
+bun run dev:svelte    # vite dev
+```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+### `NO_CF_EMULATE`
+
+`@sveltejs/adapter-cloudflare` spins up a workerd/miniflare process to emulate Cloudflare bindings
+during `dev` and `prerender`. On some machines (notably Windows) workerd crashes with an access
+violation. Set `NO_CF_EMULATE=1` to skip the emulation — the site uses no Cloudflare bindings, so
+nothing is lost locally:
+
+```bash
+NO_CF_EMULATE=1 bun run dev
+```
+
+```powershell
+$env:NO_CF_EMULATE = '1'; bun run dev
 ```
 
 ## Building
 
-To create a production version of your app:
-
 ```bash
-npm run build
+bun run build
+bun run preview
 ```
 
-You can preview the production build with `npm run preview`.
+## Writing content
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Markdown lives in `src/content/`, grouped by section directory. Each file needs frontmatter:
+
+```md
+---
+title: useTransform
+description: Create a motion value that transforms another.
+section: Motion values
+---
+```
+
+`section` must match the enum in `velite.config.js`, and the sidebar order comes from the `NN_`
+filename prefix (stripped from the slug). Sidebar groups are defined in `src/lib/navigation.ts`.
+
+Pages can import live demos from `src/lib/components/demos/` and components from `@svecodocs/kit`
+inside a `<script>` block.

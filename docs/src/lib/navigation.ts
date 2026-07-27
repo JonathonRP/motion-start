@@ -6,27 +6,16 @@ import { getAllDocs } from "./utils.js";
 
 const allDocs = getAllDocs();
 
-const components = allDocs
-	.filter((doc) => doc.section === "Components")
-	.map((doc) => ({
-		title: doc.title,
-		href: `/docs/${doc.slug}`,
-	}));
+/** Docs are ordered by their `NN_` filename prefix, which velite strips from the slug. */
+function section(name: string) {
+	return allDocs
+		.filter((doc) => doc.section === name)
+		.map((doc) => ({
+			title: doc.navLabel ?? doc.title,
+			href: `/docs/${doc.slug}`,
+		}));
+}
 
-const configuration = allDocs
-	.filter((doc) => doc.section === "Configuration")
-	.map((doc) => ({
-		title: doc.title,
-		href: `/docs/${doc.slug}`,
-	}));
-
-const animation = allDocs
-	.filter((doc) => doc.section === "Animation")
-	.map((doc) => ({
-		title: doc.title,
-		href: `/docs/${doc.slug}`,
-	}));
-	
 export const navigation = defineNavigation({
 	anchors: [
 		{
@@ -41,22 +30,22 @@ export const navigation = defineNavigation({
 		},
 		{
 			title: "Releases",
-			href: "https://github.com/svecosystem/svecodocs/releases",
+			href: "https://github.com/JonathonRP/motion-start/releases",
 			icon: Tag,
 		},
 	],
 	sections: [
 		{
-			title: "Configuration",
-			items: configuration,
-		},
-		{
 			title: "Animation",
-			items: animation,
+			items: section("Animation"),
 		},
 		{
 			title: "Components",
-			items: components,
+			items: section("Components"),
+		},
+		{
+			title: "Motion values",
+			items: section("Motion values"),
 		},
 	],
 });
