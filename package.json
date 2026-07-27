@@ -17,6 +17,7 @@
 		"test:run": "bun run --filter motion-start test:run",
 		"test:types": "bun run --filter motion-start test:types",
 		"dev": "bun run --filter @motion-start/playground dev",
+		"dev:ci": "bun run --filter @motion-start/playground dev:ci",
 		"cypress": "cypress open",
 		"cypress:run": "cypress run",
 		"docs:dev": "bun run --filter @motion-start/docs dev",

@@ -22,8 +22,8 @@ const config = {
 		// `motion/features/viewport/types`, `gestures/pan/PanSession`); the prefix
 		// form covers those.
 		alias: {
-			"motion-start": "../../packages/motion-start/src",
-			"motion-start/*": "../../packages/motion-start/src/*",
+			'motion-start': '../../packages/motion-start/src',
+			'motion-start/*': '../../packages/motion-start/src/*',
 		},
 	},
 	// compilerOptions: {

@@ -1,10 +1,10 @@
-import { fileURLToPath } from "node:url";
-import { writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { docs } from "../.velite/index.js";
-import removeMd from "remove-markdown";
+import { fileURLToPath } from 'node:url';
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { docs } from '../.velite/index.js';
+import removeMd from 'remove-markdown';
 
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 // Inlined from @svecodocs/kit's `cleanMarkdown`. That helper lives in
 // `dist/utils.js`, which the package does not expose through its exports map,
@@ -17,8 +17,8 @@ function cleanMarkdown(raw) {
 		gfm: true,
 		useImgAltText: true,
 	})
-		.replaceAll("\n", " ")
-		.replaceAll("\t", " ");
+		.replaceAll('\n', ' ')
+		.replaceAll('\t', ' ');
 }
 
 export function buildDocsSearchIndex() {
@@ -32,8 +32,6 @@ export function buildDocsSearchIndex() {
 
 const searchData = buildDocsSearchIndex();
 
-writeFileSync(
-	resolve(__dirname, "../src/routes/api/search.json/search.json"),
-	JSON.stringify(searchData),
-	{ flag: "w" }
-);
+writeFileSync(resolve(__dirname, '../src/routes/api/search.json/search.json'), JSON.stringify(searchData), {
+	flag: 'w',
+});
