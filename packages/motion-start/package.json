@@ -91,7 +91,8 @@
 		"release": "bun --bun run build && bun --bun ../../scripts/release.js"
 	},
 	"dependencies": {
-		"csstype": "^3.2.3"
+		"csstype": "^3.2.3",
+		"runed": "^0.37.1"
 	},
 	"devDependencies": {
 		"@emotion/is-prop-valid": "^1.4.0",
