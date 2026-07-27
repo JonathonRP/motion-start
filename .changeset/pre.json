@@ -1,8 +1,10 @@
 {
-	"mode": "pre",
-	"tag": "next",
-	"initialVersions": {
-		"motion-start": "0.1.0"
-	},
-	"changesets": []
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "motion-start": "0.1.0"
+  },
+  "changesets": [
+    "polite-rockets-deliver"
+  ]
 }
