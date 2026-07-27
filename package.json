@@ -91,7 +91,7 @@
 		"test:ui": "vitest --ui",
 		"test:types:ui": "vitest --ui",
 		"test:suite": "vitest --run && vitest --typecheck.only && cypress run",
-		"release": "bun --bun run build && npm publish --access public && npx changeset tag"
+		"release": "bun --bun run build && npm publish --access public --tag next && npx changeset tag"
 	},
 	"dependencies": {
 		"csstype": "^3.2.3"
