@@ -1,0 +1,3 @@
+[mcp_servers.svelte]
+command = "npx"
+args = ["-y", "@sveltejs/mcp"]

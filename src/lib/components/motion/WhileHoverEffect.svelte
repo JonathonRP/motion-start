@@ -1,26 +1,31 @@
+<svelte:options runes={false} />
+
 <script>
-    import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
+import Box from '../Box.svelte';
+import { motion } from '$lib/motion-start';
 </script>
 
-<Box cls="bg-slate-800 flex gap-3 md:gap-10 flex-col md:flex-row text-black">
-    <Motion.div
+<Box cls="gap-3 md:gap-10 flex-col md:flex-row">
+    <motion.div
+        id='whilehoverscale'
         whileHover={{
             scale: 0.86,
         }}
-        class="box">Scale</Motion.div
+        class="box">Scale</motion.div
     >
-    <Motion.div
+    <motion.div
+        id="whilehoverrotate"
         whileHover={{
             scale: 0.8,
             rotate: 45,
         }}
-        class="box">Hover Rotate</Motion.div
+        class="box">Hover Rotate</motion.div
     >
-    <Motion.div
+    <motion.div
+        id='whilehovercolor'
         whileHover={{
             backgroundColor: "#0091FF",
         }}
-        class="box">BgColor</Motion.div
+        class="box">BgColor</motion.div
     >
 </Box>

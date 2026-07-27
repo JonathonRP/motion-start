@@ -1,0 +1,33 @@
+/** Ported from framer-motion/packages/framer-motion/src/render/utils/__tests__/flat-tree.test.ts */
+import { describe, test, expect } from 'vitest';
+import type { WithDepth } from '../compare-by-depth.js';
+import { FlatTree } from '../flat-tree.js';
+
+describe('FlatTree', () => {
+	test('Correctly sorts by depth on iteration', () => {
+		const tree = new FlatTree<WithDepth>();
+
+		tree.add({ depth: 1 });
+		tree.add({ depth: 0 });
+		expect((tree as any).children).toStrictEqual([{ depth: 1 }, { depth: 0 }]);
+
+		const received: WithDepth[] = [];
+		tree.forEach((child) => received.push(child));
+		expect(received).toStrictEqual([{ depth: 0 }, { depth: 1 }]);
+		expect((tree as any).children).toStrictEqual([{ depth: 0 }, { depth: 1 }]);
+	});
+
+	test("Doesn't crash when removing child mid-loop", () => {
+		const tree = new FlatTree<WithDepth>();
+		const toRemove = { depth: 1 };
+		tree.add({ depth: 0 });
+		tree.add(toRemove);
+
+		const received: WithDepth[] = [];
+		tree.forEach((child) => {
+			received.push(child);
+			tree.remove(toRemove);
+		});
+		expect(received).toStrictEqual([{ depth: 0 }]);
+	});
+});

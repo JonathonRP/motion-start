@@ -1,0 +1,173 @@
+/** 
+based on framer-motion@11.11.11,
+Copyright (c) 2018 Framer B.V.
+*/
+
+import { addPointerEvent } from '../events/add-pointer-event.js';
+import { type EventListenerWithPointInfo, extractEventInfo } from '../events/event-info.js';
+import type { EventInfo } from '../events/types.js';
+import { frame } from '../frameloop/index.js';
+import { Feature } from '../motion/features/Feature.js';
+import { noop } from '../utils/noop.js';
+import { pipe } from '../utils/pipe.js';
+import { isDragActive } from './drag/utils/lock.js';
+import { isNodeOrChild } from './utils/is-node-or-child.js';
+
+function fireSyntheticPointerEvent(name: string, handler?: EventListenerWithPointInfo) {
+	if (!handler) return;
+	const syntheticPointerEvent = new PointerEvent(`pointer${name}`);
+	handler(syntheticPointerEvent, extractEventInfo(syntheticPointerEvent));
+}
+
+export class PressGesture extends Feature<Element> {
+	// @ts-expect-error
+	private isPressing: boolean;
+
+	private removeStartListeners: Function = noop;
+	private removeEndListeners: Function = noop;
+	private removeAccessibleListeners: Function = noop;
+
+	private startPress(event: PointerEvent, info: EventInfo) {
+		this.isPressing = true;
+
+		const { onTapStart, whileTap } = this.node.getProps();
+
+		/**
+		 * Ensure we trigger animations before firing event callback
+		 */
+		if (whileTap && this.node.animationState) {
+			this.node.animationState.setActive('whileTap', true);
+		}
+
+		if (onTapStart) {
+			frame.postRender(() => onTapStart(event, info));
+		}
+	}
+
+	private checkPressEnd() {
+		this.removeEndListeners();
+		this.isPressing = false;
+
+		const props = this.node.getProps();
+
+		if (props.whileTap && this.node.animationState) {
+			this.node.animationState.setActive('whileTap', false);
+		}
+
+		return !isDragActive();
+	}
+
+	private startPointerPress = (startEvent: PointerEvent, startInfo: EventInfo) => {
+		if (this.isPressing) return;
+
+		this.removeEndListeners();
+
+		const props = this.node.getProps();
+
+		const endPointerPress = (endEvent: PointerEvent, endInfo: EventInfo) => {
+			if (!this.checkPressEnd()) return;
+
+			const { onTap, onTapCancel, globalTapTarget } = this.node.getProps();
+
+			/**
+			 * We only count this as a tap gesture if the event.target is the same
+			 * as, or a child of, this component's element
+			 */
+			const handler =
+				!globalTapTarget && !isNodeOrChild(this.node.current, endEvent.target as Element) ? onTapCancel : onTap;
+
+			if (handler) {
+				frame.update(() => handler(endEvent, endInfo));
+			}
+		};
+
+		const removePointerUpListener = addPointerEvent(window, 'pointerup', endPointerPress, {
+			passive: !(props.onTap || props['onPointerUp' as keyof typeof props]),
+		});
+
+		const removePointerCancelListener = addPointerEvent(
+			window,
+			'pointercancel',
+			(cancelEvent, cancelInfo) => this.cancelPress(cancelEvent, cancelInfo),
+			{
+				passive: !(props.onTapCancel || props['onPointerCancel' as keyof typeof props]),
+			}
+		);
+
+		this.removeEndListeners = pipe(removePointerUpListener, removePointerCancelListener);
+
+		this.startPress(startEvent, startInfo);
+	};
+
+	private cancelPress(event: PointerEvent, info: EventInfo) {
+		if (!this.checkPressEnd()) return;
+
+		const { onTapCancel } = this.node.getProps();
+		if (onTapCancel) {
+			frame.postRender(() => onTapCancel(event, info));
+		}
+	}
+
+	private startAccessiblePress = () => {
+		const handleKeydown = (keydownEvent: KeyboardEvent) => {
+			if (keydownEvent.key !== 'Enter' || this.isPressing) return;
+
+			const handleKeyup = (keyupEvent: KeyboardEvent) => {
+				if (keyupEvent.key !== 'Enter' || !this.checkPressEnd()) return;
+
+				fireSyntheticPointerEvent('up', (event, info) => {
+					const { onTap } = this.node.getProps();
+					if (onTap) {
+						frame.postRender(() => onTap(event, info));
+					}
+				});
+			};
+
+			this.removeEndListeners();
+			this.removeEndListeners = this.listen('keyup', handleKeyup);
+
+			fireSyntheticPointerEvent('down', (event, info) => {
+				this.startPress(event, info);
+			});
+		};
+
+		const removeKeydownListener = this.listen('keydown', handleKeydown);
+
+		const handleBlur = () => {
+			if (!this.isPressing) return;
+
+			fireSyntheticPointerEvent('cancel', (cancelEvent, cancelInfo) => this.cancelPress(cancelEvent, cancelInfo));
+		};
+
+		const removeBlurListener = this.listen('blur', handleBlur);
+
+		this.removeAccessibleListeners = pipe(removeKeydownListener, removeBlurListener);
+	};
+
+	mount() {
+		const props = this.node.getProps();
+
+		// For globalTapTarget, the listener must go on window (imperative).
+		// Otherwise attach directly to the element.
+		if (props.globalTapTarget) {
+			const removePointerListener = addPointerEvent(window, 'pointerdown', this.startPointerPress, {
+				passive: !(props.onTapStart || props['onPointerStart' as keyof typeof props]),
+			});
+			const removeFocusListener = this.listen('focus', this.startAccessiblePress);
+			this.removeStartListeners = pipe(removePointerListener, removeFocusListener);
+		} else {
+			this.listen('pointerdown', (event) =>
+				this.startPointerPress(event as PointerEvent, extractEventInfo(event as PointerEvent))
+			);
+			const removeFocusListener = this.listen('focus', this.startAccessiblePress);
+			this.removeStartListeners = removeFocusListener;
+		}
+	}
+
+	unmount() {
+		this.removeStartListeners();
+		this.removeEndListeners();
+		this.removeAccessibleListeners();
+		super.unmount();
+	}
+}

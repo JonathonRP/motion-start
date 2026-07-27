@@ -2,14 +2,17 @@
 based on framer-motion@4.1.17,
 Copyright (c) 2018 Framer B.V.
 */
-export type { AnimatePresenceProps } from "./types.js";
+export type { AnimatePresenceProps } from './types.js';
+/**
+ * Framer Motion removed the legacy ConditionalGeneric helper before v11.11.11.
+ * Motion Start intentionally follows that public API.
+ */
 /**
  * `AnimatePresence` enables the animation of components that have been removed from the tree.
- *         
- *  You can provide an array T[] to the `list` prop, where each item has to have a unique `key` attribute. Via slot prop `item` 
- *  single items of the array are passed down to children, so that for each array item one component is rendered.
- *           
- *  Alternatively you can leave `list` undefined and supply a boolean to the `show` prop. If `true`, the child is rendered.
+ *
+ * Use Svelte's keyed `{#each}` and `{#if}` blocks to express child identity and
+ * lifetime. Motion elements with an `exit` prop automatically bridge their
+ * Svelte outro into Motion's exit feature.
  *
  * @motion
  *
@@ -18,19 +21,11 @@ export type { AnimatePresenceProps } from "./types.js";
  *
  * ```jsx
  * import { motion, AnimatePresence } from 'svelte-motion'
- * const items = [
- *  {key:1},
- *  {key:2},
- *  {key:3}
- * ]
- *   <AnimatePresence list={items}>
- *       <MotionDiv
- *         initial={{ opacity: 0 }}
- *         animate={{ opacity: 1 }}
- *         exit={{ opacity: 0 }}
- *       />
- *   </AnimatePresence>
- * )
+ * <AnimatePresence>
+ *   {#each items as item (item.id)}
+ *     <motion.div exit={{ opacity: 0 }}>{item.label}</motion.div>
+ *   {/each}
+ * </AnimatePresence>
  * ```
  *
  * You can sequence exit animations throughout a tree using variants.
@@ -41,6 +36,5 @@ export type { AnimatePresenceProps } from "./types.js";
  *
  * @public
  */
-export type ConditionalGeneric<T> = T extends {key:any} ? T : { key: 1}; // Better handling of defaults and the optional list prop
 export { default as AnimatePresence } from './AnimatePresence.svelte';
 export { PresenceChild } from './PresenceChild/index.js';

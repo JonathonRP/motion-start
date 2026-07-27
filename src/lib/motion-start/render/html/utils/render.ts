@@ -1,23 +1,22 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { HTMLRenderState } from "../types";
 
+import type { MotionStyle } from '../../../index.js';
+import type { IProjectionNode } from '../../../projection/node/types.js';
+import type { HTMLRenderState } from '../types.js';
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-function renderHTML (element: HTMLElement, { style, vars }: HTMLRenderState) {
-    // Directly assign style into the Element's style prop. In tests Object.assign is the
-    // fastest way to assign styles.
-    Object.assign(element.style, style);
-    // Loop over any CSS variables and assign those.
-    for (var key in vars) {
-        //@ts-ignore
-        element.style.setProperty(key, vars[key]);
-    }
+export function renderHTML(
+	element: HTMLElement,
+	{ style, vars }: HTMLRenderState,
+	styleProp?: MotionStyle,
+	projection?: IProjectionNode<unknown>
+) {
+	Object.assign(element.style, style, projection && projection.getProjectionStyles(styleProp));
+
+	// Loop over any CSS variables and assign those.
+	for (const key in vars) {
+		element.style.setProperty(key, vars[key] as string);
+	}
 }
-
-export { renderHTML };

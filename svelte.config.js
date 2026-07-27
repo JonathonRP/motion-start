@@ -8,9 +8,9 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
 	},
-	compilerOptions: {
-		runes: false,
-	},
+	// compilerOptions: {
+	//   runes: false,
+	// },
 };
 
 export default config;

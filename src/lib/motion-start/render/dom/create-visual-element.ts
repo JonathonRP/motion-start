@@ -1,22 +1,21 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
-import type { CreateVisualElement } from "../types";
 
-/** 
-based on framer-motion@4.0.3,
-Copyright (c) 2018 Framer B.V.
-*/
-import { htmlVisualElement } from '../html/visual-element.js';
-import { svgVisualElement } from '../svg/visual-element.js';
+import type { Component } from 'svelte';
+import { HTMLVisualElement } from '../html/HTMLVisualElement.js';
+import { SVGVisualElement } from '../svg/SVGVisualElement.js';
+import type { CreateVisualElement, VisualElementOptions } from '../types.js';
+import { isSVGComponent } from './utils/is-svg-component.js';
 
-
-var createDomVisualElement: CreateVisualElement<HTMLElement | SVGElement> = function (Component, options) {
-   
-    return Component === "SVG"
-        ? svgVisualElement(options!, { enableHardwareAcceleration: false })
-        : htmlVisualElement(options!, { enableHardwareAcceleration: true });
+export const createDomVisualElement: CreateVisualElement<HTMLElement | SVGElement> = (
+	Component: string | Component<Record<string, unknown>>,
+	options: VisualElementOptions<HTMLElement | SVGElement>
+) => {
+	return isSVGComponent(Component as string | Component)
+		? new SVGVisualElement(options)
+		: new HTMLVisualElement(options, {
+				allowProjection: Component !== null,
+			});
 };
-
-export { createDomVisualElement };
