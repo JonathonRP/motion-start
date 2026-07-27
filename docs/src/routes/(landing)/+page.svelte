@@ -3,13 +3,16 @@
 	import { siteConfig } from "$lib/site-config";
 
 	/**
-	 * Landing hero, matching the reference design: logo and wordmark sit
-	 * side by side, a small bold two-line tagline sits beneath, and a lavender
-	 * pill leads into the docs. Everything is centred on a near-black field.
+	 * Landing hero.
+	 *
+	 * Layout follows the reference design — logo and wordmark side by side, a
+	 * small bold tagline, and a lavender CTA pill — combined with the richer
+	 * atmosphere of the earlier pass: a soft radial glow behind the lockup, a
+	 * bloom on the logo, and a quiet set of footer links.
 	 */
 
 	const time = useTime();
-	const drift = useTransform(time, (t: number) => Math.sin(t / 1600) * 6);
+	const drift = useTransform(time, (t: number) => Math.sin(t / 1600) * 7);
 
 	const container = {
 		hidden: { opacity: 0 },
@@ -17,7 +20,7 @@
 	};
 
 	const rise = {
-		hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
+		hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
 		visible: {
 			opacity: 1,
 			y: 0,
@@ -32,9 +35,11 @@
 	<meta name="description" content={siteConfig.description} />
 </svelte:head>
 
-<main class="grid min-h-svh place-items-center bg-background px-6">
+<main class="relative grid min-h-svh place-items-center overflow-hidden bg-background px-6">
+	<div class="landing-glow" aria-hidden="true"></div>
+
 	<motion.div
-		class="flex flex-col items-center text-center"
+		class="relative flex flex-col items-center text-center"
 		variants={container}
 		initial="hidden"
 		animate="visible"
@@ -44,9 +49,9 @@
 			<motion.img
 				src="/logo.webp"
 				alt=""
-				width="56"
-				height="56"
-				class="size-14 rounded-2xl"
+				width="60"
+				height="60"
+				class="size-15 rounded-2xl shadow-[0_0_60px_-12px_var(--ms-glow)]"
 				whileHover={{ scale: 1.06, rotate: -4 }}
 				transition={{ type: "spring", stiffness: 320, damping: 18 }}
 			/>
@@ -70,10 +75,37 @@
 		>
 			Get Started
 		</motion.a>
+
+		<motion.div variants={rise} class="mt-14 flex items-center gap-5 font-mono text-xs">
+			<a class="text-foreground-alt transition-colors hover:text-foreground" href="/docs/getting-started">
+				Install
+			</a>
+			<span class="text-border">/</span>
+			<a class="text-foreground-alt transition-colors hover:text-foreground" href={siteConfig.links.github}>
+				GitHub
+			</a>
+			<span class="text-border">/</span>
+			<span class="text-foreground-alt">alpha</span>
+		</motion.div>
 	</motion.div>
 </main>
 
 <style>
+	.landing-glow {
+		position: absolute;
+		inset: -20% 0 auto 50%;
+		width: min(900px, 120vw);
+		height: 700px;
+		translate: -50% 0;
+		background: radial-gradient(
+			circle at 50% 45%,
+			color-mix(in oklab, var(--ms-glow) 40%, transparent),
+			transparent 65%
+		);
+		filter: blur(20px);
+		pointer-events: none;
+	}
+
 	/* Soft lavender/pink pill with dark text, as in the design. */
 	:global(.ms-cta) {
 		background: linear-gradient(100deg, oklch(78% 0.13 340), oklch(76% 0.12 300));
