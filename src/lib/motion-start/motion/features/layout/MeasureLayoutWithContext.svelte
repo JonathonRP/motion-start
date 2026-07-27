@@ -28,6 +28,18 @@ const defaultScaleCorrectors = {
 const props: MeasureProps = $props();
 const safeToRemove = () => props.safeToRemove?.();
 
+/**
+ * Framer-motion runs `getSnapshotBeforeUpdate` on every render of the motion
+ * component, so any prop that can change layout — `style`, `class`, and so on —
+ * gets a pre-commit measurement for free. A Svelte effect only re-runs for the
+ * sources it actually reads, so tracking `layoutDependency` alone means a plain
+ * `layout` element that resizes itself (e.g. via `style`) never snapshots and
+ * therefore snaps instead of animating. Spreading `props` reads every prop and
+ * yields a fresh object identity per commit, which is the closest analogue to
+ * "this component re-rendered".
+ */
+const renderSnapshot = $derived.by(() => ({ ...props }));
+
 onMount(() => {
 	const { visualElement, layoutGroup, switchLayoutGroup, layoutId } = props;
 	const { projection } = visualElement;
@@ -73,11 +85,22 @@ let hasCompletedInitialPrepass = false;
 // Pre-commit snapshot phase. This is the Svelte analogue of
 // getSnapshotBeforeUpdate in framer-motion's MeasureLayout.
 watch.pre(
-	[() => props.layoutDependency, () => props.drag, () => props.visualElement?.projection, () => props.isPresent],
-	([], [prevLayoutDependency, , , prevIsPresent]) => {
-		const { layoutDependency, visualElement, isPresent } = props;
+	[
+		() => renderSnapshot,
+		() => props.layoutDependency,
+		() => props.ambientLayoutVersion,
+		() => props.drag,
+		() => props.visualElement?.projection,
+		() => props.isPresent,
+	],
+	(_currentValues, [, prevLayoutDependency, prevAmbientLayoutVersion, , , prevIsPresent]) => {
+		const { layoutDependency, ambientLayoutVersion, visualElement, isPresent } = props;
 		const projection = visualElement?.projection;
-		const shouldSnapshot = props.drag || prevLayoutDependency !== layoutDependency || layoutDependency === undefined;
+		const shouldSnapshot =
+			props.drag ||
+			prevLayoutDependency !== layoutDependency ||
+			prevAmbientLayoutVersion !== ambientLayoutVersion ||
+			layoutDependency === undefined;
 
 		if (!projection) {
 			if (prevIsPresent !== isPresent && !isPresent) {

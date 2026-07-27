@@ -14,6 +14,13 @@ interface MeasureContextProps {
 	isPresent: boolean;
 	safeToRemove?: VoidFunction | null;
 	measurePop?: import('svelte/attachments').Attachment | null;
+	/**
+	 * Version counters contributed by an enclosing `AnimatePresence` or `Reorder`
+	 * group. These are separate from `layoutDependency` because they are ambient:
+	 * an element inherits them without opting in, so they must add snapshot
+	 * opportunities rather than replace the user's own dependency.
+	 */
+	ambientLayoutVersion?: unknown;
 }
 
 export interface MeasureProps extends MotionProps, MeasureContextProps {
@@ -53,6 +60,13 @@ export const animateLayout = {
 
 	const reorderLayoutDependency = $derived(reorderContext?.orderVersion);
 
+	// Both contexts can be active at once (a reordered list inside an
+	// AnimatePresence), so combine them into a single comparable token rather
+	// than letting one mask updates from the other.
+	const ambientLayoutVersion = $derived(
+		`${String(reorderLayoutDependency)}:${String(presenceLayoutDependency)}`,
+	);
+
 	// custom can still serve as a local layout dependency when no explicit
 	// layoutDependency is provided.
 	const layoutGroup = $derived(
@@ -62,9 +76,8 @@ export const animateLayout = {
 
 <MeasureLayoutWithContext
 	{...props}
-	layoutDependency={
-		props.layoutDependency ??
-		props.custom ?? reorderLayoutDependency ?? presenceLayoutDependency}
+	layoutDependency={props.layoutDependency ?? props.custom}
+	{ambientLayoutVersion}
 	measurePop={presenceMeasurePop}
 	{layoutGroup}
 	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}
