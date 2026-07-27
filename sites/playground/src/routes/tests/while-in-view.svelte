@@ -2,7 +2,7 @@
 import { motion } from 'motion-start';
 import { page } from '$app/state';
 import type { MotionStyle } from 'motion-start';
-import type { ViewportOptions } from '$lib/motion-start/motion/features/viewport/types';
+import type { ViewportOptions } from 'motion-start/motion/features/viewport/types';
 
 const amount = $derived((page.url.searchParams.get('amount') as ViewportOptions['amount'] | null) || undefined);
 const once = $derived(page.url.searchParams.get('once') ? true : undefined);

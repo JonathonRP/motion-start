@@ -82,13 +82,12 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun --bun run package",
-		"package": "svelte-package --input ./src/lib/motion-start && publint --strict",
+		"package": "svelte-package --input ./src && publint --strict",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"test": "vitest --typecheck=false",
 		"test:run": "vitest --run",
 		"test:types": "vitest --typecheck.only",
-		"test:ui": "vitest --ui",
-		"release": "bun --bun run build && bun --bun ../../scripts/release.js"
+		"test:ui": "vitest --ui"
 	},
 	"dependencies": {
 		"csstype": "^3.2.3",

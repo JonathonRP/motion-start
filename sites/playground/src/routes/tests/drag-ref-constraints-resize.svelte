@@ -2,7 +2,7 @@
 
 <script lang="ts">
 import { motion } from 'motion-start';
-import { ref as createRef } from '$lib/motion-start/utils/ref.svelte';
+import { ref as createRef } from 'motion-start/utils/ref.svelte';
 
 const constraintsRef = createRef<HTMLDivElement | null>(null);
 let constraintsElement = $state<HTMLDivElement | null>(null);

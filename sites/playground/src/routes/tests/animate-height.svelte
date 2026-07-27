@@ -2,7 +2,7 @@
 
 <script lang="ts">
 import { AnimatePresence, motion } from 'motion-start';
-import { ref as createRef } from '$lib/motion-start/utils/ref.svelte';
+import { ref as createRef } from 'motion-start/utils/ref.svelte';
 
 let isVisible = $state(true);
 let output = $state<Array<string | number>>([]);

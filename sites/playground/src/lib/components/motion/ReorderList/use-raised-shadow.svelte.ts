@@ -1,5 +1,5 @@
 import { type MotionValue, useMotionValue } from 'motion-start';
-import { animate } from '$lib/motion-start/animation/animate';
+import { animate } from 'motion-start/animation/animate';
 import { onMount } from 'svelte';
 
 const inactiveShadow = '0px 0px 0px rgba(0,0,0,0.8)';

@@ -11,12 +11,7 @@
 		"strict": true,
 		"skipLibCheck": true,
 		"verbatimModuleSyntax": true,
-		"types": ["node", "cypress", "cypress-real-events"],
-		"paths": {
-			// Mirrors the vite alias: a few routes reach for library internals that
-			// are deliberately not exported. Everything else imports "motion-start".
-			"$lib/motion-start/*": ["../../packages/motion-start/src/lib/motion-start/*"]
-		}
+		"types": ["node"]
 	},
 	"include": ["src"],
 	"exclude": ["node_modules", ".svelte-kit"]

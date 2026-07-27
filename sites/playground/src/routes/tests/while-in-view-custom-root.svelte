@@ -1,7 +1,7 @@
 <script lang="ts">
 import { motion } from 'motion-start';
 import type { MotionStyle } from 'motion-start';
-import type { RefObject } from '$lib/motion-start/utils/safe-react-types';
+import type { RefObject } from 'motion-start/utils/safe-react-types';
 
 let containerRef: HTMLDivElement | null = $state(null);
 

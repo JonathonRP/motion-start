@@ -9,23 +9,29 @@
 		"sites/*"
 	],
 	"scripts": {
-		"build": "bun --cwd packages/motion-start run build",
-		"package": "bun --cwd packages/motion-start run package",
-		"check": "bun --cwd packages/motion-start run check",
-		"test": "bun --cwd packages/motion-start run test",
-		"test:run": "bun --cwd packages/motion-start run test:run",
-		"test:types": "bun --cwd packages/motion-start run test:types",
-		"dev": "bun --cwd sites/playground run dev",
-		"cypress": "bun --cwd sites/playground run cypress",
-		"docs:dev": "bun --cwd sites/docs run dev",
-		"docs:build": "bun --cwd sites/docs run build",
+		"build": "bun run --filter motion-start build",
+		"package": "bun run --filter motion-start package",
+		"check": "bun run --filter motion-start check && bun run --filter @motion-start/playground check",
+		"check:package": "bun run --filter motion-start check",
+		"test": "bun run --filter motion-start test",
+		"test:run": "bun run --filter motion-start test:run",
+		"test:types": "bun run --filter motion-start test:types",
+		"dev": "bun run --filter @motion-start/playground dev",
+		"cypress": "cypress open",
+		"cypress:run": "cypress run",
+		"docs:dev": "bun run --filter @motion-start/docs dev",
+		"docs:build": "bun run --filter @motion-start/docs build",
 		"lint": "biome check",
-		"format": "biome format --write ."
+		"format": "biome format --write .",
+		"release": "bun --bun run build && bun --bun scripts/release.js"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.2",
 		"@changesets/cli": "^2.31.0",
 		"@types/bun": "latest",
+		"@types/cypress": "^1.1.6",
+		"cypress": "13.6.0",
+		"cypress-real-events": "^1.15.0",
 		"typescript": "^5.9.3"
 	},
 	"engines": {

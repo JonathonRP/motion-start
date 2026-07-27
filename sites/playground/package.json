@@ -7,9 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json",
-		"cypress": "cypress open",
-		"cypress:run": "cypress run"
+		"check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json"
 	},
 	"dependencies": {
 		"motion-start": "workspace:*"
@@ -21,13 +19,10 @@
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.2",
-		"@types/cypress": "^1.1.6",
 		"@types/node": "^20.19.43",
 		"bits-ui": "^2.18.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"cypress": "13.6.0",
-		"cypress-real-events": "^1.15.0",
 		"lucide-svelte": "^0.542.0",
 		"mode-watcher": "^1.1.0",
 		"runed": "^0.37.1",

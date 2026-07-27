@@ -1,7 +1,7 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-	import { animateMini } from "$lib/motion-start/animation/animators/waapi/animate-style";
+	import { animateMini } from "motion-start/animation/animators/waapi/animate-style";
 
 	let result = $state("");
 

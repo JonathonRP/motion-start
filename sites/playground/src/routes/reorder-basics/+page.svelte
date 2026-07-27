@@ -1,7 +1,7 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-import { Reorder } from '$lib/motion-start/components/Reorder';
+import { Reorder } from 'motion-start/components/Reorder';
 let items = $state(['Alpha', 'Bravo', 'Charlie', 'Delta']);
 function onReorder(newOrder: string[]) {
 	items = newOrder;

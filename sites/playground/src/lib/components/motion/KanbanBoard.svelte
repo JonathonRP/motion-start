@@ -2,7 +2,7 @@
 
 <script lang="ts">
 	import { LayoutGroup, Reorder } from 'motion-start';
-	import type { PanInfo } from '$lib/motion-start/gestures/pan/PanSession';
+	import type { PanInfo } from 'motion-start/gestures/pan/PanSession';
 	import { tick } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
 	import Box from '../Box.svelte';

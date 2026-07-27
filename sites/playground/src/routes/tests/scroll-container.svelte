@@ -1,6 +1,6 @@
 <script lang="ts">
 import { useScroll, motion, useMotionValueEvent } from 'motion-start';
-import type { RefObject } from '$lib/motion-start/utils/safe-react-types';
+import type { RefObject } from 'motion-start/utils/safe-react-types';
 
 let containerRef: HTMLDivElement | null = $state(null);
 let targetRef: HTMLDivElement | null = $state(null);

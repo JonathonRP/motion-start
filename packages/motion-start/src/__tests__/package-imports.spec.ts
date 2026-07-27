@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, resolve } from 'node:path';
 import { describe, expect, test } from 'vitest';
 
-const sourceRoot = resolve('src/lib/motion-start');
+const sourceRoot = resolve('src');
 const sourceExtensions = ['.ts', '.js', '.svelte.ts', '.svelte.js', '.svelte'];
 
 function walk(directory: string): string[] {
