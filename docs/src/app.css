@@ -126,7 +126,7 @@ main:has(> #content) > footer {
 
 /* One child at a time: `AnimatePresence mode="wait"` keeps the outgoing page
  * out of flow once its exit finishes, so the article never has to share the
- * row. This needs motion-start >= 0.2.0-next.2 (the wait-mode serialisation
+ * row. This needs motion-start >= 0.2.0-next.3 (the wait-mode serialisation
  * fix); before that both pages tiled here and the column visibly halved. */
 
 /* The reading column is phi^2 times the sidebar, which sets the two columns
