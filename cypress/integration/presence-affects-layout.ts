@@ -63,4 +63,33 @@ describe('presenceAffectsLayout=false', () => {
 		cy.wait(500);
 		cy.get('.item-without-layout').should('have.length', 0);
 	});
+
+	it('does not animate the sibling layout shift when presence does not affect layout', () => {
+		let initialTop = 0;
+		let finalTop = 0;
+
+		cy.visit('?test=presence-affects-layout')
+			.wait(100)
+			.get('#non-affecting-presence')
+			.uncheck()
+			.get('#non-affecting-reflow-sibling')
+			.then(([$sibling]: JQuery<HTMLElement>) => {
+				initialTop = $sibling.getBoundingClientRect().top;
+				finalTop = initialTop - 44;
+			})
+			.get('#remove-non-affecting-reflow-item')
+			.click()
+			.wait(100)
+			.get('#non-affecting-reflow-sibling')
+			.should(([$sibling]: JQuery<HTMLElement>) => {
+				expect($sibling.getBoundingClientRect().top).to.be.closeTo(initialTop, 1);
+			})
+			.get('#non-affecting-reflow-item')
+			.should('not.exist')
+			.wait(50)
+			.get('#non-affecting-reflow-sibling')
+			.should(([$sibling]: JQuery<HTMLElement>) => {
+				expect($sibling.getBoundingClientRect().top).to.be.closeTo(finalTop, 1);
+			});
+	});
 });

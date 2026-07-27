@@ -58,34 +58,36 @@ describe('AnimatePresenceMode demo', () => {
 		});
 	});
 
-	it('does not restore an exiting item styles before removing it', () => {
+	it('does not restore an exiting item inline styles before removal', () => {
 		let reachedExitFrame = false;
-		let reboundedBeforeRemoval = false;
+		let reboundedComputedOpacity = false;
+		let restoredFinalOpacity = false;
 		let clearedFinalOpacity = false;
+		let observer: MutationObserver | undefined;
+		const opacityHistory: string[] = [];
 
 		cy.get('ul li[aria-label="Remove item 1"]').then(([$item]) => {
 			const item = $item as HTMLElement;
-			const observer = new MutationObserver(() => {
-				const opacity = Number.parseFloat(item.style.opacity);
-				if (Number.isFinite(opacity) && opacity < 0.1) {
-					reachedExitFrame = true;
-				} else if (reachedExitFrame && item.style.opacity === '') {
-					clearedFinalOpacity = true;
+			const recordStyles = (records: MutationRecord[]) => {
+				for (const record of records) {
+					if (record.oldValue != null) opacityHistory.push(record.oldValue);
 				}
+				opacityHistory.push(item.getAttribute('style') ?? '');
+			};
+			observer = new MutationObserver(recordStyles);
+			observer.observe(item, {
+				attributeFilter: ['style'],
+				attributeOldValue: true,
 			});
-			observer.observe(item, { attributeFilter: ['style'] });
 
 			const sampleFrame = () => {
-				if (!item.isConnected) {
-					observer.disconnect();
-					return;
-				}
+				if (!item.isConnected) return;
 
 				const opacity = Number.parseFloat(getComputedStyle(item).opacity);
-				if (opacity < 0.1) {
+				if (opacity <= 0.001) {
 					reachedExitFrame = true;
-				} else if (reachedExitFrame && opacity > 0.5) {
-					reboundedBeforeRemoval = true;
+				} else if (reachedExitFrame && opacity > 0.005) {
+					reboundedComputedOpacity = true;
 				}
 
 				requestAnimationFrame(sampleFrame);
@@ -97,9 +99,28 @@ describe('AnimatePresenceMode demo', () => {
 		cy.get('ul li[aria-label="Remove item 1"]').click();
 		cy.get('ul li[aria-label="Remove item 1"]', { timeout: 3000 }).should('not.exist');
 		cy.then(() => {
+			for (const record of observer?.takeRecords() ?? []) {
+				if (record.oldValue != null) opacityHistory.push(record.oldValue);
+			}
+			observer?.disconnect();
+
+			let foundFinalOpacity = false;
+			for (const style of opacityHistory) {
+				const match = style.match(/(?:^|;\s*)opacity:\s*([^;]+)/);
+				const opacity = match ? Number.parseFloat(match[1]) : Number.NaN;
+				if (Number.isFinite(opacity) && opacity <= 0.001) {
+					foundFinalOpacity = true;
+				} else if (foundFinalOpacity && Number.isFinite(opacity) && opacity > 0.01) {
+					restoredFinalOpacity = true;
+				} else if (foundFinalOpacity && !match) {
+					clearedFinalOpacity = true;
+				}
+			}
+
 			expect(reachedExitFrame).to.equal(true);
-			expect(reboundedBeforeRemoval).to.equal(false);
-			expect(clearedFinalOpacity).to.equal(false);
+			expect(reboundedComputedOpacity).to.equal(false);
+			expect(restoredFinalOpacity, opacityHistory.join('\n')).to.equal(false);
+			expect(clearedFinalOpacity, opacityHistory.join('\n')).to.equal(false);
 		});
 	});
 });

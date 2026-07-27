@@ -8,12 +8,13 @@ afterEach(() => {
 	document.body.innerHTML = '';
 });
 
-function createContext() {
+function createContext(presenceAffectsLayout = true) {
 	const complete = vi.fn();
 	const reserve = vi.fn();
 	const context: MotionOutroContext = {
 		custom: undefined,
 		mode: 'sync',
+		presenceAffectsLayout,
 		begin: () => complete,
 		reserve,
 		remaining: () => 0,
@@ -268,6 +269,33 @@ describe('motionExitOutro', () => {
 
 		expect(update).not.toHaveBeenCalled();
 		await new Promise<void>((resolve) => queueMicrotask(resolve));
+		expect(update).toHaveBeenCalledTimes(1);
+	});
+
+	it('updates only the exiting projection when presence does not affect layout', async () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext(false);
+		const { projection, root, update, visualElement } = createVisualElement(node, { duration: 1 });
+		const siblingWillUpdate = vi.fn();
+		const sibling = {
+			options: { layout: true },
+			willUpdate: siblingWillUpdate,
+		} as unknown as IProjectionNode<unknown>;
+		root.nodes = {
+			forEach(callback: (projectionNode: IProjectionNode<unknown>) => void) {
+				callback(projection);
+				callback(sibling);
+			},
+		} as never;
+
+		const config = motionExitOutro(node, { context, visualElement });
+		config.tick?.(0, 1);
+		flushPendingMotionExitLayout(node);
+		await new Promise<void>((resolve) => queueMicrotask(resolve));
+
+		expect(projection.willUpdate).toHaveBeenCalledTimes(2);
+		expect(siblingWillUpdate).not.toHaveBeenCalled();
 		expect(update).toHaveBeenCalledTimes(1);
 	});
 });

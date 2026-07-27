@@ -247,7 +247,10 @@ function makePresenceContext(
 	};
 }
 
-function markProjectionWillUpdate(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+function markProjectionWillUpdate(
+	visualElement: VisualElement<HTMLElement | SVGElement | unknown>,
+	presenceAffectsLayout = true
+) {
 	const projection = visualElement.projection;
 	if (!projection) return undefined;
 
@@ -256,6 +259,12 @@ function markProjectionWillUpdate(visualElement: VisualElement<HTMLElement | SVG
 
 	if (!root?.isUpdating) {
 		root?.startUpdate();
+	}
+
+	if (!presenceAffectsLayout) {
+		seedLateSnapshot(projection);
+		projection.willUpdate();
+		return root;
 	}
 
 	if (!presenceId || !root?.nodes) {
@@ -347,7 +356,9 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	}
 
 	const previousLayoutBox: Box | undefined = element.projection?.layout?.layoutBox;
-	const projectionRoot = markProjectionWillUpdate(element);
+	// Upstream avoids refreshing sibling presence context when this flag is
+	// false while the exiting child's own presence still changes.
+	const projectionRoot = markProjectionWillUpdate(element, context.presenceAffectsLayout);
 	if (context.mode === 'popLayout') {
 		releasePopLayout = applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
 		flushPopLayout(motionNode);
@@ -383,7 +394,8 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 					delete motionNode.dataset.motionPrevPointerEvents;
 				}
 				if (context.mode !== 'popLayout') {
-					const finalProjectionRoot = markProjectionWillUpdate(element) ?? projectionRoot;
+					const finalProjectionRoot =
+						markProjectionWillUpdate(element, context.presenceAffectsLayout) ?? projectionRoot;
 					if (finalProjectionRoot) {
 						pendingLayoutUpdates.set(motionNode, finalProjectionRoot);
 					}

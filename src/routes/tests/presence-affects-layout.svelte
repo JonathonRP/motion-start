@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from '$lib/motion-start';
 let count1 = $state(0);
 let count2 = $state(0);
 let showReflowItem = $state(true);
+let nonAffectingPresence = $state(true);
+let nonAffectingReflowItems = $state([{ key: 'non-affecting-reflow-item' }, { key: 'non-affecting-reflow-sibling' }]);
 
 const items1 = $derived(Array.from({ length: count1 }, (_, i) => ({ key: i })));
 const items2 = $derived(Array.from({ length: count2 }, (_, i) => ({ key: i })));
@@ -89,6 +91,23 @@ const reflowItems = $derived(showReflowItem ? [{ key: 'reflow-item' }] : []);
         <button id="remove-reflow-item" onclick={() => (showReflowItem = false)}
             >Remove reflow item</button
         >
+        <button
+            id="remove-non-affecting-reflow-item"
+            onclick={() => {
+                nonAffectingReflowItems = nonAffectingReflowItems.filter(
+                    (item) => item.key !== "non-affecting-reflow-item",
+                );
+            }}
+            >Remove non-affecting reflow item</button
+        >
+        <label>
+            <input
+                id="non-affecting-presence"
+                type="checkbox"
+                bind:checked={nonAffectingPresence}
+            />
+            Non-affecting presence participates in layout
+        </label>
     </div>
 
     <div
@@ -123,5 +142,31 @@ const reflowItems = $derived(showReflowItem ? [{ key: 'reflow-item' }] : []);
             transition={{ duration: 0.3 }}
             layout
         />
+    </div>
+
+    <div
+        id="non-affecting-reflow-list"
+        style="display: flex; flex-direction: column; gap: 4px; position: relative;"
+    >
+        <AnimatePresence presenceAffectsLayout={nonAffectingPresence}>
+            {#each nonAffectingReflowItems as item (item.key)}
+                <motion.div
+                    id={item.key}
+                    style={{
+                        width: "100px",
+                        height: "40px",
+                        background:
+                            item.key === "non-affecting-reflow-item"
+                                ? "orange"
+                                : "teal",
+                    }}
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    layout
+                />
+            {/each}
+        </AnimatePresence>
     </div>
 </div>

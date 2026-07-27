@@ -39,6 +39,9 @@ setMotionOutroContext({
 	get nonce() {
 		return motionConfig.nonce;
 	},
+	get presenceAffectsLayout() {
+		return presenceAffectsLayout;
+	},
 	begin() {
 		if (presenceAffectsLayout) presenceLayoutVersion++;
 		activeOutros++;

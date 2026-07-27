@@ -57,7 +57,10 @@ function handleItemKeydown(event: KeyboardEvent, item: number) {
                         layout
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
-                        transition={{ type: "spring" }}
+                        transition={{
+                            default: { type: "spring" },
+                            opacity: { duration: 0.2 },
+                        }}
                         role="button"
                         tabindex={0}
                         aria-label={`Remove item ${item}`}

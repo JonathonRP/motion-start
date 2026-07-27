@@ -17,10 +17,11 @@ import type { ValueAnimationOptions, ValueAnimationOptionsWithRenderContext } fr
 import { BaseAnimation, type ValueAnimationOptionsWithDefaults } from './BaseAnimation.js';
 import { MainThreadAnimation } from './MainThreadAnimation.js';
 import { acceleratedValues } from './utils/accelerated-values.js';
-import { startWaapiAnimation } from './waapi/index.js';
 import { isWaapiSupportedEasing } from './waapi/easing.js';
+import { startWaapiAnimation } from './waapi/index.js';
 import { attachTimeline } from './waapi/utils/attach-timeline.js';
 import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.js';
+import { setStyle } from './waapi/utils/style.js';
 import { supportsLinearEasing } from './waapi/utils/supports-linear-easing.js';
 import { supportsWaapi } from './waapi/utils/supports-waapi.js';
 
@@ -167,6 +168,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		if (!mv.owner?.current) {
 			return false;
 		}
+		const element = mv.owner.current as HTMLElement;
 
 		/**
 		 * If the user has provided an easing function name that isn't supported
@@ -199,7 +201,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			type = 'keyframes';
 		}
 
-		const animation = startWaapiAnimation(mv.owner?.current as unknown as HTMLElement, name, keyframes as string[], {
+		const animation = startWaapiAnimation(element, name, keyframes as string[], {
 			...this.options,
 			duration,
 			times,
@@ -224,7 +226,16 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			 */
 			animation.onfinish = () => {
 				const { onComplete } = this.options;
-				mv.set(getFinalKeyframe(keyframes, this.options, finalKeyframe));
+				const keyframe = getFinalKeyframe(keyframes, this.options, finalKeyframe);
+				mv.set(keyframe);
+
+				/**
+				 * Commit the final style synchronously before cancelling WAAPI.
+				 * MotionValue rendering is frame-scheduled, so cancelling first can
+				 * briefly reveal the element's previous inline style in Firefox.
+				 */
+				setStyle(element, name, keyframe);
+
 				onComplete?.();
 				this.cancel();
 				this.resolveFinishedPromise();

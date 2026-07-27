@@ -4,6 +4,7 @@ export interface MotionOutroContext {
 	readonly custom: unknown;
 	readonly mode: 'sync' | 'popLayout' | 'wait';
 	readonly nonce?: string;
+	readonly presenceAffectsLayout: boolean;
 	begin: () => (id: string | number, completed?: boolean) => void;
 	reserve: (duration: number) => void;
 	remaining: () => number;
