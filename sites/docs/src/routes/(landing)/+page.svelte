@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { motion, useTime, useTransform } from "motion-start";
-	import { siteConfig } from "$lib/site-config";
+	import { githubUrl, siteConfig } from "$lib/site-config";
 
 	/**
 	 * Landing hero.
@@ -86,7 +86,7 @@
 				Install
 			</a>
 			<span class="text-border">/</span>
-			<a class="text-foreground-alt transition-colors hover:text-foreground" href={siteConfig.links.github}>
+			<a class="text-foreground-alt transition-colors hover:text-foreground" href={githubUrl}>
 				GitHub
 			</a>
 			<span class="text-border">/</span>
