@@ -1,0 +1,47 @@
+{
+	"name": "@motion-start/playground",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json",
+		"cypress": "cypress open",
+		"cypress:run": "cypress run"
+	},
+	"dependencies": {
+		"motion-start": "workspace:*"
+	},
+	"devDependencies": {
+		"@lucide/svelte": "^0.544.0",
+		"@sveltejs/adapter-auto": "^6.1.1",
+		"@sveltejs/kit": "^2.69.1",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tailwindcss/typography": "^0.5.20",
+		"@tailwindcss/vite": "^4.3.2",
+		"@types/cypress": "^1.1.6",
+		"@types/node": "^20.19.43",
+		"bits-ui": "^2.18.1",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"cypress": "13.6.0",
+		"cypress-real-events": "^1.15.0",
+		"lucide-svelte": "^0.542.0",
+		"mode-watcher": "^1.1.0",
+		"runed": "^0.37.1",
+		"sv": "^0.14.1",
+		"svelte": "5.56.4",
+		"svelte-check": "^4.7.1",
+		"svelte-render-scan": "^1.1.0",
+		"tailwind-merge": "^3.6.0",
+		"tailwind-variants": "^3.2.2",
+		"tailwindcss": "^4.3.2",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.6",
+		"vite-plugin-devtools-json": "^1.0.0",
+		"zod": "^4.4.3"
+	}
+}

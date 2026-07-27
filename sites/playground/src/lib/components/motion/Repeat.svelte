@@ -1,0 +1,24 @@
+<svelte:options runes={false} />
+
+<script>
+import Box from '../Box.svelte';
+import { motion } from 'motion-start';
+let i = 0;
+</script>
+
+<Box>
+    {#key i}
+        <motion.div
+        id="repeatbox"
+            animate={{
+                rotate: 360,
+            }}
+            transition={{
+                ease: "linear",
+                duration: 2,
+                repeat: Infinity,
+            }}
+            class="box"
+        ></motion.div>
+    {/key}
+</Box>

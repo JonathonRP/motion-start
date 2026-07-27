@@ -6,10 +6,11 @@ bun.lockb
 # Output
 .output
 .vercel
-/.svelte-kit
-/build
-/dist/*
-/cypress/videos/
+.svelte-kit
+build
+dist
+cypress/videos/
+cypress/screenshots/
 
 # OS
 .DS_Store
@@ -25,6 +26,5 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 *.vitest-temp.*
-bun.lockb
 
 /regressions/

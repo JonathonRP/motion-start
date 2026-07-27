@@ -1,0 +1,36 @@
+{
+	"name": "@motion-start/docs",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "concurrently \"bun run dev:content\" \"bun run dev:svelte\"",
+		"dev:content": "velite dev --watch",
+		"dev:svelte": "vite dev",
+		"build": "velite && node ./scripts/update-velite-output.js && bun run build:search && vite build",
+		"build:search": "node ./scripts/build-search-data.js",
+		"preview": "vite preview",
+		"check": "velite && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "velite && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"dependencies": {
+		"motion-start": "workspace:*"
+	},
+	"devDependencies": {
+		"@svecodocs/kit": "latest",
+		"@sveltejs/adapter-cloudflare": "^4.8.0",
+		"@sveltejs/kit": "^2.69.1",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tailwindcss/vite": "^4.3.2",
+		"bits-ui": "^1.0.0-next.65",
+		"concurrently": "^10.0.4",
+		"mdsx": "^0.0.6",
+		"phosphor-svelte": "^3.0.1",
+		"svelte": "5.56.4",
+		"svelte-check": "^4.7.1",
+		"tailwindcss": "^4.3.2",
+		"typescript": "^5.9.3",
+		"velite": "^0.2.1",
+		"vite": "^7.3.6"
+	}
+}
