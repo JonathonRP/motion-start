@@ -14,4 +14,8 @@ The incoming child is now taken out of flow imperatively at intro time and resto
 drops its node out of flow immediately, rather than lingering until Svelte's own outro timer
 elapses, which previously left a short window where both children were laid out.
 
+This applies to `SVGElement` children as well as `HTMLElement` ones. Children that are already
+out of flow (`position: absolute` / `fixed`) are left alone, since they cannot share layout with
+a sibling and hiding them would zero out the box read by projection and `onLayoutMeasure`.
+
 `mode="sync"` and `mode="popLayout"` are unaffected.

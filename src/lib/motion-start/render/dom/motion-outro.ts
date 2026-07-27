@@ -287,14 +287,35 @@ function markProjectionWillUpdate(
 	return root;
 }
 
+/**
+ * `motion.svg` children render through the SVG config, so wait-mode layout
+ * control has to cover `SVGElement` as well as `HTMLElement`. Both expose
+ * `style` and `dataset`, which is all the hide/restore pair needs.
+ */
+function isWaitDisplayNode(motionNode: Element): motionNode is HTMLElement | SVGElement {
+	return motionNode instanceof HTMLElement || motionNode instanceof SVGElement;
+}
+
+/**
+ * Elements outside normal flow (`position: absolute` / `fixed`) cannot share
+ * layout with a sibling, so hiding them buys nothing and actively breaks
+ * measurement: a `display: none` node reports a zeroed box, which would feed a
+ * bogus snapshot into projection and `onLayoutMeasure`.
+ */
+function participatesInFlow(motionNode: HTMLElement | SVGElement) {
+	const { position } = getComputedStyle(motionNode);
+	return position !== 'absolute' && position !== 'fixed';
+}
+
 function hideFromLayout(motionNode: Element) {
-	if (!(motionNode instanceof HTMLElement) || motionNode.dataset.motionWaitDisplay !== undefined) return;
+	if (!isWaitDisplayNode(motionNode) || motionNode.dataset.motionWaitDisplay !== undefined) return;
+	if (!participatesInFlow(motionNode)) return;
 	motionNode.dataset.motionWaitDisplay = motionNode.style.display;
 	motionNode.style.display = 'none';
 }
 
 function restoreWaitDisplay(motionNode: Element) {
-	if (!(motionNode instanceof HTMLElement)) return;
+	if (!isWaitDisplayNode(motionNode)) return;
 	const previous = motionNode.dataset.motionWaitDisplay;
 	if (previous === undefined) return;
 	delete motionNode.dataset.motionWaitDisplay;
@@ -316,9 +337,10 @@ function restoreWaitDisplay(motionNode: Element) {
  * plain enter is restored in the same tick, before paint.
  */
 function deferLayoutUntilExitsComplete(motionNode: Element, context: MotionOutroContext) {
-	if (!(motionNode instanceof HTMLElement) || motionNode.dataset.motionWaitDisplay !== undefined) return;
+	if (!isWaitDisplayNode(motionNode) || motionNode.dataset.motionWaitDisplay !== undefined) return;
 
 	hideFromLayout(motionNode);
+	if (motionNode.dataset.motionWaitDisplay === undefined) return;
 
 	const reveal = () => restoreWaitDisplay(motionNode);
 

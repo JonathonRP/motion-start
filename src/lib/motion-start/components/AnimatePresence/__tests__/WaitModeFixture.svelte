@@ -2,7 +2,7 @@
 import { motion } from '../../../index.js';
 import AnimatePresence from '../AnimatePresence.svelte';
 
-let { mode = 'wait' as 'sync' | 'wait' | 'popLayout' } = $props();
+let { mode = 'wait' as 'sync' | 'wait' | 'popLayout', variant = 'html' as 'html' | 'svg' | 'absolute' } = $props();
 
 let step = $state(0);
 </script>
@@ -12,14 +12,35 @@ let step = $state(0);
 <div id="host">
 	<AnimatePresence {mode}>
 		{#key step}
-			<motion.div
-				class="page"
-				data-step={step}
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				exit={{ opacity: 0 }}
-				transition={{ duration: 0.05 }}
-			></motion.div>
+			{#if variant === 'svg'}
+				<motion.svg
+					class="page"
+					data-step={step}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.05 }}
+				></motion.svg>
+			{:else if variant === 'absolute'}
+				<motion.div
+					class="page"
+					data-step={step}
+					style={{ position: 'absolute' }}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.05 }}
+				></motion.div>
+			{:else}
+				<motion.div
+					class="page"
+					data-step={step}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.05 }}
+				></motion.div>
+			{/if}
 		{/key}
 	</AnimatePresence>
 </div>

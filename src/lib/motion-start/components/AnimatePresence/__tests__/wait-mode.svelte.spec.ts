@@ -126,4 +126,48 @@ describe('AnimatePresence mode="wait"', () => {
 		expect(page.style.display).not.toBe('none');
 		expect(page.dataset.motionWaitDisplay).toBeUndefined();
 	});
+
+	it('serialises SVG children the same way it serialises HTML children', async () => {
+		instance = mount(WaitModeFixture, { target: document.body, props: { mode: 'wait', variant: 'svg' } });
+		flushSync();
+		await nextFrame();
+
+		const outgoing = document.querySelector('#host .page') as SVGElement;
+		expect(outgoing).toBeInstanceOf(SVGElement);
+		const tracker = trackVisiblePages();
+
+		(document.querySelector('#advance') as HTMLButtonElement).click();
+		flushSync();
+		tracker.sample();
+
+		await waitFor(() => !outgoing.isConnected);
+		await nextFrame();
+		tracker.sample();
+
+		const counts = tracker.stop();
+		expect(Math.max(...counts), `laid-out .page counts over time: ${counts.join(',')}`).toBe(1);
+
+		const pages = [...document.querySelectorAll('#host .page')] as SVGElement[];
+		expect(pages).toHaveLength(1);
+		expect(pages[0].style.display).not.toBe('none');
+	});
+
+	it('leaves out-of-flow children measurable, since they cannot share layout', async () => {
+		instance = mount(WaitModeFixture, { target: document.body, props: { mode: 'wait', variant: 'absolute' } });
+		flushSync();
+
+		// An absolutely positioned child takes no part in flow, so hiding it
+		// would only zero out its box for projection and `onLayoutMeasure`.
+		const page = document.querySelector('#host .page') as HTMLElement;
+		expect(page.style.display).not.toBe('none');
+		expect(page.dataset.motionWaitDisplay).toBeUndefined();
+
+		(document.querySelector('#advance') as HTMLButtonElement).click();
+		flushSync();
+
+		const pages = [...document.querySelectorAll('#host .page')] as HTMLElement[];
+		for (const candidate of pages) {
+			expect(candidate.style.display).not.toBe('none');
+		}
+	});
 });

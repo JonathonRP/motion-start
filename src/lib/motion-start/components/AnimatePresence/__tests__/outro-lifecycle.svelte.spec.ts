@@ -57,14 +57,18 @@ describe('AnimatePresence Svelte outro lifecycle', () => {
 		const target = document.querySelector('#exit-target') as HTMLElement;
 		const visualElement = visualElementStore.get(target);
 		const styles: string[] = [target.getAttribute('style') ?? ''];
-		const observer = new MutationObserver(() => {
+		const record = () => {
 			styles.push(target.getAttribute('style') ?? '');
-		});
+		};
+		const observer = new MutationObserver(record);
 		observer.observe(target, { attributes: true, attributeFilter: ['style'] });
 		click('#remove-exit');
 
 		expect(target.isConnected).toBe(true);
 		await waitFor(() => !target.isConnected);
+		// Records queued but not yet delivered would otherwise be dropped by
+		// `disconnect()`, losing the final committed style.
+		if (observer.takeRecords().length > 0) record();
 		observer.disconnect();
 
 		expect(target.style.opacity, `${styles.join('\n')}\nlatest=${String(visualElement?.latestValues.opacity)}`).toBe(
