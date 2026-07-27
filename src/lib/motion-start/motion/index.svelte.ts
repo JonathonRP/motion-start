@@ -22,6 +22,7 @@ import type { UseVisualState } from './utils/use-visual-state.svelte.js';
 import { motionComponentSymbol } from './utils/symbol.js';
 import { useVisualElement } from './utils/use-visual-element.svelte.js';
 import MeasureLayoutRenderer from './MeasureLayoutRenderer.svelte';
+import MotionScope from './MotionScope.svelte';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -55,7 +56,7 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 }: MotionComponentConfig<Instance, RenderState>) => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
-	const MotionComponent: Component<MotionComponentProps<Props> & { ref?: Ref<Instance> }> = (anchor, props) => {
+	const renderMotionComponent: Component<MotionComponentProps<Props> & { ref?: Ref<Instance> }> = (anchor, props) => {
 		const motionConfig = $derived.by(useMotionConfigContext);
 		const configAndProps = $derived.by(() => {
 			const propsState = $state({
@@ -151,9 +152,9 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		});
 
 		const measureProps = $derived.by(() => ({
-				...configAndProps,
-				visualElement: context.visualElement ?? undefined,
-			}));
+			...configAndProps,
+			visualElement: context.visualElement ?? undefined,
+		}));
 
 		// Let Svelte own the dynamic component branch so its lifecycle is torn
 		// down when layout/drag features disappear and recreated on replacement.
@@ -167,6 +168,25 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		});
 
 		return rendererInstance;
+	};
+
+	/**
+	 * `MotionScope` is a compiled component, so initialising the motion body inside
+	 * it gives every motion component its own context scope. See `MotionScope.svelte`
+	 * for why that matters.
+	 */
+	const MotionComponent: Component<MotionComponentProps<Props> & { ref?: Ref<Instance> }> = (anchor, props) => {
+		const instance: { current: Record<string, any> | null } = { current: null };
+
+		MotionScope(anchor, {
+			run: () => {
+				instance.current = renderMotionComponent(anchor, props);
+			},
+		});
+
+		// `run` executes synchronously during MotionScope's initialisation, so the
+		// instance is always populated by the time we return it.
+		return instance.current!;
 	};
 
 	(MotionComponent as any)[motionComponentSymbol] = Component;
