@@ -1,3 +1,4 @@
+import { tick } from 'svelte';
 import type { TransitionConfig } from 'svelte/transition';
 import { getValueTransition } from '../../animation/utils/get-value-transition.js';
 import { applyPopLayout, removePopLayout } from '../../components/AnimatePresence/PopChild/pop-layout.js';
@@ -286,6 +287,46 @@ function markProjectionWillUpdate(
 	return root;
 }
 
+function hideFromLayout(motionNode: Element) {
+	if (!(motionNode instanceof HTMLElement) || motionNode.dataset.motionWaitDisplay !== undefined) return;
+	motionNode.dataset.motionWaitDisplay = motionNode.style.display;
+	motionNode.style.display = 'none';
+}
+
+function restoreWaitDisplay(motionNode: Element) {
+	if (!(motionNode instanceof HTMLElement)) return;
+	const previous = motionNode.dataset.motionWaitDisplay;
+	if (previous === undefined) return;
+	delete motionNode.dataset.motionWaitDisplay;
+	motionNode.style.display = previous;
+}
+
+/**
+ * `mode="wait"` must not lay the incoming child out until the outgoing one has
+ * finished exiting.
+ *
+ * This used to be attempted by delaying a `display: none` CSS transition by
+ * `context.remaining()`. That reads a duration the *outro* publishes through
+ * `reserve()`, but Svelte builds the incoming keyed block before tearing the
+ * outgoing one down, so the intro almost always read `0`, emitted no CSS at all,
+ * and both children were laid out at once.
+ *
+ * Hiding the node imperatively removes the ordering dependency: hide first, ask
+ * afterwards. `waitForExit()` resolves immediately when nothing is exiting, so a
+ * plain enter is restored in the same tick, before paint.
+ */
+function deferLayoutUntilExitsComplete(motionNode: Element, context: MotionOutroContext) {
+	if (!(motionNode instanceof HTMLElement) || motionNode.dataset.motionWaitDisplay !== undefined) return;
+
+	hideFromLayout(motionNode);
+
+	const reveal = () => restoreWaitDisplay(motionNode);
+
+	tick()
+		.then(() => context.waitForExit())
+		.then(reveal, reveal);
+}
+
 export function motionEnterIntro(
 	node: Element,
 	{ context, visualElement }: MotionOutroParams
@@ -315,22 +356,23 @@ export function motionEnterIntro(
 		motionNode.style.pointerEvents = motionNode.dataset.motionPrevPointerEvents;
 		delete motionNode.dataset.motionPrevPointerEvents;
 	}
+	// A reversed exit re-enters the same node, which `finish` may already have
+	// pulled out of flow.
+	restoreWaitDisplay(motionNode);
 	visualElement?.animationState?.setActive('exit', false);
 
-	return () => {
-		const delay = context?.mode === 'wait' ? context.remaining() : 0;
-		return {
-			delay,
-			duration: 0,
-			css: delay > 0 ? (t) => (t < 1 ? 'display: none' : '') : undefined,
-		};
-	};
+	if (context?.mode === 'wait') {
+		deferLayoutUntilExitsComplete(motionNode, context);
+	}
+
+	return () => ({ duration: 0 });
 }
 
 export function motionExitOutro(node: Element, { context, visualElement }: MotionOutroParams): TransitionConfig {
 	if (!context || !visualElement) return { duration: 0 };
 
 	const element = visualElement;
+	const outroContext = context;
 	const motionNode = getMotionNode(node, element);
 	const complete = context.begin();
 	let releasePopLayout: VoidFunction | undefined;
@@ -341,6 +383,15 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 		if (completed) return;
 		completed = true;
 		pendingExitFinish.delete(motionNode);
+		// The exit animation is done, but Svelte keeps the node mounted until its
+		// own outro timer elapses. In `wait` mode that trailing window would let
+		// the outgoing and incoming children share the layout, so drop the
+		// finished node out of flow immediately. `motionEnterIntro` restores it
+		// if the exit is reversed before removal.
+		if (outroContext.mode === 'wait') {
+			restoreWaitDisplay(motionNode);
+			hideFromLayout(motionNode);
+		}
 		complete(element.presenceContext?.id ?? 'outro', completedExit);
 	}
 
