@@ -1,6 +1,7 @@
 <script lang="ts">
 	import MsLogo from "$lib/components/ms-logo.svelte";
 	import DocsSidebarRail from "$lib/components/docs-sidebar-rail.svelte";
+	import DocsFooter from "$lib/components/docs-footer.svelte";
 	import { DocsLayout } from "@svecodocs/kit";
 	import { navigation } from "$lib/navigation";
 	import { motion, AnimatePresence } from "motion-start";
@@ -22,6 +23,7 @@
 	{/snippet}
 
 	<DocsSidebarRail />
+	<DocsFooter />
 
 	<AnimatePresence mode="wait">
 		{#key page.url.pathname}
