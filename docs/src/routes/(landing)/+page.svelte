@@ -12,20 +12,21 @@
 	 */
 
 	const time = useTime();
-	const drift = useTransform(time, (t: number) => Math.sin(t / 1600) * 7);
+	// Previous pass's drift: wider travel, slightly quicker cycle.
+	const drift = useTransform(time, (t: number) => Math.sin(t / 1400) * 10);
 
 	const container = {
 		hidden: { opacity: 0 },
-		visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+		visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
 	};
 
 	const rise = {
-		hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
+		hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
 		visible: {
 			opacity: 1,
 			y: 0,
 			filter: "blur(0px)",
-			transition: { type: "spring", stiffness: 240, damping: 28 },
+			transition: { type: "spring", stiffness: 220, damping: 26 },
 		},
 	};
 </script>
