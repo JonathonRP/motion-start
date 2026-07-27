@@ -122,8 +122,8 @@ header {
 	padding-block: 0.25rem;
 }
 
-/* The separators between groups aren't in the design. */
-[data-sidebar="content"] [data-sidebar="separator"] {
+/* The separators — under the logo and between groups — aren't in the design. */
+[data-sidebar="separator"] {
 	display: none;
 }
 

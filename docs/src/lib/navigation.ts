@@ -1,7 +1,4 @@
 import { defineNavigation } from "@svecodocs/kit";
-import ChalkboardTeacher from "phosphor-svelte/lib/ChalkboardTeacher";
-import RocketLaunch from "phosphor-svelte/lib/RocketLaunch";
-import Tag from "phosphor-svelte/lib/Tag";
 import { getAllDocs } from "./utils.js";
 
 const allDocs = getAllDocs();
@@ -16,25 +13,20 @@ function section(name: string) {
 		}));
 }
 
+/**
+ * The design has no icon anchor block — every entry sits under a section
+ * heading, starting with "Getting Started". Its two pages have no `NN_`
+ * prefix to sort by, so they're listed explicitly to guarantee the order.
+ */
 export const navigation = defineNavigation({
-	anchors: [
-		{
-			title: "Introduction",
-			href: "/docs",
-			icon: ChalkboardTeacher,
-		},
+	sections: [
 		{
 			title: "Getting Started",
-			href: "/docs/getting-started",
-			icon: RocketLaunch,
+			items: [
+				{ title: "Introduction", href: "/docs" },
+				{ title: "Installation", href: "/docs/getting-started" },
+			],
 		},
-		{
-			title: "Releases",
-			href: "https://github.com/JonathonRP/motion-start/releases",
-			icon: Tag,
-		},
-	],
-	sections: [
 		{
 			title: "Animation",
 			items: section("Animation"),

@@ -1,7 +1,7 @@
 ---
 title: Introduction
 description: A production-ready declarative motion library for Svelte.
-section: Overview
+section: Getting Started
 ---
 
 <script>

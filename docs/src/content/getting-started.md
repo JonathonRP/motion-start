@@ -1,7 +1,7 @@
 ---
 title: Getting Started
 description: Install Motion Start and write your first animation.
-section: Overview
+section: Getting Started
 ---
 
 <script>
