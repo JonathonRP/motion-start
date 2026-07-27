@@ -48,6 +48,13 @@
 
 /* ---------------------------------------------------------------- shell -- */
 
+/* The page itself scrolls, and the content column is centred inside a flexible
+ * main. Without a reserved gutter, navigating from a short page to a tall one
+ * makes the scrollbar appear and shifts the column sideways. */
+html {
+	scrollbar-gutter: stable;
+}
+
 /* The design has no top chrome bar — the sidebar card and the content start at
  * the same height. Keep the kit's header (it holds search and the theme
  * toggle) but let it dissolve into the page. */
@@ -57,6 +64,13 @@ header {
 }
 
 /* -------------------------------------------------------------- sidebar -- */
+
+/* The kit puts `border-r` on the fixed sidebar column wrapper, which draws a
+ * full-height rule alongside our inset card. The card supplies its own edge,
+ * so drop the wrapper's. */
+div:has(> [data-sidebar="sidebar"]) {
+	border-right-width: 0;
+}
 
 /* Float the sidebar as an inset rounded card rather than a flush full-height
  * column. */
