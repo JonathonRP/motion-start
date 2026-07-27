@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MsLogo from "$lib/components/ms-logo.svelte";
+	import DocsSidebarRail from "$lib/components/docs-sidebar-rail.svelte";
 	import { DocsLayout } from "@svecodocs/kit";
 	import { navigation } from "$lib/navigation";
 	import { motion, AnimatePresence } from "motion-start";
@@ -10,15 +11,17 @@
 
 <DocsLayout {navigation}>
 	{#snippet logo()}
-		<a href="/" class="flex items-center">
-			<MsLogo />
-			<span class="sr-only">Motion Start</span>
-		</a>
+		<!-- The kit already wraps this snippet in an <a href="/docs">, so this
+		     must not contain another anchor. -->
+		<MsLogo />
+		<span class="sr-only">Motion Start</span>
 		<span class="ml-auto font-mono text-[10px] leading-tight text-foreground-alt/70">
 			<span class="block">alpha</span>
 			<span class="block">v0.2</span>
 		</span>
 	{/snippet}
+
+	<DocsSidebarRail />
 
 	<AnimatePresence mode="wait">
 		{#key page.url.pathname}

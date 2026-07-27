@@ -64,7 +64,9 @@ header {
 	opacity: 0.65;
 }
 
-/* Nav links: a fuchsia rail slides in on hover, locks in when active. */
+/* Nav links. The active indicator is a single shared rail rendered by
+ * docs-sidebar-rail.svelte, which springs between items on navigation — so the
+ * per-item ::before rail is deliberately not used here. */
 [data-sidebar="content"] [data-sidebar="menu-button"] {
 	position: relative;
 	font-size: 0.8125rem;
@@ -74,41 +76,13 @@ header {
 		transform 160ms ease;
 }
 
-[data-sidebar="content"] [data-sidebar="menu-button"]::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 50%;
-	height: 0;
-	width: 2px;
-	border-radius: 2px;
-	background: var(--ms-rail);
-	opacity: 0;
-	transition:
-		height 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
-		top 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
-		opacity 160ms ease;
-}
-
-[data-sidebar="content"] [data-sidebar="menu-button"]:hover::before {
-	height: 40%;
-	top: 30%;
-	opacity: 0.5;
-}
-
 [data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"] {
 	background-color: color-mix(in oklab, var(--ms-glow) 9%, transparent);
 }
 
-[data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"]::before {
-	height: 60%;
-	top: 20%;
-	opacity: 1;
-	box-shadow: 0 0 12px 0 var(--ms-glow);
-}
-
 [data-sidebar="content"] [data-sidebar="menu-button"]:not([data-active="true"]):hover {
 	transform: translateX(2px);
+	background-color: color-mix(in oklab, var(--ms-glow) 5%, transparent);
 }
 
 /* --------------------------------------------------------------- type -- */
