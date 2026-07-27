@@ -1,20 +1,24 @@
+<svelte:options runes={false} />
+
 <script>
-    import Box from "../Box.svelte";
-    import { Motion } from "$lib/motion-start";
+import Box from '../Box.svelte';
+import { motion } from '$lib/motion-start';
 </script>
 
-<Box cls="bg-slate-800 flex gap-3 md:gap-10 text-black">
-    <Motion.div
+<Box cls="gap-3 md:gap-10">
+    <motion.div
+        id="whiletaprotate"
         whileTap={{
             rotate: 45,
             scale: 0.75,
         }}
-        class="box">Rotate</Motion.div
+        class="box">Rotate</motion.div
     >
-    <Motion.div
+    <motion.div
+        id="whiletapscale"
         whileTap={{
             scale: 0.84,
         }}
-        class="box">Simple</Motion.div
+        class="box">Simple</motion.div
     >
 </Box>

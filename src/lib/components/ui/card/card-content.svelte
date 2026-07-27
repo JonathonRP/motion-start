@@ -10,6 +10,17 @@
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 </script>
 
-<div bind:this={ref} data-slot="card-content" class={cn("px-6", className)} {...restProps}>
-	{@render children?.()}
+<div
+	bind:this={ref}
+	data-slot="card-content"
+	class={cn("px-6", className)}
+	{...restProps}
+>
+	<svelte:boundary>
+		{@render children?.()}
+		{#snippet failed()}
+			<p>whoops!</p>
+			<p>check console for error</p>
+		{/snippet}
+	</svelte:boundary>
 </div>

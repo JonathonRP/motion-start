@@ -1,9 +1,13 @@
 name: Preview
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{github.head_ref || github.ref_name}}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -26,4 +30,4 @@ jobs:
         run: bun --bun run build
 
       - name: Publish preview
-        run: npx pkg-pr-new publish . --template './examples/*'
+        run: npx pkg-pr-new publish .

@@ -1,0 +1,18 @@
+{
+	"servers": {
+		"svelte": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["@sveltejs/mcp"],
+			"cwd": "${input:cwd}",
+			"env": {}
+		}
+	},
+	"inputs": [
+		{
+			"id": "cwd",
+			"type": "promptString",
+			"description": "Working Directory"
+		}
+	]
+}

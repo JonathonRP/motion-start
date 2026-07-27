@@ -1,12 +1,14 @@
+import type { VariantLabels } from '../../../motion/types.js';
 import type { Snippet } from 'svelte';
-import type { VariantLabels } from '../../../motion/types';
+
 export interface PresenceChildProps {
-	children?: Snippet;
+	presenceKey?: string | number;
 	isPresent: boolean;
 	onExitComplete?: () => void;
 	initial?: false | VariantLabels;
 	custom?: any;
+	presenceLayoutVersion?: number;
 	presenceAffectsLayout: boolean;
-	isCustom: boolean;
-	presenceKey?: any;
+	mode: 'wait' | 'sync' | 'popLayout';
+	children: Snippet;
 }

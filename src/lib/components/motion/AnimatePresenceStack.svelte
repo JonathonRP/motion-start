@@ -1,53 +1,34 @@
-<script>
-  import { AnimatePresence } from "$lib/motion-start";
-  import Card from "$lib/components/Card.svelte";
+<!-- https://codesandbox.io/p/sandbox/gm9n3c?file=/src/index.js -->
 
-  let index = 0;
-  let exitX = 0;
+<script lang="ts">
+import Card from '$lib/components/Card.svelte';
+import { AnimatePresence } from '$lib/motion-start';
+import Box from '../Box.svelte';
 
-  $: mint = index + 1;
-
-  function handleDragEnd(_, info) {
-    if (info.offset.x < -100) {
-      exitX = -250;
-      index = index + 1;
-    }
-    if (info.offset.x > 100) {
-      exitX = 250;
-      index = index + 1;
-    }
-  }
-
-  /**
- * This example demonstrates how to create a stack of cards that can be dragged and dismissed using Animate
-<div
-    class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
->
-    <AnimatePresence initial={false} let:item list={[{ key: index }]}>
-        <Card bind:index={mint} frontCard={false} />
-        <Card bind:index drag="x" frontCard={true} />
-    </AnimatePresence>
-</div>
-*/
+let index = $state(0);
+let mint = $derived(index + 1);
+let exitDirection = $state(0);
 </script>
 
-<div
-  class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
->
-  <AnimatePresence
-    initial={false}
-    let:item
-    list={[
-      { key: index, isFront: true },
-      { key: mint, isFront: false },
-    ]}
-  >
-    <Card
-      bind:index={item.key}
-      drag={item.isFront ? "x" : false}
-      frontCard={item.isFront}
-      onDragEnd={item.isFront ? handleDragEnd : undefined}
-      custom={exitX}
-    />
-  </AnimatePresence>
-</div>
+<Box>
+    <div
+        class="w-64 h-64 relative bg-gray-700/40 rounded-lg flex justify-center items-center"
+    >
+        <AnimatePresence initial={false} custom={exitDirection}>
+            {#each [
+                { key: index, isFront: true },
+                { key: mint, isFront: false },
+            ] as item (item.key)}
+                <Card
+                    bind:index={
+                        () => item.key,
+                        (value) => { index = value; }
+                    }
+                    drag={item.isFront ? "x" : false}
+                    frontCard={item.isFront}
+                    bind:exitX={exitDirection}
+                />
+            {/each}
+        </AnimatePresence>
+    </div>
+</Box>

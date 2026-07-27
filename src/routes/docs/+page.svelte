@@ -1,3 +1,3 @@
 <script lang="ts">
-    // docs landing page
+// docs landing page
 </script>

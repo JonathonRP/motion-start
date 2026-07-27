@@ -1,5 +1,5 @@
 node_modules
-.pnpm-store
+/.pnpm-store/
 bun.lockb
 /types/tsdoc-metadata.json
 
@@ -9,6 +9,7 @@ bun.lockb
 /.svelte-kit
 /build
 /dist/*
+/cypress/videos/
 
 # OS
 .DS_Store
@@ -25,3 +26,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 *.vitest-temp.*
 bun.lockb
+
+/regressions/

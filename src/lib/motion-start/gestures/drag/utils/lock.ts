@@ -1,69 +1,55 @@
 /** 
-based on framer-motion@4.1.17,
+based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
+
 export type Lock = (() => void) | false;
 
-
-/** 
-based on framer-motion@4.1.17,
-Copyright (c) 2018 Framer B.V.
-*/
-
-function createLock(name: string) {
-    var lock: string | null = null;
-    return function (): Lock {
-        var openLock = function () {
-            lock = null;
-        };
-        
-        if (lock === null) {
-            lock = name;
-            return openLock;
-        }
-        return false;
-    };
-}
-var globalHorizontalLock = createLock("dragHorizontal");
-var globalVerticalLock = createLock("dragVertical");
-function getGlobalLock(drag: boolean | "x" | "y" | "lockDirection") {
-    var lock: Lock = false;
-    if (drag === "y") {
-        
-        lock = globalVerticalLock();
-    }
-    else if (drag === "x") {
-        
-        lock = globalHorizontalLock();
-    }
-    else {
-        var openHorizontal_1 = globalHorizontalLock();
-        var openVertical_1 = globalVerticalLock();
-        if (openHorizontal_1 && openVertical_1) {
-            lock = function () {// @ts-expect-error
-                openHorizontal_1();// @ts-expect-error
-                openVertical_1();
-            };
-        }
-        else {
-            // Release the locks because we don't use them
-            if (openHorizontal_1)
-                openHorizontal_1();
-            if (openVertical_1)
-                openVertical_1();
-        }
-    }
-    return lock;
-}
-function isDragActive() {
-    // Check the gesture lock - if we get it, it means no drag gesture is active
-    // and we can safely fire the tap gesture.
-    var openGestureLock = getGlobalLock(true);
-    if (!openGestureLock)
-        return true;
-    openGestureLock();
-    return false;
+export function createLock(name: string) {
+	let lock: null | string = null;
+	return (): Lock => {
+		const openLock = (): void => {
+			lock = null;
+		};
+		if (lock === null) {
+			lock = name;
+			return openLock;
+		}
+		return false;
+	};
 }
 
-export { createLock, getGlobalLock, isDragActive };
+const globalHorizontalLock = createLock('dragHorizontal');
+const globalVerticalLock = createLock('dragVertical');
 
+export function getGlobalLock(drag: boolean | 'x' | 'y' | 'lockDirection'): Lock {
+	let lock: Lock = false;
+	if (drag === 'y') {
+		lock = globalVerticalLock();
+	} else if (drag === 'x') {
+		lock = globalHorizontalLock();
+	} else {
+		const openHorizontal = globalHorizontalLock();
+		const openVertical = globalVerticalLock();
+		if (openHorizontal && openVertical) {
+			lock = () => {
+				openHorizontal();
+				openVertical();
+			};
+		} else {
+			// Release the locks because we don't use them
+			if (openHorizontal) openHorizontal();
+			if (openVertical) openVertical();
+		}
+	}
+	return lock;
+}
+
+export function isDragActive() {
+	// Check the gesture lock - if we get it, it means no drag gesture is active
+	// and we can safely fire the tap gesture.
+	const openGestureLock = getGlobalLock(true);
+	if (!openGestureLock) return true;
+	openGestureLock();
+	return false;
+}

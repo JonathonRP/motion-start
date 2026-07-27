@@ -11,10 +11,39 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js",
-			"import": "./dist/index.js",
-			"module": "./dist/index.js",
-			"default": "./dist/index.js"
+			"svelte": "./dist/index.js"
+		},
+		"./dom": {
+			"types": "./dist/dom.d.ts",
+			"svelte": "./dist/dom.js",
+			"import": "./dist/dom.js",
+			"default": "./dist/dom.js"
+		},
+		"./dom/mini": {
+			"types": "./dist/dom-mini.d.ts",
+			"svelte": "./dist/dom-mini.js",
+			"import": "./dist/dom-mini.js",
+			"default": "./dist/dom-mini.js"
+		},
+		"./client": {
+			"types": "./dist/client.d.ts",
+			"svelte": "./dist/client.js"
+		},
+		"./m": {
+			"types": "./dist/m.d.ts",
+			"svelte": "./dist/m.js"
+		},
+		"./mini": {
+			"types": "./dist/mini.d.ts",
+			"svelte": "./dist/mini.js",
+			"import": "./dist/mini.js",
+			"default": "./dist/mini.js"
+		},
+		"./projection": {
+			"types": "./dist/projection.d.ts",
+			"svelte": "./dist/projection.js",
+			"import": "./dist/projection.js",
+			"default": "./dist/projection.js"
 		},
 		"./package.json": "./package.json",
 		"./src/context/MotionContext": {
@@ -24,16 +53,10 @@
 			"default": "./dist/context/MotionContext/index.js"
 		},
 		"./src/motion": {
-			"types": "./dist/motion/index.d.ts",
-			"svelte": "./dist/motion/index.js",
-			"import": "./dist/motion/index.js",
-			"default": "./dist/motion/index.js"
-		},
-		"./src/render": {
-			"types": "./dist/render/index.d.ts",
-			"svelte": "./dist/render/index.js",
-			"import": "./dist/render/index.js",
-			"default": "./dist/render/index.js"
+			"types": "./dist/motion/index.svelte.d.ts",
+			"svelte": "./dist/motion/index.svelte.js",
+			"import": "./dist/motion/index.svelte.js",
+			"default": "./dist/motion/index.svelte.js"
 		},
 		"./src/value": {
 			"types": "./dist/value/index.d.ts",
@@ -54,55 +77,66 @@
 	"browser": "./dist/index.js",
 	"type": "module",
 	"scripts": {
+		"sv": "bunx sv",
 		"dev": "vite dev",
 		"build docs": "vite build",
 		"build": "bun --bun package",
 		"package": "svelte-kit sync && svelte-package --input ./src/lib/motion-start && publint --strict",
 		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check": "svelte-kit sync && sv check --tsconfig ./tsconfig.json",
 		"lint": "biome check",
-		"test": "vitest",
+		"cypress": "cypress open",
+		"test": "vitest --typecheck=false",
 		"test:types": "vitest --typecheck.only",
 		"test:ui": "vitest --ui",
 		"test:types:ui": "vitest --ui",
+		"test:suite": "vitest --run && vitest --typecheck.only && cypress run",
 		"release": "bun --bun run build && npm publish --access public && npx changeset tag"
 	},
 	"dependencies": {
-		"framesync": "^6.1.2",
-		"popmotion": "^11.0.5",
-		"style-value-types": "5.1.2"
+		"csstype": "^3.2.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.0.0",
-		"@changesets/cli": "^2.27.10",
-		"@emotion/is-prop-valid": "^1.3.1",
+		"@biomejs/biome": "^2.5.2",
+		"@changesets/cli": "^2.31.0",
+		"@emotion/is-prop-valid": "^1.4.0",
 		"@lucide/svelte": "^0.544.0",
-		"@sveltejs/adapter-auto": "^6.0.0",
-		"@sveltejs/kit": "^2.0.0",
-		"@sveltejs/package": "^2.3.11",
-		"@sveltejs/vite-plugin-svelte": "^6.0.0",
-		"@tailwindcss/typography": "^0.5.15",
-		"@tailwindcss/vite": "^4.0.0",
-		"@tsconfig/svelte": "^5.0.4",
-		"@types/node": "^20.17.9",
+		"@sveltejs/adapter-auto": "^6.1.1",
+		"@sveltejs/kit": "^2.69.1",
+		"@sveltejs/package": "^2.5.8",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tailwindcss/typography": "^0.5.20",
+		"@tailwindcss/vite": "^4.3.2",
+		"@tsconfig/svelte": "^5.0.8",
+		"@types/bun": "latest",
+		"@types/cypress": "^1.1.6",
+		"@types/node": "^20.19.43",
 		"@vitest/ui": "latest",
-		"bits-ui": "^2.11.0",
+		"bits-ui": "^2.18.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"csstype": "^3.1.3",
+		"cypress": "13.6.0",
+		"cypress-real-events": "^1.15.0",
+		"happy-dom": "^20.10.6",
 		"lucide-svelte": "^0.542.0",
 		"mode-watcher": "^1.1.0",
-		"publint": "^0.3.0",
-		"svelte-check": "^4.1.1",
-		"tailwind-merge": "^3.0.0",
-		"tailwind-variants": "^3.1.1",
-		"tailwindcss": "^4.0.0",
-		"typescript": "^5.7.2",
-		"vite": "^7.0.0",
-		"vitest": "latest"
+		"publint": "^0.3.21",
+		"runed": "^0.37.1",
+		"sv": "^0.14.1",
+		"svelte-check": "^4.7.1",
+		"svelte-render-scan": "^1.1.0",
+		"tailwind-merge": "^3.6.0",
+		"tailwind-variants": "^3.2.2",
+		"tailwindcss": "^4.3.2",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.6",
+		"vite-plugin-devtools-json": "^1.0.0",
+		"vitest": "latest",
+		"zod": "^4.4.3"
 	},
 	"peerDependencies": {
-		"svelte": "^5.33.16"
+		"svelte": "5.56.4"
 	},
 	"engines": {
 		"bun": ">=1.0.0",
@@ -121,6 +155,12 @@
 	"trustedDependencies": [
 		"@biomejs/biome",
 		"@sveltejs/kit",
-		"esbuild"
+		"@swc/core",
+		"@tailwindcss/oxide",
+		"cypress",
+		"esbuild",
+		"sharp",
+		"svelte-preprocess",
+		"workerd"
 	]
 }

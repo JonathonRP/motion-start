@@ -1,15 +1,18 @@
+<svelte:options runes={false} />
+
 <script>
-    import Box from "../Box.svelte";
-    import { Motion, useTransform, useMotionValue } from "$lib/motion-start";
-    let x = useMotionValue(0);
-    let y = useMotionValue(0);
-    let rotateX = useTransform(y, [-100, 100], [60, -60]);
-    let rotateY = useTransform(x, [-100, 100], [-60, 60]);
+import Box from '../Box.svelte';
+import { motion, useTransform, useMotionValue } from '$lib/motion-start';
+let x = useMotionValue(0);
+let y = useMotionValue(0);
+let rotateX = useTransform(y, [-100, 100], [60, -60]);
+let rotateY = useTransform(x, [-100, 100], [-60, 60]);
 </script>
 
-<Box cls="bg-slate-800 flex text-black" minHeight={350}>
+<Box>
     <div class="small_circle">
-        <Motion.div
+        <motion.div
+            id="drag3dtransform"
             style={{
                 left: -25,
                 top: -25,
@@ -31,7 +34,7 @@
             whileTap={{ cursor: "grabbing" }}
             class="box font-medium"
         >
-            3D</Motion.div
+            3D</motion.div
         >
     </div>
 </Box>

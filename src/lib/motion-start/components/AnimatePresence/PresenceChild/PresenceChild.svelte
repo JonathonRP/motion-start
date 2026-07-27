@@ -1,98 +1,122 @@
-<!-- based on framer-motion@4.0.3,
+<!-- based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V. -->
-<svelte:options runes />
-
-<script lang="ts" module>
-  let presenceId = 0;
-  function getPresenceId() {
-    const id = presenceId;
-    presenceId++;
-    return id;
-  }
-  function newChildrenMap(): Map<number, boolean> {
-    return new Map<number, boolean>();
-  }
+<script module lang="ts">
+function newChildrenMap(): Map<string | number, boolean> {
+	return new Map<string | number, boolean>();
+}
 </script>
 
 <script lang="ts">
-  import { setContext, tick, untrack } from "svelte";
-  import { setDomContext } from "../../../context/DOMcontext.js";
-  import { PresenceContext } from "../../../context/PresenceContext.js";
-  import type { PresenceChildProps } from "./index.js";
+	import { tick } from "svelte";
+	import type { Attachment } from "svelte/attachments";
+	import {
+		type PresenceContext,
+		setPresenceContext,
+	} from "../../../context/PresenceContext.svelte.js";
+	import PopChild from "../PopChild/PopChild.svelte";
+	import type { PresenceChildProps } from "./index.js";
 
-  interface Props extends PresenceChildProps {}
+	interface Props extends PresenceChildProps {}
 
-  let {
-    isPresent,
-    onExitComplete = undefined,
-    initial = undefined,
-    custom = undefined,
-    presenceAffectsLayout,
-    isCustom,
-    children,
-    presenceKey = undefined,
-  }: Props = $props();
+	let {
+		isPresent,
+		onExitComplete = undefined,
+		initial,
+		custom = undefined,
+		presenceLayoutVersion = 0,
+		presenceAffectsLayout,
+		mode,
+		children: desendants,
+	}: Props = $props();
 
-  const presenceChildren = newChildrenMap();
-  const id = getPresenceId();
+	const presenceChildren = $state(newChildrenMap());
+	const id = $props.id();
 
-  const refresh = $derived(presenceAffectsLayout ? undefined : isPresent);
+	// Keep one mutable context object alive so child registration and popLayout
+	// measurement survive prop changes without forcing consumers onto a new reference.
 
-  const memoContext = (flag?: boolean) => {
-    return {
-      id,
-      presenceKey,
-      initial,
-      isPresent,
-      custom,
-      onExitComplete: (childId: number) => {
-        if (!presenceChildren.has(childId)) return;
-        if (presenceChildren.get(childId) === true) return;
-        presenceChildren.set(childId, true);
-        let allComplete = true;
-        presenceChildren.forEach((isComplete) => {
-          if (!isComplete) allComplete = false;
-        });
+	const handleExitComplete = (childId: string | number) => {
+		if (!presenceChildren.has(childId)) return;
+		presenceChildren.set(childId, true);
+		for (const [, isComplete] of presenceChildren) {
+			if (!isComplete) return;
+		}
+		onExitComplete?.();
+	};
 
-        allComplete && onExitComplete?.();
-      },
-      register: (childId: number) => {
-        presenceChildren.set(childId, false);
-        return () => presenceChildren.delete(childId);
-      },
-    };
-  };
-  let context = PresenceContext();
-  // Set synchronously so children's usePresence() sees a non-null value via get()
-  context.set(memoContext());
+	const register = (childId: string | number) => {
+		presenceChildren.set(childId, false);
+		return () => {
+			presenceChildren.delete(childId);
+		};
+	};
 
-  // Update context when relevant props change
-  $effect(() => {
-    if (presenceAffectsLayout) {
-      // Track all relevant props
-      isPresent;
-      initial;
-      custom;
-      // But set context without tracking to avoid loops
-      untrack(() => context.set(memoContext()));
-    } else {
-      // When presenceAffectsLayout is false, only track isPresent via refresh
-      refresh;
-      untrack(() => context.set(memoContext()));
-    }
-  });
+	let measurePop = $state<Attachment | undefined>();
+	const layoutVersion = $derived(
+		presenceAffectsLayout && presenceLayoutVersion !== undefined ? presenceLayoutVersion : 0,
+	);
 
-  const keyset = (flag?: boolean) => {
-    presenceChildren.forEach((_, key) => presenceChildren.set(key, false));
-  };
-  $effect(() => {
-    keyset(isPresent);
-    tick().then(() => {
-      !isPresent && !presenceChildren.size && onExitComplete?.();
-    });
-  });
-  setContext(PresenceContext, context);
-  setDomContext("Presence", isCustom, context);
+	const context: PresenceContext = {
+		id,
+		register,
+		onExitComplete: handleExitComplete,
+		get measurePop() {
+			return measurePop;
+		},
+		set measurePop(value) {
+			measurePop = value;
+		},
+		get initial() {
+			return initial;
+		},
+		get isPresent() {
+			return isPresent;
+		},
+		get custom() {
+			return custom;
+		},
+		get presenceLayoutVersion() {
+			return layoutVersion;
+		},
+	};
+
+	// When this child begins exiting, reset every registered descendant back to
+	// incomplete so the parent waits for the new exit cycle to finish.
+	$effect(() => {
+		if (!isPresent) {
+			presenceChildren.forEach((_, key) =>
+				presenceChildren.set(key, false),
+			);
+		}
+	});
+
+	// If no descendants registered exit work, we can complete removal on the
+	// next tick once the parent has had a chance to mount everything.
+	$effect(() => {
+		const isExiting = !isPresent;
+		if (!isExiting) return;
+
+		tick().then(() => {
+			if (!isPresent && !presenceChildren.size) {
+				onExitComplete?.();
+			}
+		});
+	});
+
+	// Provide a stable context object; reactive fields are exposed through getters.
+	setPresenceContext(context);
+
+	const component = $derived({ pop: PopChild, props: { isPresent } });
 </script>
 
-{@render children?.()}
+{#snippet children()}
+	{#if mode === "popLayout"}
+		<component.pop {...component.props}>
+			{@render desendants?.()}
+		</component.pop>
+	{:else}
+		{@render desendants?.()}
+	{/if}
+{/snippet}
+
+{@render children()}

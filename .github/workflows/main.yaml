@@ -3,13 +3,16 @@ name: CI
 on:
   push:
     branches:
-      - "**"
-    pull_request:
+      - main
+  pull_request:
+    branches:
       - main
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede stale runs on a PR, but never cancel a `main` run: Publish is
+  # chained off this workflow's completion via `workflow_run`.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   Check:
@@ -27,22 +30,6 @@ jobs:
       - name: Run svelte-check
         run: bun --bun run check
 
-  # Lint:
-  #   runs-on: ubuntu-latest
-  #   name: Lint
-  #   steps:
-  #       - uses: actions/checkout@v4
-  #       - uses: pnpm/action-setup@v4
-  #       - uses: actions/setup-node@v4
-  #         with:
-  #             node-version: 20
-  #             cache: pnpm
-
-  #       - name: Install dependencies
-  #         run: pnpm install
-
-  #       - run: pnpm lint
-
   Test:
     runs-on: ubuntu-latest
     steps:
@@ -54,5 +41,16 @@ jobs:
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
-      - name: Run tests
-        run: bun --bun run test
+      - name: Run unit tests
+        run: bun --bun vitest --run
+
+      - name: Run type tests
+        run: bun --bun vitest --typecheck.only
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v7
+        with:
+          install: false
+          start: bun --bun run dev -- --host 0.0.0.0 --port 5000
+          wait-on: http://localhost:5000
+          wait-on-timeout: 120

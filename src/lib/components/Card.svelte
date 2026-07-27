@@ -1,49 +1,71 @@
 <script lang="ts">
-  import { Motion, useMotionValue, useTransform } from "$lib/motion-start";
+import { motion, type PanInfo, useMotionValue, useTransform, type Variants } from '$lib/motion-start';
 
-  const x = useMotionValue(0);
-  const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
-  const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
-    clamp: false,
-  });
+const x = useMotionValue(0);
+const scale = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
+const rotate = useTransform(x, [-150, 0, 150], [-45, 0, 45], {
+	clamp: false,
+});
 
-  export let drag: any = false;
-  export let frontCard = false;
-  export let index: any = 0;
-  export let custom;
-  export let onDragEnd;
+let {
+	drag = false,
+	frontCard = false,
+	index = $bindable(0),
+	exitX = $bindable(0),
+}: {
+	drag?: boolean | 'x' | 'y';
+	frontCard?: boolean;
+	index?: number;
+	exitX?: number;
+} = $props();
 
-  const variantsFrontCard = {
-    animate: { scale: 1, y: 0, opacity: 1 },
-    exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
-  };
-  const variantsBackCard = {
-    initial: { scale: 0.3, y: 105, opacity: 0 },
-    animate: { scale: 0.75, y: 30, opacity: 0.5 },
-  };
-  $: isFront = frontCard ? variantsFrontCard : variantsBackCard;
+const variantsFrontCard: Variants = {
+	animate: { scale: 1, y: 0, opacity: 1 },
+	exit: (custom: any) => ({ x: custom, opacity: 0, scale: 0.5 }),
+};
+const variantsBackCard: Variants = {
+	initial: { scale: 0.3, y: 105, opacity: 0 },
+	animate: { scale: 0.75, y: 30, opacity: 0.5 },
+};
+
+const isFront = $derived(frontCard ? variantsFrontCard : variantsBackCard);
+
+function handleDragEnd(_: PointerEvent, info: PanInfo) {
+	if (info.offset.x < -100) {
+		exitX = -250;
+		index = index + 1;
+	} else if (info.offset.x > 100) {
+		exitX = 250;
+		index = index + 1;
+	}
+}
 </script>
 
 <!-- Animate Presence Stack -->
 
-<Motion.div
-  style={{
-    x,
-    rotate,
-  }}
-  {drag}
-  dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
-  variants={isFront}
-  initial="initial"
-  animate="animate"
-  {onDragEnd}
-  exit="exit"
-  {custom}
-  transition={frontCard
-    ? { type: "spring", stiffness: 300, damping: 20 }
-    : { scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
-  class="w-32 h-32 top-10 bg-white rouned-xl absolute rounded-xl text-black flex justify-center items-center select-none touch-none
-					 {frontCard ? 'z-10 cursor-grab active:cursor-grabbing' : 'z-0 pointer-none'}"
+<motion.div
+    id="presswipe-{index}"
+    style={{
+        x,
+        rotate,
+    }}
+    {drag}
+    dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
+    variants={isFront}
+    initial="initial"
+    animate="animate"
+    onDragEnd={drag ? handleDragEnd : undefined}
+    exit="exit"
+    custom={exitX}
+    transition={frontCard
+        ? {
+            default: { type: "spring", stiffness: 300, damping: 20 },
+            opacity: { duration: 0.2 },
+        }
+        : { scale: { duration: 0.2 }, opacity: { duration: 0.4 } }}
+    class="w-32 h-32 top-10 bg-white rounded-xl absolute text-black flex justify-center items-center select-none touch-none {frontCard
+        ? 'cursor-grab active:cursor-grabbing z-10'
+        : 'z-0 pointer-none'}"
 >
-  {index}
-</Motion.div>
+    {index}
+</motion.div>
