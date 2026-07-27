@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- ed7a87c: Target `ES2022` in `tsconfig.json` so packaged output keeps native class fields instead of downlevelled `Object.defineProperty` assignments, which broke subclass field initialisation in consumers.
+
 ## 0.2.0-next.0
 
 ### Minor Changes
