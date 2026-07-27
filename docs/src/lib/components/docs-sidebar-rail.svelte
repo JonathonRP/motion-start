@@ -108,14 +108,13 @@
 </div>
 
 <style>
-	:global(.ms-sidebar-rail) {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 2px;
-		border-radius: 2px;
-		background: var(--ms-rail);
-		box-shadow: 0 0 12px 0 var(--ms-glow);
-		pointer-events: none;
-	}
+:global(.ms-sidebar-rail) {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 2px;
+	border-radius: 2px;
+	background: var(--ms-rail);
+	pointer-events: none;
+}
 </style>

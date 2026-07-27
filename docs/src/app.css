@@ -6,126 +6,171 @@
 /*
  * Motion Start docs theme.
  *
- * Near-black surfaces, a fuchsia/violet brand glow lifted from the logo, and a
- * monospaced navigation. Selectors target the real @svecodocs/kit DOM:
- * the sidebar is composed of divs carrying [data-sidebar="..."] attributes,
- * and the page content lives in #main-content. (<aside> is the table of
- * contents, not the nav.)
+ * Matches the reference design: a near-black page, a floating rounded sidebar
+ * card with periwinkle mono section labels and a yellow-green active item,
+ * a monospaced white page title, and muted sans section headings.
+ *
+ * Selectors target the real @svecodocs/kit DOM. The sidebar is built from divs
+ * carrying [data-sidebar="..."]; the <aside> elements are the table of
+ * contents, not the nav.
  */
+
+/*
+ * @svecodocs/kit defines no `*-alt` tokens, so utilities like
+ * `text-foreground-alt` and `bg-background-alt` don't resolve on their own.
+ * Register them here (inline, so they follow the .dark override below).
+ */
+@theme inline {
+	--color-foreground-alt: var(--theme-color-foreground-alt);
+	--color-background-alt: var(--theme-color-background-alt);
+}
 
 :root {
 	--ms-glow: oklch(70% 0.24 328 / 0.55);
-	--ms-rail: oklch(72% 0.23 328);
+	/* Periwinkle used for sidebar section labels. */
+	--ms-section: oklch(72% 0.12 275);
+	/* Yellow-green used for the selected nav item. */
+	--ms-active: oklch(88% 0.15 105);
+	--ms-rail: var(--ms-active);
+
+	--theme-color-foreground-alt: oklch(45% 0.01 286);
+	--theme-color-background-alt: oklch(97% 0.002 286);
 }
 
 .dark {
-	--theme-color-background: #0a0a0d;
-	--theme-color-background-secondary: #060608;
-	--theme-color-border: oklch(26% 0.012 300);
+	--theme-color-background: #09090b;
+	--theme-color-background-secondary: #141417;
+	--theme-color-border: oklch(26% 0.008 300);
+
+	--theme-color-foreground-alt: oklch(70% 0.012 286);
+	--theme-color-background-alt: #101013;
 }
 
 /* ---------------------------------------------------------------- shell -- */
 
-/* A single soft brand glow bleeding down from the top of the content area.
- * The kit nests two <main> elements: the sidebar inset shell, and the inner
- * #main-content column. `:has()` lets us target the outer one.
- *
- * This is painted as a background image rather than a pseudo-element so it can
- * never sit above the text and tint it. */
-.dark main:has(#main-content) {
-	background-image: radial-gradient(
-		80% 420px at 50% 0%,
-		color-mix(in oklab, var(--ms-glow) 14%, transparent),
-		transparent 70%
-	);
-	background-repeat: no-repeat;
-}
-
-/* Translucent, blurred top bar so content scrolls beneath it. */
+/* The design has no top chrome bar — the sidebar card and the content start at
+ * the same height. Keep the kit's header (it holds search and the theme
+ * toggle) but let it dissolve into the page. */
 header {
-	background-color: color-mix(in oklab, var(--color-background-secondary) 72%, transparent);
-	backdrop-filter: blur(12px) saturate(140%);
-	-webkit-backdrop-filter: blur(12px) saturate(140%);
+	background-color: transparent;
+	border-bottom-color: transparent;
 }
 
-/* ------------------------------------------------------------- sidebar -- */
+/* -------------------------------------------------------------- sidebar -- */
 
-[data-sidebar="content"] [data-sidebar="menu-button"],
+/* Float the sidebar as an inset rounded card rather than a flush full-height
+ * column. */
+[data-sidebar="sidebar"] {
+	background-color: var(--color-background-secondary);
+	border-radius: 0.875rem;
+	margin: 0.75rem 0 0.75rem 0.75rem;
+	height: auto;
+	max-height: calc(100dvh - 1.5rem);
+	border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+}
+
+[data-sidebar="content"] {
+	padding-inline: 0.25rem;
+}
+
+/* Section labels: mono, periwinkle, sentence case — not tiny uppercase. */
 [data-sidebar="group-label"] {
 	font-family: var(--font-mono);
-	letter-spacing: -0.01em;
-}
-
-/* Section headings: small, uppercase, tracked out. */
-[data-sidebar="group-label"] {
-	font-size: 0.6875rem;
-	text-transform: uppercase;
-	letter-spacing: 0.14em;
-	opacity: 0.65;
-}
-
-/* Nav links. The active indicator is a single shared rail rendered by
- * docs-sidebar-rail.svelte, which springs between items on navigation — so the
- * per-item ::before rail is deliberately not used here. */
-[data-sidebar="content"] [data-sidebar="menu-button"] {
-	position: relative;
 	font-size: 0.8125rem;
-	transition:
-		color 160ms ease,
-		background-color 160ms ease,
-		transform 160ms ease;
+	font-weight: 500;
+	text-transform: none;
+	letter-spacing: -0.01em;
+	color: var(--ms-section);
+	opacity: 1;
+	margin-top: 0.5rem;
 }
 
-[data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"] {
-	background-color: color-mix(in oklab, var(--ms-glow) 9%, transparent);
+.dark [data-sidebar="group-label"] {
+	color: var(--ms-section);
 }
 
-[data-sidebar="content"] [data-sidebar="menu-button"]:not([data-active="true"]):hover {
-	transform: translateX(2px);
-	background-color: color-mix(in oklab, var(--ms-glow) 5%, transparent);
+/* Nav items: mono, tight, quiet. No pill, no indent — colour carries the
+ * selected state, matching the design. */
+[data-sidebar="content"] [data-sidebar="menu-button"] {
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	letter-spacing: -0.01em;
+	height: 1.75rem;
+	min-height: 1.75rem;
+	padding-block: 0;
+	border-radius: 0.375rem;
+	transition: color 160ms ease;
+}
+
+[data-sidebar="content"] [data-sidebar="menu-button"]:hover {
+	background-color: transparent;
+	color: var(--color-foreground);
+}
+
+[data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"],
+.dark [data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"] {
+	background-color: transparent;
+	color: var(--ms-active);
+}
+
+/* Tighten the gaps between items and groups to match the reference density. */
+[data-sidebar="content"] [data-sidebar="menu"] {
+	gap: 0;
+}
+
+[data-sidebar="content"] [data-sidebar="group"] {
+	padding-block: 0.25rem;
+}
+
+/* The separators between groups aren't in the design. */
+[data-sidebar="content"] [data-sidebar="separator"] {
+	display: none;
 }
 
 /* --------------------------------------------------------------- type -- */
 
-/* Gradient page titles, echoing the logo. */
-.dark #main-content h1 {
-	background: linear-gradient(
-		100deg,
-		oklch(97% 0.02 300),
-		oklch(88% 0.09 330) 55%,
-		oklch(85% 0.11 265)
-	);
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent;
-	width: fit-content;
+/* Page title: large monospace, plain white — not a gradient. */
+#main-content h1 {
+	font-family: var(--font-mono);
+	font-size: clamp(2.25rem, 1.5rem + 2vw, 3.25rem);
+	font-weight: 500;
+	letter-spacing: -0.03em;
+	color: var(--color-foreground);
 }
 
-/* Monospaced section headings tie the content back to the nav. */
+/* The lede under the title is large and muted. */
+#main-content h1 + p {
+	font-size: 1.375rem;
+	line-height: 1.4;
+	color: var(--color-foreground-alt);
+}
+
+/* Section headings read dimmer than body copy in the design. */
 #main-content h2,
 #main-content h3 {
-	font-family: var(--font-mono);
-	letter-spacing: -0.02em;
+	font-family: var(--font-sans);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	color: var(--color-foreground-alt);
+	opacity: 0.85;
 }
 
-/* Table of contents reads as supporting chrome, not primary nav. */
-aside nav a {
-	font-size: 0.8125rem;
-	transition: color 140ms ease;
+#main-content h2 {
+	font-size: 1.5rem;
 }
 
 /* -------------------------------------------------------------- code -- */
 
 .dark #main-content pre {
-	border: 1px solid var(--color-border);
-	border-radius: 0.75rem;
-	background-color: color-mix(in oklab, var(--color-background-secondary) 80%, #000) !important;
+	border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+	border-radius: 0.625rem;
+	background-color: var(--color-background-secondary) !important;
 }
 
 /* ------------------------------------------------------------ scrollbar -- */
 
 .dark * {
-	scrollbar-color: color-mix(in oklab, var(--ms-rail) 35%, transparent) transparent;
+	scrollbar-color: color-mix(in oklab, var(--color-border) 90%, transparent) transparent;
 	scrollbar-width: thin;
 }
 
