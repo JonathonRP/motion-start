@@ -5,6 +5,7 @@
     "motion-start": "0.1.0"
   },
   "changesets": [
+    "lucky-pugs-repeat",
     "polite-rockets-deliver"
   ]
 }
