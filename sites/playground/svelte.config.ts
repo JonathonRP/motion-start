@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-auto';
+import type { Config } from '@sveltejs/kit';
 
-/** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
@@ -29,6 +29,6 @@ const config = {
 	// compilerOptions: {
 	//   runes: false,
 	// },
-};
+} satisfies Config;
 
 export default config;
