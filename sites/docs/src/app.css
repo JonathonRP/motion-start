@@ -26,7 +26,9 @@
 }
 
 :root {
-	--ms-glow: oklch(70% 0.24 328 / 0.55);
+	/* Halo behind the logo mark and the landing bloom. Orchid, matching the
+	   centre of the mark's blue-orchid-sage gradient. */
+	--ms-glow: oklch(64% 0.14 318 / 0.55);
 	/* Periwinkle used for sidebar section labels. */
 	--ms-section: #7f8cf5;
 	/* Yellow-green used for the selected nav item. */

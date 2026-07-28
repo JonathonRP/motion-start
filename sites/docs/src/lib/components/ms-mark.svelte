@@ -2,16 +2,18 @@
 	import { motion } from "motion-start";
 	import { MediaQuery } from "svelte/reactivity";
 	import {
+		GLYPH_FILL,
 		GLYPH_STROKE,
 		GLYPH_TRANSFORM,
 		GRADIENT_FROM,
 		GRADIENT_TO,
 		M_PATH,
+		S_OFFSET,
 		S_PATH,
 		STOP_A,
 		STOP_B,
 		STOP_C,
-		TRAILS,
+		STOP_OFFSETS,
 	} from "$lib/ms-mark-art.js";
 
 	/**
@@ -45,8 +47,7 @@
 
 	const uid = $props.id();
 	const fillId = `ms-fill-${uid}`;
-	const trailId = `ms-trail-${uid}`;
-	const trailsId = `ms-trails-${uid}`;
+	const clipId = `ms-clip-${uid}`;
 
 	const loop = {
 		duration: 9,
@@ -92,52 +93,44 @@
 			transition={loop}
 		>
 			<motion.stop
-				offset="0"
+				offset={STOP_OFFSETS[0]}
 				stop-color={STOP_A[0]}
 				animate={playing ? { stopColor: STOP_A } : undefined}
 				transition={loop}
 			/>
 			<motion.stop
-				offset="0.55"
+				offset={STOP_OFFSETS[1]}
 				stop-color={STOP_B[0]}
 				animate={playing ? { stopColor: STOP_B } : undefined}
 				transition={loop}
 			/>
 			<motion.stop
-				offset="1"
+				offset={STOP_OFFSETS[2]}
 				stop-color={STOP_C[0]}
 				animate={playing ? { stopColor: STOP_C } : undefined}
 				transition={loop}
 			/>
 		</motion.linearGradient>
 
-		<linearGradient id={trailId} gradientUnits="userSpaceOnUse" x1="22" y1="24" x2="2" y2="2">
-			<stop offset="0" stop-color="#ffffff" stop-opacity="0.95" />
-			<stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-		</linearGradient>
-
-		<g id={trailsId} fill="none" stroke="url(#{trailId})" stroke-linecap="round">
-			{#each TRAILS as trail (trail.d)}
-				<path d={trail.d} stroke-width={trail.width} />
-			{/each}
-		</g>
+		<clipPath id={clipId}>
+			<rect x="0" y="0" width="64" height="64" rx="14" />
+		</clipPath>
 	</defs>
 
-	<rect x="0" y="0" width="64" height="64" rx="14" fill="url(#{fillId})" />
+	<g clip-path="url(#{clipId})">
+		<rect x="0" y="0" width="64" height="64" fill="url(#{fillId})" />
 
-	<use href="#{trailsId}" />
-	<use href="#{trailsId}" transform="rotate(180 32 32)" />
-
-	<g
-		transform={GLYPH_TRANSFORM}
-		fill="none"
-		stroke="#ffffff"
-		stroke-width={GLYPH_STROKE}
-		stroke-linecap="butt"
-		stroke-linejoin="miter"
-		stroke-miterlimit="2.4"
-	>
-		<path d={M_PATH} />
-		<path d={S_PATH} transform="translate(26 0)" />
+		<g
+			transform={GLYPH_TRANSFORM}
+			fill="none"
+			stroke={GLYPH_FILL}
+			stroke-width={GLYPH_STROKE}
+			stroke-linecap="butt"
+			stroke-linejoin="miter"
+			stroke-miterlimit="2.6"
+		>
+			<path d={M_PATH} />
+			<path d={S_PATH} transform="translate({S_OFFSET.x} {S_OFFSET.y})" />
+		</g>
 	</g>
 </svg>

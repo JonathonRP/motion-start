@@ -31,9 +31,9 @@ function renderOgCard() {
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 	<defs>
 		<radialGradient id="bloom" cx="0.5" cy="0.5" r="0.5">
-			<stop offset="0" stop-color="${STOP_C[0]}" stop-opacity="0.5" />
-			<stop offset="0.5" stop-color="${STOP_B[0]}" stop-opacity="0.2" />
-			<stop offset="1" stop-color="${STOP_A[0]}" stop-opacity="0" />
+			<stop offset="0" stop-color="${STOP_B[0]}" stop-opacity="0.5" />
+			<stop offset="0.5" stop-color="${STOP_A[0]}" stop-opacity="0.22" />
+			<stop offset="1" stop-color="${STOP_C[0]}" stop-opacity="0" />
 		</radialGradient>
 	</defs>
 	<rect width="1200" height="630" fill="#232327" />
