@@ -349,6 +349,22 @@ function deferLayoutUntilExitsComplete(motionNode: Element, context: MotionOutro
 		.then(reveal, reveal);
 }
 
+/**
+ * A nested motion element inside an exiting subtree finishes its (usually
+ * absent) exit animation immediately, long before the ancestor that owns the
+ * presence child has faded out. Pulling it out of flow there collapses the
+ * outgoing content while it is still on screen. The ancestor is removed as a
+ * whole anyway, so only the outermost exiting node needs to leave the flow.
+ */
+function hasExitingAncestor(motionNode: Element) {
+	let parent = motionNode.parentElement;
+	while (parent) {
+		if (pendingExitFinish.has(parent)) return true;
+		parent = parent.parentElement;
+	}
+	return false;
+}
+
 export function motionEnterIntro(
 	node: Element,
 	{ context, visualElement }: MotionOutroParams
@@ -404,13 +420,14 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	function finish(completedExit = true) {
 		if (completed) return;
 		completed = true;
+		const nested = hasExitingAncestor(motionNode);
 		pendingExitFinish.delete(motionNode);
 		// The exit animation is done, but Svelte keeps the node mounted until its
 		// own outro timer elapses. In `wait` mode that trailing window would let
 		// the outgoing and incoming children share the layout, so drop the
 		// finished node out of flow immediately. `motionEnterIntro` restores it
 		// if the exit is reversed before removal.
-		if (outroContext.mode === 'wait') {
+		if (outroContext.mode === 'wait' && !nested) {
 			restoreWaitDisplay(motionNode);
 			hideFromLayout(motionNode);
 		}

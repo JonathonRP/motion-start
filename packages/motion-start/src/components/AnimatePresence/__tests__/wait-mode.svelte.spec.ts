@@ -152,6 +152,39 @@ describe('AnimatePresence mode="wait"', () => {
 		expect(pages[0].style.display).not.toBe('none');
 	});
 
+	it('keeps nested motion elements in flow while their ancestor is still exiting', async () => {
+		instance = mount(WaitModeFixture, { target: document.body, props: { mode: 'wait', variant: 'nested' } });
+		flushSync();
+		await nextFrame();
+
+		const outgoing = document.querySelector('#host .page') as HTMLElement;
+		const nested = outgoing.querySelector('.nested') as HTMLElement;
+
+		// A nested motion element has no `exit` of its own, so its exit resolves
+		// immediately. Pulling it out of flow there would collapse the outgoing
+		// content while the ancestor is still animating out.
+		const collapsed: string[] = [];
+		const observer = new MutationObserver(() => {
+			if (outgoing.isConnected && outgoing.style.display !== 'none' && nested.style.display === 'none') {
+				collapsed.push(`${outgoing.style.display || 'in-flow'}/${nested.style.display}`);
+			}
+		});
+		observer.observe(document.querySelector('#host') as HTMLElement, {
+			subtree: true,
+			attributes: true,
+			attributeFilter: ['style'],
+		});
+
+		(document.querySelector('#advance') as HTMLButtonElement).click();
+		flushSync();
+
+		await waitFor(() => !outgoing.isConnected);
+		await nextFrame();
+		observer.disconnect();
+
+		expect(collapsed, `nested element hidden while ancestor was visible: ${collapsed.join(',')}`).toHaveLength(0);
+	});
+
 	it('leaves out-of-flow children measurable, since they cannot share layout', async () => {
 		instance = mount(WaitModeFixture, { target: document.body, props: { mode: 'wait', variant: 'absolute' } });
 		flushSync();

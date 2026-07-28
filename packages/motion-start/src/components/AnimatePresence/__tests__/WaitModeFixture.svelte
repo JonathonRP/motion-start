@@ -4,7 +4,8 @@
 import { motion } from '../../../index.js';
 import AnimatePresence from '../AnimatePresence.svelte';
 
-let { mode = 'wait' as 'sync' | 'wait' | 'popLayout', variant = 'html' as 'html' | 'svg' | 'absolute' } = $props();
+let { mode = 'wait' as 'sync' | 'wait' | 'popLayout', variant = 'html' as 'html' | 'svg' | 'absolute' | 'nested' } =
+	$props();
 
 let step = $state(0);
 </script>
@@ -33,6 +34,17 @@ let step = $state(0);
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.05 }}
 				></motion.div>
+			{:else if variant === 'nested'}
+				<motion.div
+					class="page"
+					data-step={step}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.05 }}
+				>
+					<motion.div class="nested" whileHover={{ scale: 1.1 }}></motion.div>
+				</motion.div>
 			{:else}
 				<motion.div
 					class="page"
