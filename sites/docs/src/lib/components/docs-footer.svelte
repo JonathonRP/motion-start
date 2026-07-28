@@ -1,40 +1,41 @@
 <script lang="ts">
-	import { motion } from "motion-start";
+import { motion } from 'motion-start';
 
-	/**
-	 * The docs footer.
-	 *
-	 * @svecodocs/kit hardcodes its own <footer> inside DocsLayout and takes no
-	 * props for it, so it can't be configured — it credits Svecosystem and
-	 * carries a theme dropdown and social buttons the design doesn't have. We
-	 * hide it in app.css and portal this one into the same place instead.
-	 */
+/**
+ * The docs footer.
+ *
+ * @svecodocs/kit hardcodes its own <footer> inside DocsLayout and takes no
+ * props for it, so it can't be configured — it credits Svecosystem and
+ * carries a theme dropdown and social buttons the design doesn't have. We
+ * hide it in app.css and portal this one into the same place instead.
+ */
 
-	const year = new Date().getFullYear();
+const year = new Date().getFullYear();
 
-	const links = [
-		{ label: "GitHub", href: "https://github.com/JonathonRP/motion-start" },
-		{ label: "npm", href: "https://www.npmjs.com/package/motion-start" },
-		{ label: "Framer Motion", href: "https://motion.dev" },
-	];
+const links = [
+	{ label: 'GitHub', href: 'https://github.com/JonathonRP/motion-start' },
+	{ label: 'npm', href: 'https://www.npmjs.com/package/motion-start' },
+	{ label: 'Framer Motion', href: 'https://motion.dev' },
+];
 
-	function portal(node: HTMLElement) {
-		// Sidebar.Inset is the <main> wrapping the content row; the kit's footer
-		// is its last child, so ours goes in the same slot.
-		const target = document.querySelector<HTMLElement>("main:has(> #content)");
-		if (!target) return;
+function portal(node: HTMLElement) {
+	// Sidebar.Inset is the <main> wrapping the content row; the kit's footer
+	// is its last child, so ours goes in the same slot.
+	const target = document.querySelector<HTMLElement>('main:has(> #content)');
+	if (!target) return;
 
-		target.appendChild(node);
+	target.appendChild(node);
+	node.style.display = 'contents';
 
-		return {
-			destroy() {
-				node.remove();
-			},
-		};
-	}
+	return {
+		destroy() {
+			node.remove();
+		},
+	};
+}
 </script>
 
-<div use:portal class="contents">
+<div use:portal class="footer-portal">
 	<footer class="ms-footer">
 		<span class="ms-footer-mark">motion start</span>
 		<span class="ms-footer-meta">&copy; {year} &middot; MIT</span>
@@ -57,6 +58,10 @@
 </div>
 
 <style>
+	.footer-portal {
+		display: none;
+	}
+
 	:global(.ms-footer) {
 		display: flex;
 		align-items: baseline;
