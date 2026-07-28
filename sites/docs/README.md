@@ -33,27 +33,31 @@ bun run dev:content   # velite --watch
 bun run dev:svelte    # vite dev
 ```
 
-### `NO_CF_EMULATE`
-
-`@sveltejs/adapter-cloudflare` spins up a workerd/miniflare process to emulate Cloudflare bindings
-during `dev` and `prerender`. On some machines (notably Windows) workerd crashes with an access
-violation. Set `NO_CF_EMULATE=1` to skip the emulation — the site uses no Cloudflare bindings, so
-nothing is lost locally:
-
-```bash
-NO_CF_EMULATE=1 bun run dev
-```
-
-```powershell
-$env:NO_CF_EMULATE = '1'; bun run dev
-```
-
 ## Building
 
 ```bash
 bun run build
 bun run preview
 ```
+
+The site is fully prerendered with `@sveltejs/adapter-static`. Pushes to `main` that affect the
+package or docs deploy `sites/docs/build` to GitHub Pages through `.github/workflows/docs.yaml`.
+The Pages custom domain is `motion-start.com`.
+
+### Custom-domain DNS
+
+The domain currently uses Hover DNS. To activate the GitHub Pages custom domain, replace the
+existing apex `A` record with GitHub Pages' four records:
+
+```text
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+```
+
+Point `www.motion-start.com` to `jonathonrp.github.io` with a `CNAME` record. After DNS propagates
+and GitHub provisions the certificate, enable **Enforce HTTPS** in the repository's Pages settings.
 
 ## Writing content
 
