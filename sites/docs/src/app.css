@@ -1,0 +1,328 @@
+@import "@svecodocs/kit/theme-fuchsia.css";
+@import "@svecodocs/kit/globals.css";
+
+@source "../node_modules/@svecodocs/kit";
+
+/*
+ * Motion Start docs theme.
+ *
+ * Matches the reference design: a near-black page, a floating rounded sidebar
+ * card with periwinkle mono section labels and a yellow-green active item,
+ * a monospaced white page title, and muted sans section headings.
+ *
+ * Selectors target the real @svecodocs/kit DOM. The sidebar is built from divs
+ * carrying [data-sidebar="..."]; the <aside> elements are the table of
+ * contents, not the nav.
+ */
+
+/*
+ * @svecodocs/kit defines no `*-alt` tokens, so utilities like
+ * `text-foreground-alt` and `bg-background-alt` don't resolve on their own.
+ * Register them here (inline, so they follow the .dark override below).
+ */
+@theme inline {
+	--color-foreground-alt: var(--theme-color-foreground-alt);
+	--color-background-alt: var(--theme-color-background-alt);
+}
+
+:root {
+	--ms-glow: oklch(70% 0.24 328 / 0.55);
+	/* Periwinkle used for sidebar section labels. */
+	--ms-section: #7f8cf5;
+	/* Yellow-green used for the selected nav item. */
+	--ms-active: #cdd97f;
+	--ms-rail: var(--ms-active);
+
+	--theme-color-foreground-alt: oklch(45% 0.01 286);
+	--theme-color-background-alt: oklch(97% 0.002 286);
+}
+
+/*
+ * ------------------------------------------------------------------ phi --
+ *
+ * Every size and gap below comes off the golden ratio rather than being
+ * eyeballed, so the layout keeps one consistent rhythm.
+ *
+ * Space is a pure phi scale (each step is phi times the last), anchored at
+ * 1rem. The two fractional steps are exact: 1/phi = 0.618, 1/phi^2 = 0.382.
+ *
+ * Type steps by sqrt(phi) = 1.272 instead. A full phi jump is too coarse for
+ * running text -- it skips straight from 17px to 27px -- and stepping by the
+ * square root means every *other* step is still exactly phi apart, so the
+ * scale stays golden while giving usable intermediate sizes.
+ */
+:root {
+	--ms-phi: 1.618;
+	--ms-phi-2: 2.618;
+
+	/* Space: 1rem * phi^n */
+	--ms-space-3xs: 0.236rem;
+	--ms-space-2xs: 0.382rem;
+	--ms-space-xs: 0.618rem;
+	--ms-space-sm: 1rem;
+	--ms-space-md: 1.618rem;
+	--ms-space-lg: 2.618rem;
+	--ms-space-xl: 4.236rem;
+	--ms-space-2xl: 6.854rem;
+
+	/* Type: 1.0625rem (17px) * sqrt(phi)^n */
+	--ms-text-nudge: 0.835rem; /* 13.4px */
+	--ms-text-body: 1.0625rem; /* 17px   */
+	--ms-text-1: 1.352rem; /* 21.6px */
+	--ms-text-2: 1.719rem; /* 27.5px */
+	--ms-text-3: 2.187rem; /* 35.0px */
+	--ms-text-4: 2.781rem; /* 44.5px */
+	--ms-text-5: 3.538rem; /* 56.6px */
+
+	/* Radii ride the same fractional steps. */
+	--ms-radius-sm: var(--ms-space-2xs);
+	--ms-radius: var(--ms-space-xs);
+	--ms-radius-lg: var(--ms-space-sm);
+}
+
+/*
+ * The design's dark surfaces are a warm charcoal, not near-black. The page sits
+ * at #232327 with the sidebar card and code blocks a step lighter, which is
+ * what gives the reference its soft, low-contrast feel.
+ */
+.dark {
+	--theme-color-background: #232327;
+	--theme-color-background-secondary: #2c2c31;
+	--theme-color-border: #3a3a41;
+
+	--theme-color-foreground-alt: #9c9ca3;
+	--theme-color-background-alt: #2a2a2e;
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+/* The page itself scrolls, and the content column is centred inside a flexible
+ * main. Without a reserved gutter, navigating from a short page to a tall one
+ * makes the scrollbar appear and shifts the column sideways. */
+html {
+	scrollbar-gutter: stable;
+}
+
+/* The design has no top chrome bar at all — no search, no social links, no
+ * theme toggle. The sidebar card and the content both start at the top of the
+ * page. The kit hardcodes <Header /> inside DocsLayout and takes no prop to
+ * omit it, so remove it here. */
+header {
+	display: none;
+}
+
+/* Same for the kit's footer, which credits Svecosystem and carries a theme
+ * dropdown. DocsFooter replaces it. */
+main:has(> #content) > footer {
+	display: none;
+}
+
+/* With the header gone the content row supplies the top spacing. */
+#content {
+	padding-top: var(--ms-space-lg);
+	padding-inline: var(--ms-space-md);
+	gap: var(--ms-space-md);
+}
+
+/* One child at a time: `AnimatePresence mode="wait"` keeps the outgoing page
+ * out of flow once its exit finishes, so the article never has to share the
+ * row. This needs motion-start >= 0.2.0-next.3 (the wait-mode serialisation
+ * fix); before that both pages tiled here and the column visibly halved. */
+
+/* The reading column is phi^2 times the sidebar, which sets the two columns
+ * in a golden relationship instead of a round 640px. */
+#main-content {
+	max-width: calc(var(--sidebar-width, 16rem) * var(--ms-phi-2));
+}
+
+/* The table-of-contents column sizes to its own text, so a page with longer
+ * headings would widen it and shove the article sideways. Pin it to the nav
+ * sidebar's width so both flanks match and the article never moves. */
+#content aside.sticky {
+	flex: 0 0 auto;
+	width: var(--sidebar-width, 16rem);
+}
+
+/* The article wrapper takes the rest, rather than shrink-wrapping. */
+#content aside.sticky + div {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+@media (max-width: 1279px) {
+	/* The kit hides the TOC's inner block below xl; drop the column too. */
+	#content aside.sticky {
+		width: 0;
+	}
+}
+
+/* -------------------------------------------------------------- sidebar -- */
+
+/* The kit puts `border-r` on the fixed sidebar column wrapper, which draws a
+ * full-height rule alongside our inset card. The card supplies its own edge,
+ * so drop the wrapper's. */
+div:has(> [data-sidebar="sidebar"]) {
+	border-right-width: 0;
+}
+
+/* Float the sidebar as an inset rounded card. In the design it shrink-wraps its
+ * nav rather than running the full height, and it's a flat lighter fill with no
+ * outline. */
+[data-sidebar="sidebar"] {
+	background-color: var(--color-background-secondary);
+	border-radius: var(--ms-radius);
+	margin: var(--ms-space-md) 0 var(--ms-space-md) var(--ms-space-md);
+	height: auto;
+	align-self: flex-start;
+	max-height: calc(100dvh - var(--ms-space-lg));
+	border: 0;
+	padding-bottom: var(--ms-space-xs);
+}
+
+[data-sidebar="content"] {
+	padding-inline: var(--ms-space-xs);
+	gap: 0;
+}
+
+/* Section labels: mono, periwinkle, sentence case — not tiny uppercase. */
+[data-sidebar="group-label"] {
+	font-family: var(--font-mono);
+	font-size: var(--ms-text-nudge);
+	font-weight: 500;
+	text-transform: none;
+	letter-spacing: -0.01em;
+	color: var(--ms-section);
+	opacity: 1;
+	height: auto;
+	padding-inline: var(--ms-space-xs);
+	margin-bottom: var(--ms-space-2xs);
+}
+
+.dark [data-sidebar="group-label"] {
+	color: var(--ms-section);
+}
+
+/* Nav items: mono, tight, quiet. No pill, no indent — colour carries the
+ * selected state, matching the design. */
+[data-sidebar="content"] [data-sidebar="menu-button"] {
+	font-family: var(--font-mono);
+	font-size: var(--ms-text-nudge);
+	letter-spacing: -0.01em;
+	height: var(--ms-space-md);
+	min-height: var(--ms-space-md);
+	padding-block: 0;
+	padding-inline: var(--ms-space-xs);
+	border-radius: var(--ms-radius-sm);
+	transition: color 160ms ease;
+}
+
+[data-sidebar="content"] [data-sidebar="menu-button"]:hover {
+	background-color: transparent;
+	color: var(--color-foreground);
+}
+
+[data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"],
+.dark [data-sidebar="content"] [data-sidebar="menu-button"][data-active="true"] {
+	background-color: transparent;
+	color: var(--ms-active);
+}
+
+/* Tighten the gaps between items and groups to match the reference density. */
+[data-sidebar="content"] [data-sidebar="menu"] {
+	gap: 0;
+}
+
+/* Group rhythm: one full space step between sections. */
+[data-sidebar="content"] [data-sidebar="group"] {
+	padding: 0;
+	margin-top: var(--ms-space-sm);
+}
+
+[data-sidebar="content"] [data-sidebar="group"]:first-of-type {
+	margin-top: 0;
+}
+
+/* The separators — under the logo and between groups — aren't in the design. */
+[data-sidebar="separator"] {
+	display: none;
+}
+
+/* --------------------------------------------------------------- type -- */
+
+/* Page title: large monospace, plain white — not a gradient. */
+#main-content h1 {
+	font-family: var(--font-mono);
+	font-size: clamp(var(--ms-text-3), 1.5rem + 2.6vw, var(--ms-text-5));
+	font-weight: 500;
+	letter-spacing: -0.035em;
+	/* Display type reads tighter than the body's phi leading. */
+	line-height: 1.1;
+	color: var(--color-foreground);
+	margin-bottom: var(--ms-space-md);
+}
+
+/* The lede under the title is large and muted. */
+#main-content h1 + p {
+	font-size: var(--ms-text-2);
+	line-height: 1.272;
+	letter-spacing: -0.015em;
+	color: var(--color-foreground-alt);
+	margin-bottom: var(--ms-space-lg);
+}
+
+/* Body copy leads at phi. */
+#main-content p,
+#main-content li {
+	font-size: var(--ms-text-body);
+	line-height: var(--ms-phi);
+}
+
+/* Section headings read dimmer than body copy in the design. */
+#main-content h2,
+#main-content h3 {
+	font-family: var(--font-sans);
+	font-weight: 400;
+	letter-spacing: -0.015em;
+	line-height: 1.272;
+	color: var(--color-foreground-alt);
+	opacity: 0.85;
+	margin-top: var(--ms-space-lg);
+	margin-bottom: var(--ms-space-sm);
+}
+
+#main-content h2 {
+	font-size: var(--ms-text-2);
+}
+
+#main-content h3 {
+	font-size: var(--ms-text-1);
+}
+
+/* -------------------------------------------------------------- code -- */
+
+.dark #main-content pre {
+	border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+	border-radius: var(--ms-radius-sm);
+	background-color: var(--color-background-alt) !important;
+	padding: var(--ms-space-sm) var(--ms-space-md);
+	margin-block: var(--ms-space-md);
+}
+
+/* ------------------------------------------------------------ scrollbar -- */
+
+.dark * {
+	scrollbar-color: color-mix(in oklab, var(--color-border) 90%, transparent) transparent;
+	scrollbar-width: thin;
+}
+
+/* ---------------------------------------------------------------- a11y -- */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

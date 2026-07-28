@@ -29,41 +29,9 @@ differences are documented in
 
 > **Note:** This is svelte-motion ported to typescript currently. We have plans to evolve it to include modern features in framer-motion and to use svelte/motion to implement animations in the future.
 
-## Installation
+# Documentation
 
-```sh
-npm install --save-dev motion-start
-```
-
-```sh
-pnpm install --save-dev motion-start
-```
-
-```sh
-yarn install --save-dev motion-start
-```
-
-```sh
-bun install --save-dev motion-start
-```
-
-## Usage
-
-Corresponding to a `MotionDiv` in framer-motion is this:
-
-```javascript
-
-
-import { Motion } from 'motion-start'
-
-<Motion.div></Motion.div>
-```
-For svg elements like 'g', 'path' or 'circle', use:
-
-```javascript
-<Motion.g></Motion.g>
-```
-
+For full documentation, visit [motion-start.com](https://motion-start.com/docs).
 
 # Community
 Join the Discord server to ask questions, find collaborators, or say hi!

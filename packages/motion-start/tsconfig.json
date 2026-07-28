@@ -1,0 +1,20 @@
+{
+	"extends": "@tsconfig/svelte/tsconfig.json",
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"sourceMap": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"verbatimModuleSyntax": true,
+		"declaration": true,
+		"declarationMap": true,
+		"types": ["vitest/globals", "node"]
+	},
+	"include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+	"exclude": ["node_modules", "dist"]
+}

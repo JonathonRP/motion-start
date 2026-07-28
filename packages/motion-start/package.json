@@ -1,0 +1,130 @@
+{
+	"name": "motion-start",
+	"version": "0.2.0-next.3",
+	"description": "Svelte animation library inspired by the React library framer-motion.",
+	"license": "MIT",
+	"author": {
+		"name": "JonathonRP",
+		"url": "https://github.com/JonathonRP"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JonathonRP/motion-start.git",
+		"directory": "packages/motion-start"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
+		},
+		"./dom": {
+			"types": "./dist/dom.d.ts",
+			"svelte": "./dist/dom.js",
+			"import": "./dist/dom.js",
+			"default": "./dist/dom.js"
+		},
+		"./dom/mini": {
+			"types": "./dist/dom-mini.d.ts",
+			"svelte": "./dist/dom-mini.js",
+			"import": "./dist/dom-mini.js",
+			"default": "./dist/dom-mini.js"
+		},
+		"./client": {
+			"types": "./dist/client.d.ts",
+			"svelte": "./dist/client.js"
+		},
+		"./m": {
+			"types": "./dist/m.d.ts",
+			"svelte": "./dist/m.js"
+		},
+		"./mini": {
+			"types": "./dist/mini.d.ts",
+			"svelte": "./dist/mini.js",
+			"import": "./dist/mini.js",
+			"default": "./dist/mini.js"
+		},
+		"./projection": {
+			"types": "./dist/projection.d.ts",
+			"svelte": "./dist/projection.js",
+			"import": "./dist/projection.js",
+			"default": "./dist/projection.js"
+		},
+		"./package.json": "./package.json",
+		"./src/context/MotionContext": {
+			"types": "./dist/context/MotionContext/index.d.ts",
+			"svelte": "./dist/context/MotionContext/index.js",
+			"import": "./dist/context/MotionContext/index.js",
+			"default": "./dist/context/MotionContext/index.js"
+		},
+		"./src/motion": {
+			"types": "./dist/motion/index.svelte.d.ts",
+			"svelte": "./dist/motion/index.svelte.js",
+			"import": "./dist/motion/index.svelte.js",
+			"default": "./dist/motion/index.svelte.js"
+		},
+		"./src/value": {
+			"types": "./dist/value/index.d.ts",
+			"svelte": "./dist/value/index.js",
+			"import": "./dist/value/index.js",
+			"default": "./dist/value/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"browser": "./dist/index.js",
+	"type": "module",
+	"scripts": {
+		"build": "bun --bun run package",
+		"package": "svelte-package --input ./src && publint --strict",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest --typecheck=false",
+		"test:run": "vitest --run",
+		"test:types": "vitest --typecheck.only",
+		"test:ui": "vitest --ui"
+	},
+	"dependencies": {
+		"csstype": "^3.2.3",
+		"runed": "^0.37.1"
+	},
+	"devDependencies": {
+		"@emotion/is-prop-valid": "^1.4.0",
+		"@sveltejs/kit": "^2.70.1",
+		"@sveltejs/package": "^2.5.8",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tsconfig/svelte": "^5.0.8",
+		"@types/node": "^20.19.43",
+		"@vitest/ui": "latest",
+		"happy-dom": "^20.10.6",
+		"publint": "^0.3.21",
+		"sv": "^0.14.1",
+		"svelte": "5.56.8",
+		"svelte-check": "^4.7.4",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.6",
+		"vitest": "latest"
+	},
+	"peerDependencies": {
+		"svelte": "5.56.8"
+	},
+	"engines": {
+		"bun": ">=1.0.0",
+		"node": ">=20"
+	},
+	"keywords": [
+		"svelte animation",
+		"svelte",
+		"animation",
+		"gestures",
+		"drag",
+		"spring",
+		"popmotion",
+		"framer-motion"
+	]
+}

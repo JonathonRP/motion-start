@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- Default to dark: the design is dark-first, and this avoids a flash of
+     light before ModeWatcher hydrates. ModeWatcher removes the class in the
+     docs if the visitor has chosen light. -->
+<html lang="en" class="dark">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover" class="relative">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
