@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { motion, useTime, useTransform } from "motion-start";
+	import MsMark from "$lib/components/ms-mark.svelte";
 	import { githubUrl, siteConfig } from "$lib/site-config";
 
 	/**
@@ -48,15 +49,13 @@
 		<!-- Logo sits above the wordmark, drifting on its own, as it did before
 		     the mockup-driven rewrite. -->
 		<motion.div variants={rise} style={{ y: drift }} class="mb-7">
-			<motion.img
-				src="/logo.webp"
-				alt="Motion Start"
-				width="88"
-				height="88"
-				class="size-22 rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
+			<motion.div
+				class="rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
 				whileHover={{ scale: 1.06, rotate: -4 }}
 				transition={{ type: "spring", stiffness: 320, damping: 18 }}
-			/>
+			>
+				<MsMark size={88} title="Motion Start" class="size-22" />
+			</motion.div>
 		</motion.div>
 
 		<motion.h1

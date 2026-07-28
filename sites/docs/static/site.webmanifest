@@ -1,11 +1,12 @@
 {
-	"name": "",
-	"short_name": "",
+	"name": "Motion Start",
+	"short_name": "Motion Start",
 	"icons": [
 		{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
-		{ "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+		{ "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" },
+		{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
 	],
-	"theme_color": "#ffffff",
-	"background_color": "#ffffff",
+	"theme_color": "#232327",
+	"background_color": "#232327",
 	"display": "standalone"
 }
