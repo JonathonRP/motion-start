@@ -2,10 +2,13 @@
   "mode": "pre",
   "tag": "next",
   "initialVersions": {
-    "motion-start": "0.1.0"
+    "motion-start": "0.1.0",
+    "@motion-start/docs": "0.0.0",
+    "@motion-start/playground": "0.0.0"
   },
   "changesets": [
     "heavy-donkeys-shout",
+    "lucky-donuts-repeat",
     "lucky-pugs-repeat",
     "polite-rockets-deliver",
     "quiet-pots-repeat"
