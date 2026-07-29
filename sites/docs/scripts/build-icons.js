@@ -14,9 +14,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pngToIco from 'png-to-ico';
 import sharp from 'sharp';
-import { renderStaticMark, STOPS } from '../src/lib/ms-mark-art.js';
+import { BASE, BLOBS, renderStaticMark } from '../src/lib/ms-mark-art.js';
 
-const [BLUE, , MAGENTA, , YELLOW] = STOPS.map((stop) => stop.colors[0]);
+const [BLUE, YELLOW] = BLOBS.map((blob) => blob.colors[0]);
+const MAGENTA = BASE[1].colors[0];
 
 const staticDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'static');
 

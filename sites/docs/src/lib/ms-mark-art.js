@@ -1,59 +1,74 @@
 /**
  * Geometry for the motion-start mark.
  *
- * Shared by `ms-mark.svelte` (which animates the gradient with motion-start)
- * and `scripts/build-icons.js` (which rasterises a still version into the
- * favicon set). Keeping it in one plain module means the animated logo and the
+ * Shared by `ms-mark.svelte` (which animates it with motion-start) and
+ * `scripts/build-icons.js` (which rasterises a still version into the favicon
+ * set). Keeping it in one plain module means the animated logo and the
  * generated icons can never drift apart.
  *
- * The artwork is a 64 x 64 rounded tile, traced pixel-for-pixel from the
- * high-resolution design concept:
- *   - an oversized, slanted "Ms" (capital M + lower case s) that fills the tile
- *     edge to edge, with the s running off the right edge and below the baseline
- *   - a diagonal gradient behind it running pale blue (bottom left) through a
- *     broad magenta band to vivid yellow (top right)
+ * The artwork is a 64 x 64 rounded tile:
+ *   - a magenta base with two radial blobs sitting on top of it - a tight
+ *     yellow circle in the top right corner and a broad blue sweep across the
+ *     bottom left. Both centres and radii were fitted by least squares to the
+ *     colour regions in the design concept, which is a mesh gradient rather
+ *     than a straight diagonal ramp.
+ *   - a slanted "Ms" drawn last, so it always sits in front of the blobs.
  */
 
 /**
- * The lockup as a single filled outline, auto-traced from the concept and
- * simplified. Two subpaths: the M, then the s. Counters are reverse-wound, so
- * it must be filled with `fill-rule="evenodd"`.
+ * Glyph skeletons, authored upright in a local space where the cap line is
+ * y = 0 and the M's baseline is y = 48. They are stroked rather than filled,
+ * which is what gives the concept's even monoline weight.
  */
-export const GLYPH_PATH =
-	'M 7.57 2.61 C 7.04 2.85, 6.71 3.2, 6.6 3.67 C 6.51 4.06, 6.29 4.96, 6.11 5.68 C 5.93 6.4, 5.65 8.15, 5.48 9.56 C 5.32 10.97, 4.98 12.69, 4.73 13.38 C 4.47 14.06, 4.1 15.53, 3.89 16.63 C 3.69 17.73, 3.23 19.86, 2.88 21.38 C 1.94 25.48, 1.68 28.39, 1.98 31.63 C 2.23 34.35, 2.58 38.32, 2.9 42.06 C 3.08 44.21, 3.32 44.57, 4.54 44.45 C 5.71 44.34, 5.84 44, 6.87 38.5 C 7.07 37.47, 7.4 35.84, 7.62 34.88 C 7.84 33.91, 8.17 32.11, 8.36 30.87 C 8.54 29.62, 8.82 28.16, 8.97 27.62 C 9.37 26.13, 10.23 21.98, 10.31 21.15 C 10.4 20.2, 11.09 19.74, 11.63 20.27 C 11.93 20.57, 12.03 21.5, 12.12 24.76 C 12.5 39.17, 12.67 40, 15.28 40.54 C 17.35 40.98, 17.62 40.65, 20.71 33.75 C 20.99 33.13, 21.39 32.34, 21.59 32 C 21.9 31.48, 23.04 29.1, 24.05 26.87 C 24.54 25.77, 26.03 24.46, 26.41 24.78 C 26.62 24.95, 26.7 25.25, 26.6 25.48 C 26.5 25.7, 26.34 26.44, 26.23 27.13 C 25.79 30.05, 25.4 32.02, 24.82 34.38 C 24.48 35.75, 24.09 37.55, 23.97 38.38 C 23.84 39.2, 23.63 40.35, 23.49 40.94 C 23.36 41.53, 23.25 42.34, 23.25 42.75 C 23.25 43.15, 23.03 43.91, 22.76 44.43 C 22.1 45.71, 21.83 47.86, 22.28 48.15 C 23.8 49.09, 28.49 49.99, 28.95 49.44 C 29.21 49.13, 29.77 46.59, 30.39 43 C 30.56 41.97, 30.99 39.83, 31.33 38.25 C 31.68 36.67, 32.19 34.28, 32.48 32.95 C 32.77 31.61, 33.13 30.21, 33.27 29.82 C 33.42 29.44, 33.6 27.77, 33.66 26.13 C 33.72 24.48, 33.87 22.73, 33.99 22.25 C 34.11 21.77, 34.34 20.31, 34.51 19 C 34.67 17.69, 35.06 15.61, 35.39 14.38 C 35.92 12.32, 36.1 11.18, 36.03 10.3 C 35.99 9.88, 34.1 9.08, 32.59 8.86 C 31.92 8.76, 30.94 8.53, 30.41 8.34 C 29.23 7.93, 28.17 8.31, 28.05 9.19 C 28 9.5, 27.57 10.05, 27.09 10.42 C 26.61 10.78, 26 11.51, 25.74 12.03 C 25.47 12.55, 24.97 13.39, 24.63 13.9 C 24.28 14.4, 24 15.01, 24 15.24 C 24 15.61, 23.46 16.74, 22.16 19.13 C 21.94 19.54, 21.75 20.02, 21.75 20.2 C 21.75 20.39, 21.48 20.89, 21.15 21.33 C 20.81 21.77, 20.34 22.63, 20.1 23.25 C 19.5 24.8, 18.8 25.75, 18.26 25.75 C 17.26 25.75, 17.13 25.14, 16.96 19.65 C 16.52 5.36, 16.43 4.61, 15.07 3.56 C 13.73 2.55, 9.05 1.95, 7.57 2.61 M 47.13 22.59 C 45.62 22.78, 44.58 23.06, 43.97 23.44 C 43.47 23.75, 42.82 24, 42.52 24 C 41.82 24, 41.1 24.38, 40.05 25.29 C 39.6 25.68, 39.07 26, 38.86 26 C 38.42 26, 36.25 27.94, 36.25 28.33 C 36.25 28.48, 35.97 29, 35.63 29.49 C 34.25 31.48, 34.9 37.23, 36.87 40.63 C 37.65 41.95, 41.14 44.55, 42.63 44.89 C 43.04 44.99, 43.49 45.15, 43.63 45.26 C 43.76 45.36, 45.39 45.68, 47.25 45.98 C 53.07 46.89, 53.83 47.04, 55.79 47.68 C 60.26 49.13, 61.87 53.5, 59.17 56.88 C 58.78 57.37, 58.2 57.75, 57.7 57.85 C 51.02 59.17, 48.81 58.36, 46 53.56 C 44.72 51.37, 44.77 51.38, 39.63 52.53 C 37.63 52.98, 37.14 54.02, 38.25 55.43 C 38.52 55.78, 38.75 56.31, 38.75 56.6 C 38.75 56.89, 38.98 57.46, 39.25 57.88 C 39.52 58.29, 39.75 58.78, 39.75 58.97 C 39.75 59.16, 40.09 59.69, 40.5 60.16 C 40.91 60.63, 41.25 61.22, 41.25 61.48 C 41.25 62.66, 43.65 62.87, 52 62.44 C 58.72 62.09, 61.97 60.7, 63.43 57.53 C 64.14 55.97, 63.83 43.27, 63.07 42.98 C 62.7 42.84, 62.23 42.59, 62.04 42.43 C 61.14 41.68, 55.52 40.49, 49.46 39.76 C 44.38 39.15, 41.64 35.31, 43.56 31.49 C 44.82 29, 50.21 27.94, 52.83 29.67 C 54.1 30.51, 56.39 33.1, 56.54 33.88 C 56.76 35.03, 63.57 34.08, 63.71 32.88 C 64.04 30.12, 62.12 25.75, 60.59 25.75 C 60.49 25.75, 60.12 25.48, 59.76 25.15 C 58.77 24.22, 55.59 23, 54.13 22.99 C 53.44 22.99, 52.59 22.82, 52.25 22.63 C 51.52 22.21, 50.25 22.2, 47.13 22.59';
+export const M_PATH = 'M 0 48 L 0 0 L 12 42 L 24 0 L 24 48';
+
+/** Lower case s, 23 wide x 36 tall. */
+export const S_PATH =
+	'M 22.4 8.4 C 22.4 3.2 17.8 0 11.6 0 C 5.5 0 1 3 1 7.8 C 1 12 4 14.6 9.7 16 C 17.2 17.8 22.4 20.6 22.4 26.2 C 22.4 32.4 17.4 36 11.2 36 C 5 36 0 32 0 26.4';
+
+export const GLYPH_STROKE = 7.8;
 
 /** Warm off-white, sampled from the concept - deliberately not pure white. */
 export const GLYPH_FILL = '#f7f2ec';
 
 /**
- * Gradient stops.
- *
- * Sampled in 24 bins along the tile's bottom-left -> top-right diagonal. The
- * concept is deliberately not an even blend: it holds a wide blue plateau,
- * eases slowly into magenta (hence the intermediate stop at 0.32 - the ramp is
- * convex and two stops cannot describe it), holds magenta flat across the
- * middle third, then breaks hard into yellow. Duplicating the magenta at 0.40
- * and 0.60 is what produces that plateau, and the short 0.60 -> 0.70 gap is
- * what makes the yellow read as a solid corner block rather than a fade.
- *
- * Rendered back and re-sampled with the same binning, this tracks the concept
- * to a mean RGB distance of 10.5/255 (7.7 excluding one bin where the concept
- * photo carries a specular highlight).
- *
- * Each stop carries colour keyframes; index 0 is also the still colour baked
- * into the favicons.
+ * The two glyphs are placed independently: the M sits hard against the left
+ * edge, and the s is rotated further clockwise and pushed right until it runs
+ * off the tile, matching the concept. Both share the same slant and scale.
  */
-export const STOPS = [
-	{ offset: 0.16, colors: ['#bbcae2', '#b2c6e9', '#bbcae2'] },
-	{ offset: 0.32, colors: ['#bfaed9', '#bba6de', '#bfaed9'] },
-	{ offset: 0.4, colors: ['#ce86cd', '#d47ed3', '#ce86cd'] },
-	{ offset: 0.6, colors: ['#ce86cd', '#d47ed3', '#ce86cd'] },
-	{ offset: 0.7, colors: ['#f2de58', '#f6e550', '#f2de58'] },
+const SLANT = 'scale(0.76) skewX(-13)';
+export const M_TRANSFORM = `translate(22 26) rotate(9) ${SLANT} translate(-18 -27)`;
+export const S_TRANSFORM = `translate(46.5 43) rotate(-14) scale(1.04) ${SLANT} translate(-11.2 -18)`;
+
+/** Magenta base, bottom-left corner to top-right. Colour keyframes per stop. */
+export const BASE = [
+	{ offset: 0, colors: ['#c98ccd', '#c485d1', '#c98ccd'] },
+	{ offset: 1, colors: ['#d283cb', '#d97ccf', '#d283cb'] },
 ];
 
-/** Gradient vector keyframes, in the 64 x 64 user space. Runs bottom-left to top-right. */
-export const GRADIENT_FROM = { x1: 0, y1: 64, x2: 64, y2: 0 };
-export const GRADIENT_TO = { x1: 10, y1: 84, x2: 80, y2: 12 };
+/**
+ * Radial blobs. `solid` is the offset at which the blob stops being fully
+ * opaque and starts fading, so the ratio `solid` -> 1 controls how hard the
+ * edge reads. The concept's yellow edge is much harder than its blue one, but
+ * because the yellow circle is small and the blue sweep is large, both land at
+ * about the same fraction of their own radius.
+ */
+export const BLOBS = [
+	{
+		id: 'blue',
+		colors: ['#b4c6e6', '#aac1ea', '#b4c6e6'],
+		solid: 0.8,
+		from: { cx: 9.5, cy: 85.9, r: 45 },
+		to: { cx: 16, cy: 80, r: 49 },
+	},
+	{
+		id: 'yellow',
+		colors: ['#f2de58', '#f6e550', '#f2de58'],
+		solid: 0.78,
+		from: { cx: 48, cy: 6, r: 30 },
+		to: { cx: 43, cy: 11, r: 33 },
+	},
+];
 
 /** Corner radius of the tile, in the 64 x 64 user space. */
 export const TILE_RADIUS = 13;
@@ -67,25 +82,43 @@ export const TILE_RADIUS = 13;
  * @returns {string}
  */
 export function renderStaticMark({ size = 64, rounded = true, x = 0, y = 0, idPrefix = 'ms' } = {}) {
-	const { x1, y1, x2, y2 } = GRADIENT_FROM;
-	const fill = `${idPrefix}-fill`;
-	const clip = `${idPrefix}-clip`;
+	/** @param {string} name */
+	const id = (name) => `${idPrefix}-${name}`;
 	const radius = rounded ? TILE_RADIUS : 0;
-	const stops = STOPS.map((stop) => `<stop offset="${stop.offset}" stop-color="${stop.colors[0]}" />`).join('\n\t\t\t');
+
+	const blobs = BLOBS.map(
+		(
+			blob
+		) => `<radialGradient id="${id(blob.id)}" gradientUnits="userSpaceOnUse" cx="${blob.from.cx}" cy="${blob.from.cy}" r="${blob.from.r}">
+			<stop offset="0" stop-color="${blob.colors[0]}" stop-opacity="1" />
+			<stop offset="${blob.solid}" stop-color="${blob.colors[0]}" stop-opacity="1" />
+			<stop offset="1" stop-color="${blob.colors[0]}" stop-opacity="0" />
+		</radialGradient>`
+	).join('\n\t\t');
+
+	const layers = BLOBS.map((blob) => `<rect x="0" y="0" width="64" height="64" fill="url(#${id(blob.id)})" />`).join(
+		'\n\t\t'
+	);
 
 	return `<svg xmlns="http://www.w3.org/2000/svg" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 64 64" role="img">
 	<title>Motion Start</title>
 	<defs>
-		<linearGradient id="${fill}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
-			${stops}
+		<linearGradient id="${id('base')}" gradientUnits="userSpaceOnUse" x1="0" y1="64" x2="64" y2="0">
+			<stop offset="${BASE[0].offset}" stop-color="${BASE[0].colors[0]}" />
+			<stop offset="${BASE[1].offset}" stop-color="${BASE[1].colors[0]}" />
 		</linearGradient>
-		<clipPath id="${clip}">
+		${blobs}
+		<clipPath id="${id('clip')}">
 			<rect x="0" y="0" width="64" height="64" rx="${radius}" />
 		</clipPath>
 	</defs>
-	<g clip-path="url(#${clip})">
-		<rect x="0" y="0" width="64" height="64" fill="url(#${fill})" />
-		<path d="${GLYPH_PATH}" fill="${GLYPH_FILL}" fill-rule="evenodd" />
+	<g clip-path="url(#${id('clip')})">
+		<rect x="0" y="0" width="64" height="64" fill="url(#${id('base')})" />
+		${layers}
+		<g fill="none" stroke="${GLYPH_FILL}" stroke-width="${GLYPH_STROKE}" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2.6">
+			<path d="${M_PATH}" transform="${M_TRANSFORM}" />
+			<path d="${S_PATH}" transform="${S_TRANSFORM}" />
+		</g>
 	</g>
 </svg>
 `;

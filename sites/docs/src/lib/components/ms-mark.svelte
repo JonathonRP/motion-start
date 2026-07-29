@@ -2,21 +2,24 @@
 	import { motion } from "motion-start";
 	import { MediaQuery } from "svelte/reactivity";
 	import {
+		BASE,
+		BLOBS,
 		GLYPH_FILL,
-		GLYPH_PATH,
-		GRADIENT_FROM,
-		GRADIENT_TO,
-		STOPS,
+		GLYPH_STROKE,
+		M_PATH,
+		M_TRANSFORM,
+		S_PATH,
+		S_TRANSFORM,
 		TILE_RADIUS,
 	} from "$lib/ms-mark-art.js";
 
 	/**
 	 * The motion-start mark, drawn as vectors rather than a raster logo.
 	 *
-	 * The rounded tile is filled by a gradient animated with the library itself:
-	 * `motion.linearGradient` sweeps the gradient vector across the tile while
-	 * each `motion.stop` cycles its colour. Both run on the same long, mirrored
-	 * loop so the tile reads as a slow drift rather than a strobe.
+	 * The tile is a mesh gradient animated with the library itself: two
+	 * `motion.radialGradient` blobs drift over a `motion.linearGradient` base
+	 * while every `motion.stop` cycles its colour. All of it runs on one long,
+	 * mirrored loop so the tile reads as a slow drift rather than a strobe.
 	 *
 	 * Geometry and palette live in `$lib/ms-mark-art.js`, shared with the icon
 	 * generator so the favicons cannot drift from the animated mark.
@@ -40,8 +43,7 @@
 	const playing = $derived(animated && !reducedMotion.current);
 
 	const uid = $props.id();
-	const fillId = `ms-fill-${uid}`;
-	const clipId = `ms-clip-${uid}`;
+	const id = (name: string) => `ms-${name}-${uid}`;
 
 	const loop = {
 		duration: 9,
@@ -50,15 +52,16 @@
 		ease: "easeInOut",
 	} as const;
 
-	const sweep = $derived(
-		playing
-			? {
-					x1: [GRADIENT_FROM.x1, GRADIENT_TO.x1],
-					y1: [GRADIENT_FROM.y1, GRADIENT_TO.y1],
-					x2: [GRADIENT_FROM.x2, GRADIENT_TO.x2],
-					y2: [GRADIENT_FROM.y2, GRADIENT_TO.y2],
-				}
-			: undefined
+	const drift = $derived(
+		BLOBS.map((blob) =>
+			playing
+				? {
+						cx: [blob.from.cx, blob.to.cx],
+						cy: [blob.from.cy, blob.to.cy],
+						r: [blob.from.r, blob.to.r],
+					}
+				: undefined
+		)
 	);
 </script>
 
@@ -76,17 +79,8 @@
 	{/if}
 
 	<defs>
-		<motion.linearGradient
-			id={fillId}
-			gradientUnits="userSpaceOnUse"
-			x1={GRADIENT_FROM.x1}
-			y1={GRADIENT_FROM.y1}
-			x2={GRADIENT_FROM.x2}
-			y2={GRADIENT_FROM.y2}
-			animate={sweep}
-			transition={loop}
-		>
-			{#each STOPS as stop (stop.offset)}
+		<motion.linearGradient id={id("base")} gradientUnits="userSpaceOnUse" x1="0" y1="64" x2="64" y2="0">
+			{#each BASE as stop (stop.offset)}
 				<motion.stop
 					offset={stop.offset}
 					stop-color={stop.colors[0]}
@@ -96,13 +90,50 @@
 			{/each}
 		</motion.linearGradient>
 
-		<clipPath id={clipId}>
+		{#each BLOBS as blob, i (blob.id)}
+			<motion.radialGradient
+				id={id(blob.id)}
+				gradientUnits="userSpaceOnUse"
+				cx={blob.from.cx}
+				cy={blob.from.cy}
+				r={blob.from.r}
+				animate={drift[i]}
+				transition={loop}
+			>
+				{#each [0, blob.solid, 1] as offset, stopIndex (offset)}
+					<motion.stop
+						{offset}
+						stop-color={blob.colors[0]}
+						stop-opacity={stopIndex === 2 ? 0 : 1}
+						animate={playing ? { stopColor: blob.colors } : undefined}
+						transition={loop}
+					/>
+				{/each}
+			</motion.radialGradient>
+		{/each}
+
+		<clipPath id={id("clip")}>
 			<rect x="0" y="0" width="64" height="64" rx={TILE_RADIUS} />
 		</clipPath>
 	</defs>
 
-	<g clip-path="url(#{clipId})">
-		<rect x="0" y="0" width="64" height="64" fill="url(#{fillId})" />
-		<path d={GLYPH_PATH} fill={GLYPH_FILL} fill-rule="evenodd" />
+	<g clip-path="url(#{id('clip')})">
+		<rect x="0" y="0" width="64" height="64" fill="url(#{id('base')})" />
+		{#each BLOBS as blob (blob.id)}
+			<rect x="0" y="0" width="64" height="64" fill="url(#{id(blob.id)})" />
+		{/each}
+
+		<!-- Drawn last so the lockup always sits in front of the gradient blobs. -->
+		<g
+			fill="none"
+			stroke={GLYPH_FILL}
+			stroke-width={GLYPH_STROKE}
+			stroke-linecap="butt"
+			stroke-linejoin="miter"
+			stroke-miterlimit="2.6"
+		>
+			<path d={M_PATH} transform={M_TRANSFORM} />
+			<path d={S_PATH} transform={S_TRANSFORM} />
+		</g>
 	</g>
 </svg>
