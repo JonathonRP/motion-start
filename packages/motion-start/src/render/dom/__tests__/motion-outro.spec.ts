@@ -4,8 +4,16 @@ import type { IProjectionNode } from '../../../projection/node/types.js';
 import type { VisualElement } from '../../VisualElement.svelte.js';
 import { flushPendingMotionExitLayout, motionEnterIntro, motionExitOutro } from '../motion-outro.js';
 
+const originalTimeline = Object.getOwnPropertyDescriptor(document, 'timeline');
+
 afterEach(() => {
 	document.body.innerHTML = '';
+	vi.restoreAllMocks();
+	if (originalTimeline) {
+		Object.defineProperty(document, 'timeline', originalTimeline);
+	} else {
+		delete (document as unknown as { timeline?: unknown }).timeline;
+	}
 });
 
 function createContext(presenceAffectsLayout = true) {
@@ -60,6 +68,40 @@ function createVisualElement(node: HTMLElement, transition: Record<string, unkno
 	return { didUpdate, projection, root, update, visualElement };
 }
 
+/**
+ * Builds a chain of exiting variant children, where `durations[0]` is the
+ * outermost element's own exit duration and every level that has a descendant
+ * sequences it with `when: 'afterChildren'`.
+ */
+function createSequencedExitElement(node: HTMLElement, durations: number[]) {
+	let child: VisualElement<HTMLElement> | undefined;
+
+	for (let index = durations.length - 1; index >= 0; index--) {
+		const exit = {
+			opacity: 0,
+			transition: child ? { duration: durations[index], when: 'afterChildren' } : { duration: durations[index] },
+		};
+
+		child = {
+			animationState: {
+				setActive: vi.fn(() => new Promise(() => undefined)),
+			},
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({ exit }),
+			getVariant: (name: string) => (name === 'exit' ? exit : undefined),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			sortNodePosition: () => 0,
+			values: new Map(),
+			variantChildren: child ? new Set([child]) : new Set(),
+		} as unknown as VisualElement<HTMLElement>;
+	}
+
+	return child as VisualElement<HTMLElement>;
+}
+
 describe('motionExitOutro', () => {
 	it('retains an afterChildren parent through its child and parent animation durations', () => {
 		const node = document.createElement('div');
@@ -99,8 +141,10 @@ describe('motionExitOutro', () => {
 
 		const config = motionExitOutro(node, { context, visualElement });
 
-		expect(config.duration).toBe(241);
-		expect(reserve).toHaveBeenCalledWith(241);
+		// 100ms child + 100ms parent, plus a scheduling frame for each of the two
+		// points at which Motion starts an animation, plus the completion margin.
+		expect(config.duration).toBe(281);
+		expect(reserve).toHaveBeenCalledWith(281);
 	});
 
 	it('retains an afterChildren parent through a configured child exit variant before it starts running', () => {
@@ -149,8 +193,95 @@ describe('motionExitOutro', () => {
 
 		const config = motionExitOutro(node, { context, visualElement });
 
-		expect(config.duration).toBe(241);
-		expect(reserve).toHaveBeenCalledWith(241);
+		expect(config.duration).toBe(281);
+		expect(reserve).toHaveBeenCalledWith(281);
+	});
+
+	/**
+	 * Regression guard for the `when: 'afterChildren'` ordering contract: the
+	 * parent's own exit animation is only queued once the child animations have
+	 * settled, so the retained block has to outlive both steps *and* the frame
+	 * each of them loses to keyframe resolution. Retaining for less unmounts the
+	 * visual element mid-sequence, which clears its event subscriptions and drops
+	 * the parent's `onAnimationComplete` entirely.
+	 */
+	it('budgets a scheduling frame for every start point of a sequenced exit', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const visualElement = createSequencedExitElement(node, [0.1, 0.1]);
+
+		const config = motionExitOutro(node, { context, visualElement });
+		const [childDuration, parentDuration] = [100, 100];
+		const startPoints = 2;
+
+		expect(config.duration).toBeGreaterThan(childDuration + parentDuration);
+		expect(config.duration).toBe(childDuration + parentDuration + startPoints * 40 + 1);
+	});
+
+	it('compounds the scheduling budget for each nested afterChildren boundary', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const visualElement = createSequencedExitElement(node, [0.1, 0.1, 0.1]);
+
+		// Three sequenced 100ms steps, so three start points to pay for.
+		expect(motionExitOutro(node, { context, visualElement }).duration).toBe(300 + 3 * 40 + 1);
+	});
+
+	it('retains a concurrent exit past the frame its animation loses to scheduling', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const visualElement = createSequencedExitElement(node, [0.1]);
+
+		expect(motionExitOutro(node, { context, visualElement }).duration).toBe(100 + 40 + 1);
+	});
+
+	/**
+	 * Svelte back-dates the outro's WAAPI clock to the start of the current
+	 * frame, so a frame that spent 60ms before reaching the outro hands back a
+	 * retained window 60ms shorter than the one that was requested.
+	 */
+	it('extends the retained window by the frame time the outro clock has already spent', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context, reserve } = createContext();
+		const visualElement = createSequencedExitElement(node, [0.1]);
+		const frameStart = performance.now();
+		vi.spyOn(performance, 'now').mockReturnValue(frameStart + 60);
+		Object.defineProperty(document, 'timeline', {
+			configurable: true,
+			value: { currentTime: frameStart },
+		});
+
+		expect(motionExitOutro(node, { context, visualElement }).duration).toBe(100 + 40 + 60 + 1);
+		expect(reserve).toHaveBeenCalledWith(100 + 40 + 60 + 1);
+	});
+
+	it('leaves a node with nothing to animate unretained regardless of frame time', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context, reserve } = createContext();
+		const visualElement = {
+			animationState: { setActive: vi.fn(() => Promise.resolve()) },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values: new Map(),
+		} as unknown as VisualElement<HTMLElement>;
+		const frameStart = performance.now();
+		vi.spyOn(performance, 'now').mockReturnValue(frameStart + 60);
+		Object.defineProperty(document, 'timeline', {
+			configurable: true,
+			value: { currentTime: frameStart },
+		});
+
+		expect(motionExitOutro(node, { context, visualElement }).duration).toBe(0);
+		expect(reserve).not.toHaveBeenCalled();
 	});
 
 	it('retains a layoutId-only node for its configured layout transition', async () => {
