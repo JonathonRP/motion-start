@@ -14,6 +14,7 @@ section: Getting Started
 	import SharedLayoutDemo from "$lib/components/demos/shared-layout-demo.svelte";
 	import PresenceDemo from "$lib/components/demos/presence-demo.svelte";
 	import ReorderDemo from "$lib/components/demos/reorder-demo.svelte";
+	import KanbanDemo from "$lib/components/demos/kanban-demo.svelte";
 	import MotionValueDemo from "$lib/components/demos/motion-value-demo.svelte";
 </script>
 
@@ -135,6 +136,48 @@ Read more in [AnimatePresence](/docs/components/animate-presence).
 	{/each}
 </Reorder.Group>
 ```
+
+Read more in [Reorder](/docs/components/reorder).
+
+## Kanban board
+
+`Reorder.Group` owns one list. Dragging a card from one list into another is a different problem: the
+card has to be picked up in one group and dropped into another without either group losing track of
+it.
+
+Drag a card anywhere on the board, or focus one and use the arrow keys.
+
+<DemoContainer class="py-8">
+	<KanbanDemo />
+</DemoContainer>
+
+```svelte
+<LayoutGroup>
+	{#each columns as column (column)}
+		<Reorder.Group values={cards} onReorder={(next) => reindex(next)}>
+			{#snippet children({ item: card })}
+				{#if rendersIn(card, column)}
+					<Reorder.Item
+						value={card}
+						layoutId={card.id}
+						{layoutDependency}
+						style={{ order: renderOrder(card) }}
+						onDrag={(event, info) => previewDrop(card, info)}
+						onDragEnd={() => commitDrop(card.id)}
+					>
+						{card.title}
+					</Reorder.Item>
+				{/if}
+			{/snippet}
+		</Reorder.Group>
+	{/each}
+</LayoutGroup>
+```
+
+The dragged card renders in whichever column it is currently _over_ rather than the one it still
+belongs to, and the move is only committed on drop — so an abandoned drag needs no undo, because the
+preview simply stops being true. `layoutId` carries the card's identity across the two groups, and
+because the preview is state `Reorder` knows nothing about, it is passed to `layoutDependency`.
 
 Read more in [Reorder](/docs/components/reorder).
 
