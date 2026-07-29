@@ -3,17 +3,11 @@
 	import { MediaQuery } from "svelte/reactivity";
 	import {
 		GLYPH_FILL,
-		GLYPH_STROKE,
-		GLYPH_TRANSFORM,
+		GLYPH_PATH,
 		GRADIENT_FROM,
 		GRADIENT_TO,
-		M_PATH,
-		S_OFFSET,
-		S_PATH,
-		STOP_A,
-		STOP_B,
-		STOP_C,
-		STOP_OFFSETS,
+		STOPS,
+		TILE_RADIUS,
 	} from "$lib/ms-mark-art.js";
 
 	/**
@@ -21,8 +15,8 @@
 	 *
 	 * The rounded tile is filled by a gradient animated with the library itself:
 	 * `motion.linearGradient` sweeps the gradient vector across the tile while
-	 * three `motion.stop`s cycle their colours. Both run on the same long,
-	 * mirrored loop so the tile reads as a slow drift rather than a strobe.
+	 * each `motion.stop` cycles its colour. Both run on the same long, mirrored
+	 * loop so the tile reads as a slow drift rather than a strobe.
 	 *
 	 * Geometry and palette live in `$lib/ms-mark-art.js`, shared with the icon
 	 * generator so the favicons cannot drift from the animated mark.
@@ -92,45 +86,23 @@
 			animate={sweep}
 			transition={loop}
 		>
-			<motion.stop
-				offset={STOP_OFFSETS[0]}
-				stop-color={STOP_A[0]}
-				animate={playing ? { stopColor: STOP_A } : undefined}
-				transition={loop}
-			/>
-			<motion.stop
-				offset={STOP_OFFSETS[1]}
-				stop-color={STOP_B[0]}
-				animate={playing ? { stopColor: STOP_B } : undefined}
-				transition={loop}
-			/>
-			<motion.stop
-				offset={STOP_OFFSETS[2]}
-				stop-color={STOP_C[0]}
-				animate={playing ? { stopColor: STOP_C } : undefined}
-				transition={loop}
-			/>
+			{#each STOPS as stop (stop.offset)}
+				<motion.stop
+					offset={stop.offset}
+					stop-color={stop.colors[0]}
+					animate={playing ? { stopColor: stop.colors } : undefined}
+					transition={loop}
+				/>
+			{/each}
 		</motion.linearGradient>
 
 		<clipPath id={clipId}>
-			<rect x="0" y="0" width="64" height="64" rx="14" />
+			<rect x="0" y="0" width="64" height="64" rx={TILE_RADIUS} />
 		</clipPath>
 	</defs>
 
 	<g clip-path="url(#{clipId})">
 		<rect x="0" y="0" width="64" height="64" fill="url(#{fillId})" />
-
-		<g
-			transform={GLYPH_TRANSFORM}
-			fill="none"
-			stroke={GLYPH_FILL}
-			stroke-width={GLYPH_STROKE}
-			stroke-linecap="butt"
-			stroke-linejoin="miter"
-			stroke-miterlimit="2.6"
-		>
-			<path d={M_PATH} />
-			<path d={S_PATH} transform="translate({S_OFFSET.x} {S_OFFSET.y})" />
-		</g>
+		<path d={GLYPH_PATH} fill={GLYPH_FILL} fill-rule="evenodd" />
 	</g>
 </svg>
