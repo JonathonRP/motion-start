@@ -455,7 +455,6 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	const outroContext = context;
 	const motionNode = getMotionNode(node, element);
 	const complete = context.begin();
-	let releasePopLayout: VoidFunction | undefined;
 	let previousPointerEvents = '';
 	let completed = false;
 
@@ -491,8 +490,21 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	// Upstream avoids refreshing sibling presence context when this flag is
 	// false while the exiting child's own presence still changes.
 	const projectionRoot = markProjectionWillUpdate(element, context.presenceAffectsLayout);
-	if (context.mode === 'popLayout') {
-		releasePopLayout = applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
+	// Only the outermost exiting node leaves the flow, for the same reason
+	// `finish` skips nested nodes in `wait` mode: a motion element inside an
+	// exiting subtree has no exit of its own to play, so pulling it out of flow
+	// just scrambles content that is still on screen. The ancestor is pinned and
+	// removed whole. Without this a page of demos injected a stylesheet per
+	// nested element on every navigation.
+	if (context.mode === 'popLayout' && !hasExitingAncestor(motionNode)) {
+		// Deliberately not captured for release at the end of the outro. Svelte
+		// keeps the node mounted past its transition (see `finish`), and putting
+		// it back into flow there re-stretches the parent for the remainder — a
+		// tall exiting page snapping back into a flex row visibly shoves
+		// everything below it. The rule is dropped when the node is detached
+		// (`flushPendingMotionExitLayout`) or when a reversed exit re-enters it
+		// (`motionEnterIntro`), which are the only two ways this ends.
+		applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
 		flushPopLayout(motionNode);
 		(projectionRoot as { update?: VoidFunction } | undefined)?.update?.();
 	}
@@ -521,7 +533,6 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 		duration,
 		tick(t) {
 			if (t === 0) {
-				releasePopLayout?.();
 				if (motionNode instanceof HTMLElement) {
 					motionNode.style.pointerEvents = previousPointerEvents;
 					delete motionNode.dataset.motionPrevPointerEvents;
@@ -540,6 +551,13 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 }
 
 export function flushPendingMotionExitLayout(node: Element) {
+	// This runs from the motion attachment's teardown, which Svelte calls just
+	// before it detaches the node — the one point that is reached whether the
+	// exit ran to completion or was torn down mid-flight. `popLayout` injects a
+	// stylesheet per exiting node, so releasing it anywhere less certain leaks
+	// a <style> element into the head on every interrupted navigation.
+	removePopLayout(node);
+
 	const projectionRoot = pendingLayoutUpdates.get(node);
 	if (!projectionRoot) return;
 

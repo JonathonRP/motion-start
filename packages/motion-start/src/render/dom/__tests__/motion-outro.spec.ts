@@ -16,12 +16,12 @@ afterEach(() => {
 	}
 });
 
-function createContext(presenceAffectsLayout = true) {
+function createContext(presenceAffectsLayout = true, mode: MotionOutroContext['mode'] = 'sync') {
 	const complete = vi.fn();
 	const reserve = vi.fn();
 	const context: MotionOutroContext = {
 		custom: undefined,
-		mode: 'sync',
+		mode,
 		presenceAffectsLayout,
 		begin: () => complete,
 		reserve,
@@ -406,6 +406,59 @@ describe('motionExitOutro', () => {
 
 		expect(complete).toHaveBeenCalledTimes(1);
 		expect(complete).toHaveBeenCalledWith(expect.any(String), false);
+	});
+
+	it('keeps a popLayout child out of flow for the whole time Svelte retains it', async () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext(true, 'popLayout');
+		const { visualElement } = createVisualElement(node, { duration: 1 });
+
+		const config = motionExitOutro(node, { context, visualElement });
+		expect(node.dataset.motionPopId).toBeDefined();
+
+		// Svelte calls tick(0) when the transition ends but keeps the node
+		// mounted afterwards. Releasing here would drop a tall exiting child
+		// back into its parent's flow and shove everything below it.
+		config.tick?.(0, 1);
+		expect(node.dataset.motionPopId).toBeDefined();
+
+		flushPendingMotionExitLayout(node);
+		expect(node.dataset.motionPopId).toBeUndefined();
+	});
+
+	it('does not leak a popLayout stylesheet when the exit never completes', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext(true, 'popLayout');
+		const { visualElement } = createVisualElement(node, { duration: 1 });
+
+		const before = document.querySelectorAll('style[data-motion-pop-style]').length;
+		motionExitOutro(node, { context, visualElement });
+		expect(document.querySelectorAll('style[data-motion-pop-style]')).toHaveLength(before + 1);
+
+		// Torn down mid-flight, with no tick(0) — the case that used to leave a
+		// <style> element behind on every interrupted navigation.
+		flushPendingMotionExitLayout(node);
+		expect(document.querySelectorAll('style[data-motion-pop-style]')).toHaveLength(before);
+	});
+
+	it('leaves a nested popLayout child in flow inside an exiting ancestor', () => {
+		const parent = document.createElement('div');
+		const child = document.createElement('div');
+		parent.appendChild(child);
+		document.body.appendChild(parent);
+		const { context } = createContext(true, 'popLayout');
+		const parentElement = createVisualElement(parent, { duration: 1 });
+		const childElement = createVisualElement(child, { duration: 1 });
+
+		motionExitOutro(parent, { context, visualElement: parentElement.visualElement });
+		motionExitOutro(child, { context, visualElement: childElement.visualElement });
+
+		// The ancestor is pinned and removed whole, so the child has nothing to
+		// gain from leaving the flow and plenty to scramble by doing so.
+		expect(parent.dataset.motionPopId).toBeDefined();
+		expect(child.dataset.motionPopId).toBeUndefined();
 	});
 
 	it('flushes the final layout after outro cleanup instead of styling the mounted exit node', async () => {
