@@ -70,40 +70,48 @@ the whole row shouldn't be draggable.
 
 ## Moving between lists
 
-`Reorder.Group` owns one list. Dragging a card from one list into another — a kanban board — is a
-different job, and `Reorder` is the wrong tool for it: use a plain `motion.div` with `layoutId`,
-which carries the card's identity across the two columns.
+Each column is a `Reorder.Group`, which owns the order inside that list. Add the same `layoutId` to
+each `Reorder.Item` and it can also be re-parented between groups: `Reorder` handles the source
+column while `layoutId` carries the card's identity across the handoff.
 
 <DemoContainer class="py-8">
 	<KanbanDemo />
 </DemoContainer>
 
-The card is dragged freely and the move is committed on release, so an abandoned drag needs no undo.
-`dragConstraints` pinned to zero with `dragElastic={1}` lets the card follow the pointer anywhere
-while still springing home if it is dropped somewhere that isn't a column. When the card is
-re-parented, the two columns agree — via `layoutId` — that they are holding the same card, so it
-animates from where you let go into its new slot.
+Cards reorder within their source column during the gesture. `dragConstraints` pinned to zero with
+`dragElastic={1}` also lets the card follow the pointer anywhere on the board. A cross-column move is
+committed on release, and `layoutId` animates the re-parented item from the drop point into its new
+slot.
 
 ```svelte
-<motion.div
-	layout
-	layoutId={card.id}
-	drag
-	dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-	dragElastic={1}
-	onDrag={(event, info) => (hovered = columnAt(info.point))}
-	onDragEnd={(event, info) => commitDrop(card, info)}
-	whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
+<Reorder.Group
+	as="div"
+	values={inColumn(column)}
+	onReorder={(next) => reindex(next)}
 >
-	{card.title}
-</motion.div>
+	{#snippet children({ item: card })}
+		<Reorder.Item
+			as="div"
+			value={card}
+			layoutId={card.id}
+			drag
+			dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+			dragElastic={1}
+			onDrag={(event, info) => (hovered = columnAt(info.point))}
+			onDragEnd={(event, info) => commitDrop(card, info)}
+			whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
+		>
+			{card.title}
+		</Reorder.Item>
+	{/snippet}
+</Reorder.Group>
 ```
 
 <Callout type="warning" title="Mutate the cards in place">
 
-`layoutId` is keyed off the card's id but the `{#each}` is keyed off the object, so replacing cards
-with fresh objects on every move tears the whole list down at once and leaves nothing to animate
-from. `$state` is deeply reactive, so assigning to a field is enough:
+`Reorder.Group` keys each item by its value. If that value is an object, replacing cards with fresh
+objects during `onReorder` unmounts the active item mid-gesture; it also breaks the stable identity
+that `layoutId` needs for the handoff. `$state` is deeply reactive, so mutate the existing cards:
 
 ```ts
 card.column = target;

@@ -1,7 +1,19 @@
 <script lang="ts">
 	import { Reorder, animate, useMotionValue } from 'motion-start';
 
-	let { item, axis }: { item: string; axis: 'x' | 'y' } = $props();
+	let {
+		item,
+		axis,
+		useLayoutId = false,
+		freeDrag = false,
+		onDragInvalidate,
+	}: {
+		item: string;
+		axis: 'x' | 'y';
+		useLayoutId?: boolean;
+		freeDrag?: boolean;
+		onDragInvalidate?: () => void;
+	} = $props();
 
 	const x = useMotionValue(0);
 	const y = useMotionValue(0);
@@ -32,6 +44,11 @@
 <Reorder.Item
 	value={item}
 	id={item}
+	layoutId={useLayoutId ? item : undefined}
+	drag={freeDrag ? true : undefined}
+	dragConstraints={freeDrag ? { top: 0, left: 0, right: 0, bottom: 0 } : undefined}
+	dragElastic={freeDrag ? 1 : undefined}
+	onDrag={onDragInvalidate}
 	style={{ boxShadow, y }}
 	dragTransition={{ bounceStiffness: 2000, bounceDamping: 10000 }}
 	transition={{ duration: 0.1 }}

@@ -23,6 +23,37 @@ function expectBbox(element: HTMLElement, expectedBbox: BoundingBox) {
 }
 
 describe("Drag to reorder", () => {
+    it("Y axis with layoutId", () => {
+        cy.visit("?test=drag-to-reorder&layoutId&freeDrag&invalidateOnDrag")
+            .wait(50)
+            .get("#Tomato")
+            .trigger("pointerdown", 360, 175, { force: true })
+            .wait(50)
+            .trigger("pointermove", 360, 180, { force: true })
+            .wait(50)
+            .trigger("pointermove", 360, 200, { force: true })
+            .wait(50)
+            .trigger("pointermove", 360, 220, { force: true })
+            .wait(100)
+            .should(([$item]: any) => {
+                expectBbox($item, {
+                    height: 68,
+                    left: 350,
+                    top: 249,
+                    width: 340,
+                })
+            })
+            .get("#Cucumber")
+            .should(([$item]: any) => {
+                expectBbox($item, {
+                    height: 68,
+                    left: 350,
+                    top: 174,
+                    width: 340,
+                })
+            })
+    })
+
     it("Y axis", () => {
         cy.visit("?test=drag-to-reorder")
             .wait(50)

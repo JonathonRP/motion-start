@@ -139,10 +139,9 @@
 	}
 
 	function setColumnOrder(colId: ColumnId, nextCards: Card[]) {
-		const nextOrder = new Map(nextCards.map((card, index) => [card.id, index]));
-		cards = cards.map((card) =>
-			card.column === colId && nextOrder.has(card.id) ? { ...card, order: nextOrder.get(card.id)! } : card
-		);
+		nextCards.forEach((card, index) => {
+			if (card.column === colId) card.order = index;
+		});
 	}
 
 	function moveCardToColumn(cardId: string, currentCol: ColumnId, targetCol: ColumnId, targetIndex: number) {
@@ -153,22 +152,14 @@
 		const targetCards = getCommittedColumnCards(targetCol).filter((card) => card.id !== cardId);
 		const clampedIndex = Math.min(Math.max(targetIndex, 0), targetCards.length);
 
-		targetCards.splice(clampedIndex, 0, { ...dragged, column: targetCol, order: clampedIndex });
+		targetCards.splice(clampedIndex, 0, dragged);
+		dragged.column = targetCol;
 
-		const sourceOrder = new Map(sourceCards.map((card, index) => [card.id, index]));
-		const targetOrder = new Map(targetCards.map((card, index) => [card.id, index]));
-
-		cards = cards.map((card) => {
-			if (card.id === cardId) {
-				return { ...card, column: targetCol, order: targetOrder.get(card.id) ?? clampedIndex };
-			}
-			if (card.column === currentCol && sourceOrder.has(card.id)) {
-				return { ...card, order: sourceOrder.get(card.id)! };
-			}
-			if (card.column === targetCol && targetOrder.has(card.id)) {
-				return { ...card, order: targetOrder.get(card.id)! };
-			}
-			return card;
+		sourceCards.forEach((card, index) => {
+			card.order = index;
+		});
+		targetCards.forEach((card, index) => {
+			card.order = index;
 		});
 	}
 

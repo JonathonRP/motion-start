@@ -1,17 +1,16 @@
 <script lang="ts">
-	import { LayoutGroup, motion, type PanInfo } from "motion-start";
+	import { LayoutGroup, Reorder, type PanInfo } from "motion-start";
 	import { tick } from "svelte";
 	import type { Attachment } from "svelte/attachments";
 
 	/*
-	 * A kanban board is the honest test of a shared layout animation: a card has
-	 * to keep its identity while moving between two independent lists. `layoutId`
-	 * is what carries that identity across, so both columns agree they are
-	 * holding the same card rather than two lookalikes.
+	 * A kanban board combines two jobs. Reorder owns the order inside each
+	 * column, while `layoutId` carries a card's identity across columns so both
+	 * lists agree they are handing off the same card rather than two lookalikes.
 	 *
-	 * The card is dragged freely and the move is committed on release, so an
-	 * abandoned drag needs no undo. Everything below exists only to answer
-	 * "which column, and which slot" at the moment the pointer lifts.
+	 * Cards still drag freely in two dimensions. Reorder responds while the
+	 * pointer stays in the source column; a cross-column move is committed on
+	 * release and the shared layout animation takes over from the drop point.
 	 */
 
 	const COLUMNS = ["scheming", "in-motion", "conquered"] as const;
@@ -128,7 +127,11 @@
 		const y = info.point.y - window.scrollY;
 		const column = columnAt(x, y);
 
-		if (column) move(card.id, column, slotIndexAt(column, card.id, y));
+		// Reorder has already committed moves within the source column. Only
+		// re-parent here; doing both would reorder the same drop twice.
+		if (column && column !== card.column) {
+			move(card.id, column, slotIndexAt(column, card.id, y));
+		}
 
 		hovered = null;
 		draggingId = null;
@@ -186,11 +189,19 @@
 						<span class="text-foreground-alt tabular-nums">{inColumn(column).length}</span>
 					</h3>
 
-					<div role="list" aria-label={LABELS[column]} class="flex min-h-24 flex-col gap-2">
-						{#each inColumn(column) as card (card.id)}
-							<motion.div
+					<Reorder.Group
+						as="div"
+						role="list"
+						aria-label={LABELS[column]}
+						values={inColumn(column)}
+						onReorder={(next: Card[]) => reindex(next)}
+						class="flex min-h-24 flex-col gap-2"
+					>
+						{#snippet children({ item: card }: { item: Card })}
+							<Reorder.Item
+								as="div"
 								id={`villain-card-${card.id}`}
-								layout
+								value={card}
 								layoutId={card.id}
 								drag
 								dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
@@ -211,9 +222,9 @@
 								class="bg-background border-border cursor-grab rounded-lg border px-2.5 py-2 text-[0.8rem] leading-snug select-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
 							>
 								{card.title}
-							</motion.div>
-						{/each}
-					</div>
+							</Reorder.Item>
+						{/snippet}
+					</Reorder.Group>
 				</div>
 			{/each}
 		</div>

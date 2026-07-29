@@ -141,9 +141,9 @@ Read more in [Reorder](/docs/components/reorder).
 
 ## Kanban board
 
-`Reorder.Group` owns one list. Dragging a card from one list into another is a different problem: the
-card has to be picked up in one column and dropped into another without either column losing track of
-it. That is `layoutId` on a plain `motion.div`, not `Reorder`.
+Each column is a `Reorder.Group`, so cards shuffle smoothly within that list. Giving every
+`Reorder.Item` a `layoutId` adds the other half of a kanban board: the same card can be re-parented
+into another group without either column losing track of it.
 
 Drag a card anywhere on the board, or focus one and use the arrow keys.
 
@@ -154,10 +154,15 @@ Drag a card anywhere on the board, or focus one and use the arrow keys.
 ```svelte
 <LayoutGroup>
 	{#each columns as column (column)}
-		<div role="list">
-			{#each inColumn(column) as card (card.id)}
-				<motion.div
-					layout
+		<Reorder.Group
+			as="div"
+			values={inColumn(column)}
+			onReorder={(next) => reindex(next)}
+		>
+			{#snippet children({ item: card })}
+				<Reorder.Item
+					as="div"
+					value={card}
 					layoutId={card.id}
 					drag
 					dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
@@ -167,17 +172,16 @@ Drag a card anywhere on the board, or focus one and use the arrow keys.
 					whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
 				>
 					{card.title}
-				</motion.div>
-			{/each}
-		</div>
+				</Reorder.Item>
+			{/snippet}
+		</Reorder.Group>
 	{/each}
 </LayoutGroup>
 ```
 
-The card is dragged freely — `dragConstraints` pinned to zero with `dragElastic={1}` lets it follow
-the pointer anywhere and spring home if it is dropped outside a column — and the move is only
-committed on release, so an abandoned drag needs no undo. When the card is re-parented, `layoutId`
-tells both columns they are holding the same card, so it animates from where you let go into its
+`Reorder` commits moves inside the source column while the card is dragged. `dragConstraints` pinned
+to zero with `dragElastic={1}` lets the same item travel freely across the board; a cross-column move
+is committed on release, and `layoutId` animates the re-parented item from the drop point into its
 new slot.
 
 Read more in [Reorder](/docs/components/reorder).

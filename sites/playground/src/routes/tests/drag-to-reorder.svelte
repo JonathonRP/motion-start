@@ -4,9 +4,13 @@
     import { page } from '$app/state';
 
     const axis = $derived.by<'x' | 'y'>(() => page.url.searchParams.get('axis') === 'x' ? 'x' : 'y');
+    const useLayoutId = $derived(page.url.searchParams.has('layoutId'));
+    const freeDrag = $derived(page.url.searchParams.has('freeDrag'));
+    const invalidateOnDrag = $derived(page.url.searchParams.has('invalidateOnDrag'));
 
     const initialItems = ['Tomato', 'Cucumber', 'Mustard', 'Chicken'];
     let items = $state([...initialItems]);
+    let dragVersion = $state(0);
 
     function handleReorder(newItems: string[]) {
         items = newItems;
@@ -18,9 +22,16 @@
     onReorder={handleReorder}
     style={axis === 'y' ? {} : { display: 'flex' }}
     values={items}
+    data-drag-version={dragVersion}
 >
     {#snippet children({ item })}
-        <DragToReorderItem {item} {axis} />
+        <DragToReorderItem
+            {item}
+            {axis}
+            {useLayoutId}
+            {freeDrag}
+            onDragInvalidate={invalidateOnDrag ? () => dragVersion++ : undefined}
+        />
     {/snippet}
 </Reorder.Group>
 
