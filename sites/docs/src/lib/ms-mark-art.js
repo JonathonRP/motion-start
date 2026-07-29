@@ -74,9 +74,9 @@ export const BLOBS = [
 export const TILE_RADIUS = 13;
 
 /**
- * A standalone, un-animated SVG document for the mark. Used to generate the
- * favicon set and the static `favicon.svg`, and embedded (with `x`/`y`) as a
- * nested `<svg>` inside the Open Graph card.
+ * A standalone, un-animated SVG document for the mark. Embedded (with `x`/`y`)
+ * as a nested `<svg>` inside the Open Graph card. The app icons come from
+ * `static/logo.webp` instead, so this no longer feeds the favicon set.
  *
  * @param {{ size?: number, rounded?: boolean, x?: number, y?: number, idPrefix?: string }} [options]
  * @returns {string}

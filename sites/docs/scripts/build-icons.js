@@ -1,11 +1,17 @@
 /**
- * Regenerates the favicon set from the shared mark geometry.
+ * Regenerates the favicon set and the Open Graph card.
  *
- * Run with `bun run icons` after changing `src/lib/ms-mark-art.js` so the
- * static icons stay in step with the animated `<MsMark />`.
+ * The app icons come from `static/logo.webp` — the original navy MS mark. It is
+ * a raster, so there is no vector favicon: the PNG sizes and the .ico are
+ * resampled from the 698px source.
+ *
+ * The OG card still uses the animated mark's palette and geometry, since that
+ * is the artwork the site itself shows.
+ *
+ * Run with `bun run icons` after changing either source.
  *
  * Outputs into `static/`:
- *   favicon.svg, favicon-16x16.png, favicon-32x32.png, favicon.ico,
+ *   favicon-16x16.png, favicon-32x32.png, favicon.ico,
  *   apple-touch-icon.png, android-chrome-{192,512}x{192,512}.png, og.png
  */
 
@@ -20,9 +26,18 @@ const [BLUE, YELLOW] = BLOBS.map((blob) => blob.colors[0]);
 const MAGENTA = BASE[1].colors[0];
 
 const staticDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'static');
+const iconSource = join(staticDir, 'logo.webp');
 
-/** @param {string} svg @param {number} size */
-const raster = (svg, size) => sharp(Buffer.from(svg), { density: 384 }).resize(size, size).png().toBuffer();
+/**
+ * Downsampling a 698px raster to 16px with a plain box filter turns the italic
+ * MS to mud, so use Lanczos and give the small sizes a light sharpen back.
+ *
+ * @param {number} size
+ */
+const rasterIcon = (size) => {
+	const pipeline = sharp(iconSource).resize(size, size, { kernel: 'lanczos3', fit: 'cover' });
+	return (size <= 48 ? pipeline.sharpen({ sigma: 0.6 }) : pipeline).png().toBuffer();
+};
 
 /**
  * Open Graph card: the mark and wordmark on the docs' dark page colour, over
@@ -51,9 +66,6 @@ function renderOgCard() {
 async function main() {
 	await mkdir(staticDir, { recursive: true });
 
-	const markSvg = renderStaticMark({ size: 64 });
-	await writeFile(join(staticDir, 'favicon.svg'), markSvg, 'utf8');
-
 	/** @type {Array<[string, number]>} */
 	const pngs = [
 		['favicon-16x16.png', 16],
@@ -64,11 +76,12 @@ async function main() {
 	];
 
 	for (const [name, size] of pngs) {
-		await writeFile(join(staticDir, name), await raster(markSvg, size));
+		await writeFile(join(staticDir, name), await rasterIcon(size));
 	}
 
 	// .ico wants a few square sizes; 16/32/48 covers browser tabs and Windows.
-	const icoSources = await Promise.all([16, 32, 48].map((size) => raster(markSvg, size)));
+	const icoSources = [];
+	for (const size of [16, 32, 48]) icoSources.push(await rasterIcon(size));
 	await writeFile(join(staticDir, 'favicon.ico'), await pngToIco(icoSources));
 
 	const og = await sharp(Buffer.from(renderOgCard()), { density: 288 }).resize(1200, 630).png().toBuffer();
