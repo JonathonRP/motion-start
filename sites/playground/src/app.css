@@ -103,13 +103,22 @@
 		user-select: none;
 	} */
 
+	/*
+	 * Two families need two rules: a single @font-face block only ever declares
+	 * one family, so the mono descriptors below used to overwrite the sans ones
+	 * and "Geist Sans" was never defined at all. The paths were wrong too - they
+	 * pointed at a Geist/ subdirectory that does not exist, and the files
+	 * themselves were misspelled "giest".
+	 */
 	@font-face {
 		font-family: "Geist Sans";
-		src: url("/fonts/Geist/geist-sans.ttf") format("truetype");
+		src: url("/fonts/geist-sans.ttf") format("truetype");
 		font-display: swap;
+	}
 
+	@font-face {
 		font-family: "Geist Mono";
-		src: url("/fonts/Geist/geist-mono.ttf") format("truetype");
+		src: url("/fonts/geist-mono.ttf") format("truetype");
 		font-display: swap;
 	}
 

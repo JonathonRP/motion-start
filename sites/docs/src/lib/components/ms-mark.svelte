@@ -65,17 +65,27 @@
 		ease: "easeInOut",
 	} as const;
 
-	// The lockup is deliberately slower than the tile. It is on an ease, not a
-	// spring: a spring spends most of its duration asymptotically parked on the
-	// target, which at this amplitude is indistinguishable from not animating at
-	// all - the first attempt at this looked completely static.
-	const glyphLoop = (duration: number) =>
+	// The lockup gets a beat rather than a drift. Continuous easing at an
+	// amplitude small enough to keep a logo looking like a logo is invisible at
+	// the 88px this renders at - a 4 degree rotation moves the s by about one
+	// pixel. A short, big, springy hit on a long cycle is legible at any size
+	// and stays out of the way in between, which is what `times` buys here: the
+	// first 55% of the cycle is dead still.
+	const BEAT = 5.4;
+	const beatTimes = [0, 0.55, 0.66, 0.74, 0.84, 1];
+
+	const glyphLoop = (delay: number) =>
 		({
-			duration,
+			duration: BEAT,
+			times: beatTimes,
+			delay,
 			repeat: Number.POSITIVE_INFINITY,
-			repeatType: "mirror",
-			ease: "easeInOut",
+			repeatType: "loop",
+			ease: "easeOut",
 		}) as const;
+
+	const mBeat = { scale: [1, 1, 1.18, 0.94, 1.04, 1] };
+	const sBeat = { rotate: [0, 0, -19, 8, -3, 0] };
 
 	const drift = $derived(
 		BLOBS.map((blob) =>
@@ -167,15 +177,15 @@
 			<g transform={M_TRANSFORM}>
 				<motion.path
 					d={M_PATH}
-					animate={playing ? { scale: [1, 1.09] } : undefined}
-					transition={glyphLoop(6)}
+					animate={playing ? mBeat : undefined}
+					transition={glyphLoop(0)}
 				/>
 			</g>
 			<g transform={S_TRANSFORM}>
 				<motion.path
 					d={S_PATH}
-					animate={playing ? { rotate: [-7, 7] } : undefined}
-					transition={glyphLoop(7.5)}
+					animate={playing ? sBeat : undefined}
+					transition={glyphLoop(0.14)}
 				/>
 			</g>
 		</g>

@@ -25,6 +25,30 @@
 	--color-background-alt: var(--theme-color-background-alt);
 }
 
+/*
+ * @svecodocs/kit asks for Inter and JetBrains Mono but ships no @font-face for
+ * either, so the docs silently fell back to whatever the visitor happened to
+ * have installed - which for most people is Segoe UI and Consolas, not the
+ * design. Self-host Geist instead: it is already vendored for the playground,
+ * so both sites now render in the same face and neither depends on a CDN.
+ */
+@font-face {
+	font-family: "Geist Sans";
+	src: url("/fonts/geist-sans.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Geist Mono";
+	src: url("/fonts/geist-mono.ttf") format("truetype");
+	font-display: swap;
+}
+
+@theme {
+	--font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 :root {
 	/* Halo behind the logo mark and the landing bloom. Magenta, matching the
 	   broad centre band of the mark's blue-magenta-yellow gradient. */

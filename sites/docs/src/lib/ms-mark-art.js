@@ -54,26 +54,33 @@ export const BASE = [
  * about the same fraction of their own radius.
  *
  * `from` is the concept's measured position, so the still icons and the OG card
- * match the design exactly; `to` is where the spring throws it. The two blobs
- * run at different durations so they drift permanently out of phase instead of
- * pulsing in lockstep.
+ * match the design exactly; `to` is where the spring throws it.
+ *
+ * The travel is mostly positional, not scalar. An earlier pass grew the yellow
+ * radius by 20% and it swallowed the magenta entirely at the far end - the tile
+ * stopped being a three-colour mesh and just read as a slow brightness pulse.
+ * Swinging the centres while holding the radii roughly steady keeps all three
+ * colours on screen the whole time, so the movement reads as movement.
+ *
+ * The two blobs run at different durations so they drift permanently out of
+ * phase instead of pulsing in lockstep.
  */
 export const BLOBS = [
 	{
 		id: 'blue',
 		colors: ['#b4c6e6', '#aac1ea', '#b4c6e6'],
 		solid: 0.8,
-		duration: 4.2,
+		duration: 3.6,
 		from: { cx: 9.5, cy: 85.9, r: 45 },
-		to: { cx: 24, cy: 73, r: 53 },
+		to: { cx: 27, cy: 80, r: 47 },
 	},
 	{
 		id: 'yellow',
 		colors: ['#f2de58', '#f6e550', '#f2de58'],
 		solid: 0.78,
-		duration: 3.4,
+		duration: 2.9,
 		from: { cx: 48, cy: 6, r: 30 },
-		to: { cx: 36, cy: 18, r: 36 },
+		to: { cx: 42, cy: 11, r: 31 },
 	},
 ];
 
