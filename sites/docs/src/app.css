@@ -144,12 +144,21 @@ main:has(> #content) > footer {
 	padding-top: var(--ms-space-lg);
 	padding-inline: var(--ms-space-md);
 	gap: var(--ms-space-md);
+	/* The outgoing page is pinned here by `AnimatePresence mode="popLayout"`,
+	 * which positions it absolutely from its measured offsets - so this has to
+	 * be its offset parent or it would be placed against the viewport. */
+	position: relative;
+	/* The pages slide sideways past each other. `clip` rather than `hidden`
+	 * because `hidden` would make this a scroll container and break the
+	 * sticky table of contents; `overflow-x` alone leaves the y axis visible. */
+	overflow-x: clip;
 }
 
-/* One child at a time: `AnimatePresence mode="wait"` keeps the outgoing page
- * out of flow once its exit finishes, so the article never has to share the
- * row. This needs motion-start >= 0.2.0-next.3 (the wait-mode serialisation
- * fix); before that both pages tiled here and the column visibly halved. */
+/* The outgoing page is out of flow, so only the incoming one sizes the row and
+ * the footer sits directly below it for the whole transition. Under the old
+ * `mode="wait"` there was a ~200ms window where neither page was in flow, the
+ * row collapsed to nothing, and the footer jumped up the viewport before the
+ * new page appeared. */
 
 /* The reading column is phi^2 times the sidebar, which sets the two columns
  * in a golden relationship instead of a round 640px. */
