@@ -45,12 +45,33 @@
 	const uid = $props.id();
 	const id = (name: string) => `ms-${name}-${uid}`;
 
-	const loop = {
-		duration: 9,
+	// The blobs get a springy overshoot so the tile feels alive; their colours
+	// stay on a plain ease, because a spring's overshoot on a colour would push
+	// channels out of gamut and just read as a flicker. Both mirror, so the
+	// visible cycle is twice these durations.
+	const blobLoop = {
+		type: "spring",
+		bounce: 0.45,
+		duration: 4.5,
+		repeat: Number.POSITIVE_INFINITY,
+		repeatType: "mirror",
+	} as const;
+
+	const colorLoop = {
+		duration: 5,
 		repeat: Number.POSITIVE_INFINITY,
 		repeatType: "mirror",
 		ease: "easeInOut",
 	} as const;
+
+	/** Deliberately far slower than the tile, so the lockup only ever drifts. */
+	const glyphLoop = (duration: number) =>
+		({
+			duration,
+			repeat: Number.POSITIVE_INFINITY,
+			repeatType: "mirror",
+			ease: "easeInOut",
+		}) as const;
 
 	const drift = $derived(
 		BLOBS.map((blob) =>
@@ -85,7 +106,7 @@
 					offset={stop.offset}
 					stop-color={stop.colors[0]}
 					animate={playing ? { stopColor: stop.colors } : undefined}
-					transition={loop}
+					transition={colorLoop}
 				/>
 			{/each}
 		</motion.linearGradient>
@@ -98,7 +119,7 @@
 				cy={blob.from.cy}
 				r={blob.from.r}
 				animate={drift[i]}
-				transition={loop}
+				transition={blobLoop}
 			>
 				{#each [0, blob.solid, 1] as offset, stopIndex (offset)}
 					<motion.stop
@@ -106,7 +127,7 @@
 						stop-color={blob.colors[0]}
 						stop-opacity={stopIndex === 2 ? 0 : 1}
 						animate={playing ? { stopColor: blob.colors } : undefined}
-						transition={loop}
+						transition={colorLoop}
 					/>
 				{/each}
 			</motion.radialGradient>
@@ -132,8 +153,27 @@
 			stroke-linejoin="miter"
 			stroke-miterlimit="2.6"
 		>
-			<path d={M_PATH} transform={M_TRANSFORM} />
-			<path d={S_PATH} transform={S_TRANSFORM} />
+			<!--
+				Placement stays on a plain wrapper `g`: motion writes its transform to
+				`style.transform`, which would win over a `transform` attribute on the
+				same element and throw the lockup back to the origin. Motion measures
+				each path's own bbox for the transform origin, so the M breathes about
+				its centre and the s pivots about its own.
+			-->
+			<g transform={M_TRANSFORM}>
+				<motion.path
+					d={M_PATH}
+					animate={playing ? { scale: [1, 1.05] } : undefined}
+					transition={glyphLoop(24)}
+				/>
+			</g>
+			<g transform={S_TRANSFORM}>
+				<motion.path
+					d={S_PATH}
+					animate={playing ? { rotate: [-5, 5] } : undefined}
+					transition={glyphLoop(30)}
+				/>
+			</g>
 		</g>
 	</g>
 </svg>
