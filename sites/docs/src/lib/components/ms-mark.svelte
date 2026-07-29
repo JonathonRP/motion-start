@@ -4,25 +4,31 @@
 	import {
 		BASE,
 		BLOBS,
+		BOUNCE,
 		GLYPH_FILL,
 		GLYPH_STROKE,
+		GRAVITY,
+		IMPACT,
 		M_PATH,
 		M_TRANSFORM,
+		PHASES,
 		S_PATH,
 		S_TRANSFORM,
 		TILE_RADIUS,
 	} from "$lib/ms-mark-art.js";
 
 	/**
-	 * The motion-start mark, drawn as vectors rather than a raster logo.
+	 * The motion-start mark, drawn as vectors rather than a raster logo, and
+	 * animated with the library itself.
 	 *
-	 * The tile is a mesh gradient animated with the library itself: two
-	 * `motion.radialGradient` blobs drift over a `motion.linearGradient` base
-	 * while every `motion.stop` cycles its colour. All of it runs on one long,
-	 * mirrored loop so the tile reads as a slow drift rather than a strobe.
+	 * The tile is a mesh gradient: two `motion.radialGradient` blobs over a
+	 * `motion.linearGradient` base, with a third gradient used as impact light.
+	 * All of it hangs off the single bounce defined in `$lib/ms-mark-art.js`,
+	 * which the landing hero also uses to hop the tile - so the insides always
+	 * react on the exact frame the tile hits the floor.
 	 *
-	 * Geometry and palette live in `$lib/ms-mark-art.js`, shared with the icon
-	 * generator so the favicons cannot drift from the animated mark.
+	 * Geometry and palette live in `$lib/ms-mark-art.js` too, shared with the
+	 * icon generator so the favicons cannot drift from the animated mark.
 	 */
 
 	type Props = {
@@ -46,97 +52,67 @@
 	const id = (name: string) => `ms-${name}-${uid}`;
 
 	/*
-	 * Everything below runs on ONE clock.
+	 * Every part of the mark is a consequence of the bounce defined in
+	 * `ms-mark-art.js`. Timing constants come from there so the tile's hop (on
+	 * the landing hero) and the tile's insides cannot drift apart.
 	 *
-	 * The first pass gave the blobs, the colours and the lockup three unrelated
-	 * durations. Each part was moving, but nothing ever lined up, so the tile
-	 * read as slow mush with an unrelated twitch in it. Motion is fun when it
-	 * looks caused: here the light gathers, snaps across the tile, and the
-	 * letters get knocked by it a beat later.
-	 *
-	 * Sharing one duration and one `times` vocabulary is what buys that. Phases
-	 * are fractions of CYCLE, so retiming the whole thing is a single number.
+	 * The story, in order: it falls, it lands, the mesh sloshes sideways from
+	 * the impact, light splashes out across the face, and the letters get
+	 * jolted a frame or two later.
 	 */
-	const CYCLE = 5.6;
-
-	/** gather (light pulls in) - snap - rebound - settle - rest */
-	const PHASES = [0, 0.4, 0.52, 0.63, 0.78, 1];
-
-	// Slow in, hard out of the snap, then a soft recovery. Per-segment easing is
-	// what makes the snap feel like an impact instead of another swell.
-	const HIT_EASE = ["easeInOut", "easeIn", "circOut", "easeOut", "easeInOut"] as const;
-
-	/** One turn of the shared clock, optionally held back by `delay`. */
 	const cycle = (delay = 0) =>
 		({
-			duration: CYCLE,
+			duration: BOUNCE,
 			times: PHASES,
-			ease: HIT_EASE,
+			ease: GRAVITY,
 			delay,
 			repeat: Number.POSITIVE_INFINITY,
 			repeatType: "loop",
 		}) as const;
 
 	/*
-	 * The blobs travel positionally and hold their radii near-fixed. Growing a
-	 * blob 20% made the yellow swallow the magenta entirely at one end and the
-	 * tile stopped reading as a three-colour mesh. They overshoot `to` on the
-	 * snap, which is what sells the sweep as an impact rather than a slide.
+	 * The mesh sloshes. It sits still through the fall, lurches past `to` at
+	 * the moment of contact, then wobbles back - liquid in a dropped glass.
+	 *
+	 * The travel is positional, not scalar. An earlier pass grew the yellow
+	 * radius 20% and it swallowed the magenta entirely at the far end, so the
+	 * tile stopped reading as a three-colour mesh and became a brightness
+	 * pulse. Radii barely move; the centres do the work.
 	 */
-	const overshoot = (from: number, to: number, by = 0.4) => to + (to - from) * by;
+	const slosh = (from: number, to: number) => {
+		const d = to - from;
+		return [from, from + d * 0.15, from + d * 0.5, to + d * 0.45, to, from + d * 0.3, from];
+	};
 
 	const blobKeyframes = (blob: (typeof BLOBS)[number]) => ({
-		cx: [
-			blob.from.cx,
-			blob.to.cx,
-			overshoot(blob.from.cx, blob.to.cx),
-			blob.to.cx,
-			(blob.from.cx + blob.to.cx) / 2,
-			blob.from.cx,
-		],
-		cy: [
-			blob.from.cy,
-			blob.to.cy,
-			overshoot(blob.from.cy, blob.to.cy),
-			blob.to.cy,
-			(blob.from.cy + blob.to.cy) / 2,
-			blob.from.cy,
-		],
-		r: [
-			blob.from.r,
-			blob.to.r,
-			overshoot(blob.from.r, blob.to.r, 0.15),
-			blob.to.r,
-			(blob.from.r + blob.to.r) / 2,
-			blob.from.r,
-		],
+		cx: slosh(blob.from.cx, blob.to.cx),
+		cy: slosh(blob.from.cy, blob.to.cy),
+		r: slosh(blob.from.r, blob.to.r),
 	});
 
 	// Colours ride the same clock but on a plain ease: a springy or snapped
 	// colour pushes channels out of gamut and just reads as a flicker.
 	const colorLoop = {
-		duration: CYCLE,
+		duration: BOUNCE,
 		repeat: Number.POSITIVE_INFINITY,
 		repeatType: "mirror",
 		ease: "easeInOut",
 	} as const;
 
 	/*
-	 * The thing that makes the beat land: a specular streak that crosses the
-	 * tile and is invisible the rest of the time.
+	 * Impact light. A hard-edged highlight rips across the face at the moment
+	 * of contact and is invisible the rest of the time.
 	 *
-	 * A mesh of two soft blobs is inherently gentle - even a third of a tile of
-	 * travel only reads as a slow swell, which is why the earlier passes felt
-	 * like nothing was happening. A hard-edged highlight is the opposite, and
-	 * it gives the lockup something to visibly react to.
+	 * This is the piece that makes the whole thing land. Two soft blobs are
+	 * inherently gentle however far they travel, so without it the lockup had
+	 * nothing visible to react to and the tile just swelled.
 	 *
-	 * It has its own `times` because the flash needs a sharper envelope than the
-	 * rest, but it shares CYCLE, so it stays phase-locked. It peaks at 0.42 and
-	 * the M pops at 0.52 - light first, letters second.
+	 * It gets its own `times` because a flash needs a much sharper envelope
+	 * than a fall, but it shares BOUNCE, so it stays pinned to the impact.
 	 */
-	const streakTimes = [0, 0.3, 0.42, 0.54, 1];
+	const streakTimes = [0, IMPACT - 0.12, IMPACT, IMPACT + 0.16, 1];
 	const streakLoop = {
-		duration: CYCLE,
+		duration: BOUNCE,
 		times: streakTimes,
 		ease: ["easeIn", "easeOut", "easeIn", "linear"],
 		repeat: Number.POSITIVE_INFINITY,
@@ -144,22 +120,35 @@
 	} as const;
 
 	const streak = {
-		x1: [-32, -32, 14, 68, 68],
-		x2: [-6, -6, 40, 94, 94],
+		x1: [-24, -24, 20, 70, 70],
+		x2: [-8, -8, 36, 86, 86],
 		opacity: [0, 0, 1, 0, 0],
 	};
 
 	/*
-	 * The lockup. Continuous easing at an amplitude small enough to keep a logo
-	 * looking like a logo is invisible at the 88px this renders at - a 4 degree
-	 * rotation moves the s by about one pixel. So the letters sit still through
-	 * the gather, then take the hit: the M squashes in anticipation and pops,
-	 * the s coils the other way and whips through.
+	 * The lockup, reacting to the landing.
 	 *
-	 * The s is held back 90ms so the pair lands as two beats, not one thud.
+	 * Amplitude has to be big or it may as well not exist: at 88px a 4 degree
+	 * rotation moves the s by roughly one pixel. So instead of easing the
+	 * letters continuously, they ride the fall almost still, compress into the
+	 * squash, then over-pop out of it and wobble down - the M as a scale, the
+	 * s as a floppy whip, both with a little vertical bob of their own so they
+	 * look loose inside the tile rather than painted onto it.
+	 *
+	 * The s is held back another 90ms so the pair lands as two beats, not one
+	 * thud, and its rotation runs opposite to its own resting slant so the
+	 * whip is visible against the M.
 	 */
-	const mBeat = { scale: [1, 0.93, 1.2, 0.97, 1.03, 1] };
-	const sBeat = { rotate: [0, 7, -24, 10, -4, 0], scale: [1, 0.96, 1.12, 0.99, 1.02, 1] };
+	const mBeat = {
+		scale: [1, 1.03, 1, 0.9, 1.2, 1.03, 1],
+		y: [0, -0.6, 0.4, 2, -2.4, 0.4, 0],
+	};
+
+	const sBeat = {
+		rotate: [0, -4, -7, 11, -21, 7, 0],
+		scale: [1, 1.02, 1, 0.92, 1.15, 1.02, 1],
+		y: [0, -0.8, 0.6, 2.6, -2.8, 0.6, 0],
+	};
 </script>
 
 <svg
@@ -212,15 +201,18 @@
 		<motion.linearGradient
 			id={id("streak")}
 			gradientUnits="userSpaceOnUse"
-			x1="-32"
+			x1="-24"
 			y1="64"
-			x2="-6"
+			x2="-8"
 			y2="0"
 			animate={playing ? { x1: streak.x1, x2: streak.x2 } : undefined}
 			transition={streakLoop}
 		>
+			<!-- A narrow, bright glint rather than a wide wash. At 26 units and
+			     0.62 it flooded the whole tile and the letters vanished into it
+			     on the two frames that matter most. -->
 			<stop offset="0" stop-color={GLYPH_FILL} stop-opacity="0" />
-			<stop offset="0.5" stop-color={GLYPH_FILL} stop-opacity="0.62" />
+			<stop offset="0.5" stop-color={GLYPH_FILL} stop-opacity="0.5" />
 			<stop offset="1" stop-color={GLYPH_FILL} stop-opacity="0" />
 		</motion.linearGradient>
 

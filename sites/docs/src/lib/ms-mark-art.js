@@ -90,6 +90,51 @@ export const BLOBS = [
 /** Corner radius of the tile, in the 64 x 64 user space. */
 export const TILE_RADIUS = 13;
 
+/*
+ * ------------------------------------------------------------------ timing --
+ *
+ * The mark is one bounce, and every moving part is a consequence of it.
+ *
+ * This used to be four clocks: an 8.8s sine float on the landing page, two
+ * blob springs, a colour cycle and a glyph beat. Each part moved and none of
+ * them ever agreed, so the whole thing read as drift with unrelated twitches
+ * in it. Sharing one period and one phase vocabulary is what turns a pile of
+ * loops into a character.
+ *
+ * The story: the tile falls, lands, squashes, splashes light out sideways, and
+ * the letters get jolted by the impact before it springs back up. Everything
+ * below is expressed as a fraction of BOUNCE, so retiming is one number.
+ */
+export const BOUNCE = 2.9;
+
+/** apex - falling - contact - squashed - launch - rising - apex */
+export const PHASES = [0, 0.34, 0.46, 0.52, 0.6, 0.78, 1];
+
+/** The exact phase of impact. Everything reactive is pinned to it. */
+export const IMPACT = PHASES[3];
+
+/**
+ * Gravity: accelerate into the floor, decelerate out of it. `circIn`/`circOut`
+ * are much closer to a real fall than `easeIn`/`easeOut`, which are too gentle
+ * at the extremes to read as weight.
+ */
+export const GRAVITY = ['circIn', 'circIn', 'linear', 'circOut', 'circOut', 'easeOut'];
+
+/**
+ * Squash and stretch on the tile itself. Volume is roughly conserved - x grows
+ * as y shrinks - which is the whole trick that makes a rectangle read as
+ * something with mass rather than something being scaled.
+ *
+ * `transform-origin: bottom` keeps the base planted while it squashes, so it
+ * lands on the floor instead of shrinking towards its middle.
+ */
+export const HOP = {
+	y: [-16, -3, 5, 8, 1, -12, -16],
+	scaleX: [1, 0.96, 1.05, 1.17, 0.93, 0.99, 1],
+	scaleY: [1, 1.05, 0.95, 0.83, 1.11, 1.01, 1],
+	rotate: [-2.5, -1, 0.5, 1.5, 0, -2, -2.5],
+};
+
 /**
  * A standalone, un-animated SVG document for the mark. Embedded (with `x`/`y`)
  * as a nested `<svg>` inside the Open Graph card. The app icons come from

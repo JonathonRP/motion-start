@@ -21,7 +21,7 @@
  * no font files, so the docs used to render in whatever the visitor happened to
  * have installed. Self-host the real thing instead, in three roles:
  *
- *   Satoshi        display - the page title and section headings
+ *   Bespoke Serif  display - the page title and section headings
  *   Geist          body copy and UI
  *   JetBrains Mono pre/code, and the mono accents the design uses for labels
  *
@@ -30,7 +30,7 @@
  * has no heading-level default to hook.
  */
 @theme {
-	--font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+	--font-display: "Bespoke Serif", ui-serif, Georgia, serif;
 	--font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
 	--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -271,12 +271,14 @@ div:has(> [data-sidebar="sidebar"]) {
 
 /* --------------------------------------------------------------- type -- */
 
-/* Page title: large Satoshi display, plain white — not a gradient. */
+/* Page title: large serif display, plain white — not a gradient. */
 #main-content h1 {
 	font-family: var(--font-display);
 	font-size: clamp(var(--ms-text-3), 1.5rem + 2.6vw, var(--ms-text-5));
 	font-weight: 500;
-	letter-spacing: -0.035em;
+	/* A serif needs far less negative tracking than the geometric sans this
+	   replaced - at -0.035em the stems started colliding with the serifs. */
+	letter-spacing: -0.018em;
 	/* Display type reads tighter than the body's phi leading. */
 	line-height: 1.1;
 	color: var(--color-foreground);
@@ -299,13 +301,13 @@ div:has(> [data-sidebar="sidebar"]) {
 	line-height: var(--ms-phi);
 }
 
-/* Section headings read dimmer than body copy in the design. Satoshi only
- * ships 500/700/900, so 500 is the lightest weight that avoids synthesis. */
+/* Section headings read dimmer than body copy in the design. Regular weight,
+ * because a serif at 500 next to Geist body copy reads heavier than it is. */
 #main-content h2,
 #main-content h3 {
 	font-family: var(--font-display);
-	font-weight: 500;
-	letter-spacing: -0.015em;
+	font-weight: 400;
+	letter-spacing: -0.005em;
 	line-height: 1.272;
 	color: var(--color-foreground-alt);
 	opacity: 0.85;

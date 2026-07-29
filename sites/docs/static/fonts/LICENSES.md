@@ -6,7 +6,7 @@ this way.
 
 | Family | Files | Licence |
 | --- | --- | --- |
-| Satoshi | `satoshi-*.woff2` | [ITF Free Font Licence](https://www.fontshare.com/licenses/itf-ffl) — Indian Type Foundry |
+| Bespoke Serif | `bespoke-serif-*.woff2` | [ITF Free Font Licence](https://www.fontshare.com/licenses/itf-ffl) — Indian Type Foundry |
 | Geist | `geist-*.woff2` | SIL Open Font Licence 1.1 — full text in `OFL-geist.txt`, © 2023 Vercel |
 | JetBrains Mono | `jetbrains-mono-*.woff2` | SIL Open Font Licence 1.1 — © 2020 The JetBrains Mono Project Authors |
 

@@ -1,20 +1,30 @@
 <script lang="ts">
-	import { motion, useTime, useTransform } from "motion-start";
+	import { motion } from "motion-start";
+	import { MediaQuery } from "svelte/reactivity";
 	import MsMark from "$lib/components/ms-mark.svelte";
+	import { BOUNCE, GRAVITY, HOP, PHASES } from "$lib/ms-mark-art.js";
 	import { githubUrl, siteConfig } from "$lib/site-config";
 
 	/**
-	 * Landing hero.
+	 * Landing hero: an 88px mark bouncing above a large wordmark, over a soft
+	 * radial glow.
 	 *
-	 * The logo lockup and its motion are the original pre-mockup treatment:
-	 * an 88px mark drifting above a large monospace wordmark, over a soft
-	 * radial glow. The tagline and CTA pill keep the reference design's
-	 * styling.
+	 * The hop is the mark's own clock. It used to be `sin(t / 1400) * 10`, an
+	 * 8.8s float that drifted against the mark's internal beat forever, so the
+	 * tile's insides reacted to nothing in particular. Now the tile falls,
+	 * squashes on contact and springs back, and the light and letters inside it
+	 * fire on the frame it lands - see `ms-mark-art.js` for the timing.
 	 */
 
-	const time = useTime();
-	// Original drift: wide travel, quick cycle.
-	const drift = useTransform(time, (t: number) => Math.sin(t / 1400) * 10);
+	const reducedMotion = new MediaQuery("prefers-reduced-motion: reduce");
+
+	const hop = {
+		duration: BOUNCE,
+		times: PHASES,
+		ease: GRAVITY,
+		repeat: Number.POSITIVE_INFINITY,
+		repeatType: "loop",
+	} as const;
 
 	const container = {
 		hidden: { opacity: 0 },
@@ -46,21 +56,36 @@
 		initial="hidden"
 		animate="visible"
 	>
-		<!-- Logo sits above the wordmark, drifting on its own, as it did before
-		     the mockup-driven rewrite. -->
-		<motion.div variants={rise} style={{ y: drift }} class="mb-7">
+		<!--
+			Three layers, because each owns a different transform and they would
+			otherwise fight: `rise` is the entrance, the middle div is the endless
+			hop, and the inner div is the hover. Giving the hop div an object
+			`animate` also stops it inheriting the parent's "visible" variant,
+			which would clobber the loop.
+
+			`transform-origin: bottom` is what makes the squash read as landing
+			rather than shrinking - the base stays planted while the top comes
+			down. The glow lives on the hover layer so it squashes with the tile.
+		-->
+		<motion.div variants={rise} class="mb-7">
 			<motion.div
-				class="rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
-				whileHover={{ scale: 1.06, rotate: -4 }}
-				transition={{ type: "spring", stiffness: 320, damping: 18 }}
+				style={{ transformOrigin: "bottom center" }}
+				animate={reducedMotion.current ? undefined : HOP}
+				transition={hop}
 			>
-				<MsMark size={88} title="Motion Start" class="size-22" />
+				<motion.div
+					class="rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
+					whileHover={{ scale: 1.06, rotate: -4 }}
+					transition={{ type: "spring", stiffness: 320, damping: 18 }}
+				>
+					<MsMark size={88} title="Motion Start" class="size-22" />
+				</motion.div>
 			</motion.div>
 		</motion.div>
 
 		<motion.h1
 			variants={rise}
-			class="font-display text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl"
+			class="font-display text-4xl leading-[1.05] font-medium tracking-[-0.018em] sm:text-5xl"
 		>
 			motion start
 		</motion.h1>
