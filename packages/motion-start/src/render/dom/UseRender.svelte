@@ -8,12 +8,14 @@ import { untrack } from 'svelte';
 import { type Attachment, createAttachmentKey } from 'svelte/attachments';
 import { useMotionOutroContext } from '../../context/OutroContext.svelte.js';
 import type { RenderComponent } from '../../motion/features/types.js';
+import { isBrowser } from '../../utils/is-browser.js';
 import { isMotionValue } from '../../value/utils/is-motion-value.js';
 import type { HTMLRenderState } from '../html/types.js';
 import { useHTMLProps } from '../html/use-props.svelte.js';
 import type { SVGRenderState } from '../svg/types.js';
 import { useSvgProps } from '../svg/use-props.svelte.js';
 import { flushPendingMotionExitLayout, motionEnterIntro, motionExitOutro } from './motion-outro.js';
+import { camelToDash } from './utils/camel-to-dash.js';
 import { filterProps } from './utils/filter-props.js';
 import { isSVGComponent } from './utils/is-svg-component.js';
 
@@ -43,6 +45,23 @@ const listenerAttachmentKeys = Object.create(null) as Record<symbol, symbol>;
 
 function isCustomStyleProperty(key: string) {
 	return key.startsWith('--') || key.includes('-');
+}
+
+function getServerStyleName(key: string) {
+	if (key.startsWith('--')) return key;
+
+	const name = camelToDash(key);
+	return /^(webkit|moz|ms|o)-/.test(name) ? `-${name}` : name;
+}
+
+function serializeServerStyle(style: Record<string, unknown>) {
+	return Object.entries(style)
+		.filter(([key, value]) => !/[;:{}\s]/.test(key) && value != null && !isMotionValue(value))
+		.map(([key, value]) => {
+			const serializedValue = String(value).replaceAll(';', '\\00003b');
+			return `${getServerStyleName(key)}: ${serializedValue};`;
+		})
+		.join(' ');
 }
 
 const styleAttachment: Attachment<HTMLElement | SVGElement> = (node) => {
@@ -118,7 +137,13 @@ const elementProps = $derived.by(() => {
 		Record<symbol, Attachment<HTMLElement | SVGElement> | false | null | undefined>;
 
 	if (withAttachments.style && typeof withAttachments.style === 'object') {
-		delete withAttachments.style;
+		if (isBrowser) {
+			delete withAttachments.style;
+		} else {
+			// Svelte stringifies style objects inside spread attributes as
+			// "[object Object]", so dynamic Motion styles need serialization here.
+			withAttachments.style = serializeServerStyle(withAttachments.style as Record<string, unknown>);
+		}
 	}
 	withAttachments[styleAttachmentKey] = styleAttachment;
 
