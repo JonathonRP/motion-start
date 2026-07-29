@@ -1,30 +1,19 @@
 <script lang="ts">
 	import { motion } from "motion-start";
-	import { MediaQuery } from "svelte/reactivity";
 	import MsMark from "$lib/components/ms-mark.svelte";
-	import { BOUNCE, GRAVITY, HOP, PHASES } from "$lib/ms-mark-art.js";
 	import { githubUrl, siteConfig } from "$lib/site-config";
 
 	/**
 	 * Landing hero: an 88px mark bouncing above a large wordmark, over a soft
 	 * radial glow.
 	 *
-	 * The hop is the mark's own clock. It used to be `sin(t / 1400) * 10`, an
-	 * 8.8s float that drifted against the mark's internal beat forever, so the
-	 * tile's insides reacted to nothing in particular. Now the tile falls,
-	 * squashes on contact and springs back, and the light and letters inside it
-	 * fire on the frame it lands - see `ms-mark-art.js` for the timing.
+	 * The hop belongs to the mark itself (`bounce`), not to this page. It used
+	 * to be `sin(t / 1400) * 10` here, an 8.8s float that drifted against the
+	 * mark's internal beat forever, so the tile's insides reacted to nothing in
+	 * particular. Now the tile falls, squashes on contact and springs back, and
+	 * the light and letters inside it fire on the frame it lands - see
+	 * `ms-mark-art.js` for the timing.
 	 */
-
-	const reducedMotion = new MediaQuery("prefers-reduced-motion: reduce");
-
-	const hop = {
-		duration: BOUNCE,
-		times: PHASES,
-		ease: GRAVITY,
-		repeat: Number.POSITIVE_INFINITY,
-		repeatType: "loop",
-	} as const;
 
 	const container = {
 		hidden: { opacity: 0 },
@@ -57,29 +46,18 @@
 		animate="visible"
 	>
 		<!--
-			Three layers, because each owns a different transform and they would
-			otherwise fight: `rise` is the entrance, the middle div is the endless
-			hop, and the inner div is the hover. Giving the hop div an object
-			`animate` also stops it inheriting the parent's "visible" variant,
-			which would clobber the loop.
-
-			`transform-origin: bottom` is what makes the squash read as landing
-			rather than shrinking - the base stays planted while the top comes
-			down. The glow lives on the hover layer so it squashes with the tile.
+			Two layers now that the mark hops itself: `rise` is the entrance and the
+			inner div is the hover. The glow sits on the hover layer, so it stays
+			put as a halo while the tile falls through it - the tile has mass, the
+			light behind it does not.
 		-->
 		<motion.div variants={rise} class="mb-7">
 			<motion.div
-				style={{ transformOrigin: "bottom center" }}
-				animate={reducedMotion.current ? undefined : HOP}
-				transition={hop}
+				class="rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
+				whileHover={{ scale: 1.06, rotate: -4 }}
+				transition={{ type: "spring", stiffness: 320, damping: 18 }}
 			>
-				<motion.div
-					class="rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
-					whileHover={{ scale: 1.06, rotate: -4 }}
-					transition={{ type: "spring", stiffness: 320, damping: 18 }}
-				>
-					<MsMark size={88} title="Motion Start" class="size-22" />
-				</motion.div>
+				<MsMark size={88} bounce={1} title="Motion Start" class="size-22" />
 			</motion.div>
 		</motion.div>
 

@@ -8,6 +8,8 @@
 		GLYPH_FILL,
 		GLYPH_STROKE,
 		GRAVITY,
+		HOP_TRANSITION,
+		hopKeyframes,
 		IMPACT,
 		M_PATH,
 		M_TRANSFORM,
@@ -37,16 +39,30 @@
 		class?: string;
 		/** Set false for a still mark. */
 		animated?: boolean;
+		/**
+		 * Hop amplitude, as a fraction of the authored bounce. 0 leaves the tile
+		 * planted and only the insides move - which reads oddly, because the
+		 * flash and the glyph jolt then have no visible cause. Anything above 0
+		 * wraps the mark so it falls and squashes on the same clock.
+		 */
+		bounce?: number;
 		/** When provided the mark is exposed to assistive tech with this name. */
 		title?: string;
 	};
 
-	let { size = 28, class: className = "", animated = true, title = "" }: Props = $props();
+	let {
+		size = 28,
+		class: className = "",
+		animated = true,
+		bounce = 0,
+		title = "",
+	}: Props = $props();
 
 	// The drift is decorative, so drop it entirely when the visitor asks for
 	// reduced motion; the mark keeps its first-frame gradient.
 	const reducedMotion = new MediaQuery("prefers-reduced-motion: reduce");
 	const playing = $derived(animated && !reducedMotion.current);
+	const hopping = $derived(playing && bounce > 0);
 
 	const uid = $props.id();
 	const id = (name: string) => `ms-${name}-${uid}`;
@@ -151,119 +167,143 @@
 	};
 </script>
 
-<svg
-	viewBox="0 0 64 64"
-	width={size}
-	height={size}
-	class={className}
-	role={title ? "img" : undefined}
-	aria-hidden={title ? undefined : "true"}
-	xmlns="http://www.w3.org/2000/svg"
->
-	{#if title}
-		<title>{title}</title>
-	{/if}
+{#snippet artwork()}
+	<svg
+		viewBox="0 0 64 64"
+		width={size}
+		height={size}
+		class={className}
+		role={title ? "img" : undefined}
+		aria-hidden={title ? undefined : "true"}
+		xmlns="http://www.w3.org/2000/svg"
+	>
+		{#if title}
+			<title>{title}</title>
+		{/if}
 
-	<defs>
-		<motion.linearGradient id={id("base")} gradientUnits="userSpaceOnUse" x1="0" y1="64" x2="64" y2="0">
-			{#each BASE as stop (stop.offset)}
-				<motion.stop
-					offset={stop.offset}
-					stop-color={stop.colors[0]}
-					animate={playing ? { stopColor: stop.colors } : undefined}
-					transition={colorLoop}
-				/>
-			{/each}
-		</motion.linearGradient>
-
-		{#each BLOBS as blob (blob.id)}
-			<motion.radialGradient
-				id={id(blob.id)}
-				gradientUnits="userSpaceOnUse"
-				cx={blob.from.cx}
-				cy={blob.from.cy}
-				r={blob.from.r}
-				animate={playing ? blobKeyframes(blob) : undefined}
-				transition={cycle(blob.lead)}
-			>
-				{#each [0, blob.solid, 1] as offset, stopIndex (offset)}
+		<defs>
+			<motion.linearGradient id={id("base")} gradientUnits="userSpaceOnUse" x1="0" y1="64" x2="64" y2="0">
+				{#each BASE as stop (stop.offset)}
 					<motion.stop
-						{offset}
-						stop-color={blob.colors[0]}
-						stop-opacity={stopIndex === 2 ? 0 : 1}
-						animate={playing ? { stopColor: blob.colors } : undefined}
+						offset={stop.offset}
+						stop-color={stop.colors[0]}
+						animate={playing ? { stopColor: stop.colors } : undefined}
 						transition={colorLoop}
 					/>
 				{/each}
-			</motion.radialGradient>
-		{/each}
+			</motion.linearGradient>
 
-		<motion.linearGradient
-			id={id("streak")}
-			gradientUnits="userSpaceOnUse"
-			x1="-24"
-			y1="64"
-			x2="-8"
-			y2="0"
-			animate={playing ? { x1: streak.x1, x2: streak.x2 } : undefined}
-			transition={streakLoop}
-		>
-			<!-- A narrow, bright glint rather than a wide wash. At 26 units and
-			     0.62 it flooded the whole tile and the letters vanished into it
-			     on the two frames that matter most. -->
-			<stop offset="0" stop-color={GLYPH_FILL} stop-opacity="0" />
-			<stop offset="0.5" stop-color={GLYPH_FILL} stop-opacity="0.5" />
-			<stop offset="1" stop-color={GLYPH_FILL} stop-opacity="0" />
-		</motion.linearGradient>
+			{#each BLOBS as blob (blob.id)}
+				<motion.radialGradient
+					id={id(blob.id)}
+					gradientUnits="userSpaceOnUse"
+					cx={blob.from.cx}
+					cy={blob.from.cy}
+					r={blob.from.r}
+					animate={playing ? blobKeyframes(blob) : undefined}
+					transition={cycle(blob.lead)}
+				>
+					{#each [0, blob.solid, 1] as offset, stopIndex (offset)}
+						<motion.stop
+							{offset}
+							stop-color={blob.colors[0]}
+							stop-opacity={stopIndex === 2 ? 0 : 1}
+							animate={playing ? { stopColor: blob.colors } : undefined}
+							transition={colorLoop}
+						/>
+					{/each}
+				</motion.radialGradient>
+			{/each}
 
-		<clipPath id={id("clip")}>
-			<rect x="0" y="0" width="64" height="64" rx={TILE_RADIUS} />
-		</clipPath>
-	</defs>
-
-	<g clip-path="url(#{id('clip')})">
-		<rect x="0" y="0" width="64" height="64" fill="url(#{id('base')})" />
-		{#each BLOBS as blob (blob.id)}
-			<rect x="0" y="0" width="64" height="64" fill="url(#{id(blob.id)})" />
-		{/each}
-
-		<!-- Sits above the mesh but behind the lockup, so the letters stay legible
-		     through the flash. Hidden entirely for a still mark. -->
-		{#if playing}
-			<motion.rect
-				x="0"
-				y="0"
-				width="64"
-				height="64"
-				fill="url(#{id('streak')})"
-				opacity="0"
-				animate={{ opacity: streak.opacity }}
+			<motion.linearGradient
+				id={id("streak")}
+				gradientUnits="userSpaceOnUse"
+				x1="-24"
+				y1="64"
+				x2="-8"
+				y2="0"
+				animate={playing ? { x1: streak.x1, x2: streak.x2 } : undefined}
 				transition={streakLoop}
-			/>
-		{/if}
+			>
+				<!-- A narrow, bright glint rather than a wide wash. At 26 units and
+				     0.62 it flooded the whole tile and the letters vanished into it
+				     on the two frames that matter most. -->
+				<stop offset="0" stop-color={GLYPH_FILL} stop-opacity="0" />
+				<stop offset="0.5" stop-color={GLYPH_FILL} stop-opacity="0.5" />
+				<stop offset="1" stop-color={GLYPH_FILL} stop-opacity="0" />
+			</motion.linearGradient>
 
-		<!-- Drawn last so the lockup always sits in front of the gradient blobs. -->
-		<g
-			fill="none"
-			stroke={GLYPH_FILL}
-			stroke-width={GLYPH_STROKE}
-			stroke-linecap="butt"
-			stroke-linejoin="miter"
-			stroke-miterlimit="2.6"
-		>
-			<!--
-				Placement stays on a plain wrapper `g`: motion writes its transform to
-				`style.transform`, which would win over a `transform` attribute on the
-				same element and throw the lockup back to the origin. Motion measures
-				each path's own bbox for the transform origin, so the M breathes about
-				its centre and the s pivots about its own.
-			-->
-			<g transform={M_TRANSFORM}>
-				<motion.path d={M_PATH} animate={playing ? mBeat : undefined} transition={cycle(0.06)} />
-			</g>
-			<g transform={S_TRANSFORM}>
-				<motion.path d={S_PATH} animate={playing ? sBeat : undefined} transition={cycle(0.15)} />
+			<clipPath id={id("clip")}>
+				<rect x="0" y="0" width="64" height="64" rx={TILE_RADIUS} />
+			</clipPath>
+		</defs>
+
+		<g clip-path="url(#{id('clip')})">
+			<rect x="0" y="0" width="64" height="64" fill="url(#{id('base')})" />
+			{#each BLOBS as blob (blob.id)}
+				<rect x="0" y="0" width="64" height="64" fill="url(#{id(blob.id)})" />
+			{/each}
+
+			<!-- Sits above the mesh but behind the lockup, so the letters stay legible
+			     through the flash. Hidden entirely for a still mark. -->
+			{#if playing}
+				<motion.rect
+					x="0"
+					y="0"
+					width="64"
+					height="64"
+					fill="url(#{id('streak')})"
+					opacity="0"
+					animate={{ opacity: streak.opacity }}
+					transition={streakLoop}
+				/>
+			{/if}
+
+			<!-- Drawn last so the lockup always sits in front of the gradient blobs. -->
+			<g
+				fill="none"
+				stroke={GLYPH_FILL}
+				stroke-width={GLYPH_STROKE}
+				stroke-linecap="butt"
+				stroke-linejoin="miter"
+				stroke-miterlimit="2.6"
+			>
+				<!--
+					Placement stays on a plain wrapper `g`: motion writes its transform to
+					`style.transform`, which would win over a `transform` attribute on the
+					same element and throw the lockup back to the origin. Motion measures
+					each path's own bbox for the transform origin, so the M breathes about
+					its centre and the s pivots about its own.
+				-->
+				<g transform={M_TRANSFORM}>
+					<motion.path d={M_PATH} animate={playing ? mBeat : undefined} transition={cycle(0.06)} />
+				</g>
+				<g transform={S_TRANSFORM}>
+					<motion.path d={S_PATH} animate={playing ? sBeat : undefined} transition={cycle(0.15)} />
+				</g>
 			</g>
 		</g>
-	</g>
-</svg>
+	</svg>
+{/snippet}
+
+{#if hopping}
+	<!--
+		The hop lives with the mark so the flash and the glyph jolt always have a
+		visible cause. Every mount that animates should bounce; only the amplitude
+		differs, because HOP is authored against the 88px hero and would punch out
+		of a 28px header at full size.
+
+		transform-origin: bottom is what makes the squash read as landing rather
+		than shrinking - the base stays planted while the top comes down.
+	-->
+	<motion.span
+		class="block"
+		style={{ transformOrigin: "bottom center" }}
+		animate={hopKeyframes(bounce)}
+		transition={HOP_TRANSITION}
+	>
+		{@render artwork()}
+	</motion.span>
+{:else}
+	{@render artwork()}
+{/if}

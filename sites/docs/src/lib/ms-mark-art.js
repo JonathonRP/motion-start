@@ -136,6 +136,33 @@ export const HOP = {
 };
 
 /**
+ * `HOP` scaled down for smaller mounts.
+ *
+ * The hero mark is 88px and HOP is authored against it; the sidebar mark is
+ * 28px, where a 16px apex is taller than the logo itself and would punch out
+ * of the header. Travel and rotation scale linearly, while the squash scales
+ * about 1 so a quieter bounce squashes less rather than not at all.
+ *
+ * @param {number} amount 1 for the authored hop, 0 for none.
+ * @returns {typeof HOP}
+ */
+export const hopKeyframes = (amount = 1) => ({
+	y: HOP.y.map((v) => v * amount),
+	scaleX: HOP.scaleX.map((v) => 1 + (v - 1) * amount),
+	scaleY: HOP.scaleY.map((v) => 1 + (v - 1) * amount),
+	rotate: HOP.rotate.map((v) => v * amount),
+});
+
+/** The transition every hop shares, whatever its amplitude. */
+export const HOP_TRANSITION = {
+	duration: BOUNCE,
+	times: PHASES,
+	ease: GRAVITY,
+	repeat: Number.POSITIVE_INFINITY,
+	repeatType: /** @type {'loop'} */ ('loop'),
+};
+
+/**
  * A standalone, un-animated SVG document for the mark. Embedded (with `x`/`y`)
  * as a nested `<svg>` inside the Open Graph card. The app icons come from
  * `static/logo.webp` instead, so this no longer feeds the favicon set.

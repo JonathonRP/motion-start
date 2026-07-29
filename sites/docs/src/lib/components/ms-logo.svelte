@@ -13,7 +13,10 @@
 		whileTap={{ scale: 0.94 }}
 		transition={{ type: "spring", stiffness: 400, damping: 18 }}
 	>
-		<MsMark size={28} class="block size-7" />
+		<!-- A third of the hero's amplitude. HOP is authored against the 88px mark,
+		     where a 16px apex is proportionate; at 28px that is taller than the
+		     logo itself and would shove the header around. -->
+		<MsMark size={28} bounce={0.34} class="block size-7" />
 	</motion.span>
 	{#if wordmark}
 		<span class="font-mono text-[13px] leading-[1.05] font-medium tracking-tight">
