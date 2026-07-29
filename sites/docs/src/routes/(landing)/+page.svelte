@@ -60,7 +60,7 @@
 
 		<motion.h1
 			variants={rise}
-			class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl"
+			class="font-display text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl"
 		>
 			motion start
 		</motion.h1>

@@ -1,0 +1,157 @@
+/**
+ * One-off: pulls the webfonts the docs use into static/fonts as woff2 and
+ * writes src/fonts.css.
+ *
+ * Satoshi comes from Fontshare (ITF Free Font Licence), Geist and JetBrains
+ * Mono from Google Fonts (both OFL). Everything is self-hosted, so the docs
+ * make no third-party requests at runtime.
+ *
+ * Re-run with `node ./scripts/fetch-fonts.js` if the weight list changes.
+ */
+
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const fontDir = join(here, '..', 'static', 'fonts');
+
+// Google serves woff2 only to UAs it believes support it.
+const UA =
+	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
+
+/** @param {string} url */
+async function get(url) {
+	const res = await fetch(url, { headers: { 'User-Agent': UA } });
+	if (!res.ok) throw new Error(`${res.status} ${url}`);
+	return res;
+}
+
+/** @typedef {{ lo: number, hi: number, subset: string, url: string, range: string | null }} Face */
+
+/**
+ * Pulls every woff2 `@font-face` out of a font CSS payload.
+ *
+ * Google labels each block with a `latin` / `cyrillic` comment that sits
+ * *before* the `@font-face` token, so after splitting on that token the label
+ * lands at the tail of the previous chunk rather than the head of its own.
+ *
+ * @param {string} css
+ * @param {string[]} subsets keep only these; empty means keep everything
+ * @returns {Face[]}
+ */
+function parseFaces(css, subsets) {
+	/** @type {Face[]} */
+	const faces = [];
+	const chunks = css.split('@font-face');
+
+	for (let i = 1; i < chunks.length; i++) {
+		const block = chunks[i];
+		if (!block.includes('src:')) continue;
+
+		const labels = [...chunks[i - 1].matchAll(/\/\*\s*([a-z-]+)\s*\*\//gi)];
+		const subset = labels.length ? labels[labels.length - 1][1] : 'default';
+		if (subsets.length && !subsets.includes(subset)) continue;
+
+		const url = block.match(/url\((?:'|")?(\S+?\.woff2)(?:'|")?\)/);
+		// Variable fonts declare a range - "font-weight: 400 600" - so the upper
+		// bound has to be captured or every weight collapses onto the lower one.
+		const weight = block.match(/font-weight:\s*(\d+)(?:\s+(\d+))?/);
+		if (!url || !weight) continue;
+
+		const range = block.match(/unicode-range:\s*([^;]+);/);
+		faces.push({
+			lo: Number(weight[1]),
+			hi: Number(weight[2] ?? weight[1]),
+			subset,
+			url: url[1].startsWith('//') ? `https:${url[1]}` : url[1],
+			range: range ? range[1].trim() : null,
+		});
+	}
+
+	return faces;
+}
+
+/** @type {Array<{ family: string, slug: string, css: string, subsets: string[] }>} */
+const SOURCES = [
+	{
+		family: 'Satoshi',
+		slug: 'satoshi',
+		css: 'https://api.fontshare.com/v2/css?f%5B%5D=satoshi@500,700,900',
+		subsets: [],
+	},
+	{
+		family: 'Geist',
+		slug: 'geist',
+		css: 'https://fonts.googleapis.com/css2?family=Geist:wght@400..600&display=swap',
+		subsets: ['latin', 'latin-ext'],
+	},
+	{
+		family: 'JetBrains Mono',
+		slug: 'jetbrains-mono',
+		css: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400..700&display=swap',
+		subsets: ['latin', 'latin-ext'],
+	},
+];
+
+await mkdir(fontDir, { recursive: true });
+
+/** @type {string[]} */
+const rules = [];
+
+for (const source of SOURCES) {
+	const faces = parseFaces(await (await get(source.css)).text(), source.subsets);
+	if (!faces.length) throw new Error(`no woff2 faces found for ${source.family}`);
+
+	/*
+	 * Google ships Geist and JetBrains Mono as variable fonts, so every
+	 * requested weight resolves to the same file and only the declared
+	 * font-weight differs. Group by URL and emit one rule per file covering the
+	 * span of weights that referenced it. A static family like Satoshi yields
+	 * one group per weight, so the same code covers both.
+	 */
+	/** @type {Map<string, Face[]>} */
+	const byFile = new Map();
+	for (const face of faces) {
+		const group = byFile.get(face.url);
+		if (group) group.push(face);
+		else byFile.set(face.url, [face]);
+	}
+
+	for (const [url, group] of byFile) {
+		const lo = Math.min(...group.map((f) => f.lo));
+		const hi = Math.max(...group.map((f) => f.hi));
+		const span = lo === hi ? `${lo}` : `${lo}-${hi}`;
+		const name = `${source.slug}-${group[0].subset === 'latin-ext' ? `${span}-ext` : span}.woff2`;
+
+		const bytes = Buffer.from(await (await get(url)).arrayBuffer());
+		await writeFile(join(fontDir, name), bytes);
+		console.log(`${name.padEnd(30)} ${(bytes.length / 1024).toFixed(1)} kB`);
+
+		rules.push(
+			[
+				'@font-face {',
+				`\tfont-family: "${source.family}";`,
+				`\tsrc: url("/fonts/${name}") format("woff2");`,
+				`\tfont-weight: ${lo === hi ? lo : `${lo} ${hi}`};`,
+				'\tfont-style: normal;',
+				'\tfont-display: swap;',
+				group[0].range ? `\tunicode-range: ${group[0].range};` : '',
+				'}',
+			]
+				.filter((line) => line !== '')
+				.join('\n')
+		);
+	}
+}
+
+const header = `/*
+ * Generated by scripts/fetch-fonts.js - do not edit by hand.
+ *
+ * Satoshi (Fontshare, ITF Free Font Licence) for display, Geist (OFL) for body
+ * and JetBrains Mono (OFL) for code. Self-hosted, so no runtime requests leave
+ * the site. Licences are in static/fonts/.
+ */\n\n`;
+
+await writeFile(join(here, '..', 'src', 'fonts.css'), header + rules.join('\n\n') + '\n', 'utf8');
+console.log('wrote src/fonts.css');

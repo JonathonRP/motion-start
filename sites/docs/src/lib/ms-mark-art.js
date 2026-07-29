@@ -53,8 +53,9 @@ export const BASE = [
  * because the yellow circle is small and the blue sweep is large, both land at
  * about the same fraction of their own radius.
  *
- * `from` is the concept's measured position, so the still icons and the OG card
- * match the design exactly; `to` is where the spring throws it.
+ * `from` is the concept's measured position and frame 0 of the loop, so the
+ * still icons and the OG card match the design exactly; `to` is the far end of
+ * the sweep, which the snap briefly overshoots.
  *
  * The travel is mostly positional, not scalar. An earlier pass grew the yellow
  * radius by 20% and it swallowed the magenta entirely at the far end - the tile
@@ -62,15 +63,17 @@ export const BASE = [
  * Swinging the centres while holding the radii roughly steady keeps all three
  * colours on screen the whole time, so the movement reads as movement.
  *
- * The two blobs run at different durations so they drift permanently out of
- * phase instead of pulsing in lockstep.
+ * Both blobs share the mark's single clock; `lead` is how far each is held back
+ * within it. The blue sweep runs first and the yellow answers it, and both land
+ * before the lockup reacts, which is what makes the beat look caused rather
+ * than coincidental.
  */
 export const BLOBS = [
 	{
 		id: 'blue',
 		colors: ['#b4c6e6', '#aac1ea', '#b4c6e6'],
 		solid: 0.8,
-		duration: 3.6,
+		lead: 0,
 		from: { cx: 9.5, cy: 85.9, r: 45 },
 		to: { cx: 27, cy: 80, r: 47 },
 	},
@@ -78,7 +81,7 @@ export const BLOBS = [
 		id: 'yellow',
 		colors: ['#f2de58', '#f6e550', '#f2de58'],
 		solid: 0.78,
-		duration: 2.9,
+		lead: 0.28,
 		from: { cx: 48, cy: 6, r: 30 },
 		to: { cx: 42, cy: 11, r: 31 },
 	},
