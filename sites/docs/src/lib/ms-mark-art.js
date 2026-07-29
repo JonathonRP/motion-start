@@ -52,21 +52,28 @@ export const BASE = [
  * edge reads. The concept's yellow edge is much harder than its blue one, but
  * because the yellow circle is small and the blue sweep is large, both land at
  * about the same fraction of their own radius.
+ *
+ * `from` is the concept's measured position, so the still icons and the OG card
+ * match the design exactly; `to` is where the spring throws it. The two blobs
+ * run at different durations so they drift permanently out of phase instead of
+ * pulsing in lockstep.
  */
 export const BLOBS = [
 	{
 		id: 'blue',
 		colors: ['#b4c6e6', '#aac1ea', '#b4c6e6'],
 		solid: 0.8,
+		duration: 4.2,
 		from: { cx: 9.5, cy: 85.9, r: 45 },
-		to: { cx: 16, cy: 80, r: 49 },
+		to: { cx: 24, cy: 73, r: 53 },
 	},
 	{
 		id: 'yellow',
 		colors: ['#f2de58', '#f6e550', '#f2de58'],
 		solid: 0.78,
+		duration: 3.4,
 		from: { cx: 48, cy: 6, r: 30 },
-		to: { cx: 43, cy: 11, r: 33 },
+		to: { cx: 36, cy: 18, r: 36 },
 	},
 ];
 

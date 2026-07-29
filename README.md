@@ -1,5 +1,5 @@
 <p align="center">
- <img align="center" src="https://raw.githubusercontent.com/JonathonRP/motion-start/main/static/logo.webp" height="96" />
+ <img align="center" src="https://raw.githubusercontent.com/JonathonRP/motion-start/main/sites/docs/static/logo.webp" height="96" />
  <h1 align="center">
   Motion Start
  </h1>

@@ -1,7 +1,7 @@
 /**
  * Regenerates the favicon set and the Open Graph card.
  *
- * The app icons come from `static/logo.webp` — the original navy MS mark. It is
+ * The app icons come from `static/logo.webp` â€” the original navy MS mark. It is
  * a raster, so there is no vector favicon: the PNG sizes and the .ico are
  * resampled from the 698px source.
  *
@@ -40,25 +40,61 @@ const rasterIcon = (size) => {
 };
 
 /**
- * Open Graph card: the mark and wordmark on the docs' dark page colour, over
- * the same gradient bloom the landing hero uses.
+ * Open Graph card.
+ *
+ * Asymmetric rather than centred: the tile sits left with a soft bloom of its
+ * own colours behind it, and the wordmark, tagline and a sample of the API
+ * stack up on the right. The background aura deliberately drops the tile's
+ * yellow - yellow at low opacity over a neutral dark reads as olive sludge -
+ * and keeps magenta and blue, which stay chromatic when they dim.
+ *
+ * `font-family` is a plain stack rather than `ui-monospace`: the rasteriser has
+ * no UA to resolve the generic against and silently falls back to a serif.
  */
 function renderOgCard() {
-	const mark = renderStaticMark({ size: 168, x: 516, y: 168, idPrefix: 'og' });
+	const mark = renderStaticMark({ size: 268, x: 96, y: 181, idPrefix: 'og' });
+	const mono = "Consolas, 'DejaVu Sans Mono', monospace";
 
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 	<defs>
-		<radialGradient id="bloom" cx="0.5" cy="0.5" r="0.5">
-			<stop offset="0" stop-color="${MAGENTA}" stop-opacity="0.5" />
-			<stop offset="0.5" stop-color="${YELLOW}" stop-opacity="0.2" />
+		<radialGradient id="wash" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0" stop-color="${MAGENTA}" stop-opacity="0.30" />
+			<stop offset="1" stop-color="${MAGENTA}" stop-opacity="0" />
+		</radialGradient>
+		<radialGradient id="cool" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0" stop-color="${BLUE}" stop-opacity="0.17" />
 			<stop offset="1" stop-color="${BLUE}" stop-opacity="0" />
 		</radialGradient>
+		<radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0" stop-color="${YELLOW}" stop-opacity="0.22" />
+			<stop offset="0.55" stop-color="${MAGENTA}" stop-opacity="0.14" />
+			<stop offset="1" stop-color="${MAGENTA}" stop-opacity="0" />
+		</radialGradient>
+		<linearGradient id="rule" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+			<stop offset="0" stop-color="${BLUE}" />
+			<stop offset="0.5" stop-color="${MAGENTA}" />
+			<stop offset="1" stop-color="${YELLOW}" />
+		</linearGradient>
 	</defs>
-	<rect width="1200" height="630" fill="#232327" />
-	<ellipse cx="600" cy="260" rx="640" ry="430" fill="url(#bloom)" />
+
+	<rect width="1200" height="630" fill="#131316" />
+	<ellipse cx="1010" cy="90" rx="620" ry="420" fill="url(#wash)" />
+	<ellipse cx="150" cy="600" rx="620" ry="420" fill="url(#cool)" />
+
+	<ellipse cx="230" cy="315" rx="250" ry="250" fill="url(#halo)" />
 	${mark}
-	<text x="600" y="428" fill="#ffffff" font-family="ui-monospace, 'DejaVu Sans Mono', monospace" font-size="72" font-weight="500" text-anchor="middle">motion start</text>
-	<text x="600" y="486" fill="#a9a9b3" font-family="ui-monospace, 'DejaVu Sans Mono', monospace" font-size="26" text-anchor="middle">declarative motion for Svelte</text>
+
+	<text x="452" y="272" fill="#f6f6f8" font-family="${mono}" font-size="82" font-weight="700" letter-spacing="-1">motion start</text>
+	<text x="456" y="322" fill="#a7a7b4" font-family="${mono}" font-size="28">declarative motion for Svelte</text>
+
+	<rect x="456" y="366" width="668" height="88" rx="16" fill="#1b1b20" stroke="#2e2e36" stroke-width="2" />
+	<text x="488" y="420" font-family="${mono}" font-size="26" xml:space="preserve">
+		<tspan fill="#6f6f7d">&lt;</tspan><tspan fill="${MAGENTA}">motion.div</tspan><tspan fill="#6f6f7d"> </tspan><tspan fill="${YELLOW}">animate</tspan><tspan fill="#6f6f7d">={{ </tspan><tspan fill="${YELLOW}">x</tspan><tspan fill="#6f6f7d">: </tspan><tspan fill="${BLUE}">100</tspan><tspan fill="#6f6f7d"> }} /&gt;</tspan>
+	</text>
+
+	<text x="456" y="512" fill="#75757f" font-family="${mono}" font-size="24">motion-start.com</text>
+
+	<rect x="0" y="624" width="1200" height="6" fill="url(#rule)" />
 </svg>
 `;
 }

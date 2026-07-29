@@ -47,24 +47,28 @@
 
 	// The blobs get a springy overshoot so the tile feels alive; their colours
 	// stay on a plain ease, because a spring's overshoot on a colour would push
-	// channels out of gamut and just read as a flicker. Both mirror, so the
-	// visible cycle is twice these durations.
-	const blobLoop = {
-		type: "spring",
-		bounce: 0.45,
-		duration: 4.5,
-		repeat: Number.POSITIVE_INFINITY,
-		repeatType: "mirror",
-	} as const;
+	// channels out of gamut and just read as a flicker. Each blob runs at its
+	// own duration so the two drift out of phase rather than pulsing together.
+	const blobLoop = (duration: number) =>
+		({
+			type: "spring",
+			bounce: 0.62,
+			duration,
+			repeat: Number.POSITIVE_INFINITY,
+			repeatType: "mirror",
+		}) as const;
 
 	const colorLoop = {
-		duration: 5,
+		duration: 4,
 		repeat: Number.POSITIVE_INFINITY,
 		repeatType: "mirror",
 		ease: "easeInOut",
 	} as const;
 
-	/** Deliberately far slower than the tile, so the lockup only ever drifts. */
+	// The lockup is deliberately slower than the tile. It is on an ease, not a
+	// spring: a spring spends most of its duration asymptotically parked on the
+	// target, which at this amplitude is indistinguishable from not animating at
+	// all - the first attempt at this looked completely static.
 	const glyphLoop = (duration: number) =>
 		({
 			duration,
@@ -119,7 +123,7 @@
 				cy={blob.from.cy}
 				r={blob.from.r}
 				animate={drift[i]}
-				transition={blobLoop}
+				transition={blobLoop(blob.duration)}
 			>
 				{#each [0, blob.solid, 1] as offset, stopIndex (offset)}
 					<motion.stop
@@ -163,15 +167,15 @@
 			<g transform={M_TRANSFORM}>
 				<motion.path
 					d={M_PATH}
-					animate={playing ? { scale: [1, 1.05] } : undefined}
-					transition={glyphLoop(24)}
+					animate={playing ? { scale: [1, 1.09] } : undefined}
+					transition={glyphLoop(6)}
 				/>
 			</g>
 			<g transform={S_TRANSFORM}>
 				<motion.path
 					d={S_PATH}
-					animate={playing ? { rotate: [-5, 5] } : undefined}
-					transition={glyphLoop(30)}
+					animate={playing ? { rotate: [-7, 7] } : undefined}
+					transition={glyphLoop(7.5)}
 				/>
 			</g>
 		</g>
