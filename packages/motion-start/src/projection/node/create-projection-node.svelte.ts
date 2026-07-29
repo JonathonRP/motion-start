@@ -183,6 +183,13 @@ export function createProjectionNode<I = unknown>({
 		snapshot: Measurements | undefined;
 
 		/**
+		 * The node's own transform when `snapshot` was taken, so `updateSnapshot`
+		 * can tell a snapshot that still describes the element from one the element
+		 * has since been dragged away from.
+		 */
+		snapshotTransform: { x: number; y: number } | undefined;
+
+		/**
 		 * A box defining the element's layout relative to the page. This will have been
 		 * captured with all parent scrolls and projection transforms unset.
 		 */
@@ -523,7 +530,19 @@ export function createProjectionNode<I = unknown>({
 							 * that was probably never commited to screen and look like a jumpy box.
 							 */
 
-							if (!hasLayoutChanged) {
+							/**
+							 * Svelte commits more often than React renders, so a layout
+							 * animation set up by one commit can be followed by another
+							 * projection pass a frame or two later that sees no further
+							 * layout change. An animation that has started but not yet
+							 * advanced a single frame was set up against exactly the
+							 * layout this pass is looking at, so it is not the stale,
+							 * never-committed animation this guard exists to clean up -
+							 * finishing it would snap the element to its destination.
+							 */
+							const isUnrendered = this.currentAnimation !== undefined && this.animationProgress === 0;
+
+							if (!hasLayoutChanged && !isUnrendered) {
 								finishAnimation(this);
 							}
 
@@ -761,11 +780,50 @@ export function createProjectionNode<I = unknown>({
 		 * Update measurements
 		 */
 		updateSnapshot() {
-			if (this.snapshot || !this.instance) return;
+			if (!this.instance) return;
 
 			const instance = this.instance as unknown as Element | undefined;
-			if (instance && !instance.isConnected && this.layout) {
-				this.snapshot = cloneMeasurements(this.layout, this.latestValues, this.target);
+			const isDetached = Boolean(instance && !instance.isConnected);
+
+			/**
+			 * Dragging moves an element through its motion values, which never
+			 * re-renders it, so nothing in the normal update cycle clears a snapshot
+			 * taken when the gesture began. Reusing it would animate a `layoutId`
+			 * handover from where the element was picked up rather than where it was
+			 * dropped, which reads as the element jumping the whole drag distance
+			 * backwards before it sets off. Retake the snapshot whenever the node's
+			 * own transform has moved on from the one it was taken under.
+			 *
+			 * A node that has already been detached is exempt: it cannot move again,
+			 * so the snapshot taken as it left is the truthful one. Its motion values
+			 * do carry on settling, and re-measuring on those would overwrite the
+			 * handover origin with wherever the animation happens to be headed.
+			 */
+			const x = (this.latestValues.x as number) || 0;
+			const y = (this.latestValues.y as number) || 0;
+			const takenUnder = this.snapshotTransform;
+			const movedSince = takenUnder ? takenUnder.x !== x || takenUnder.y !== y : x !== 0 || y !== 0;
+			if (this.snapshot && (isDetached || !movedSince)) return;
+
+			this.snapshotTransform = { x, y };
+
+			if (isDetached && this.layout) {
+				/**
+				 * Svelte tears the DOM down before it runs a component's cleanup, so a
+				 * node that is handing its `layoutId` over is usually already detached
+				 * by the time it snapshots itself. Its last measurements are still good
+				 * for `layoutBox` - that is where layout alone put it - but they predate
+				 * any transform it has picked up since, most obviously a drag offset.
+				 *
+				 * `measuredBox` is the box a shared-layout handover animates *from*
+				 * (see `notifyLayoutUpdate`), so it has to describe where the element
+				 * really was. Without this a card dropped into another list jumps back
+				 * to its old slot before animating across.
+				 */
+				const baseBox = this.target ?? this.layout.layoutBox;
+				const visualBox = hasTransform(this.latestValues) ? this.applyTransform(baseBox, true) : this.target;
+
+				this.snapshot = cloneMeasurements(this.layout, this.latestValues, this.target, visualBox);
 				return;
 			}
 
@@ -1763,6 +1821,7 @@ export function createProjectionNode<I = unknown>({
 
 		clearSnapshot() {
 			this.resumeFrom = this.snapshot = undefined;
+			this.snapshotTransform = undefined;
 		}
 
 		// Only run on root
@@ -1926,11 +1985,12 @@ function clearIsLayoutDirty<I>(node: IProjectionNode<I>) {
 function cloneMeasurements(
 	measurements: Measurements,
 	latestValues: ResolvedValues,
-	layoutBoxOverride?: Box
+	layoutBoxOverride?: Box,
+	measuredBoxOverride: Box | undefined = layoutBoxOverride
 ): Measurements {
 	const measuredBox = createBox();
 	const layoutBox = createBox();
-	copyBoxInto(measuredBox, layoutBoxOverride || measurements.measuredBox);
+	copyBoxInto(measuredBox, measuredBoxOverride || measurements.measuredBox);
 	copyBoxInto(layoutBox, layoutBoxOverride || measurements.layoutBox);
 
 	return {

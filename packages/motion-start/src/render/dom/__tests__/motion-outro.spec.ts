@@ -316,6 +316,88 @@ describe('motionExitOutro', () => {
 		expect(reserve).toHaveBeenCalledWith(1001);
 	});
 
+	it('does not wait for the inertia a drag leaves behind', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const stop = vi.fn();
+		const visualElement = {
+			animationState: { setActive: vi.fn(() => Promise.resolve()) },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values: new Map([['x', { animation: { duration: 0.95, options: { type: 'inertia' }, stop } }]]),
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(stop).toHaveBeenCalledTimes(1);
+		expect(config.duration).toBe(0);
+	});
+
+	it('does not wait for whileDrag unwinding back to the base values', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const values = new Map<string, { animation?: unknown }>();
+		const setActive = vi.fn((type: string, isActive: boolean) => {
+			// Deactivating a gesture variant springs the values it set back to
+			// their base. The element is leaving; nothing should wait for that.
+			if (type === 'whileDrag' && !isActive) {
+				values.set('scale', { animation: { duration: 0.55, options: { type: 'spring' } } });
+			}
+			return Promise.resolve();
+		});
+		const visualElement = {
+			animationState: { setActive },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values,
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(setActive).toHaveBeenCalledWith('whileDrag', false);
+		expect(config.duration).toBe(0);
+	});
+
+	it('still waits for an animation the exit itself starts', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const values = new Map<string, { animation?: unknown }>([
+			['opacity', { animation: { duration: 0.2, options: { type: 'spring' } } }],
+		]);
+		const setActive = vi.fn((type: string, isActive: boolean) => {
+			// The exit retargets the same value, which produces a new animation.
+			if (type === 'exit' && isActive) {
+				values.set('opacity', { animation: { duration: 0.4, options: { type: 'spring' } } });
+			}
+			return Promise.resolve();
+		});
+		const visualElement = {
+			animationState: { setActive },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values,
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(config.duration).toBe(401);
+	});
+
 	it('keeps presence active until a retained layout outro finishes', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);

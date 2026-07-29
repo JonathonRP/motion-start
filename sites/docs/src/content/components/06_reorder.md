@@ -70,36 +70,43 @@ the whole row shouldn't be draggable.
 
 ## Moving between lists
 
-`Reorder.Group` owns one list. To drag a card from one list into another — a kanban board — pair it
-with `layoutId`, which carries the card's identity across the two groups.
+`Reorder.Group` owns one list. Dragging a card from one list into another — a kanban board — is a
+different job, and `Reorder` is the wrong tool for it: use a plain `motion.div` with `layoutId`,
+which carries the card's identity across the two columns.
 
 <DemoContainer class="py-8">
 	<KanbanDemo />
 </DemoContainer>
 
-Two things make it work. The dragged card renders in whichever column it is currently _over_, rather
-than the one it still belongs to, and the move is only committed on drop — an abandoned drag needs no
-undo, because the preview just stops being true. And since that preview is state `Reorder` knows
-nothing about, it is handed to `layoutDependency` so the group re-measures when it changes.
+The card is dragged freely and the move is committed on release, so an abandoned drag needs no undo.
+`dragConstraints` pinned to zero with `dragElastic={1}` lets the card follow the pointer anywhere
+while still springing home if it is dropped somewhere that isn't a column. When the card is
+re-parented, the two columns agree — via `layoutId` — that they are holding the same card, so it
+animates from where you let go into its new slot.
 
 ```svelte
-<Reorder.Item
-	value={card}
+<motion.div
+	layout
 	layoutId={card.id}
-	{layoutDependency}
-	style={{ order: renderOrder(card) }}
-	onDrag={(event, info) => previewDrop(card, info)}
-	onDragEnd={() => commitDrop(card.id)}
-/>
+	drag
+	dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+	dragElastic={1}
+	onDrag={(event, info) => (hovered = columnAt(info.point))}
+	onDragEnd={(event, info) => commitDrop(card, info)}
+	whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
+>
+	{card.title}
+</motion.div>
 ```
 
-<Callout type="warning" title="Keep the item objects stable">
+<Callout type="warning" title="Mutate the cards in place">
 
-`Reorder.Group` keys its list by the item itself, so mutate items in place rather than mapping to
-fresh objects. Replacing them changes every key at once and rebuilds the whole list mid-drag.
-`$state` is deeply reactive, so assigning to a field is enough:
+`layoutId` is keyed off the card's id but the `{#each}` is keyed off the object, so replacing cards
+with fresh objects on every move tears the whole list down at once and leaves nothing to animate
+from. `$state` is deeply reactive, so assigning to a field is enough:
 
 ```ts
+card.column = target;
 ordered.forEach((card, index) => {
 	card.order = index;
 });

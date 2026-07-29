@@ -17,6 +17,7 @@ export const TestRootNode = createProjectionNode<Window>({
 interface TestInstance {
 	resetTransform?: () => void;
 	box?: Box;
+	isConnected?: boolean;
 }
 
 export const TestProjectionNode = createProjectionNode<TestInstance>({

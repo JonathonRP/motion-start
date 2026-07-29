@@ -105,6 +105,169 @@ describe('node', () => {
 		expect(childInstance.resetTransform).toBeCalledTimes(1);
 	});
 
+	describe('snapshotting a detached node', () => {
+		function detachedNode(latestValues: Record<string, number>) {
+			const node = createTestNode(undefined, {}, latestValues);
+			node.mount(createInstance('detached', 50));
+			node.layout = {
+				animationId: 0,
+				measuredBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
+				layoutBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
+				latestValues: {},
+				source: node.id,
+			};
+			node.updateSnapshot();
+			return node.snapshot!;
+		}
+
+		test('keeps the transform in measuredBox so a handover animates from where the element was', () => {
+			const snapshot = detachedNode({ x: 100, y: 20 });
+
+			expect(snapshot.measuredBox.x).toEqual({ min: 100, max: 150 });
+			expect(snapshot.measuredBox.y).toEqual({ min: 20, max: 70 });
+			expect(snapshot.layoutBox.x).toEqual({ min: 0, max: 50 });
+			expect(snapshot.layoutBox.y).toEqual({ min: 0, max: 50 });
+		});
+
+		test('leaves both boxes alone when there is no transform', () => {
+			const snapshot = detachedNode({});
+
+			expect(snapshot.measuredBox.x).toEqual({ min: 0, max: 50 });
+			expect(snapshot.layoutBox.x).toEqual({ min: 0, max: 50 });
+		});
+	});
+
+	describe('a projection pass that finds no layout change', () => {
+		function nodeWithLayoutAnimation(animationProgress: number) {
+			const visualElement = {
+				current: {},
+				mount: vi.fn(),
+				getDefaultTransition: () => undefined,
+				getProps: () => ({}),
+				scheduleRender: vi.fn(),
+				shouldReduceMotion: false,
+				latestValues: {},
+			};
+			const node = createTestNode(undefined, { layout: true, visualElement: visualElement as any });
+			node.mount(createInstance('animating', 50));
+
+			const box = { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } };
+			node.layout = {
+				animationId: 0,
+				measuredBox: box,
+				layoutBox: box,
+				latestValues: {},
+				source: node.id,
+			};
+			node.targetLayout = box;
+
+			node.currentAnimation = { stop: vi.fn() } as any;
+			node.animationProgress = animationProgress;
+			node.mixTargetDelta = vi.fn();
+
+			node.notifyListeners('didUpdate', {
+				layout: box,
+				snapshot: node.layout,
+				delta: {
+					x: { translate: 0, scale: 1, origin: 0, originPoint: 0 },
+					y: { translate: 0, scale: 1, origin: 0, originPoint: 0 },
+				},
+				layoutDelta: {
+					x: { translate: 0, scale: 1, origin: 0, originPoint: 0 },
+					y: { translate: 0, scale: 1, origin: 0, originPoint: 0 },
+				},
+				hasLayoutChanged: false,
+				hasRelativeTargetChanged: false,
+			} as LayoutUpdateData);
+
+			node.unmount();
+
+			return node;
+		}
+
+		test('leaves a layout animation that has not rendered a frame yet alone', () => {
+			const node = nodeWithLayoutAnimation(0);
+
+			expect(node.mixTargetDelta).not.toHaveBeenCalled();
+			expect(node.currentAnimation).toBeDefined();
+		});
+
+		test('still finishes an animation that is already under way', () => {
+			const node = nodeWithLayoutAnimation(0.5);
+
+			expect(node.mixTargetDelta).toHaveBeenCalledWith(1000);
+		});
+	});
+
+	describe('snapshotting a node that is being dragged', () => {
+		function draggedNode({ attached }: { attached: boolean }) {
+			const latestValues: Record<string, number> = { x: 0, y: 0 };
+			const node = createTestNode(undefined, {}, latestValues);
+			const instance = createInstance('dragged', 50);
+			node.mount(attached ? { ...instance, isConnected: true } : instance);
+			node.layout = {
+				animationId: 0,
+				measuredBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
+				layoutBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
+				latestValues: {},
+				source: node.id,
+			};
+			return { node, latestValues };
+		}
+
+		test('retakes the snapshot once the element has been dragged away from it', () => {
+			const { node, latestValues } = draggedNode({ attached: true });
+
+			node.updateSnapshot();
+			const first = node.snapshot;
+
+			// A drag moves the element through its motion values without
+			// re-rendering it, so nothing else invalidates the snapshot.
+			latestValues.x = 200;
+			node.updateSnapshot();
+
+			expect(node.snapshot).not.toBe(first);
+		});
+
+		test('keeps the existing snapshot while the transform is unchanged', () => {
+			const { node } = draggedNode({ attached: true });
+
+			node.updateSnapshot();
+			const first = node.snapshot;
+			node.updateSnapshot();
+
+			expect(node.snapshot).toBe(first);
+		});
+
+		test('keeps a detached node\u2019s first snapshot even as its values settle', () => {
+			const { node, latestValues } = draggedNode({ attached: false });
+
+			latestValues.x = 200;
+			node.updateSnapshot();
+			expect(node.snapshot!.measuredBox.x).toEqual({ min: 200, max: 250 });
+
+			// The removed element cannot move again, but its motion values carry
+			// on settling. Re-measuring on those would overwrite the origin a
+			// `layoutId` handover animates from.
+			latestValues.x = 40;
+			node.updateSnapshot();
+
+			expect(node.snapshot!.measuredBox.x).toEqual({ min: 200, max: 250 });
+		});
+
+		test('clearSnapshot forgets the transform the snapshot was taken under', () => {
+			const { node, latestValues } = draggedNode({ attached: false });
+
+			latestValues.x = 200;
+			node.updateSnapshot();
+			node.clearSnapshot();
+			latestValues.x = 40;
+			node.updateSnapshot();
+
+			expect(node.snapshot!.measuredBox.x).toEqual({ min: 40, max: 90 });
+		});
+	});
+
 	test('Subtrees with updated targets propagate isProjectionDirty to children', async () => {
 		const a = createTestNode(undefined, {});
 		const aInstance = createInstance('a', 100);

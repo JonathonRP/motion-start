@@ -142,8 +142,8 @@ Read more in [Reorder](/docs/components/reorder).
 ## Kanban board
 
 `Reorder.Group` owns one list. Dragging a card from one list into another is a different problem: the
-card has to be picked up in one group and dropped into another without either group losing track of
-it.
+card has to be picked up in one column and dropped into another without either column losing track of
+it. That is `layoutId` on a plain `motion.div`, not `Reorder`.
 
 Drag a card anywhere on the board, or focus one and use the arrow keys.
 
@@ -154,30 +154,31 @@ Drag a card anywhere on the board, or focus one and use the arrow keys.
 ```svelte
 <LayoutGroup>
 	{#each columns as column (column)}
-		<Reorder.Group values={cards} onReorder={(next) => reindex(next)}>
-			{#snippet children({ item: card })}
-				{#if rendersIn(card, column)}
-					<Reorder.Item
-						value={card}
-						layoutId={card.id}
-						{layoutDependency}
-						style={{ order: renderOrder(card) }}
-						onDrag={(event, info) => previewDrop(card, info)}
-						onDragEnd={() => commitDrop(card.id)}
-					>
-						{card.title}
-					</Reorder.Item>
-				{/if}
-			{/snippet}
-		</Reorder.Group>
+		<div role="list">
+			{#each inColumn(column) as card (card.id)}
+				<motion.div
+					layout
+					layoutId={card.id}
+					drag
+					dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+					dragElastic={1}
+					onDrag={(event, info) => (hovered = columnAt(info.point))}
+					onDragEnd={(event, info) => commitDrop(card, info)}
+					whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
+				>
+					{card.title}
+				</motion.div>
+			{/each}
+		</div>
 	{/each}
 </LayoutGroup>
 ```
 
-The dragged card renders in whichever column it is currently _over_ rather than the one it still
-belongs to, and the move is only committed on drop — so an abandoned drag needs no undo, because the
-preview simply stops being true. `layoutId` carries the card's identity across the two groups, and
-because the preview is state `Reorder` knows nothing about, it is passed to `layoutDependency`.
+The card is dragged freely — `dragConstraints` pinned to zero with `dragElastic={1}` lets it follow
+the pointer anywhere and spring home if it is dropped outside a column — and the move is only
+committed on release, so an abandoned drag needs no undo. When the card is re-parented, `layoutId`
+tells both columns they are holding the same card, so it animates from where you let go into its
+new slot.
 
 Read more in [Reorder](/docs/components/reorder).
 
