@@ -3,12 +3,14 @@
 
 	let {
 		item,
+		reorderValue = item,
 		axis,
 		useLayoutId = false,
 		freeDrag = false,
 		onDragInvalidate,
 	}: {
 		item: string;
+		reorderValue?: unknown;
 		axis: 'x' | 'y';
 		useLayoutId?: boolean;
 		freeDrag?: boolean;
@@ -42,7 +44,7 @@
 </script>
 
 <Reorder.Item
-	value={item}
+	value={reorderValue}
 	id={item}
 	layoutId={useLayoutId ? item : undefined}
 	drag={freeDrag ? true : undefined}

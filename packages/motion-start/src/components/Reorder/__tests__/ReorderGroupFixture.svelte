@@ -15,11 +15,16 @@ let values = $state(['a', 'b', 'c', 'd']);
 function remove(value: string) {
 	values = values.filter((entry) => entry !== value);
 }
+
+function handleReorder(newValues: string[]) {
+	values = newValues;
+	onReorder(newValues);
+}
 </script>
 
 <button data-testid="remove-c" onclick={() => remove('c')}>remove c</button>
 
-<Group {values} {onReorder}>
+<Group {values} onReorder={handleReorder}>
 	{#snippet children({ item, id })}
 		{#if id === 0}
 			<ReorderContextProbe {oncontext} />

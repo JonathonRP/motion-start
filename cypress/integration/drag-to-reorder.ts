@@ -23,8 +23,8 @@ function expectBbox(element: HTMLElement, expectedBbox: BoundingBox) {
 }
 
 describe("Drag to reorder", () => {
-    it("Y axis with layoutId", () => {
-        cy.visit("?test=drag-to-reorder&layoutId&freeDrag&invalidateOnDrag")
+    it("animates a displaced sibling through kanban-style invalidation", () => {
+        cy.visit("?test=drag-to-reorder&layoutId&freeDrag&invalidateOnDrag&objectValues")
             .wait(50)
             .get("#Tomato")
             .trigger("pointerdown", 360, 175, { force: true })
@@ -34,24 +34,42 @@ describe("Drag to reorder", () => {
             .trigger("pointermove", 360, 200, { force: true })
             .wait(50)
             .trigger("pointermove", 360, 220, { force: true })
-            .wait(100)
-            .should(([$item]: any) => {
-                expectBbox($item, {
-                    height: 68,
-                    left: 350,
-                    top: 249,
-                    width: 340,
-                })
-            })
             .get("#Cucumber")
-            .should(([$item]: any) => {
-                expectBbox($item, {
-                    height: 68,
-                    left: 350,
-                    top: 174,
-                    width: 340,
+            .then(([$sibling]) => {
+                return new Cypress.Promise<number[]>((resolve) => {
+                    const projectionFrames: number[] = []
+                    const sampleFrame = () => {
+                        const transform = getComputedStyle($sibling).transform
+                        projectionFrames.push(
+                            transform === "none" ? 0 : new DOMMatrix(transform).m42
+                        )
+
+                        if (projectionFrames.length === 8) {
+                            resolve(projectionFrames)
+                            return
+                        }
+                        requestAnimationFrame(sampleFrame)
+                    }
+
+                    requestAnimationFrame(sampleFrame)
                 })
             })
+            .then((projectionFrames) => {
+                const intermediateFrames = projectionFrames
+                    .map(Math.abs)
+                    .filter((frame) => frame > 1 && frame < 74)
+
+                expect(
+                    intermediateFrames.length,
+                    `displaced sibling projection frames: ${JSON.stringify(projectionFrames)}`
+                ).to.be.at.least(2)
+                expect(
+                    new Set(intermediateFrames.map((frame) => Math.round(frame))).size,
+                    `distinct displaced sibling projection frames: ${JSON.stringify(projectionFrames)}`
+                ).to.be.at.least(2)
+            })
+            .get("#Tomato")
+            .trigger("pointerup", 360, 220, { force: true })
     })
 
     it("Y axis", () => {
