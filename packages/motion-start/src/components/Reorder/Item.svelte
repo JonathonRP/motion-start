@@ -88,7 +88,10 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 
 	const axis = $derived(context?.axis);
 	const registerItem = $derived(context?.registerItem);
+	const unregisterItem = $derived(context?.unregisterItem);
 	const updateOrder = $derived(context?.updateOrder);
+
+	onDestroy(() => unregisterItem?.(value));
 </script>
 
 <!--

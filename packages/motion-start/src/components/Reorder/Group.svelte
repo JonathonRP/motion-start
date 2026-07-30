@@ -128,6 +128,9 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 			}
 			order.sort(compareMin);
 		},
+		unregisterItem: (value) => {
+			order = order.filter((entry) => entry.value !== value);
+		},
 		updateOrder: (item, offset, velocity) => {
 			if (isReordering) return;
 			reconcileOrder();

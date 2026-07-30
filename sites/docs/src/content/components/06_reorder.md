@@ -78,31 +78,34 @@ column while `layoutId` carries the card's identity across the handoff.
 	<KanbanDemo />
 </DemoContainer>
 
-Cards reorder within their source column during the gesture. `dragConstraints` pinned to zero with
-`dragElastic={1}` also lets the card follow the pointer anywhere on the board. A cross-column move is
-committed on release, and `layoutId` animates the re-parented item from the drop point into its new
-slot.
+Give every group the same stable `cards` array, then conditionally render each card in its committed
+or preview column. Cards reorder while they remain in their source column. Once the pointer crosses
+into another column, `layoutId` hands the active drag to that group's copy and opens its target slot;
+release commits the preview.
 
 ```svelte
 <Reorder.Group
-	as="div"
-	values={inColumn(column)}
-	onReorder={(next) => reindex(next)}
+	values={cards}
+	onReorder={(next) => {
+		if (previewColumn) return;
+		reindex(next);
+	}}
 >
 	{#snippet children({ item: card })}
-		<Reorder.Item
-			as="div"
-			value={card}
-			layoutId={card.id}
-			drag
-			dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-			dragElastic={1}
-			onDrag={(event, info) => (hovered = columnAt(info.point))}
-			onDragEnd={(event, info) => commitDrop(card, info)}
-			whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
-		>
-			{card.title}
-		</Reorder.Item>
+		{#if renderColumn(card) === column}
+			<Reorder.Item
+				value={card}
+				layoutId={card.id}
+				drag
+				dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+				dragElastic={1}
+				onDrag={(event, info) => previewDrop(card, info)}
+				onDragEnd={(event, info) => commitDrop(card, info)}
+				whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
+			>
+				{card.title}
+			</Reorder.Item>
+		{/if}
 	{/snippet}
 </Reorder.Group>
 ```

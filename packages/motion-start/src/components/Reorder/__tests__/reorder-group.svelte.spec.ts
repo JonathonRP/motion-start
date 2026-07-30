@@ -17,10 +17,7 @@ function box(min: number, max: number): Box {
 }
 
 function getRenderedItems() {
-	return Array.from(
-		document.querySelectorAll('[data-testid^="item-"]'),
-		(item) => item.textContent,
-	);
+	return Array.from(document.querySelectorAll('[data-testid^="item-"]'), (item) => item.textContent);
 }
 
 describe('Reorder.Group order reconciliation', () => {
@@ -115,6 +112,38 @@ describe('Reorder.Group order reconciliation', () => {
 		// Drag "b" past the centre of "d" at its real, post-removal position (225).
 		// A stale entry for "c" would be treated as the next target instead, so the
 		// swap would resolve back to the current values and the drag would stick.
+		context.updateOrder('b', 90, 1);
+		await tick();
+		await tick();
+
+		expect(reorders.at(-1)).toEqual(['a', 'd', 'b']);
+	});
+
+	it('unregisters conditionally rendered items even when values still contains them', async () => {
+		const reorders: string[][] = [];
+		const captured: { context: ReorderContext<string> | null } = { context: null };
+
+		instance = mount(ReorderGroupFixture, {
+			target: document.body,
+			props: {
+				onReorder: (values: string[]) => reorders.push(values),
+				oncontext: (context: ReorderContext<string> | null) => {
+					captured.context = context;
+				},
+			},
+		});
+		flushSync();
+
+		const context = captured.context;
+		if (!context) throw new Error('Reorder.Group did not provide a context');
+
+		context.registerItem('a', box(0, 50));
+		context.registerItem('b', box(50, 150));
+		context.registerItem('c', box(150, 200));
+		context.registerItem('d', box(200, 350));
+		context.unregisterItem('c');
+		context.registerItem('d', box(150, 300));
+
 		context.updateOrder('b', 90, 1);
 		await tick();
 		await tick();

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LayoutGroup, Reorder, type PanInfo } from "motion-start";
-	import { tick } from "svelte";
+	import { Reorder, type PanInfo } from "motion-start";
+	import { onMount, tick } from "svelte";
 	import type { Attachment } from "svelte/attachments";
 
 	/*
@@ -9,8 +9,8 @@
 	 * lists agree they are handing off the same card rather than two lookalikes.
 	 *
 	 * Cards still drag freely in two dimensions. Reorder responds while the
-	 * pointer stays in the source column; a cross-column move is committed on
-	 * release and the shared layout animation takes over from the drop point.
+	 * pointer stays in the source column; `layoutId` hands the active gesture
+	 * to the target column as soon as the pointer crosses over.
 	 */
 
 	const COLUMNS = ["scheming", "in-motion", "conquered"] as const;
@@ -42,16 +42,28 @@
 		{ id: "betrayal", title: "Betray my business partner", column: "conquered", order: 1 },
 	]);
 
-	// The column the pointer is over. Only used to light up the drop target -
-	// nothing moves until the card is released.
-	let hovered = $state<ColumnId | null>(null);
+	// The column the dragged card is being previewed over, or `null` while no
+	// cross-column preview is active. This is distinct from a card's
+	// *committed* `column`/`order` fields: hovering another column only
+	// changes which group renders the card and where it visually sits, it
+	// isn't written back to the card until the pointer is released.
+	let previewColumn = $state<ColumnId | null>(null);
+	// The card's desired position within `previewColumn`, expressed as a
+	// half-index (e.g. `1.5`) so it always sorts strictly between two
+	// existing committed `order` values without colliding with either.
+	let previewOrder = $state(0);
 	let draggingId = $state<string | null>(null);
 	let announcement = $state("");
+	let ready = $state(false);
 
 	let columnRefs = $state<Record<ColumnId, HTMLElement | null>>({
 		scheming: null,
 		"in-motion": null,
 		conquered: null,
+	});
+
+	onMount(() => {
+		ready = true;
 	});
 
 	function captureColumn(column: ColumnId): Attachment<HTMLElement> {
@@ -97,8 +109,9 @@
 	 * fresh objects would tear every card down at once and there would be
 	 * nothing left to animate.
 	 */
-	function reindex(ordered: Card[]) {
-		ordered.forEach((card, index) => {
+	function reindex(ordered: Card[], column?: ColumnId) {
+		const visible = column ? ordered.filter((card) => card.column === column) : ordered;
+		visible.forEach((card, index) => {
 			card.order = index;
 		});
 	}
@@ -118,8 +131,52 @@
 		reindex(target);
 	}
 
-	function handleDrag(_event: PointerEvent, info: PanInfo) {
-		hovered = columnAt(info.point.x - window.scrollX, info.point.y - window.scrollY);
+	/**
+	 * Which column should currently render `card`: its committed `column`
+	 * while idle or being dragged within its own column, or `previewColumn`
+	 * while it's the actively-dragged card and the pointer is hovering a
+	 * *different* column. Every `Reorder.Group` shares the same full `cards`
+	 * array and gates rendering with this, rather than each group filtering
+	 * `values` down to its own slice.
+	 */
+	function renderColumn(card: Card): ColumnId {
+		return draggingId === card.id && previewColumn ? previewColumn : card.column;
+	}
+
+	/**
+	 * `values={cards}` is the same array reference for every column, so each
+	 * column's visible slot order follows `cards`' own relative ordering of
+	 * its members. Re-sort it (in place - individual Card objects are never
+	 * replaced) after any change to committed order/column or to the live
+	 * preview position, so what's rendered always matches the intended order.
+	 */
+	function resortCards() {
+		cards.sort((a, b) => {
+			const columnOf = (card: Card) => (draggingId === card.id && previewColumn ? previewColumn : card.column);
+			const orderOf = (card: Card) => (draggingId === card.id && previewColumn ? previewOrder : card.order);
+			const columnDelta = COLUMNS.indexOf(columnOf(a)) - COLUMNS.indexOf(columnOf(b));
+			return columnDelta || orderOf(a) - orderOf(b);
+		});
+	}
+
+	function handleDrag(card: Card, _event: PointerEvent, info: PanInfo) {
+		const x = info.point.x - window.scrollX;
+		const y = info.point.y - window.scrollY;
+		const column = columnAt(x, y);
+
+		if (!column || column === card.column) {
+			if (previewColumn !== null) {
+				previewColumn = null;
+				resortCards();
+			}
+			return;
+		}
+
+		previewColumn = column;
+		// Open the target insertion slot: sort just ahead of whichever
+		// existing card in `column` the pointer currently sits above.
+		previewOrder = slotIndexAt(column, card.id, y) - 0.5;
+		resortCards();
 	}
 
 	function handleDrop(card: Card, info: PanInfo) {
@@ -133,8 +190,9 @@
 			move(card.id, column, slotIndexAt(column, card.id, y));
 		}
 
-		hovered = null;
+		previewColumn = null;
 		draggingId = null;
+		resortCards();
 	}
 
 	/*
@@ -163,20 +221,21 @@
 			announcement = `${card.title}, moved to ${LABELS[target]}, position ${next + 1}`;
 		}
 
+		resortCards();
 		await tick();
 		document.getElementById(`villain-card-${card.id}`)?.focus();
 	}
 </script>
 
-<div class="w-full overflow-x-auto">
+<div class="w-full overflow-x-auto" data-kanban-board data-kanban-ready={ready}>
 	<p class="sr-only" aria-live="polite">{announcement}</p>
 
-	<LayoutGroup>
 		<div class="flex min-w-max items-start gap-3">
 			{#each COLUMNS as column (column)}
 				<div
+					data-kanban-column={column}
 					class="flex w-52 flex-col rounded-xl border p-2.5 transition-colors duration-150"
-					style="border-color: {hovered === column && draggingId
+					style="border-color: {previewColumn === column && draggingId
 						? ACCENTS[column]
 						: 'var(--border)'}; background-color: var(--background-alt)"
 					{@attach captureColumn(column)}
@@ -190,43 +249,46 @@
 					</h3>
 
 					<Reorder.Group
-						as="div"
 						role="list"
 						aria-label={LABELS[column]}
-						values={inColumn(column)}
-						onReorder={(next: Card[]) => reindex(next)}
+						values={cards}
+						onReorder={(next: Card[]) => {
+							if (previewColumn) return;
+							reindex(next, column);
+							resortCards();
+						}}
 						class="flex min-h-24 flex-col gap-2"
 					>
 						{#snippet children({ item: card }: { item: Card })}
-							<Reorder.Item
-								as="div"
-								id={`villain-card-${card.id}`}
-								value={card}
-								layoutId={card.id}
-								drag
-								dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-								dragElastic={1}
-								role="listitem"
-								tabindex="0"
-								aria-roledescription="draggable card"
-								aria-label={`${card.title}, position ${card.order + 1} in ${LABELS[card.column]}`}
-								aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
-								onkeydown={(event: KeyboardEvent) => handleKeydown(event, card)}
-								onDragStart={() => {
-									draggingId = card.id;
-								}}
-								onDrag={handleDrag}
-								onDragEnd={(_event: PointerEvent, info: PanInfo) => handleDrop(card, info)}
-								whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10, cursor: "grabbing" }}
-								transition={{ type: "spring", stiffness: 380, damping: 32 }}
-								class="bg-background border-border cursor-grab rounded-lg border px-2.5 py-2 text-[0.8rem] leading-snug select-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
-							>
-								{card.title}
-							</Reorder.Item>
+							{#if renderColumn(card) === column}
+								<Reorder.Item
+									id={`villain-card-${card.id}`}
+									value={card}
+									layoutId={card.id}
+									drag
+									dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+									dragElastic={1}
+									role="listitem"
+									tabindex="0"
+									aria-roledescription="draggable card"
+									aria-label={`${card.title}, position ${card.order + 1} in ${LABELS[card.column]}`}
+									aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+									onkeydown={(event: KeyboardEvent) => handleKeydown(event, card)}
+									onDragStart={() => {
+										draggingId = card.id;
+									}}
+									onDrag={(event: PointerEvent, info: PanInfo) => handleDrag(card, event, info)}
+									onDragEnd={(_event: PointerEvent, info: PanInfo) => handleDrop(card, info)}
+									whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10, cursor: "grabbing" }}
+									transition={{ type: "spring", stiffness: 380, damping: 32 }}
+									class="bg-background border-border cursor-grab rounded-lg border px-2.5 py-2 text-[0.8rem] leading-snug select-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
+								>
+									{card.title}
+								</Reorder.Item>
+							{/if}
 						{/snippet}
 					</Reorder.Group>
 				</div>
 			{/each}
 		</div>
-	</LayoutGroup>
 </div>

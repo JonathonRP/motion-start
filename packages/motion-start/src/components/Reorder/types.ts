@@ -4,6 +4,7 @@ import type { ReactiveInvalidation } from '../../utils/reactive-invalidation.js'
 export interface ReorderContext<T> {
 	axis: 'x' | 'y';
 	registerItem: (item: T, layout: Box) => void;
+	unregisterItem: (item: T) => void;
 	updateOrder: (item: T, offset: number, velocity: number) => void;
 	/**
 	 * A stable, reactive invalidation token. It only changes when

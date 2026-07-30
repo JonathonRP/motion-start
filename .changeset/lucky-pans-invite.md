@@ -29,3 +29,9 @@ destination, and all five are fixed here.
   `onReorder`. Stable object values could therefore consume their pre-layout snapshot
   before the keyed children moved, making displaced siblings snap instead of animate.
   The version is now flushed immediately before the reorder commit.
+- A same-`layoutId` element mounted in another parent now adopts the active pan session
+  and rebases its drag origin to the new layout, so it stays under the pointer and emits
+  one drag end while being re-parented mid-gesture.
+- `Reorder.Item` now unregisters its measured geometry when it unmounts. Groups that
+  share a full values array can conditionally render list membership without stale
+  entries influencing later reorders.

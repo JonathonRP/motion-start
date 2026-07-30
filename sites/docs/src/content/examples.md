@@ -152,37 +152,38 @@ Drag a card anywhere on the board, or focus one and use the arrow keys.
 </DemoContainer>
 
 ```svelte
-<LayoutGroup>
-	{#each columns as column (column)}
-		<Reorder.Group
-			as="div"
-			values={inColumn(column)}
-			onReorder={(next) => reindex(next)}
-		>
-			{#snippet children({ item: card })}
+{#each columns as column (column)}
+	<Reorder.Group
+		values={cards}
+		onReorder={(next) => {
+			if (previewColumn) return;
+			reindex(next);
+		}}
+	>
+		{#snippet children({ item: card })}
+			{#if renderColumn(card) === column}
 				<Reorder.Item
-					as="div"
 					value={card}
 					layoutId={card.id}
 					drag
 					dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
 					dragElastic={1}
-					onDrag={(event, info) => (hovered = columnAt(info.point))}
+					onDrag={(event, info) => previewDrop(card, info)}
 					onDragEnd={(event, info) => commitDrop(card, info)}
 					whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
 				>
 					{card.title}
 				</Reorder.Item>
-			{/snippet}
-		</Reorder.Group>
-	{/each}
-</LayoutGroup>
+			{/if}
+		{/snippet}
+	</Reorder.Group>
+{/each}
 ```
 
-`Reorder` commits moves inside the source column while the card is dragged. `dragConstraints` pinned
-to zero with `dragElastic={1}` lets the same item travel freely across the board; a cross-column move
-is committed on release, and `layoutId` animates the re-parented item from the drop point into its
-new slot.
+Every group receives the same stable card objects. The conditional chooses the one column that
+renders each card; when that choice changes during a drag, `layoutId` transfers the live gesture to
+the new list. The preview opens the target slot immediately, while release commits its column and
+order.
 
 Read more in [Reorder](/docs/components/reorder).
 

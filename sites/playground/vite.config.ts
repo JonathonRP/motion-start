@@ -17,7 +17,7 @@ export default defineConfig({
 		strictPort: true,
 		host: '127.0.0.1',
 		fs: {
-			allow: [resolve(__dirname, '../../packages/motion-start')],
+			allow: [resolve(__dirname, '../../packages/motion-start'), resolve(__dirname, '../docs')],
 		},
 		watch: {
 			ignored: ['**/node_modules/**', '**/.svelte-kit/**', '**/dist/**'],
