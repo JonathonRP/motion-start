@@ -77,10 +77,31 @@ onMount(() => {
 	globalProjectionState.hasEverUpdated = true;
 });
 
-// Incremented for every relevant wrapper update so the post-commit
-// projection flush mirrors Framer's componentDidUpdate lifecycle.
-let updateVersion = $state(0);
 let hasCompletedInitialPrepass = false;
+let isProjectionFlushPending = false;
+
+function scheduleProjectionFlush() {
+	if (isProjectionFlushPending) return;
+	isProjectionFlushPending = true;
+
+	tick().then(() => {
+		isProjectionFlushPending = false;
+
+		const { visualElement, measurePop } = props;
+		const projection = visualElement?.projection;
+		if (!projection) return;
+
+		if (measurePop) {
+			measurePop(visualElement.current as HTMLElement | SVGElement);
+		}
+		projection.root!.didUpdate();
+		microtask.postRender(() => {
+			if (!projection.currentAnimation && projection.isLead()) {
+				safeToRemove();
+			}
+		});
+	});
+}
 
 // Pre-commit snapshot phase. This is the Svelte analogue of
 // getSnapshotBeforeUpdate in framer-motion's MeasureLayout.
@@ -88,18 +109,18 @@ watch.pre(
 	[
 		() => renderSnapshot,
 		() => props.layoutDependency,
-		() => props.ambientLayoutVersion,
+		() => props.ambientLayoutDependency,
 		() => props.drag,
 		() => props.visualElement?.projection,
 		() => props.isPresent,
 	],
-	(_currentValues, [, prevLayoutDependency, prevAmbientLayoutVersion, , , prevIsPresent]) => {
-		const { layoutDependency, ambientLayoutVersion, visualElement, isPresent } = props;
+	(_currentValues, [, prevLayoutDependency, prevAmbientLayoutDependency, , , prevIsPresent]) => {
+		const { layoutDependency, ambientLayoutDependency, visualElement, isPresent } = props;
 		const projection = visualElement?.projection;
 		const shouldSnapshot =
 			props.drag ||
 			prevLayoutDependency !== layoutDependency ||
-			prevAmbientLayoutVersion !== ambientLayoutVersion ||
+			prevAmbientLayoutDependency !== ambientLayoutDependency ||
 			layoutDependency === undefined;
 
 		if (!projection) {
@@ -138,31 +159,9 @@ watch.pre(
 			}
 		}
 
-		updateVersion++;
+		scheduleProjectionFlush();
 	}
 );
-
-// Post-commit projection flush. Runs after the relevant pre-pass so
-// projection.root.didUpdate() sees the committed DOM.
-watch([() => updateVersion, () => props.visualElement?.projection], () => {
-	const { measurePop } = props;
-	const { visualElement } = props;
-
-	tick().then(() => {
-		if (!updateVersion || !visualElement?.projection) return;
-
-		const { projection } = visualElement;
-		if (measurePop) {
-			measurePop(visualElement.current as HTMLElement | SVGElement);
-		}
-		projection.root!.didUpdate();
-		microtask.postRender(() => {
-			if (!projection.currentAnimation && projection.isLead()) {
-				safeToRemove();
-			}
-		});
-	});
-});
 
 onDestroy(() => {
 	const { visualElement, layoutGroup, switchLayoutGroup } = props;
