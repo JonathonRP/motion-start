@@ -160,6 +160,10 @@
 	}
 
 	function handleDrag(card: Card, _event: PointerEvent, info: PanInfo) {
+		// `onDragStart` runs in postRender, while the first threshold-breaking
+		// `onDrag` can already be over another column.
+		if (!draggingId) draggingId = card.id;
+
 		const x = info.point.x - window.scrollX;
 		const y = info.point.y - window.scrollY;
 		const column = columnAt(x, y);
@@ -172,11 +176,13 @@
 			return;
 		}
 
-		previewColumn = column;
-		// Open the target insertion slot: sort just ahead of whichever
-		// existing card in `column` the pointer currently sits above.
-		previewOrder = slotIndexAt(column, card.id, y) - 0.5;
-		resortCards();
+		if (previewColumn !== column) {
+			previewColumn = column;
+			// Open the target insertion slot: sort just ahead of whichever
+			// existing card in `column` the pointer currently sits above.
+			previewOrder = slotIndexAt(column, card.id, y) - 0.5;
+			resortCards();
+		}
 	}
 
 	function handleDrop(card: Card, info: PanInfo) {
@@ -192,6 +198,23 @@
 
 		previewColumn = null;
 		draggingId = null;
+		resortCards();
+	}
+
+	function handleColumnReorder(column: ColumnId, next: Card[]) {
+		if (previewColumn !== null) {
+			// Only the group rendering the preview may move its insertion slot.
+			if (previewColumn !== column || !draggingId) return;
+
+			const previewIndex = next.findIndex((card) => card.id === draggingId);
+			if (previewIndex !== -1) {
+				previewOrder = previewIndex - 0.5;
+				resortCards();
+			}
+			return;
+		}
+
+		reindex(next, column);
 		resortCards();
 	}
 
@@ -252,11 +275,7 @@
 						role="list"
 						aria-label={LABELS[column]}
 						values={cards}
-						onReorder={(next: Card[]) => {
-							if (previewColumn) return;
-							reindex(next, column);
-							resortCards();
-						}}
+						onReorder={(next: Card[]) => handleColumnReorder(column, next)}
 						class="flex min-h-24 flex-col gap-2"
 					>
 						{#snippet children({ item: card }: { item: Card })}

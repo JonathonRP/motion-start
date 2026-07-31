@@ -12,13 +12,14 @@
  * docs kanban architecture contract) and gates which list actually renders a
  * given item with a plain `{#if}`, rather than filtering `values` per list.
  */
-import { Reorder } from 'motion-start';
+import { MotionConfig, Reorder } from 'motion-start';
 import type { Attachment } from 'svelte/attachments';
 
 type ListId = 'list-a' | 'list-b';
 type Item = { id: string; label: string; list: ListId; order: number };
 
 const LISTS: ListId[] = ['list-a', 'list-b'];
+const PAGE_POINT_OFFSET = 100;
 
 let items = $state<Item[]>([
 	{ id: 'alpha', label: 'Alpha', list: 'list-a', order: 0 },
@@ -62,6 +63,13 @@ function listAt(x: number, y: number): ListId | null {
 	return null;
 }
 
+function transformPagePoint(point: { x: number; y: number }) {
+	return {
+		x: point.x + PAGE_POINT_OFFSET,
+		y: point.y + PAGE_POINT_OFFSET,
+	};
+}
+
 function reindex(list: ListId, ordered: Item[]) {
 	ordered.forEach((entry, index) => {
 		if (entry.list === list) entry.order = index;
@@ -73,7 +81,10 @@ function handleDrag(item: Item, info: { point: { x: number; y: number } }) {
 	lastPointerX = info.point.x;
 	lastPointerY = info.point.y;
 
-	const target = listAt(info.point.x - window.scrollX, info.point.y - window.scrollY);
+	const target = listAt(
+		info.point.x - PAGE_POINT_OFFSET - window.scrollX,
+		info.point.y - PAGE_POINT_OFFSET - window.scrollY
+	);
 	if (target && target !== item.list) {
 		// Conditionally reparent the active card into the other Reorder.Group's
 		// DOM subtree *during* the same pointer gesture, not on drop.
@@ -87,34 +98,37 @@ function handleDragEnd() {
 }
 </script>
 
-<div style="display: flex; gap: 2rem; padding: 2rem;">
-	{#each LISTS as list (list)}
-		<div
-			data-testid={`list-${list}`}
-			style="min-height: 220px; width: 220px; border: 1px solid #888; padding: 10px;"
-			{@attach captureList(list)}
-		>
-			<Reorder.Group values={items} onReorder={(next) => reindex(list, next as Item[])}>
-				{#snippet children({ item })}
-					{#if (item as Item).list === list}
-						<Reorder.Item
-							id={`multi-item-${(item as Item).id}`}
-							value={item}
-							layoutId={(item as Item).id}
-							drag={true}
-							dragElastic={1}
-							onDrag={(_event, info) => handleDrag(item as Item, info as { point: { x: number; y: number } })}
-							onDragEnd={handleDragEnd}
-						>
-							{(item as Item).label}
-						</Reorder.Item>
-					{/if}
-				{/snippet}
-			</Reorder.Group>
-		</div>
-	{/each}
-</div>
+<MotionConfig {transformPagePoint}>
+	<div style="display: flex; gap: 2rem; padding: 2rem;">
+		{#each LISTS as list (list)}
+			<div
+				data-testid={`list-${list}`}
+				style="min-height: 220px; width: 220px; border: 1px solid #888; padding: 10px;"
+				{@attach captureList(list)}
+			>
+				<Reorder.Group values={items} onReorder={(next) => reindex(list, next as Item[])}>
+					{#snippet children({ item })}
+						{#if (item as Item).list === list}
+							<Reorder.Item
+								id={`multi-item-${(item as Item).id}`}
+								value={item}
+								layoutId={(item as Item).id}
+								drag={true}
+								dragElastic={1}
+								onDrag={(_event, info) =>
+									handleDrag(item as Item, info as { point: { x: number; y: number } })}
+								onDragEnd={handleDragEnd}
+							>
+								{(item as Item).label}
+							</Reorder.Item>
+						{/if}
+					{/snippet}
+				</Reorder.Group>
+			</div>
+		{/each}
+	</div>
 
-<div data-testid="drag-count">{dragCount}</div>
-<div data-testid="dragend-count">{dragEndCount}</div>
-<div data-testid="last-pointer">{lastPointerX},{lastPointerY}</div>
+	<div data-testid="drag-count">{dragCount}</div>
+	<div data-testid="dragend-count">{dragEndCount}</div>
+	<div data-testid="last-pointer">{lastPointerX},{lastPointerY}</div>
+</MotionConfig>

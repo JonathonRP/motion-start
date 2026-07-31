@@ -84,6 +84,7 @@ export class VisualElementDragControls {
 	private cursorOffset: Point = { x: 0, y: 0 };
 	private latestPointerPoint?: Point;
 	private latestPointerOffset?: Point;
+	private renderedCenterBeforeOnDrag?: Point;
 	private activeLayoutId?: string;
 
 	/**
@@ -155,11 +156,11 @@ export class VisualElementDragControls {
 			this.isDragging = true;
 
 			this.currentDirection = null;
-			const rect = this.visualElement.current?.getBoundingClientRect();
-			if (rect) {
+			const center = this.measureRenderedCenter();
+			if (center) {
 				this.cursorOffset = {
-					x: rect.left + rect.width / 2 + window.scrollX - (info.point.x - info.offset.x),
-					y: rect.top + rect.height / 2 + window.scrollY - (info.point.y - info.offset.y),
+					x: center.x + window.scrollX - (info.point.x - info.offset.x),
+					y: center.y + window.scrollY - (info.point.y - info.offset.y),
 				};
 			}
 			this.latestPointerPoint = info.point;
@@ -250,7 +251,11 @@ export class VisualElementDragControls {
 			 * This must fire after the render call as it might trigger a state
 			 * change which itself might trigger a layout update.
 			 */
-			onDrag && onDrag(event, info);
+			if (onDrag) {
+				this.renderedCenterBeforeOnDrag = this.measureRenderedCenter();
+				onDrag(event, info);
+				frame.read(this.compensateForOnDragLayoutShift);
+			}
 		};
 
 		const onSessionEnd = (event: PointerEvent, info: PanInfo) => this.stop(event, info);
@@ -402,17 +407,49 @@ export class VisualElementDragControls {
 	}
 
 	private measureDragCenter(): Point | undefined {
-		const element = this.visualElement.current;
-		if (!element) return undefined;
+		const renderedCenter = this.measureRenderedCenter();
+		if (!renderedCenter) return undefined;
 
-		const rect = element.getBoundingClientRect();
 		const x = this.getAxisMotionValue('x').get();
 		const y = this.getAxisMotionValue('y').get();
 		// Centers remain stable under whileDrag scale/rotation. Removing only
 		// the drag translation keeps both layouts in the same DOM coordinate space.
 		return {
-			x: (rect.left + rect.right) / 2 - (typeof x === 'number' ? x : 0),
-			y: (rect.top + rect.bottom) / 2 - (typeof y === 'number' ? y : 0),
+			x: renderedCenter.x - (typeof x === 'number' ? x : 0),
+			y: renderedCenter.y - (typeof y === 'number' ? y : 0),
+		};
+	}
+
+	private compensateForOnDragLayoutShift = () => {
+		const centerBefore = this.renderedCenterBeforeOnDrag;
+		this.renderedCenterBeforeOnDrag = undefined;
+		if (!this.isDragging || !centerBefore) return;
+
+		const centerAfter = this.measureRenderedCenter();
+		if (!centerAfter) return;
+
+		// Compensate only for the rendered shift caused after `onDrag`.
+		// Pointer-driven movement stays in updateAxis, where constraints apply.
+		let hasRebased = false;
+		eachAxis((axis) => {
+			const delta = centerBefore[axis] - centerAfter[axis];
+			if (Math.abs(delta) < 0.5) return;
+
+			const motionValue = this.getAxisMotionValue(axis);
+			this.originPoint[axis] += delta;
+			motionValue.set(motionValue.get() + delta);
+			hasRebased = true;
+		});
+		if (hasRebased) this.visualElement.render();
+	};
+
+	private measureRenderedCenter(): Point | undefined {
+		if (!this.visualElement.current) return undefined;
+
+		const box = this.visualElement.measureViewportBox();
+		return {
+			x: (box.x.min + box.x.max) / 2,
+			y: (box.y.min + box.y.max) / 2,
 		};
 	}
 
@@ -718,7 +755,6 @@ export class VisualElementDragControls {
 					this.originPoint[axis] += delta[axis].translate;
 					motionValue.set(motionValue.get() + delta[axis].translate);
 				});
-				this.visualElement.render();
 				this.visualElement.render();
 			}
 		}) as any);
