@@ -198,6 +198,19 @@ function getConfiguredLayoutDuration(visualElement: VisualElement<HTMLElement | 
 	return getTransitionDuration(layoutTransition as Record<string, unknown> | undefined);
 }
 
+/**
+ * Motion resolves keyframes and starts an exit animation from its frame loop,
+ * on the pass *after* the outro callback runs, while Svelte's outro clock
+ * starts on the frame the outro is scheduled. Every point at which an
+ * animation starts therefore costs up to one capped frame that the raw
+ * transition durations don't describe: one for the exiting element itself, and
+ * one more for each `when: 'beforeChildren' | 'afterChildren'` boundary, since
+ * the next step of the sequence is only queued once the previous step's
+ * promise settles. `getConfiguredExitTreeDuration` budgets the per-boundary
+ * frames; this adds the one for the initial start so the retained block
+ * outlives the whole sequence instead of being torn down mid-way - which would
+ * unmount the visual element and silently drop its `onAnimationComplete`.
+ */
 function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
 	const runningDuration = getRunningTreeDuration(visualElement);
 	const timing = getConfiguredExitTiming(visualElement);
@@ -207,8 +220,9 @@ function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement |
 		timing.when === 'afterChildren' && runningDuration
 			? runningDuration + timing.duration + maxFrameElapsed
 			: runningDuration;
+	const animationDuration = Math.max(runningSequenceDuration, configuredDuration);
 
-	return Math.max(layoutDuration, runningSequenceDuration, configuredDuration);
+	return Math.max(layoutDuration, animationDuration > 0 ? animationDuration + maxFrameElapsed : 0);
 }
 
 /**
@@ -219,6 +233,34 @@ function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement |
  */
 function retainThroughCompletion(duration: number) {
 	return duration > 0 ? duration + 1 : 0;
+}
+
+/**
+ * Svelte runs an outro off a WAAPI animation whose start time is back-dated to
+ * the current frame's timeline time, while Motion only starts the exit
+ * animation on the following frame-loop pass. Every millisecond the frame
+ * already spent before the outro ran is therefore retention the block never
+ * gets: a 150ms frame silently shortens the outro by a large fraction of that.
+ * Reading the elapsed frame time back off the document timeline turns the
+ * offset into a measured correction rather than a padding guess, and collapses
+ * to ~0 on a healthy frame.
+ *
+ * The reading is clamped because the document timeline pauses while the page is
+ * hidden even though `performance.now()` keeps running, so a backgrounded tab
+ * reports a skew that grows without bound. Beyond `maxFrameSkew` the timeline is
+ * stalled rather than the frame being slow - and a stalled timeline stalls the
+ * outro too - so treating it as frame time would retain the node long after its
+ * exit finished.
+ */
+const maxFrameSkew = 1000;
+
+function getFrameElapsed() {
+	if (typeof document === 'undefined' || typeof performance === 'undefined') return 0;
+
+	const timelineTime = Number(document.timeline?.currentTime ?? 0);
+	if (!timelineTime) return 0;
+
+	return Math.min(maxFrameSkew, Math.max(0, performance.now() - timelineTime));
 }
 
 function getMotionNode(node: Element, visualElement: VisualElement<HTMLElement | SVGElement | unknown> | undefined) {
@@ -457,7 +499,8 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 
 	const exitAnimation = element.animationState?.setActive('exit', true) ?? Promise.resolve();
 	const layoutDuration = getConfiguredLayoutDuration(element);
-	const duration = retainThroughCompletion(getExitDuration(element));
+	const exitDuration = getExitDuration(element);
+	const duration = retainThroughCompletion(exitDuration > 0 ? exitDuration + getFrameElapsed() : 0);
 	let completedExit = true;
 	pendingExitFinish.set(motionNode, () => finish(false));
 	exitAnimation.then(
