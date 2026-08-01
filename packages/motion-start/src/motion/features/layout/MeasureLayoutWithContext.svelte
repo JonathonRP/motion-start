@@ -26,7 +26,10 @@ const defaultScaleCorrectors = {
 };
 
 const props: MeasureProps = $props();
-const safeToRemove = () => props.safeToRemove?.();
+let isDestroyed = false;
+const safeToRemove = () => {
+	if (!isDestroyed) props.safeToRemove?.();
+};
 
 /**
  * Framer-motion runs `getSnapshotBeforeUpdate` on every render of the motion
@@ -61,7 +64,7 @@ onMount(() => {
 		}
 
 		tick().then(() => {
-			if (visualElement?.projection === projection) {
+			if (!isDestroyed && visualElement?.projection === projection) {
 				projection.root!.didUpdate();
 			}
 		});
@@ -81,11 +84,12 @@ let hasCompletedInitialPrepass = false;
 let isProjectionFlushPending = false;
 
 function scheduleProjectionFlush() {
-	if (isProjectionFlushPending) return;
+	if (isDestroyed || isProjectionFlushPending) return;
 	isProjectionFlushPending = true;
 
 	tick().then(() => {
 		isProjectionFlushPending = false;
+		if (isDestroyed) return;
 
 		const { visualElement, measurePop } = props;
 		const projection = visualElement?.projection;
@@ -96,7 +100,7 @@ function scheduleProjectionFlush() {
 		}
 		projection.root!.didUpdate();
 		microtask.postRender(() => {
-			if (!projection.currentAnimation && projection.isLead()) {
+			if (!isDestroyed && !projection.currentAnimation && projection.isLead()) {
 				safeToRemove();
 			}
 		});
@@ -164,6 +168,9 @@ watch.pre(
 );
 
 onDestroy(() => {
+	isDestroyed = true;
+	isProjectionFlushPending = false;
+
 	const { visualElement, layoutGroup, switchLayoutGroup } = props;
 	if (visualElement?.projection) {
 		const { projection } = visualElement;
