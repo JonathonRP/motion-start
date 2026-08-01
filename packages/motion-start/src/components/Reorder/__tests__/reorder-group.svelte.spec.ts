@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { Box } from '../../../projection/geometry/types.js';
 import type { ReorderContext } from '../types.js';
 import ReorderGroupFixture from './ReorderGroupFixture.svelte';
+import ReorderGroupInvariantFixture from './ReorderGroupInvariantFixture.svelte';
 
 let instance: ReturnType<typeof mount> | undefined;
 
@@ -21,6 +22,22 @@ function getRenderedItems() {
 }
 
 describe('Reorder.Group order reconciliation', () => {
+	it('throws if values becomes missing in development', () => {
+		instance = mount(ReorderGroupInvariantFixture, {
+			target: document.body,
+		});
+		flushSync();
+
+		const removeValues = document.querySelector('[data-testid="remove-values"]');
+		if (!(removeValues instanceof HTMLButtonElement)) {
+			throw new Error('Missing remove-values button');
+		}
+
+		expect(() => {
+			flushSync(() => removeValues.click());
+		}).toThrowError('Reorder.Group must be provided a values prop');
+	});
+
 	it('publishes layout invalidation before updating keyed children', async () => {
 		const captured: { context: ReorderContext<string> | null } = { context: null };
 		const reorderSnapshots: Array<{

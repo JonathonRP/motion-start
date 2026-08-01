@@ -73,7 +73,12 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 		>,
 	);
 
-	const context = $derived(useReorderContext());
+	const context = useReorderContext();
+	invariant(
+		Boolean(context),
+		"Reorder.Item must be a child of Reorder.Group",
+	);
+
 	function getInitialStyleValue(axis: "x" | "y") {
 		return style?.[axis];
 	}
@@ -134,9 +139,5 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 	{layout}
 	ignoreStrict
 >
-	{invariant(
-		Boolean(context),
-		"Reorder.Item must be a child of Reorder.Group",
-	)}
 	{@render children()}
 </ReorderItem>
