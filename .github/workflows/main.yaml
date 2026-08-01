@@ -14,12 +14,17 @@ concurrency:
   # chained off this workflow's completion via `workflow_run`.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: read
+
 jobs:
   Check:
     name: Run svelte-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -35,6 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -47,9 +54,6 @@ jobs:
 
       - name: Run type tests
         run: bun --bun run test:types
-
-      - name: Verify Cypress shard coverage
-        run: bun --bun scripts/cypress-shard.ts --verify --shards 3
 
   Cypress:
     name: Cypress (shard ${{ matrix.shard }})
@@ -66,16 +70,38 @@ jobs:
             port: 5003
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-13.6.0
+
       - name: Install Dependencies
         run: bun --bun install --frozen-lockfile
 
+      - name: Ensure Cypress binary is installed
+        run: bun x cypress install
+
+      - name: Verify Cypress shard coverage
+        if: ${{ matrix.shard == 1 }}
+        run: bun --bun scripts/cypress-shard.ts --verify --shards "${{ strategy.job-total }}"
+
       - name: Select Cypress specs
         id: shard
-        run: echo "specs=$(bun --bun scripts/cypress-shard.ts --shard ${{ matrix.shard }} --shards 3)" >> "$GITHUB_OUTPUT"
+        run: |
+          set -euo pipefail
+          specs="$(bun --bun scripts/cypress-shard.ts --shard "${{ matrix.shard }}" --shards "${{ strategy.job-total }}")"
+          if [ -z "$specs" ]; then
+            echo "Shard ${{ matrix.shard }} returned no Cypress specs" >&2
+            exit 1
+          fi
+          echo "specs=$specs" >> "$GITHUB_OUTPUT"
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v7
@@ -98,6 +124,7 @@ jobs:
   Test:
     name: Test
     if: ${{ always() }}
+    permissions: {}
     needs:
       - FastTests
       - Cypress

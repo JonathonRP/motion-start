@@ -153,5 +153,10 @@ if (Bun.argv.includes('--verify')) {
 		throw new Error(`--shard must be between 1 and ${shardCount}`);
 	}
 
-	process.stdout.write(shards[shardNumber - 1].specs.join(','));
+	const selectedSpecs = shards[shardNumber - 1].specs;
+	if (selectedSpecs.length === 0) {
+		throw new Error(`Shard ${shardNumber} of ${shardCount} has no specs; reduce --shards`);
+	}
+
+	process.stdout.write(selectedSpecs.join(','));
 }
