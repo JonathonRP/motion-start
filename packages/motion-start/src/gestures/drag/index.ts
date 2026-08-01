@@ -38,7 +38,9 @@ export class DragGesture extends Feature<HTMLElement> {
 		if (drag && typeof layoutId === 'string') {
 			const handoff = activeLayoutIdDrags.get(layoutId);
 			if (handoff && handoff !== this.controls) {
-				this.controls.adopt(handoff);
+				if (!this.controls.adopt(handoff) && activeLayoutIdDrags.get(layoutId) === handoff) {
+					activeLayoutIdDrags.delete(layoutId);
+				}
 			}
 		}
 

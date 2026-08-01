@@ -106,9 +106,9 @@ describe('node', () => {
 	});
 
 	describe('snapshotting a detached node', () => {
-		function detachedNode(latestValues: Record<string, number>) {
+		function detachedNode(latestValues: Record<string, number>, target?: IProjectionNode<unknown>['target']) {
 			const node = createTestNode(undefined, {}, latestValues);
-			node.mount(createInstance('detached', 50));
+			node.mount({ ...createInstance('detached', 50), isConnected: false });
 			node.layout = {
 				animationId: 0,
 				measuredBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
@@ -116,6 +116,7 @@ describe('node', () => {
 				latestValues: {},
 				source: node.id,
 			};
+			node.target = target;
 			node.updateSnapshot();
 			return node.snapshot!;
 		}
@@ -133,6 +134,13 @@ describe('node', () => {
 			const snapshot = detachedNode({});
 
 			expect(snapshot.measuredBox.x).toEqual({ min: 0, max: 50 });
+			expect(snapshot.layoutBox.x).toEqual({ min: 0, max: 50 });
+		});
+
+		test('keeps the static layout box while snapshotting an in-flight target', () => {
+			const snapshot = detachedNode({ x: 20 }, { x: { min: 100, max: 150 }, y: { min: 100, max: 150 } });
+
+			expect(snapshot.measuredBox.x).toEqual({ min: 120, max: 170 });
 			expect(snapshot.layoutBox.x).toEqual({ min: 0, max: 50 });
 		});
 	});
@@ -204,7 +212,7 @@ describe('node', () => {
 			const latestValues: Record<string, number> = { x: 0, y: 0 };
 			const node = createTestNode(undefined, {}, latestValues);
 			const instance = createInstance('dragged', 50);
-			node.mount(attached ? { ...instance, isConnected: true } : instance);
+			node.mount({ ...instance, isConnected: attached });
 			node.layout = {
 				animationId: 0,
 				measuredBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
@@ -214,6 +222,26 @@ describe('node', () => {
 			};
 			return { node, latestValues };
 		}
+
+		test('does not treat a non-DOM projection instance as detached', () => {
+			const latestValues: Record<string, number> = { x: 0, y: 0 };
+			const node = createTestNode(undefined, {}, latestValues);
+			node.mount(createInstance('non-dom', 50));
+			node.layout = {
+				animationId: 0,
+				measuredBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
+				layoutBox: { x: { min: 0, max: 50 }, y: { min: 0, max: 50 } },
+				latestValues: {},
+				source: node.id,
+			};
+
+			node.updateSnapshot();
+			const first = node.snapshot;
+			latestValues.x = 200;
+			node.updateSnapshot();
+
+			expect(node.snapshot).not.toBe(first);
+		});
 
 		test('retakes the snapshot once the element has been dragged away from it', () => {
 			const { node, latestValues } = draggedNode({ attached: true });

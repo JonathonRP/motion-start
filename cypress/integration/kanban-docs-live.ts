@@ -169,13 +169,13 @@ describe('Docs kanban live interaction', () => {
 										expectPointerAnchored(getBounds($card), { x: targetX, y: crossY }, 'middle-slot handoff');
 									});
 								cy.get("[data-kanban-column='scheming'] #villain-card-glowing-rock").should('not.exist');
-								cy.get("[data-kanban-column='scheming'] li").then(($remainingCards) => {
+								cy.get("[data-kanban-column='scheming'] li").should(($remainingCards) => {
 									expect(
 										[...$remainingCards].map((card) => card.id),
 										'source order should remain stable during the target-column preview'
 									).to.deep.equal(sourceOrder.filter((id) => id !== 'villain-card-glowing-rock'));
 								});
-								cy.get("[data-kanban-column='in-motion'] ul li").then(($cards) => {
+								cy.get("[data-kanban-column='in-motion'] ul li").should(($cards) => {
 									expect(
 										[...$cards].map((card) => card.id),
 										'crossing near the lower-middle slot should preview the card before the third target'

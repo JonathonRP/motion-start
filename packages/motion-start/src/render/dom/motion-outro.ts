@@ -151,8 +151,10 @@ const gestureStates = ['whileDrag', 'whileTap', 'whileHover', 'whileFocus'] as c
  * so the duration calculation can skip exactly those.
  */
 function stopGestureAnimations(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	const before = new Set<unknown>();
 	for (const value of visualElement.values.values()) {
 		const animation = value.animation as AnimationWithOptions | undefined;
+		if (animation) before.add(animation);
 		if (animation?.options?.type === 'inertia') animation.stop?.();
 	}
 
@@ -162,7 +164,7 @@ function stopGestureAnimations(visualElement: VisualElement<HTMLElement | SVGEle
 
 	const unwinding = new Set<unknown>();
 	for (const value of visualElement.values.values()) {
-		if (value.animation) unwinding.add(value.animation);
+		if (value.animation && !before.has(value.animation)) unwinding.add(value.animation);
 	}
 
 	return unwinding as ReadonlySet<unknown>;

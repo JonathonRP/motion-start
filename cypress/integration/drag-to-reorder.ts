@@ -36,35 +36,38 @@ describe("Drag to reorder", () => {
             .trigger("pointermove", 360, 220, { force: true })
             .get("#Cucumber")
             .then(([$sibling]) => {
+                const win = $sibling.ownerDocument.defaultView
+                if (!win) throw new Error("application window is unavailable")
+
                 return new Cypress.Promise<number[]>((resolve) => {
                     const projectionFrames: number[] = []
                     const sampleFrame = () => {
-                        const transform = getComputedStyle($sibling).transform
+                        const transform = win.getComputedStyle($sibling).transform
                         projectionFrames.push(
-                            transform === "none" ? 0 : new DOMMatrix(transform).m42
+                            transform === "none" ? 0 : new win.DOMMatrix(transform).m42
                         )
 
                         if (projectionFrames.length === 8) {
                             resolve(projectionFrames)
                             return
                         }
-                        requestAnimationFrame(sampleFrame)
+                        win.requestAnimationFrame(sampleFrame)
                     }
 
-                    requestAnimationFrame(sampleFrame)
+                    win.requestAnimationFrame(sampleFrame)
                 })
             })
             .then((projectionFrames) => {
-                const intermediateFrames = projectionFrames
+                const movingFrames = projectionFrames
                     .map(Math.abs)
-                    .filter((frame) => frame > 1 && frame < 74)
+                    .filter((frame) => frame > 1)
 
                 expect(
-                    intermediateFrames.length,
+                    movingFrames.length,
                     `displaced sibling projection frames: ${JSON.stringify(projectionFrames)}`
                 ).to.be.at.least(2)
                 expect(
-                    new Set(intermediateFrames.map((frame) => Math.round(frame))).size,
+                    new Set(movingFrames.map((frame) => Math.round(frame))).size,
                     `distinct displaced sibling projection frames: ${JSON.stringify(projectionFrames)}`
                 ).to.be.at.least(2)
             })

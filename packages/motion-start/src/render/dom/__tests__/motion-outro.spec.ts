@@ -399,6 +399,29 @@ describe('motionExitOutro', () => {
 		expect(config.duration).toBe(441);
 	});
 
+	it('still waits for a pre-existing animation unrelated to gesture unwinding', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const animation = { duration: 0.35, options: { type: 'spring' } };
+		const values = new Map<string, { animation?: unknown }>([['opacity', { animation }]]);
+		const visualElement = {
+			animationState: { setActive: vi.fn(() => Promise.resolve()) },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values,
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(values.get('opacity')?.animation).toBe(animation);
+		expect(config.duration).toBe(391);
+	});
+
 	it('keeps presence active until a retained layout outro finishes', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);

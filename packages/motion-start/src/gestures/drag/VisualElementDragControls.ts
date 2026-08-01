@@ -363,8 +363,13 @@ export class VisualElementDragControls {
 		if (!this.isDragging) return;
 
 		const layoutId = this.activeLayoutId;
+		if (layoutId === undefined) {
+			this.cancel();
+			return;
+		}
+
 		frame.postRender(() => {
-			if (this.isDragging && layoutId !== undefined && activeLayoutIdDrags.get(layoutId) === this) {
+			if (this.isDragging && activeLayoutIdDrags.get(layoutId) === this) {
 				this.cancel();
 			}
 		});
@@ -436,8 +441,11 @@ export class VisualElementDragControls {
 			if (Math.abs(delta) < 0.5) return;
 
 			const motionValue = this.getAxisMotionValue(axis);
+			const current = motionValue.get();
+			if (typeof current !== 'number') return;
+
 			this.originPoint[axis] += delta;
-			motionValue.set(motionValue.get() + delta);
+			motionValue.set(current + delta);
 			hasRebased = true;
 		});
 		if (hasRebased) this.visualElement.render();

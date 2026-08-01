@@ -539,6 +539,11 @@ export function createProjectionNode<I = unknown>({
 							 * layout this pass is looking at, so it is not the stale,
 							 * never-committed animation this guard exists to clean up -
 							 * finishing it would snap the element to its destination.
+							 *
+							 * Keep upstream's `!hasLayoutChanged` guard too. A changed
+							 * layout with the same target belongs to the active animation;
+							 * completing it here would skip that animation's remaining
+							 * projection frames.
 							 */
 							const isUnrendered = this.currentAnimation !== undefined && this.animationProgress === 0;
 
@@ -782,8 +787,12 @@ export function createProjectionNode<I = unknown>({
 		updateSnapshot() {
 			if (!this.instance) return;
 
-			const instance = this.instance as unknown as Element | undefined;
-			const isDetached = Boolean(instance && !instance.isConnected);
+			const instance = this.instance as unknown;
+			const isDetached =
+				typeof instance === 'object' &&
+				instance !== null &&
+				'isConnected' in instance &&
+				instance.isConnected === false;
 
 			/**
 			 * Dragging moves an element through its motion values, which never
@@ -823,7 +832,7 @@ export function createProjectionNode<I = unknown>({
 				const baseBox = this.target ?? this.layout.layoutBox;
 				const visualBox = hasTransform(this.latestValues) ? this.applyTransform(baseBox, true) : this.target;
 
-				this.snapshot = cloneMeasurements(this.layout, this.latestValues, this.target, visualBox);
+				this.snapshot = cloneMeasurements(this.layout, this.latestValues, undefined, visualBox);
 				return;
 			}
 

@@ -35,7 +35,7 @@
         });
     }
 
-    const orderedObjectItems = () => objectItems.toSorted((a, b) => a.order - b.order);
+    const orderedObjectItems = () => [...objectItems].sort((a, b) => a.order - b.order);
 </script>
 
 {#if objectValues}
