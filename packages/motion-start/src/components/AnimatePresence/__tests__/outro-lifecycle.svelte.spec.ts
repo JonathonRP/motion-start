@@ -65,6 +65,9 @@ describe('AnimatePresence Svelte outro lifecycle', () => {
 		click('#remove-exit');
 
 		expect(target.isConnected).toBe(true);
+		await waitFor(() => target.style.opacity === '0');
+		record();
+		expect(target.isConnected).toBe(true);
 		await waitFor(() => !target.isConnected);
 		// Records queued but not yet delivered would otherwise be dropped by
 		// `disconnect()`, losing the final committed style.
