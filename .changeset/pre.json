@@ -7,10 +7,17 @@
     "@motion-start/playground": "0.0.0"
   },
   "changesets": [
+    "brave-melons-repeat",
+    "bright-cats-render",
+    "calm-motions-react",
+    "eighty-pans-sleep",
     "heavy-donkeys-shout",
     "lucky-donuts-repeat",
+    "lucky-pans-invite",
     "lucky-pugs-repeat",
+    "pink-donuts-attack",
     "polite-rockets-deliver",
+    "proud-moons-repeat",
     "quiet-pots-repeat"
   ]
 }
