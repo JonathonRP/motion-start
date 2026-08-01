@@ -87,11 +87,18 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 	);
 
 	const axis = $derived(context?.axis);
-	const orderVersion = $derived(context?.orderVersion);
 	const registerItem = $derived(context?.registerItem);
 	const updateOrder = $derived(context?.updateOrder);
 </script>
 
+<!--
+	`layoutDependency` is deliberately not set here. The group's `orderVersion`
+	already reaches every item as an *ambient* layout version (see
+	`MeasureLayout`), which adds snapshot opportunities without replacing the
+	user's own dependency. Setting it as a prop here would land after `{...props}`
+	and silently discard a `layoutDependency` the caller passed in — which a board
+	that moves items between groups needs in order to animate.
+-->
 <ReorderItem
 	drag={dragProp ?? axis}
 	{...props}
@@ -122,7 +129,6 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 	}}
 	ref={externalRef}
 	{layout}
-	layoutDependency={orderVersion}
 	ignoreStrict
 >
 	{invariant(
