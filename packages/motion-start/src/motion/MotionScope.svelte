@@ -16,9 +16,13 @@
  */
 import { untrack } from 'svelte';
 
-let { run }: { run: () => void } = $props();
+let { run }: { run: (scopeId: string) => void } = $props();
+
+// Stable across SSR and hydration, which is what `appear` needs from the
+// generated `data-framer-appear-id`.
+const scopeId = $props.id();
 
 // Initialising exactly once is the point: this component exists purely to open
 // a context scope, so the motion body must not re-run when props change.
-untrack(() => run)();
+untrack(() => run)(scopeId);
 </script>

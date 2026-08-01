@@ -7,6 +7,8 @@ import { watch } from 'runed';
 import { untrack } from 'svelte';
 import { type Attachment, createAttachmentKey } from 'svelte/attachments';
 import { useMotionOutroContext } from '../../context/OutroContext.svelte.js';
+import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
+import { usePresenceContext } from '../../context/PresenceContext.svelte.js';
 import type { RenderComponent } from '../../motion/features/types.js';
 import { isBrowser } from '../../utils/is-browser.js';
 import { isMotionValue } from '../../value/utils/is-motion-value.js';
@@ -14,6 +16,7 @@ import type { HTMLRenderState } from '../html/types.js';
 import { useHTMLProps } from '../html/use-props.svelte.js';
 import type { SVGRenderState } from '../svg/types.js';
 import { useSvgProps } from '../svg/use-props.svelte.js';
+import { createAppearBootstrap } from './appear.js';
 import { flushPendingMotionExitLayout, motionEnterIntro, motionExitOutro } from './motion-outro.js';
 import { camelToDash } from './utils/camel-to-dash.js';
 import { filterProps } from './utils/filter-props.js';
@@ -26,6 +29,8 @@ type Props = Parameters<RenderComponent<HTMLElement | SVGElement, HTMLRenderStat
 let { Component, props, ref, visualState, isStatic, forwardMotionProps, visualElement = undefined }: Props = $props();
 
 const motionOutroContext = useMotionOutroContext();
+const motionConfigContext = useMotionConfigContext();
+const presenceContext = usePresenceContext();
 
 const useVisualProps = $derived(isSVGComponent(Component) ? useSvgProps : useHTMLProps);
 
@@ -39,6 +44,21 @@ const visualProps = $derived.by(() =>
 );
 
 const filteredProps = $derived(filterProps(() => props, typeof Component === 'string', forwardMotionProps));
+
+// Resolved once: the emitted <script> has to serialize identically on the server
+// and during hydration so Svelte can claim the existing node. Recomputing it
+// reactively would swap the parsed script for an inert `innerHTML` copy.
+// SVG elements are excluded because their values are attributes, not styles.
+const appearBootstrapHtml = untrack(() =>
+	typeof Component === 'string' && !isSVGComponent(Component) && !isStatic
+		? (createAppearBootstrap(
+				props,
+				visualState.latestValues,
+				motionConfigContext.reducedMotion,
+				presenceContext?.initial === false
+			) ?? '')
+		: ''
+);
 
 const styleAttachmentKey = createAttachmentKey();
 const listenerAttachmentKeys = Object.create(null) as Record<symbol, symbol>;
@@ -196,6 +216,7 @@ const motionRef: Attachment<HTMLElement | SVGElement> = (node) => {
 	>
 		{@render props.children?.()}
 	</svelte:element>
+	{@html appearBootstrapHtml}
 {:else}
 	{#if visualElement?.type === "svg"}
 		<g

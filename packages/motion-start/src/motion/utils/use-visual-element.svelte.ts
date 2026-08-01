@@ -99,7 +99,7 @@ export function useVisualElement<Instance, RenderState>(
 		window.MotionHasOptimisedAnimation?.(optimisedAppearId);
 	let hasStartedAnimation = false;
 
-	async function animateChanges(element: VisualElement<Instance>) {
+	async function animateChanges(element: VisualElement<Instance>, onStarted?: () => void) {
 		if (!hasStartedAnimation && motionOutroContext?.mode === 'wait') {
 			// Let Svelte initialise sibling outros before checking the shared
 			// counter. A replacement's visual element can otherwise mount first.
@@ -107,7 +107,9 @@ export function useVisualElement<Instance, RenderState>(
 			await motionOutroContext.waitForExit();
 		}
 		hasStartedAnimation = true;
-		return element.animationState?.animateChanges();
+		const animation = element.animationState?.animateChanges();
+		onStarted?.();
+		return animation;
 	}
 
 	watch.pre([() => visualElement, () => commitVersion], () => {
@@ -125,7 +127,11 @@ export function useVisualElement<Instance, RenderState>(
 			microtask.render(element.render);
 
 			if (shouldHandoff && element.animationState) {
-				animateChanges(element);
+				animateChanges(element, () => {
+					if (typeof window !== 'undefined') {
+						window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
+					}
+				});
 			}
 		});
 	});
@@ -141,11 +147,6 @@ export function useVisualElement<Instance, RenderState>(
 			}
 		});
 		if (shouldHandoff) {
-			queueMicrotask(() => {
-				if (typeof window !== 'undefined') {
-					window.MotionHandoffMarkAsComplete?.(optimisedAppearId);
-				}
-			});
 			wantsHandoff = false;
 		}
 	});

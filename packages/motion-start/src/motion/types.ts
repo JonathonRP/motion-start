@@ -101,6 +101,18 @@ export interface MotionStyle
 export type OnUpdate = (v: Target) => void;
 
 /**
+ * Options for parser-time entrance animations.
+ *
+ * @public
+ */
+export interface AppearOptions {
+	/**
+	 * A Content Security Policy nonce for the inline bootstrap script.
+	 */
+	nonce?: string;
+}
+
+/**
  * @public
  */
 export interface AnimationProps {
@@ -284,6 +296,20 @@ export interface MotionProps
 	 * ```
 	 */
 	style?: MotionStyle;
+
+	/**
+	 * Start a supported tween or keyframes entrance animation while the
+	 * server-rendered element is being parsed, before Svelte hydrates.
+	 *
+	 * This is a Motion Start extension. It applies to HTML elements with an
+	 * explicit, static `transition.type` of `"tween"` or `"keyframes"` whose
+	 * `animate` values are all present in `initial`. Anything else (springs,
+	 * SVG, `transformTemplate`, variant functions, per-value transitions)
+	 * falls back to animating on hydration.
+	 *
+	 * @public
+	 */
+	appear?: boolean | AppearOptions;
 
 	/**
 	 * Provide a set of motion values to perform animations on.

@@ -18,9 +18,16 @@ import type { Batcher } from '../../frameloop/types.js';
 
 /**
  * A single time to use across all animations to manually set startTime
- * and ensure they're all in sync.
+ * and ensure they're all in sync. Stored on `window` so animations started by
+ * the inline `appear` bootstrap stay in sync with these.
  */
-let startFrameTime: number;
+function getStartFrameTime() {
+	if (window.__MotionAppearStartTime === undefined) {
+		window.__MotionAppearStartTime = performance.now();
+	}
+
+	return window.__MotionAppearStartTime;
+}
 
 /**
  * A dummy animation to detect when Chrome is ready to start
@@ -194,9 +201,7 @@ export function startOptimizedAppearAnimation(
 		 * here and once in handoff to ensure we're getting
 		 * close to a frame-locked time. This keeps all animations in sync.
 		 */
-		if (startFrameTime === undefined) {
-			startFrameTime = performance.now();
-		}
+		const startFrameTime = getStartFrameTime();
 
 		appearAnimation.startTime = startFrameTime;
 

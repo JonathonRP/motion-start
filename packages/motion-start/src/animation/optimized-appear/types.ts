@@ -44,5 +44,9 @@ declare global {
 			value: MotionValue
 		) => VoidFunction | void;
 		MotionIsMounted?: boolean;
+		__MotionAppearAnimations?: Map<string, { animation: Animation; startTime: number | null }>;
+		__MotionAppearComplete?: Map<string, boolean>;
+		__MotionAppearReady?: Promise<void>;
+		__MotionAppearStartTime?: number;
 	}
 }

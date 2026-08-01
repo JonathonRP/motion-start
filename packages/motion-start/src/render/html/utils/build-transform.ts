@@ -3,19 +3,12 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { transformPropOrder } from './transform.js';
+import { transformAliases, transformPropOrder } from './transform.js';
 import type { MotionProps } from '../../../motion/types.js';
 import { getValueAsType } from '../../dom/value-types/get-as-type.js';
 import { numberValueTypes } from '../../dom/value-types/number.js';
 import type { ResolvedValues } from '../../types.js';
 import type { HTMLRenderState } from '../types.js';
-
-const translateAlias = {
-	x: 'translateX',
-	y: 'translateY',
-	z: 'translateZ',
-	transformPerspective: 'perspective',
-};
 
 const numTransforms = transformPropOrder.length;
 
@@ -39,7 +32,7 @@ export function buildTransform(
 	 * are present to the transform string.
 	 */
 	for (let i = 0; i < numTransforms; i++) {
-		const key = transformPropOrder[i] as keyof typeof translateAlias;
+		const key = transformPropOrder[i] as string;
 		const value = latestValues[key];
 
 		if (value === undefined) continue;
@@ -56,7 +49,7 @@ export function buildTransform(
 
 			if (!valueIsDefault) {
 				transformIsDefault = false;
-				const transformName = translateAlias[key] || key;
+				const transformName = transformAliases[key] || key;
 				transformString += `${transformName}(${valueAsType}) `;
 			}
 
