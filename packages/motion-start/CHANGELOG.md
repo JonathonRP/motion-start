@@ -1,5 +1,11 @@
 # motion-start
 
+## 0.2.0-next.6
+
+### Patch Changes
+
+- cd0a456: Prevent `Reorder.Group` and `Reorder.Item` development assertions from rendering `true` in production output.
+
 ## 0.2.0-next.5
 
 ### Patch Changes
