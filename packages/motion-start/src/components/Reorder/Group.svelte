@@ -84,6 +84,11 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 		children: Snippet<[{ item: V; id: number }]>;
 	} = $props();
 
+	const validatedValues = $derived.by(() => {
+		invariant(Boolean(values), "Reorder.Group must be provided a values prop");
+		return values;
+	});
+
 	const axis = $derived(axisProp);
 
 	const component = $derived(as as keyof typeof motion);
@@ -108,7 +113,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 	// and `order` lives for the lifetime of the group. Drop entries whose value
 	// is no longer rendered so removed items can't be picked as reorder targets.
 	function reconcileOrder() {
-		const present = new Set(values);
+		const present = new Set(validatedValues);
 		if (order.some((entry) => !present.has(entry.value))) {
 			order = order.filter((entry) => present.has(entry.value));
 		}
@@ -140,7 +145,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 				order = newOrder;
 				const reordered = newOrder
 					.map(getValue)
-					.filter((value) => values.includes(value));
+					.filter((value) => validatedValues.includes(value));
 				// Wait for the active drag update, then publish the ambient layout
 				// invalidation in its own flush before onReorder can move keyed children.
 				tick().then(() => {
@@ -163,8 +168,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 </script>
 
 <ReorderGroup {...props} bind:ref={externalRef} ignoreStrict>
-	{invariant(Boolean(values), "Reorder.Group must be provided a values prop")}
-	{#each values as item, indx (item)}
+	{#each validatedValues as item, indx (item)}
 		{@render children({ item, id: indx })}
 	{/each}
 </ReorderGroup>
