@@ -244,14 +244,23 @@ function retainThroughCompletion(duration: number) {
  * Reading the elapsed frame time back off the document timeline turns the
  * offset into a measured correction rather than a padding guess, and collapses
  * to ~0 on a healthy frame.
+ *
+ * The reading is clamped because the document timeline pauses while the page is
+ * hidden even though `performance.now()` keeps running, so a backgrounded tab
+ * reports a skew that grows without bound. Beyond `maxFrameSkew` the timeline is
+ * stalled rather than the frame being slow - and a stalled timeline stalls the
+ * outro too - so treating it as frame time would retain the node long after its
+ * exit finished.
  */
+const maxFrameSkew = 1000;
+
 function getFrameElapsed() {
 	if (typeof document === 'undefined' || typeof performance === 'undefined') return 0;
 
 	const timelineTime = Number(document.timeline?.currentTime ?? 0);
 	if (!timelineTime) return 0;
 
-	return Math.max(0, performance.now() - timelineTime);
+	return Math.min(maxFrameSkew, Math.max(0, performance.now() - timelineTime));
 }
 
 function getMotionNode(node: Element, visualElement: VisualElement<HTMLElement | SVGElement | unknown> | undefined) {

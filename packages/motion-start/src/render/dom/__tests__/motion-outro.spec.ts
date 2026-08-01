@@ -259,6 +259,26 @@ describe('motionExitOutro', () => {
 		expect(reserve).toHaveBeenCalledWith(100 + 40 + 60 + 1);
 	});
 
+	/**
+	 * The document timeline pauses while the page is hidden but
+	 * `performance.now()` does not, so a backgrounded tab reports an unbounded
+	 * skew that must not be mistaken for frame time.
+	 */
+	it('caps the frame-time correction so a stalled timeline cannot over-retain', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const visualElement = createSequencedExitElement(node, [0.1]);
+		const frameStart = performance.now();
+		vi.spyOn(performance, 'now').mockReturnValue(frameStart + 30_000);
+		Object.defineProperty(document, 'timeline', {
+			configurable: true,
+			value: { currentTime: frameStart },
+		});
+
+		expect(motionExitOutro(node, { context, visualElement }).duration).toBe(100 + 40 + 1000 + 1);
+	});
+
 	it('leaves a node with nothing to animate unretained regardless of frame time', () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);

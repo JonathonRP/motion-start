@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 import { motion } from '../../../index.js';
 import AnimatePresence from '../AnimatePresence.svelte';
