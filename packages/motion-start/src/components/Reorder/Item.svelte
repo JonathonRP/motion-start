@@ -92,8 +92,8 @@ function useDefaultMotionValue(value: any, defaultValue = 0) {
 </script>
 
 <!--
-	`layoutDependency` is deliberately not set here. The group's `orderVersion`
-	already reaches every item as an *ambient* layout version (see
+	`layoutDependency` is deliberately not set here. The group's
+	`layoutInvalidation` already reaches every item as an ambient dependency (see
 	`MeasureLayout`), which adds snapshot opportunities without replacing the
 	user's own dependency. Setting it as a prop here would land after `{...props}`
 	and silently discard a `layoutDependency` the caller passed in — which a board

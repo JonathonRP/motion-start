@@ -357,20 +357,31 @@ export class MotionValue<V = any> {
 	 */
 	get current(): V {
 		this.#subscribe();
-		if (collectMotionValues.current) {
-			collectMotionValues.current.push(this);
-		}
+		this.#collect();
 		return this._current!;
 	}
 
 	/**
 	 * Returns the latest state of `MotionValue`.
-	 * Prefer `.current` in Svelte components for reactive reads.
+	 *
+	 * This remains reactive for backwards compatibility with existing Svelte
+	 * templates. Prefer `.current` in new Svelte components to make reactive
+	 * reads explicit.
 	 *
 	 * @public
 	 */
-	get() {
+	get(): V {
 		return this.current;
+	}
+
+	/**
+	 * Registers this `MotionValue` with the currently open
+	 * `collectMotionValues` session, if any.
+	 */
+	#collect() {
+		if (collectMotionValues.current) {
+			collectMotionValues.current.push(this);
+		}
 	}
 
 	/**

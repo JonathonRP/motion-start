@@ -6,6 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import { createContext } from 'svelte';
 import type { Attachment } from 'svelte/attachments';
 import type { VariantLabels } from '../motion/types.js';
+import type { ReactiveInvalidation } from '../utils/reactive-invalidation.js';
 
 /**
  * @public
@@ -18,7 +19,7 @@ export interface PresenceContext {
 	measurePop?: Attachment;
 	initial?: false | VariantLabels;
 	custom?: any;
-	presenceLayoutVersion?: number;
+	presenceLayoutInvalidation?: ReactiveInvalidation;
 }
 
 const [getPresenceContext, setPresenceContext] = createContext<PresenceContext | null>();
@@ -31,4 +32,4 @@ function usePresenceContext() {
 	}
 }
 
-export { usePresenceContext, setPresenceContext };
+export { setPresenceContext, usePresenceContext };

@@ -17,6 +17,40 @@ function box(min: number, max: number): Box {
 }
 
 describe('Reorder.Group order reconciliation', () => {
+	it('invalidates layout only when updateOrder produces a real reorder', () => {
+		const captured: { context: ReorderContext<string> | null } = { context: null };
+
+		instance = mount(ReorderGroupFixture, {
+			target: document.body,
+			props: {
+				onReorder: () => undefined,
+				oncontext: (context: ReorderContext<string> | null) => {
+					captured.context = context;
+				},
+			},
+		});
+		flushSync();
+
+		const context = captured.context;
+		if (!context) throw new Error('Reorder.Group did not provide a context');
+
+		expect(context).not.toHaveProperty('orderVersion');
+		expect(context.layoutInvalidation).toBeDefined();
+
+		context.registerItem('a', box(0, 50));
+		context.registerItem('b', box(50, 150));
+		context.registerItem('c', box(150, 200));
+		context.registerItem('d', box(200, 350));
+
+		const initialToken = context.layoutInvalidation.current;
+
+		context.updateOrder('b', 0, 1);
+		expect(context.layoutInvalidation.current).toBe(initialToken);
+
+		context.updateOrder('b', 30, 1);
+		expect(context.layoutInvalidation.current).not.toBe(initialToken);
+	});
+
 	it('ignores items removed from values when picking the next reorder target', async () => {
 		const reorders: string[][] = [];
 		const captured: { context: ReorderContext<string> | null } = { context: null };
