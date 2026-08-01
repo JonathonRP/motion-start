@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 import Group from '../Group.svelte';
 import Item from '../Item.svelte';

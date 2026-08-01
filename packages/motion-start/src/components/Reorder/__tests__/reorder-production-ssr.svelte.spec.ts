@@ -1,6 +1,9 @@
 // @vitest-environment node
 
-import { fileURLToPath } from 'node:url';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { build } from 'vite';
 import { describe, expect, it } from 'vitest';
@@ -19,41 +22,47 @@ function loadSsrModule(environment: SsrEnvironment) {
 	if (ssrModule) return ssrModule;
 
 	// Bundle the fixture with Svelte's server runtime so its render helper and
-	// components share one SSR context when the in-memory chunk is imported.
-	ssrModule = build({
-		root: fileURLToPath(new URL('../../../../', import.meta.url)),
-		configFile: false,
-		logLevel: 'silent',
-		plugins: [svelte()],
-		define: {
-			'process.env.NODE_ENV': JSON.stringify(environment),
-		},
-		build: {
-			ssr: 'src/components/Reorder/__tests__/production-ssr-entry.ts',
-			write: false,
-			rollupOptions: {
-				output: {
-					format: 'es',
-					inlineDynamicImports: true,
+	// components share one SSR context when the temporary chunk is imported.
+	ssrModule = (async () => {
+		const outDir = await mkdtemp(join(tmpdir(), 'motion-start-reorder-ssr-'));
+
+		try {
+			const result = await build({
+				root: fileURLToPath(new URL('../../../../', import.meta.url)),
+				configFile: false,
+				logLevel: 'silent',
+				plugins: [svelte()],
+				define: {
+					'process.env.NODE_ENV': JSON.stringify(environment),
 				},
-			},
-		},
-		ssr: {
-			noExternal: true,
-		},
-	}).then(async (result) => {
-		const builds = Array.isArray(result) ? result : [result];
-		const entry = builds
-			.flatMap((buildResult) => ('output' in buildResult ? buildResult.output : []))
-			.find((output) => output.type === 'chunk' && output.isEntry);
+				build: {
+					ssr: 'src/components/Reorder/__tests__/production-ssr-entry.ts',
+					outDir,
+					rollupOptions: {
+						output: {
+							format: 'es',
+							inlineDynamicImports: true,
+						},
+					},
+				},
+				ssr: {
+					noExternal: true,
+				},
+			});
+			const builds = Array.isArray(result) ? result : [result];
+			const entry = builds
+				.flatMap((buildResult) => ('output' in buildResult ? buildResult.output : []))
+				.find((output) => output.type === 'chunk' && output.isEntry);
 
-		if (entry?.type !== 'chunk') {
-			throw new Error('SSR build did not emit an entry chunk');
+			if (entry?.type !== 'chunk') {
+				throw new Error('SSR build did not emit an entry chunk');
+			}
+
+			return (await import(pathToFileURL(join(outDir, entry.fileName)).href)) as SsrFixtureModule;
+		} finally {
+			await rm(outDir, { recursive: true, force: true });
 		}
-
-		const url = `data:text/javascript;base64,${Buffer.from(entry.code).toString('base64')}`;
-		return (await import(/* @vite-ignore */ url)) as SsrFixtureModule;
-	});
+	})();
 
 	ssrModules.set(environment, ssrModule);
 	return ssrModule;
