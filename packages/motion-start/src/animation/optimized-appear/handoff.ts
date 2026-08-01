@@ -28,8 +28,6 @@ export function handoffOptimizedAppearAnimation(elementId: string, valueName: st
 	 * Prefer onfinish over finished as onfinish is backwards compatible with
 	 * older browsers.
 	 */
-	animation.onfinish = cancelAnimation;
-
 	if (startTime === null || window.MotionHandoffIsComplete?.(elementId)) {
 		/**
 		 * If the startTime is null, this animation is the Paint Ready detection animation
@@ -40,7 +38,23 @@ export function handoffOptimizedAppearAnimation(elementId: string, valueName: st
 		 */
 		cancelAnimation();
 		return null;
-	} else {
+	}
+
+	// A transform animation is shared by every transform value. Keep a finished
+	// entry available through synchronous target resolution, then clean it up
+	// after Motion has rendered the handed-off values.
+	if (animation.playState === 'finished') {
+		frame.postRender(() => {
+			frame.postRender(() => {
+				if (appearAnimationStore.get(storeId)?.animation !== animation) return;
+				animation.cancel();
+				appearAnimationStore.delete(storeId);
+				if (!appearAnimationStore.size) window.MotionCancelOptimisedAnimation = undefined;
+			});
+		});
 		return startTime;
 	}
+
+	animation.onfinish = cancelAnimation;
+	return startTime;
 }

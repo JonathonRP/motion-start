@@ -4,15 +4,15 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Properties } from 'csstype';
-import type { MotionValue } from '../value/index.js';
-import type { AnimationControls } from '../animation/types.js';
-import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from '../types.js';
-import type { DraggableProps } from '../gestures/drag/types.js';
-import type { LayoutProps } from './features/layout/types.js';
-import type { EventProps } from '../render/types.js';
-import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from '../gestures/types.js';
-import type { ViewportProps } from './features/viewport/types.js';
 import type { Snippet } from 'svelte';
+import type { AnimationControls } from '../animation/types.js';
+import type { DraggableProps } from '../gestures/drag/types.js';
+import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types.js';
+import type { EventProps } from '../render/types.js';
+import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from '../types.js';
+import type { MotionValue } from '../value/index.js';
+import type { LayoutProps } from './features/layout/types.js';
+import type { ViewportProps } from './features/viewport/types.js';
 
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.
@@ -99,6 +99,18 @@ export interface MotionStyle
 		MakeCustomValueType<CustomStyles> {}
 
 export type OnUpdate = (v: Target) => void;
+
+/**
+ * Options for parser-time entrance animations.
+ *
+ * @public
+ */
+export interface AppearOptions {
+	/**
+	 * A Content Security Policy nonce for the inline bootstrap script.
+	 */
+	nonce?: string;
+}
 
 /**
  * @public
@@ -284,6 +296,20 @@ export interface MotionProps
 	 * ```
 	 */
 	style?: MotionStyle;
+
+	/**
+	 * Start a supported tween or keyframes entrance animation while the
+	 * server-rendered element is being parsed, before Svelte hydrates.
+	 *
+	 * This is a Motion Start extension. It applies to HTML elements with an
+	 * explicit, static `transition.type` of `"tween"` or `"keyframes"` whose
+	 * `animate` values are all present in `initial`. Anything else (springs,
+	 * SVG, `transformTemplate`, variant functions, per-value transitions)
+	 * falls back to animating on hydration.
+	 *
+	 * @public
+	 */
+	appear?: boolean | AppearOptions;
 
 	/**
 	 * Provide a set of motion values to perform animations on.

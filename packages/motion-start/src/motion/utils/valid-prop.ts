@@ -13,6 +13,7 @@ import type { MotionProps } from '../types.js';
  */
 const validMotionProps = new Set<keyof MotionProps>([
 	'animate',
+	'appear',
 	'exit',
 	'variants',
 	'initial',

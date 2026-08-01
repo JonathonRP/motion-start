@@ -3,24 +3,31 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { appearStoreId } from './store-id.js';
+import { noop } from '../../utils/noop.js';
 import { startWaapiAnimation } from '../animators/waapi/index.js';
 import type { NativeAnimationOptions } from '../animators/waapi/types.js';
 import { optimizedAppearDataId } from './data-id.js';
 import { handoffOptimizedAppearAnimation } from './handoff.js';
-import { appearAnimationStore, type AppearStoreEntry, appearComplete } from './store.js';
-import { noop } from '../../utils/noop.js';
+import { type AppearStoreEntry, appearAnimationStore, appearComplete, markAppearAnimationComplete } from './store.js';
+import { appearStoreId } from './store-id.js';
 import './types.js';
-import { getOptimisedAppearId } from './get-appear-id.js';
-import type { MotionValue } from '../../value/index.js';
-import type { WithAppearProps } from './types.js';
 import type { Batcher } from '../../frameloop/types.js';
+import type { MotionValue } from '../../value/index.js';
+import { getOptimisedAppearId } from './get-appear-id.js';
+import type { WithAppearProps } from './types.js';
 
 /**
  * A single time to use across all animations to manually set startTime
- * and ensure they're all in sync.
+ * and ensure they're all in sync. Stored on `window` so animations started by
+ * the inline `appear` bootstrap stay in sync with these.
  */
-let startFrameTime: number;
+function getStartFrameTime() {
+	if (window.__MotionAppearStartTime === undefined) {
+		window.__MotionAppearStartTime = performance.now();
+	}
+
+	return window.__MotionAppearStartTime;
+}
 
 /**
  * A dummy animation to detect when Chrome is ready to start
@@ -107,9 +114,7 @@ export function startOptimizedAppearAnimation(
 		};
 
 		window.MotionHandoffMarkAsComplete = (elementId: string): void => {
-			if (appearComplete.has(elementId)) {
-				appearComplete.set(elementId, true);
-			}
+			markAppearAnimationComplete(elementId);
 		};
 
 		window.MotionHandoffIsComplete = (elementId: string): boolean => {
@@ -194,9 +199,7 @@ export function startOptimizedAppearAnimation(
 		 * here and once in handoff to ensure we're getting
 		 * close to a frame-locked time. This keeps all animations in sync.
 		 */
-		if (startFrameTime === undefined) {
-			startFrameTime = performance.now();
-		}
+		const startFrameTime = getStartFrameTime();
 
 		appearAnimation.startTime = startFrameTime;
 

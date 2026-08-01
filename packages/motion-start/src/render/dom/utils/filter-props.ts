@@ -56,6 +56,13 @@ export function filterProps(props: () => MotionProps, isDom: boolean, forwardMot
 			 */
 			if (key === 'values' && typeof props().values === 'object') return false;
 
+			/**
+			 * `appear` is a Motion Start build-time hint consumed by
+			 * `createAppearBootstrap`. It has no DOM meaning, so it must never reach
+			 * an element even when `forwardMotionProps` is set.
+			 */
+			if (key === 'appear' && isDom) return false;
+
 			if (typeof key === 'symbol' && key.toString() === createAttachmentKey().toString()) return true;
 
 			// Skip symbols that aren't the attachment key

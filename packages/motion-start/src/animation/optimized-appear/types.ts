@@ -6,6 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { Batcher } from '../../frameloop/types.js';
 import type { MotionValue } from '../../value/index.js';
 import { optimizedAppearDataAttribute } from './data-id.js';
+import type { AppearStoreEntry } from './store.js';
 
 /**
  * Expose only the needed part of the VisualElement interface to
@@ -42,7 +43,11 @@ declare global {
 			visualElement: WithAppearProps,
 			valueName: string,
 			value: MotionValue
-		) => VoidFunction | void;
+		) => VoidFunction | undefined;
 		MotionIsMounted?: boolean;
+		__MotionAppearAnimations?: Map<string, AppearStoreEntry>;
+		__MotionAppearComplete?: Map<string, boolean>;
+		__MotionAppearReady?: Promise<void>;
+		__MotionAppearStartTime?: number;
 	}
 }

@@ -58,6 +58,48 @@ Like `style`, but transform shorthands (`x`, `y`, `scale`, `rotate`) and `Motion
 accepted.
 </PropField>
 
+## Server rendering and pre-hydration animation
+
+Motion components include their resolved `initial` styles in server-rendered HTML. This prevents the
+element from flashing its unanimated state before Svelte hydrates.
+
+Set `appear` to start eligible entrance animations as the browser parses the HTML, without waiting
+for Svelte hydration:
+
+```svelte
+<motion.div
+	appear
+	initial={{ opacity: 0, y: 20 }}
+	animate={{ opacity: 1, y: 0 }}
+	transition={{ type: "tween", duration: 0.4, ease: "easeOut" }}
+/>
+```
+
+`appear` is a Motion Start extension. It applies to HTML elements whose target and transition can be
+resolved on the server, with an explicit `tween` or `keyframes` transition. Every value in `animate`
+must also be present in `initial`, since there is no computed style to read from before hydration.
+
+Springs, dynamic variant functions, `transformTemplate`, SVG elements, custom components,
+CSS custom properties, per-value transitions, repeats, orchestration options (`when`,
+`delayChildren`, `staggerChildren`) and client-side navigations all fall back to the normal
+hydration-time animation. The parser-time animation hands off to Motion during hydration without
+restarting.
+
+Omitting `ease` is supported: the parser-time animation uses Motion's default `easeOut` curve.
+`MotionConfig` reduced-motion settings are respected; `"user"` suppresses parser-time transform
+animations when the visitor prefers reduced motion.
+
+For a Content Security Policy that requires nonces, pass the nonce through `appear`:
+
+```svelte
+<motion.div
+	appear={{ nonce }}
+	initial={{ opacity: 0 }}
+	animate={{ opacity: 1 }}
+	transition={{ type: "tween", duration: 0.3 }}
+/>
+```
+
 ## Gesture props
 
 `whileHover`, `whileTap`, `whileFocus`, `whileDrag` and `whileInView`, plus their event handlers.

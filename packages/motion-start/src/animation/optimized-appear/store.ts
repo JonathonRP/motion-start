@@ -12,6 +12,25 @@ export type AppearElementId = string;
 
 export type IsComplete = boolean;
 
-export const appearAnimationStore = new Map<AppearElementId, AppearStoreEntry>();
+const browserGlobal = typeof window === 'undefined' ? undefined : window;
 
-export const appearComplete = new Map<AppearElementId, IsComplete>();
+export const appearAnimationStore =
+	browserGlobal?.__MotionAppearAnimations ?? new Map<AppearElementId, AppearStoreEntry>();
+
+export const appearComplete = browserGlobal?.__MotionAppearComplete ?? new Map<AppearElementId, IsComplete>();
+
+export function markAppearAnimationComplete(elementId: AppearElementId) {
+	if (!appearComplete.has(elementId)) return;
+	appearComplete.set(elementId, true);
+}
+
+/**
+ * The parser-time bootstrap emitted by the `appear` prop usually runs before
+ * this module is evaluated, but a client-only entry can load it first.
+ * Publishing the maps back onto `window` keeps the inline script and
+ * `startOptimizedAppearAnimation` on the same store whichever order they run in.
+ */
+if (browserGlobal) {
+	browserGlobal.__MotionAppearAnimations = appearAnimationStore;
+	browserGlobal.__MotionAppearComplete = appearComplete;
+}

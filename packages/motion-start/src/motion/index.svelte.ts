@@ -5,24 +5,25 @@ Copyright (c) 2018 Framer B.V.
 
 import { watch } from 'runed';
 import type { Component, ComponentProps, Snippet } from 'svelte';
+import { optimizedAppearDataAttribute } from '../animation/optimized-appear/data-id.js';
 import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte.js';
 import { useLazyContext } from '../context/LazyContext.js';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte.js';
-import { setMotionContext, useMotionContext } from '../context/MotionContext/index.js';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte.js';
+import { setMotionContext, useMotionContext } from '../context/MotionContext/index.js';
 import type { CreateVisualElement } from '../render/types.js';
 import { invariant, warning } from '../utils/errors.js';
 import type { Ref } from '../utils/safe-react-types.js';
 import { featureDefinitions } from './features/definitions.js';
 import { loadFeatures } from './features/load-features.js';
-import type { RenderComponent, FeatureBundle } from './features/types.js';
-import type { MotionProps } from './types.js';
-import { useMotionRef } from './utils/use-motion-ref.svelte.js';
-import type { UseVisualState } from './utils/use-visual-state.svelte.js';
-import { motionComponentSymbol } from './utils/symbol.js';
-import { useVisualElement } from './utils/use-visual-element.svelte.js';
+import type { FeatureBundle, RenderComponent } from './features/types.js';
 import MeasureLayoutRenderer from './MeasureLayoutRenderer.svelte';
 import MotionScope from './MotionScope.svelte';
+import type { MotionProps } from './types.js';
+import { motionComponentSymbol } from './utils/symbol.js';
+import { useMotionRef } from './utils/use-motion-ref.svelte.js';
+import { useVisualElement } from './utils/use-visual-element.svelte.js';
+import type { UseVisualState } from './utils/use-visual-state.svelte.js';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;
@@ -56,13 +57,32 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 }: MotionComponentConfig<Instance, RenderState>) => {
 	preloadedFeatures && loadFeatures(preloadedFeatures);
 
-	const renderMotionComponent: Component<MotionComponentProps<Props> & { ref?: Ref<Instance> }> = (anchor, props) => {
+	const renderMotionComponent = (
+		anchor: Parameters<Component>[0],
+		props: MotionComponentProps<Props> & { ref?: Ref<Instance> },
+		scopeId: string
+	) => {
+		/**
+		 * `appear` needs a hydration-stable id on both the rendered element (so the
+		 * inline bootstrap can find its own animation) and in the VisualElement's
+		 * props (so `MotionHandoffAnimation` can look it up). Merging it in once
+		 * here keeps both consumers reading the same value; components without
+		 * `appear` keep the original props object untouched.
+		 */
+		const motionProps = $derived.by(() => {
+			if (!props.appear || props[optimizedAppearDataAttribute]) return props;
+
+			return {
+				...props,
+				[optimizedAppearDataAttribute]: `motion-${scopeId}`,
+			};
+		});
 		const motionConfig = $derived.by(useMotionConfigContext);
 		const configAndProps = $derived.by(() => {
 			const propsState = $state({
 				...motionConfig,
-				...props,
-				layoutId: useLayoutId(() => props),
+				...motionProps,
+				layoutId: useLayoutId(() => motionProps),
 			});
 			return propsState;
 		});
@@ -71,14 +91,14 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 
 		const parentContext = useMotionContext();
 
-		const context = $derived.by(useCreateMotionContext<Instance>(() => props, parentContext));
+		const context = $derived.by(useCreateMotionContext<Instance>(() => motionProps, parentContext));
 
 		// Call useVisualState once — mirrors React's useConstant pattern.
 		// visualState.latestValues is taken by reference by VisualElement and mutated
 		// in-place during animation. Re-calling on every props change creates a new
 		// empty latestValues object, causing UseRender to write style="" and flash.
 		const visualState = useVisualState(
-			() => props,
+			() => motionProps,
 			() => isStatic
 		);
 
@@ -135,10 +155,10 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 				return Component;
 			},
 			get props() {
-				return props;
+				return motionProps;
 			},
 			get ref() {
-				return useMotionRef<Instance, RenderState>(visualState, context.visualElement, props.ref);
+				return useMotionRef<Instance, RenderState>(visualState, context.visualElement, motionProps.ref);
 			},
 			get visualState() {
 				return visualState;
@@ -179,8 +199,8 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		const instance: { current: Record<string, any> | null } = { current: null };
 
 		MotionScope(anchor, {
-			run: () => {
-				instance.current = renderMotionComponent(anchor, props);
+			run: (scopeId: string) => {
+				instance.current = renderMotionComponent(anchor, props, scopeId);
 			},
 		});
 

@@ -30,3 +30,13 @@ export const transformPropOrder = [
  * A quick lookup for transform props.
  */
 export const transformProps = new Set(transformPropOrder);
+
+/**
+ * Motion value names that don't match the CSS transform function they build.
+ */
+export const transformAliases: Record<string, string | undefined> = {
+	x: 'translateX',
+	y: 'translateY',
+	z: 'translateZ',
+	transformPerspective: 'perspective',
+};
