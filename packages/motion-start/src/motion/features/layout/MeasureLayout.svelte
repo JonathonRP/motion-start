@@ -15,12 +15,13 @@ interface MeasureContextProps {
 	safeToRemove?: VoidFunction | null;
 	measurePop?: import('svelte/attachments').Attachment | null;
 	/**
-	 * Version counters contributed by an enclosing `AnimatePresence` or `Reorder`
-	 * group. These are separate from `layoutDependency` because they are ambient:
-	 * an element inherits them without opting in, so they must add snapshot
-	 * opportunities rather than replace the user's own dependency.
+	 * A stable dependency contributed by an enclosing `AnimatePresence` or
+	 * `Reorder` group's `layoutInvalidation` tokens. This is separate from
+	 * `layoutDependency` because it is ambient: an element inherits it
+	 * without opting in, so it must add snapshot opportunities rather than
+	 * replace the user's own dependency.
 	 */
-	ambientLayoutVersion?: unknown;
+	ambientLayoutDependency?: unknown;
 }
 
 export interface MeasureProps extends MotionProps, MeasureContextProps {
@@ -56,16 +57,15 @@ export const animateLayout = {
 
 	// measurePop is set by PopChild when mode="popLayout".
 	const presenceMeasurePop = $derived(presenceContext?.measurePop);
-	const presenceLayoutDependency = $derived(presenceContext?.presenceLayoutVersion);
+	const presenceLayoutDependency = $derived(presenceContext?.presenceLayoutInvalidation?.current);
 
-	const reorderLayoutDependency = $derived(reorderContext?.orderVersion);
+	const reorderLayoutDependency = $derived(reorderContext?.layoutInvalidation?.current);
 
 	// Both contexts can be active at once (a reordered list inside an
-	// AnimatePresence), so combine them into a single comparable token rather
-	// than letting one mask updates from the other.
-	const ambientLayoutVersion = $derived(
-		`${String(reorderLayoutDependency)}:${String(presenceLayoutDependency)}`,
-	);
+	// AnimatePresence), so combine their opaque tokens into a single tuple
+	// rather than stringifying them — a fresh tuple is only produced when one
+	// of the underlying tokens actually changes.
+	const ambientLayoutDependency = $derived([reorderLayoutDependency, presenceLayoutDependency]);
 
 	// custom can still serve as a local layout dependency when no explicit
 	// layoutDependency is provided.
@@ -77,7 +77,7 @@ export const animateLayout = {
 <MeasureLayoutWithContext
 	{...props}
 	layoutDependency={props.layoutDependency ?? props.custom}
-	{ambientLayoutVersion}
+	{ambientLayoutDependency}
 	measurePop={presenceMeasurePop}
 	{layoutGroup}
 	switchLayoutGroup={useSwitchLayoutGroupContext() ?? undefined}

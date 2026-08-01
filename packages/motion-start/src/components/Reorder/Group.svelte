@@ -64,6 +64,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 	import { motion } from "../../render/components/motion/proxy.js";
 	import type { HTMLMotionProps } from "../../render/html/types.js";
 	import { invariant } from "../../utils/errors.js";
+	import { createReactiveInvalidation } from "../../utils/reactive-invalidation.js";
 	import type { Ref } from "../../utils/safe-react-types.js";
 
 	import type { PropsWithChildren } from "../../utils/types.js";
@@ -98,7 +99,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 	);
 
 	let order: ItemData<V>[] = [];
-	let orderVersion = $state(0);
+	const layoutInvalidation = createReactiveInvalidation();
 
 	// Guard against multiple onReorder calls in the same render cycle.
 	let isReordering = false;
@@ -117,9 +118,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 		get axis() {
 			return axis;
 		},
-		get orderVersion() {
-			return orderVersion;
-		},
+		layoutInvalidation,
 		registerItem: (value, layout) => {
 			const idx = order.findIndex((entry) => value === entry.value);
 			if (idx !== -1) {
@@ -136,7 +135,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 			if (order !== newOrder) {
 				isReordering = true;
 				order = newOrder;
-				orderVersion++;
+				layoutInvalidation.invalidate();
 				const reordered = newOrder
 					.map(getValue)
 					.filter((value) => values.includes(value));

@@ -6,6 +6,7 @@ Copyright (c) 2018 Framer B.V. -->
 import { onMount } from 'svelte';
 import { useMotionConfigContext } from '../../context/MotionConfigContext.svelte.js';
 import { setMotionOutroContext } from '../../context/OutroContext.svelte.js';
+import { createReactiveInvalidation } from '../../utils/reactive-invalidation.js';
 import PresenceChild from './PresenceChild/PresenceChild.svelte';
 import type { AnimatePresenceProps } from './types.js';
 
@@ -22,7 +23,7 @@ const motionConfig = useMotionConfigContext();
 let activeOutros = 0;
 let waitUntil = 0;
 const exitWaiters: VoidFunction[] = [];
-let presenceLayoutVersion = $state(0);
+const layoutInvalidation = createReactiveInvalidation();
 let isInitialRender = $state(true);
 
 onMount(() => {
@@ -43,7 +44,7 @@ setMotionOutroContext({
 		return presenceAffectsLayout;
 	},
 	begin() {
-		if (presenceAffectsLayout) presenceLayoutVersion++;
+		if (presenceAffectsLayout) layoutInvalidation.invalidate();
 		activeOutros++;
 		let completed = false;
 
@@ -51,7 +52,7 @@ setMotionOutroContext({
 			if (completed) return;
 			completed = true;
 			activeOutros--;
-			if (presenceAffectsLayout) presenceLayoutVersion++;
+			if (presenceAffectsLayout) layoutInvalidation.invalidate();
 			if (activeOutros === 0) {
 				for (const resolve of exitWaiters.splice(0)) resolve();
 				if (completedExit) onExitComplete?.();
@@ -80,8 +81,8 @@ because Svelte's keyed blocks own their identity and DOM lifetime.
 	isPresent={true}
 	initial={initial === false && isInitialRender ? false : undefined}
 	{custom}
-	{presenceLayoutVersion}
 	{presenceAffectsLayout}
+	presenceLayoutInvalidation={layoutInvalidation}
 >
 	{@render children?.()}
 </PresenceChild>

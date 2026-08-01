@@ -23,7 +23,7 @@ function newChildrenMap(): Map<string | number, boolean> {
 		onExitComplete = undefined,
 		initial,
 		custom = undefined,
-		presenceLayoutVersion = 0,
+		presenceLayoutInvalidation,
 		presenceAffectsLayout,
 		mode,
 		children: desendants,
@@ -52,9 +52,6 @@ function newChildrenMap(): Map<string | number, boolean> {
 	};
 
 	let measurePop = $state<Attachment | undefined>();
-	const layoutVersion = $derived(
-		presenceAffectsLayout && presenceLayoutVersion !== undefined ? presenceLayoutVersion : 0,
-	);
 
 	const context: PresenceContext = {
 		id,
@@ -75,8 +72,8 @@ function newChildrenMap(): Map<string | number, boolean> {
 		get custom() {
 			return custom;
 		},
-		get presenceLayoutVersion() {
-			return layoutVersion;
+		get presenceLayoutInvalidation() {
+			return presenceAffectsLayout ? presenceLayoutInvalidation : undefined;
 		},
 	};
 
