@@ -61,17 +61,20 @@ describe('Docs kanban demo architecture contract', () => {
 
 	it('ignores source-column reorder while another column is being previewed', () => {
 		cy.readFile(demoPath).then((source: string) => {
-			const onReorderHandlers = source.match(/onReorder=\{[\s\S]*?\}\}/g) ?? [];
+			const handleColumnReorder = source.match(/function handleColumnReorder\([^)]*\)\s*\{[\s\S]*?\n\t\}/)?.[0];
 
-			expect(onReorderHandlers.length, 'expected an onReorder handler per column').to.be.at.least(1);
+			expect(handleColumnReorder, 'expected a shared column reorder handler').to.be.a('string');
+			expect(source, 'expected each column to delegate to the shared reorder handler').to.match(
+				/onReorder=\{[^}]*handleColumnReorder\(column,\s*next\)[^}]*\}/
+			);
 
-			const everyHandlerBailsOutWhilePreviewing = onReorderHandlers.every((handler) =>
-				/if\s*\([^)]*preview[^)]*\)\s*return/i.test(handler)
+			expect(handleColumnReorder, 'the shared handler should branch while a cross-column preview is active').to.match(
+				/if\s*\([^)]*preview[^)]*\)/i
 			);
 			expect(
-				everyHandlerBailsOutWhilePreviewing,
-				`every onReorder handler should bail out while a cross-column preview is active, found:\n${onReorderHandlers.join('\n---\n')}`
-			).to.equal(true);
+				handleColumnReorder,
+				'the source column should return without reordering during a target-column preview'
+			).to.match(/if\s*\(\s*previewColumn\s*!==\s*column\s*\|\|\s*!draggingId\s*\)\s*return/);
 		});
 	});
 });

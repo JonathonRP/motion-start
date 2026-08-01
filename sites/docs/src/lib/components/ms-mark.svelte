@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { motion } from "motion-start";
 	import { MediaQuery } from "svelte/reactivity";

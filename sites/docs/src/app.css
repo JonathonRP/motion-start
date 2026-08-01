@@ -280,7 +280,7 @@ div:has(> [data-sidebar="sidebar"]) {
 
 /* --------------------------------------------------------------- type -- */
 
-/* Page title: large serif display, plain white — not a gradient. */
+/* Page title: large serif display, plain white - not a gradient. */
 #main-content h1 {
 	font-family: var(--font-display);
 	font-size: clamp(var(--ms-text-3), 1.5rem + 2.6vw, var(--ms-text-5));

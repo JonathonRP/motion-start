@@ -2,10 +2,10 @@
 "motion-start": patch
 ---
 
-Fix a dragged element teleporting instead of animating when it is dropped into another list.
+Fix cross-list `layoutId` drag handoffs and target-column reordering.
 
-Five separate faults conspired to make a cross-list `layoutId` handover snap to its
-destination, and all five are fixed here.
+Cross-list kanban moves now preserve the active gesture, animate displaced siblings, and
+keep the dragged item anchored to the pointer while it changes parents and target slots.
 
 - A snapshot taken when a drag begins was never invalidated, because a drag moves an
   element through its motion values without re-rendering it. The handover then animated
@@ -25,13 +25,17 @@ destination, and all five are fixed here.
   after a layout animation started could see no further layout change and finish the
   animation before it had drawn a single frame. That guard now leaves an animation that
   has not yet advanced alone; it only cleans up animations that really are stale.
-- `Reorder.Group` published its ambient layout version one commit before calling
-  `onReorder`. Stable object values could therefore consume their pre-layout snapshot
-  before the keyed children moved, making displaced siblings snap instead of animate.
-  The version is now flushed immediately before the reorder commit.
+- `Reorder.Group` published its reactive layout invalidation before the drag frame had
+  settled. Stable object values could consume their pre-layout snapshot before keyed
+  children moved, making displaced siblings snap instead of animate. The invalidation is
+  now flushed immediately before `onReorder` commits the keyed children.
 - A same-`layoutId` element mounted in another parent now adopts the active pan session
   and rebases its drag origin to the new layout, so it stays under the pointer and emits
   one drag end while being re-parented mid-gesture.
+- Reactive sorting triggered by `onDrag` could move the active item after its constrained
+  drag position had rendered. Drag controls now compensate only for that post-callback
+  visual shift, measured in Motion's transformed coordinate space, so target-column slot
+  changes remain under the pointer without bypassing drag constraints.
 - `Reorder.Item` now unregisters its measured geometry when it unmounts. Groups that
   share a full values array can conditionally render list membership without stale
   entries influencing later reorders.

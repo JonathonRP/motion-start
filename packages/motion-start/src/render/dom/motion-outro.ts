@@ -346,7 +346,7 @@ function makePresenceContext(
 		get custom() {
 			return context.custom;
 		},
-		presenceLayoutVersion: previous?.presenceLayoutVersion,
+		presenceLayoutInvalidation: previous?.presenceLayoutInvalidation,
 	};
 }
 

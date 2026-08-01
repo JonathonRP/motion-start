@@ -157,7 +157,7 @@ Drag a card anywhere on the board, or focus one and use the arrow keys.
 		values={cards}
 		onReorder={(next) => {
 			if (previewColumn) return;
-			reindex(next);
+			reindex(next, column);
 		}}
 	>
 		{#snippet children({ item: card })}

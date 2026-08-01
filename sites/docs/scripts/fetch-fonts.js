@@ -119,6 +119,7 @@ for (const source of SOURCES) {
 	}
 
 	for (const [url, group] of byFile) {
+		const family = source.family.includes(' ') ? `"${source.family}"` : source.family;
 		const lo = Math.min(...group.map((f) => f.lo));
 		const hi = Math.max(...group.map((f) => f.hi));
 		const span = lo === hi ? `${lo}` : `${lo}-${hi}`;
@@ -131,7 +132,7 @@ for (const source of SOURCES) {
 		rules.push(
 			[
 				'@font-face {',
-				`\tfont-family: "${source.family}";`,
+				`\tfont-family: ${family};`,
 				`\tsrc: url("/fonts/${name}") format("woff2");`,
 				`\tfont-weight: ${lo === hi ? lo : `${lo} ${hi}`};`,
 				'\tfont-style: normal;',

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MotionOutroContext } from '../../../context/OutroContext.svelte.js';
 import type { IProjectionNode } from '../../../projection/node/types.js';
+import { createReactiveInvalidation } from '../../../utils/reactive-invalidation.js';
 import type { VisualElement } from '../../VisualElement.svelte.js';
 import { flushPendingMotionExitLayout, motionEnterIntro, motionExitOutro } from '../motion-outro.js';
 
@@ -395,7 +396,7 @@ describe('motionExitOutro', () => {
 
 		const config = motionExitOutro(node, { context, visualElement });
 
-		expect(config.duration).toBe(401);
+		expect(config.duration).toBe(441);
 	});
 
 	it('keeps presence active until a retained layout outro finishes', async () => {
@@ -446,15 +447,18 @@ describe('motionExitOutro', () => {
 		document.body.appendChild(node);
 		const { context } = createContext();
 		const { didUpdate, projection, visualElement } = createVisualElement(node, { duration: 1 });
+		const presenceLayoutInvalidation = createReactiveInvalidation();
 		const originalPresence = {
 			id: 'original',
 			isPresent: true,
 			register: () => () => undefined,
+			presenceLayoutInvalidation,
 		};
 		visualElement.presenceContext = originalPresence;
 
 		motionExitOutro(node, { context, visualElement });
 		expect(visualElement.presenceContext?.isPresent).toBe(false);
+		expect(visualElement.presenceContext?.presenceLayoutInvalidation).toBe(presenceLayoutInvalidation);
 
 		motionEnterIntro(node, { context, visualElement });
 

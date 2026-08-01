@@ -1,7 +1,7 @@
 /**
  * Regenerates the favicon set and the Open Graph card.
  *
- * The app icons come from `static/logo.webp` â€” the original navy MS mark. It is
+ * The app icons come from `static/logo.webp` - the original navy MS mark. It is
  * a raster, so there is no vector favicon: the PNG sizes and the .ico are
  * resampled from the 698px source.
  *
