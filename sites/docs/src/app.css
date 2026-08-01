@@ -1,5 +1,6 @@
 @import "@svecodocs/kit/theme-fuchsia.css";
 @import "@svecodocs/kit/globals.css";
+@import "./fonts.css";
 
 @source "../node_modules/@svecodocs/kit";
 
@@ -16,6 +17,25 @@
  */
 
 /*
+ * @svecodocs/kit asks for Inter and JetBrains Mono but ships no @font-face and
+ * no font files, so the docs used to render in whatever the visitor happened to
+ * have installed. Self-host the real thing instead, in three roles:
+ *
+ *   Bespoke Serif  display - the page title and section headings
+ *   Geist          body copy and UI
+ *   JetBrains Mono pre/code, and the mono accents the design uses for labels
+ *
+ * `--font-display` is a new token; `--font-sans` and `--font-mono` override the
+ * kit's. Headings opt into display explicitly further down, because Tailwind
+ * has no heading-level default to hook.
+ */
+@theme {
+	--font-display: "Bespoke Serif", ui-serif, Georgia, serif;
+	--font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/*
  * @svecodocs/kit defines no `*-alt` tokens, so utilities like
  * `text-foreground-alt` and `bg-background-alt` don't resolve on their own.
  * Register them here (inline, so they follow the .dark override below).
@@ -26,7 +46,9 @@
 }
 
 :root {
-	--ms-glow: oklch(70% 0.24 328 / 0.55);
+	/* Halo behind the logo mark and the landing bloom. Magenta, matching the
+	   broad centre band of the mark's blue-magenta-yellow gradient. */
+	--ms-glow: oklch(70% 0.15 328 / 0.55);
 	/* Periwinkle used for sidebar section labels. */
 	--ms-section: #7f8cf5;
 	/* Yellow-green used for the selected nav item. */
@@ -122,12 +144,21 @@ main:has(> #content) > footer {
 	padding-top: var(--ms-space-lg);
 	padding-inline: var(--ms-space-md);
 	gap: var(--ms-space-md);
+	/* The outgoing page is pinned here by `AnimatePresence mode="popLayout"`,
+	 * which positions it absolutely from its measured offsets - so this has to
+	 * be its offset parent or it would be placed against the viewport. */
+	position: relative;
+	/* The pages slide sideways past each other. `clip` rather than `hidden`
+	 * because `hidden` would make this a scroll container and break the
+	 * sticky table of contents; `overflow-x` alone leaves the y axis visible. */
+	overflow-x: clip;
 }
 
-/* One child at a time: `AnimatePresence mode="wait"` keeps the outgoing page
- * out of flow once its exit finishes, so the article never has to share the
- * row. This needs motion-start >= 0.2.0-next.3 (the wait-mode serialisation
- * fix); before that both pages tiled here and the column visibly halved. */
+/* The outgoing page is out of flow, so only the incoming one sizes the row and
+ * the footer sits directly below it for the whole transition. Under the old
+ * `mode="wait"` there was a ~200ms window where neither page was in flow, the
+ * row collapsed to nothing, and the footer jumped up the viewport before the
+ * new page appeared. */
 
 /* The reading column is phi^2 times the sidebar, which sets the two columns
  * in a golden relationship instead of a round 640px. */
@@ -249,12 +280,14 @@ div:has(> [data-sidebar="sidebar"]) {
 
 /* --------------------------------------------------------------- type -- */
 
-/* Page title: large monospace, plain white — not a gradient. */
+/* Page title: large serif display, plain white - not a gradient. */
 #main-content h1 {
-	font-family: var(--font-mono);
+	font-family: var(--font-display);
 	font-size: clamp(var(--ms-text-3), 1.5rem + 2.6vw, var(--ms-text-5));
 	font-weight: 500;
-	letter-spacing: -0.035em;
+	/* A serif needs far less negative tracking than the geometric sans this
+	   replaced - at -0.035em the stems started colliding with the serifs. */
+	letter-spacing: -0.018em;
 	/* Display type reads tighter than the body's phi leading. */
 	line-height: 1.1;
 	color: var(--color-foreground);
@@ -277,12 +310,13 @@ div:has(> [data-sidebar="sidebar"]) {
 	line-height: var(--ms-phi);
 }
 
-/* Section headings read dimmer than body copy in the design. */
+/* Section headings read dimmer than body copy in the design. Regular weight,
+ * because a serif at 500 next to Geist body copy reads heavier than it is. */
 #main-content h2,
 #main-content h3 {
-	font-family: var(--font-sans);
+	font-family: var(--font-display);
 	font-weight: 400;
-	letter-spacing: -0.015em;
+	letter-spacing: -0.005em;
 	line-height: 1.272;
 	color: var(--color-foreground-alt);
 	opacity: 0.85;

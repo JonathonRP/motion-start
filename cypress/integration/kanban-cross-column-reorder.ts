@@ -1,4 +1,50 @@
 describe('Kanban cross-column reorder', () => {
+	it('keeps the active card mounted while reordering inside its column', () => {
+		cy.visit('/demo/kanban-board');
+		cy.get('#kanban-task-fix-bifrost-ci-pipeline', { timeout: 15000 }).then(([$dragged]) => {
+			cy.get('#kanban-task-add-dr-strange-to-on-call').then(([$target]) => {
+				const draggedRect = $dragged.getBoundingClientRect();
+				const targetRect = $target.getBoundingClientRect();
+				const startX = draggedRect.left + draggedRect.width / 2;
+				const startY = draggedRect.top + draggedRect.height / 2;
+				const targetY = targetRect.bottom - 2;
+
+				cy.wrap($dragged)
+					.trigger('pointerdown', {
+						clientX: startX,
+						clientY: startY,
+						pageX: startX,
+						pageY: startY,
+						force: true,
+					})
+					.wait(50)
+					.trigger('pointermove', {
+						clientX: startX,
+						clientY: startY + 10,
+						pageX: startX,
+						pageY: startY + 10,
+						force: true,
+					})
+					.wait(50)
+					.trigger('pointermove', {
+						clientX: startX,
+						clientY: targetY,
+						pageX: startX,
+						pageY: targetY,
+						force: true,
+					})
+					.wait(100)
+					.then(() => {
+						expect($dragged.isConnected, 'active card remains mounted').to.equal(true);
+						expect(
+							$dragged.ownerDocument.getElementById('kanban-task-fix-bifrost-ci-pipeline'),
+							'active card keeps its DOM identity'
+						).to.equal($dragged);
+					});
+			});
+		});
+	});
+
 	it('previews and commits cross-column reorder on hover', () => {
 		cy.visit('/demo/kanban-board');
 		cy.contains('.card', 'Order Pym Particles (bulk)', { timeout: 15000 }).should('exist');

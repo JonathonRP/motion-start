@@ -9,6 +9,8 @@
 		"dev:svelte": "vite dev",
 		"build": "velite && node ./scripts/update-velite-output.js && bun run build:search && vite build",
 		"build:search": "node ./scripts/build-search-data.js",
+		"icons": "node ./scripts/build-icons.js",
+		"fonts": "node ./scripts/fetch-fonts.js",
 		"preview": "vite preview",
 		"check": "velite && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "velite && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
@@ -26,7 +28,9 @@
 		"concurrently": "^10.0.4",
 		"mdsx": "^0.0.7",
 		"phosphor-svelte": "^3.1.0",
+		"png-to-ico": "^3.0.2",
 		"remove-markdown": "^0.6.4",
+		"sharp": "^0.35.3",
 		"svelte": "5.56.8",
 		"svelte-check": "^4.7.4",
 		"tailwindcss": "^4.3.3",

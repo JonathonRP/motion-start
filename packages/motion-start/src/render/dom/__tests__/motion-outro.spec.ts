@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MotionOutroContext } from '../../../context/OutroContext.svelte.js';
 import type { IProjectionNode } from '../../../projection/node/types.js';
+import { createReactiveInvalidation } from '../../../utils/reactive-invalidation.js';
 import type { VisualElement } from '../../VisualElement.svelte.js';
 import { flushPendingMotionExitLayout, motionEnterIntro, motionExitOutro } from '../motion-outro.js';
 
@@ -16,12 +17,12 @@ afterEach(() => {
 	}
 });
 
-function createContext(presenceAffectsLayout = true) {
+function createContext(presenceAffectsLayout = true, mode: MotionOutroContext['mode'] = 'sync') {
 	const complete = vi.fn();
 	const reserve = vi.fn();
 	const context: MotionOutroContext = {
 		custom: undefined,
-		mode: 'sync',
+		mode,
 		presenceAffectsLayout,
 		begin: () => complete,
 		reserve,
@@ -316,6 +317,111 @@ describe('motionExitOutro', () => {
 		expect(reserve).toHaveBeenCalledWith(1001);
 	});
 
+	it('does not wait for the inertia a drag leaves behind', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const stop = vi.fn();
+		const visualElement = {
+			animationState: { setActive: vi.fn(() => Promise.resolve()) },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values: new Map([['x', { animation: { duration: 0.95, options: { type: 'inertia' }, stop } }]]),
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(stop).toHaveBeenCalledTimes(1);
+		expect(config.duration).toBe(0);
+	});
+
+	it('does not wait for whileDrag unwinding back to the base values', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const values = new Map<string, { animation?: unknown }>();
+		const setActive = vi.fn((type: string, isActive: boolean) => {
+			// Deactivating a gesture variant springs the values it set back to
+			// their base. The element is leaving; nothing should wait for that.
+			if (type === 'whileDrag' && !isActive) {
+				values.set('scale', { animation: { duration: 0.55, options: { type: 'spring' } } });
+			}
+			return Promise.resolve();
+		});
+		const visualElement = {
+			animationState: { setActive },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values,
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(setActive).toHaveBeenCalledWith('whileDrag', false);
+		expect(config.duration).toBe(0);
+	});
+
+	it('still waits for an animation the exit itself starts', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const values = new Map<string, { animation?: unknown }>([
+			['opacity', { animation: { duration: 0.2, options: { type: 'spring' } } }],
+		]);
+		const setActive = vi.fn((type: string, isActive: boolean) => {
+			// The exit retargets the same value, which produces a new animation.
+			if (type === 'exit' && isActive) {
+				values.set('opacity', { animation: { duration: 0.4, options: { type: 'spring' } } });
+			}
+			return Promise.resolve();
+		});
+		const visualElement = {
+			animationState: { setActive },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values,
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(config.duration).toBe(441);
+	});
+
+	it('still waits for a pre-existing animation unrelated to gesture unwinding', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext();
+		const animation = { duration: 0.35, options: { type: 'spring' } };
+		const values = new Map<string, { animation?: unknown }>([['opacity', { animation }]]);
+		const visualElement = {
+			animationState: { setActive: vi.fn(() => Promise.resolve()) },
+			children: new Set(),
+			current: node,
+			getDefaultTransition: () => undefined,
+			getProps: () => ({}),
+			presenceContext: null,
+			prevPresenceContext: undefined,
+			values,
+		} as unknown as VisualElement<HTMLElement>;
+
+		const config = motionExitOutro(node, { context, visualElement });
+
+		expect(values.get('opacity')?.animation).toBe(animation);
+		expect(config.duration).toBe(391);
+	});
+
 	it('keeps presence active until a retained layout outro finishes', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);
@@ -364,15 +470,18 @@ describe('motionExitOutro', () => {
 		document.body.appendChild(node);
 		const { context } = createContext();
 		const { didUpdate, projection, visualElement } = createVisualElement(node, { duration: 1 });
+		const presenceLayoutInvalidation = createReactiveInvalidation();
 		const originalPresence = {
 			id: 'original',
 			isPresent: true,
 			register: () => () => undefined,
+			presenceLayoutInvalidation,
 		};
 		visualElement.presenceContext = originalPresence;
 
 		motionExitOutro(node, { context, visualElement });
 		expect(visualElement.presenceContext?.isPresent).toBe(false);
+		expect(visualElement.presenceContext?.presenceLayoutInvalidation).toBe(presenceLayoutInvalidation);
 
 		motionEnterIntro(node, { context, visualElement });
 
@@ -406,6 +515,59 @@ describe('motionExitOutro', () => {
 
 		expect(complete).toHaveBeenCalledTimes(1);
 		expect(complete).toHaveBeenCalledWith(expect.any(String), false);
+	});
+
+	it('keeps a popLayout child out of flow for the whole time Svelte retains it', async () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext(true, 'popLayout');
+		const { visualElement } = createVisualElement(node, { duration: 1 });
+
+		const config = motionExitOutro(node, { context, visualElement });
+		expect(node.dataset.motionPopId).toBeDefined();
+
+		// Svelte calls tick(0) when the transition ends but keeps the node
+		// mounted afterwards. Releasing here would drop a tall exiting child
+		// back into its parent's flow and shove everything below it.
+		config.tick?.(0, 1);
+		expect(node.dataset.motionPopId).toBeDefined();
+
+		flushPendingMotionExitLayout(node);
+		expect(node.dataset.motionPopId).toBeUndefined();
+	});
+
+	it('does not leak a popLayout stylesheet when the exit never completes', () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const { context } = createContext(true, 'popLayout');
+		const { visualElement } = createVisualElement(node, { duration: 1 });
+
+		const before = document.querySelectorAll('style[data-motion-pop-style]').length;
+		motionExitOutro(node, { context, visualElement });
+		expect(document.querySelectorAll('style[data-motion-pop-style]')).toHaveLength(before + 1);
+
+		// Torn down mid-flight, with no tick(0) — the case that used to leave a
+		// <style> element behind on every interrupted navigation.
+		flushPendingMotionExitLayout(node);
+		expect(document.querySelectorAll('style[data-motion-pop-style]')).toHaveLength(before);
+	});
+
+	it('leaves a nested popLayout child in flow inside an exiting ancestor', () => {
+		const parent = document.createElement('div');
+		const child = document.createElement('div');
+		parent.appendChild(child);
+		document.body.appendChild(parent);
+		const { context } = createContext(true, 'popLayout');
+		const parentElement = createVisualElement(parent, { duration: 1 });
+		const childElement = createVisualElement(child, { duration: 1 });
+
+		motionExitOutro(parent, { context, visualElement: parentElement.visualElement });
+		motionExitOutro(child, { context, visualElement: childElement.visualElement });
+
+		// The ancestor is pinned and removed whole, so the child has nothing to
+		// gain from leaving the flow and plenty to scramble by doing so.
+		expect(parent.dataset.motionPopId).toBeDefined();
+		expect(child.dataset.motionPopId).toBeUndefined();
 	});
 
 	it('flushes the final layout after outro cleanup instead of styling the mounted exit node', async () => {

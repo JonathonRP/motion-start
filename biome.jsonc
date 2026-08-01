@@ -102,6 +102,11 @@
 		},
 		"includes": ["**", "!**/*.cjs", "!**/svelte.config.js", "!**/static/**/*.{js,ts,css}"]
 	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
 	"javascript": {
 		"formatter": {
 			"jsxQuoteStyle": "double",

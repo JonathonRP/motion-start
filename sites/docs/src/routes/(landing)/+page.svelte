@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { motion, useTime, useTransform } from "motion-start";
+	import { motion } from "motion-start";
+	import MsMark from "$lib/components/ms-mark.svelte";
 	import { githubUrl, siteConfig } from "$lib/site-config";
 
 	/**
-	 * Landing hero.
+	 * Landing hero: an 88px mark bouncing above a large wordmark, over a soft
+	 * radial glow.
 	 *
-	 * The logo lockup and its motion are the original pre-mockup treatment:
-	 * an 88px mark drifting above a large monospace wordmark, over a soft
-	 * radial glow. The tagline and CTA pill keep the reference design's
-	 * styling.
+	 * The hop belongs to the mark itself (`bounce`), not to this page. It used
+	 * to be `sin(t / 1400) * 10` here, an 8.8s float that drifted against the
+	 * mark's internal beat forever, so the tile's insides reacted to nothing in
+	 * particular. Now the tile falls, squashes on contact and springs back, and
+	 * the light and letters inside it fire on the frame it lands - see
+	 * `ms-mark-art.js` for the timing.
 	 */
-
-	const time = useTime();
-	// Original drift: wide travel, quick cycle.
-	const drift = useTransform(time, (t: number) => Math.sin(t / 1400) * 10);
 
 	const container = {
 		hidden: { opacity: 0 },
@@ -45,23 +45,25 @@
 		initial="hidden"
 		animate="visible"
 	>
-		<!-- Logo sits above the wordmark, drifting on its own, as it did before
-		     the mockup-driven rewrite. -->
-		<motion.div variants={rise} style={{ y: drift }} class="mb-7">
-			<motion.img
-				src="/logo.webp"
-				alt="Motion Start"
-				width="88"
-				height="88"
-				class="size-22 rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
+		<!--
+			Two layers now that the mark hops itself: `rise` is the entrance and the
+			inner div is the hover. The glow sits on the hover layer, so it stays
+			put as a halo while the tile falls through it - the tile has mass, the
+			light behind it does not.
+		-->
+		<motion.div variants={rise} class="mb-7">
+			<motion.div
+				class="rounded-3xl shadow-[0_0_70px_-10px_var(--ms-glow)]"
 				whileHover={{ scale: 1.06, rotate: -4 }}
 				transition={{ type: "spring", stiffness: 320, damping: 18 }}
-			/>
+			>
+				<MsMark size={88} bounce={1} title="Motion Start" class="size-22" />
+			</motion.div>
 		</motion.div>
 
 		<motion.h1
 			variants={rise}
-			class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl"
+			class="font-display text-4xl leading-[1.05] font-medium tracking-[-0.018em] sm:text-5xl"
 		>
 			motion start
 		</motion.h1>

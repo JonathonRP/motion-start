@@ -90,7 +90,7 @@ export interface PanInfo {
 }
 
 export type PanHandler = (event: PointerEvent, info: PanInfo) => void;
-interface PanSessionHandlers {
+export interface PanSessionHandlers {
 	onSessionStart: PanHandler;
 	onStart: PanHandler;
 	onMove: PanHandler;

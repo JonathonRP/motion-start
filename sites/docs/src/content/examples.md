@@ -14,6 +14,7 @@ section: Getting Started
 	import SharedLayoutDemo from "$lib/components/demos/shared-layout-demo.svelte";
 	import PresenceDemo from "$lib/components/demos/presence-demo.svelte";
 	import ReorderDemo from "$lib/components/demos/reorder-demo.svelte";
+	import KanbanDemo from "$lib/components/demos/kanban-demo.svelte";
 	import MotionValueDemo from "$lib/components/demos/motion-value-demo.svelte";
 </script>
 
@@ -135,6 +136,54 @@ Read more in [AnimatePresence](/docs/components/animate-presence).
 	{/each}
 </Reorder.Group>
 ```
+
+Read more in [Reorder](/docs/components/reorder).
+
+## Kanban board
+
+Each column is a `Reorder.Group`, so cards shuffle smoothly within that list. Giving every
+`Reorder.Item` a `layoutId` adds the other half of a kanban board: the same card can be re-parented
+into another group without either column losing track of it.
+
+Drag a card anywhere on the board, or focus one and use the arrow keys.
+
+<DemoContainer class="py-8">
+	<KanbanDemo />
+</DemoContainer>
+
+```svelte
+{#each columns as column (column)}
+	<Reorder.Group
+		values={cards}
+		onReorder={(next) => {
+			if (previewColumn) return;
+			reindex(next, column);
+		}}
+	>
+		{#snippet children({ item: card })}
+			{#if renderColumn(card) === column}
+				<Reorder.Item
+					value={card}
+					layoutId={card.id}
+					drag
+					dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+					dragElastic={1}
+					onDrag={(event, info) => previewDrop(card, info)}
+					onDragEnd={(event, info) => commitDrop(card, info)}
+					whileDrag={{ scale: 1.04, rotate: -1.5, zIndex: 10 }}
+				>
+					{card.title}
+				</Reorder.Item>
+			{/if}
+		{/snippet}
+	</Reorder.Group>
+{/each}
+```
+
+Every group receives the same stable card objects. The conditional chooses the one column that
+renders each card; when that choice changes during a drag, `layoutId` transfers the live gesture to
+the new list. The preview opens the target slot immediately, while release commits its column and
+order.
 
 Read more in [Reorder](/docs/components/reorder).
 

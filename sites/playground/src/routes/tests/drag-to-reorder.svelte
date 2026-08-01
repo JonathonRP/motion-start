@@ -4,25 +4,78 @@
     import { page } from '$app/state';
 
     const axis = $derived.by<'x' | 'y'>(() => page.url.searchParams.get('axis') === 'x' ? 'x' : 'y');
+    const useLayoutId = $derived(page.url.searchParams.has('layoutId'));
+    const freeDrag = $derived(page.url.searchParams.has('freeDrag'));
+    const invalidateOnDrag = $derived(page.url.searchParams.has('invalidateOnDrag'));
+    const objectValues = $derived(page.url.searchParams.has('objectValues'));
+
+    interface ReorderItem {
+        id: string;
+        label: string;
+        order: number;
+    }
 
     const initialItems = ['Tomato', 'Cucumber', 'Mustard', 'Chicken'];
     let items = $state([...initialItems]);
+    let objectItems = $state<ReorderItem[]>([
+        { id: 'Tomato', label: 'Tomato', order: 0 },
+        { id: 'Cucumber', label: 'Cucumber', order: 1 },
+        { id: 'Mustard', label: 'Mustard', order: 2 },
+        { id: 'Chicken', label: 'Chicken', order: 3 },
+    ]);
+    let dragVersion = $state(0);
 
     function handleReorder(newItems: string[]) {
         items = newItems;
     }
+
+    function handleObjectReorder(newItems: ReorderItem[]) {
+        newItems.forEach((item, order) => {
+            item.order = order;
+        });
+    }
+
+    const orderedObjectItems = () => [...objectItems].sort((a, b) => a.order - b.order);
 </script>
 
-<Reorder.Group
-    axis={axis}
-    onReorder={handleReorder}
-    style={axis === 'y' ? {} : { display: 'flex' }}
-    values={items}
->
-    {#snippet children({ item })}
-        <DragToReorderItem {item} {axis} />
-    {/snippet}
-</Reorder.Group>
+{#if objectValues}
+    <Reorder.Group
+        axis={axis}
+        onReorder={handleObjectReorder}
+        style={axis === 'y' ? {} : { display: 'flex' }}
+        values={orderedObjectItems()}
+        data-drag-version={dragVersion}
+    >
+        {#snippet children({ item })}
+            <DragToReorderItem
+                item={item.label}
+                reorderValue={item}
+                {axis}
+                {useLayoutId}
+                {freeDrag}
+                onDragInvalidate={invalidateOnDrag ? () => dragVersion++ : undefined}
+            />
+        {/snippet}
+    </Reorder.Group>
+{:else}
+    <Reorder.Group
+        axis={axis}
+        onReorder={handleReorder}
+        style={axis === 'y' ? {} : { display: 'flex' }}
+        values={items}
+        data-drag-version={dragVersion}
+    >
+        {#snippet children({ item })}
+            <DragToReorderItem
+                {item}
+                {axis}
+                {useLayoutId}
+                {freeDrag}
+                onDragInvalidate={invalidateOnDrag ? () => dragVersion++ : undefined}
+            />
+        {/snippet}
+    </Reorder.Group>
+{/if}
 
 <style>
     :global(body) {

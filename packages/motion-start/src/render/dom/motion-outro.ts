@@ -74,7 +74,9 @@ function flushPopLayout(node: Element) {
 
 interface AnimationWithOptions {
 	duration: number;
+	stop?: () => void;
 	options?: {
+		type?: string;
 		delay?: number;
 		repeat?: number;
 		repeatDelay?: number;
@@ -99,12 +101,25 @@ function getTransitionDuration(transition: Record<string, unknown> | undefined) 
 	return Math.max(0, delay + duration * (repeat + 1) + repeatDelay * repeat) * 1000;
 }
 
-function getRunningAnimationDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+function getRunningAnimationDuration(
+	visualElement: VisualElement<HTMLElement | SVGElement | unknown>,
+	ignore?: ReadonlySet<unknown>
+) {
 	let longest = 0;
 
 	for (const value of visualElement.values.values()) {
 		const animation = value.animation as AnimationWithOptions | undefined;
 		if (!animation) continue;
+
+		// Inertia only ever comes from a gesture, never from an exit the user
+		// configured, and `stopGestureAnimations` has already cancelled it.
+		// Stopping does not clear `value.animation` synchronously, so it has to
+		// be skipped here too or the block is retained for a drag that is over.
+		if (animation.options?.type === 'inertia') continue;
+
+		// Likewise for the animations that unwind `whileDrag` and friends back to
+		// the base values - see `stopGestureAnimations`.
+		if (ignore?.has(animation)) continue;
 
 		// Reading duration synchronously flushes Motion's keyframe resolver, so
 		// Svelte retains the block for the resolved tween/spring rather than a
@@ -117,11 +132,55 @@ function getRunningAnimationDuration(visualElement: VisualElement<HTMLElement | 
 	return longest;
 }
 
-function getRunningTreeDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
-	let longest = getRunningAnimationDuration(visualElement);
+const gestureStates = ['whileDrag', 'whileTap', 'whileHover', 'whileFocus'] as const;
+
+/**
+ * An element removed by its own gesture - a card dropped into another list, say
+ * - is still mid-gesture when it leaves. Two kinds of animation are running on
+ * it that nothing should wait for.
+ *
+ * The drag itself leaves inertia on `x`/`y`. While the element is retained it
+ * carries on sliding back towards where the drag started, which reads as a
+ * second copy of the card once a `layoutId` twin has taken over. Inertia is
+ * only ever produced by a gesture, so it is safe to single out: every exit a
+ * user configures is a tween or a spring.
+ *
+ * `whileDrag` and friends then unwind back to the base values, and those *are*
+ * ordinary springs. They cannot be told apart after the fact, so they are
+ * started here, before the exit, and the animations they produce are collected
+ * so the duration calculation can skip exactly those.
+ */
+function stopGestureAnimations(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
+	const before = new Set<unknown>();
+	for (const value of visualElement.values.values()) {
+		const animation = value.animation as AnimationWithOptions | undefined;
+		if (animation) before.add(animation);
+		if (animation?.options?.type === 'inertia') animation.stop?.();
+	}
+
+	for (const state of gestureStates) {
+		visualElement.animationState?.setActive(state, false);
+	}
+
+	const unwinding = new Set<unknown>();
+	for (const value of visualElement.values.values()) {
+		if (value.animation && !before.has(value.animation)) unwinding.add(value.animation);
+	}
+
+	return unwinding as ReadonlySet<unknown>;
+}
+
+function getRunningTreeDuration(
+	visualElement: VisualElement<HTMLElement | SVGElement | unknown>,
+	ignore?: ReadonlySet<unknown>
+) {
+	let longest = getRunningAnimationDuration(visualElement, ignore);
 
 	for (const child of visualElement.children) {
-		longest = Math.max(longest, getRunningTreeDuration(child as VisualElement<HTMLElement | SVGElement | unknown>));
+		longest = Math.max(
+			longest,
+			getRunningTreeDuration(child as VisualElement<HTMLElement | SVGElement | unknown>, ignore)
+		);
 	}
 
 	return longest;
@@ -211,8 +270,11 @@ function getConfiguredLayoutDuration(visualElement: VisualElement<HTMLElement | 
  * outlives the whole sequence instead of being torn down mid-way - which would
  * unmount the visual element and silently drop its `onAnimationComplete`.
  */
-function getExitDuration(visualElement: VisualElement<HTMLElement | SVGElement | unknown>) {
-	const runningDuration = getRunningTreeDuration(visualElement);
+function getExitDuration(
+	visualElement: VisualElement<HTMLElement | SVGElement | unknown>,
+	ignore?: ReadonlySet<unknown>
+) {
+	const runningDuration = getRunningTreeDuration(visualElement, ignore);
 	const timing = getConfiguredExitTiming(visualElement);
 	const configuredDuration = getConfiguredExitTreeDuration(visualElement);
 	const layoutDuration = getConfiguredLayoutDuration(visualElement);
@@ -455,7 +517,6 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	const outroContext = context;
 	const motionNode = getMotionNode(node, element);
 	const complete = context.begin();
-	let releasePopLayout: VoidFunction | undefined;
 	let previousPointerEvents = '';
 	let completed = false;
 
@@ -491,15 +552,29 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 	// Upstream avoids refreshing sibling presence context when this flag is
 	// false while the exiting child's own presence still changes.
 	const projectionRoot = markProjectionWillUpdate(element, context.presenceAffectsLayout);
-	if (context.mode === 'popLayout') {
-		releasePopLayout = applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
+	// Only the outermost exiting node leaves the flow, for the same reason
+	// `finish` skips nested nodes in `wait` mode: a motion element inside an
+	// exiting subtree has no exit of its own to play, so pulling it out of flow
+	// just scrambles content that is still on screen. The ancestor is pinned and
+	// removed whole. Without this a page of demos injected a stylesheet per
+	// nested element on every navigation.
+	if (context.mode === 'popLayout' && !hasExitingAncestor(motionNode)) {
+		// Deliberately not captured for release at the end of the outro. Svelte
+		// keeps the node mounted past its transition (see `finish`), and putting
+		// it back into flow there re-stretches the parent for the remainder — a
+		// tall exiting page snapping back into a flex row visibly shoves
+		// everything below it. The rule is dropped when the node is detached
+		// (`flushPendingMotionExitLayout`) or when a reversed exit re-enters it
+		// (`motionEnterIntro`), which are the only two ways this ends.
+		applyPopLayout(motionNode as HTMLElement | SVGElement, context.nonce, previousLayoutBox);
 		flushPopLayout(motionNode);
 		(projectionRoot as { update?: VoidFunction } | undefined)?.update?.();
 	}
 
+	const gestureUnwind = stopGestureAnimations(element);
 	const exitAnimation = element.animationState?.setActive('exit', true) ?? Promise.resolve();
 	const layoutDuration = getConfiguredLayoutDuration(element);
-	const exitDuration = getExitDuration(element);
+	const exitDuration = getExitDuration(element, gestureUnwind);
 	const duration = retainThroughCompletion(exitDuration > 0 ? exitDuration + getFrameElapsed() : 0);
 	let completedExit = true;
 	pendingExitFinish.set(motionNode, () => finish(false));
@@ -521,7 +596,6 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 		duration,
 		tick(t) {
 			if (t === 0) {
-				releasePopLayout?.();
 				if (motionNode instanceof HTMLElement) {
 					motionNode.style.pointerEvents = previousPointerEvents;
 					delete motionNode.dataset.motionPrevPointerEvents;
@@ -540,6 +614,13 @@ export function motionExitOutro(node: Element, { context, visualElement }: Motio
 }
 
 export function flushPendingMotionExitLayout(node: Element) {
+	// This runs from the motion attachment's teardown, which Svelte calls just
+	// before it detaches the node — the one point that is reached whether the
+	// exit ran to completion or was torn down mid-flight. `popLayout` injects a
+	// stylesheet per exiting node, so releasing it anywhere less certain leaks
+	// a <style> element into the head on every interrupted navigation.
+	removePopLayout(node);
+
 	const projectionRoot = pendingLayoutUpdates.get(node);
 	if (!projectionRoot) return;
 

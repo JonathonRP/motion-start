@@ -3,11 +3,11 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import type { SVGAttributes } from 'svelte/elements';
 import type { Properties } from 'csstype';
-import type { Easing } from './easing/types.js';
-import type { TransformProperties, CustomStyles, SVGPathProperties } from './motion/types.js';
+import type { SVGAttributes } from 'svelte/elements';
 import type { VariableKeyframesDefinition } from './animation/types.js';
+import type { Easing } from './easing/types.js';
+import type { CustomStyles, SVGPathProperties, TransformProperties } from './motion/types.js';
 
 export type GenericKeyframesTarget<V> = V[] | Array<null | V>;
 
@@ -950,8 +950,19 @@ export type TransitionMap = Orchestration &
 export type Transition = (Orchestration & Repeat & TransitionDefinition) | (Orchestration & Repeat & TransitionMap);
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+/**
+ * csstype's `TLength` defaults to `string | 0`, which would reject the plain
+ * numbers motion accepts everywhere at runtime - `width: 100`, and the SVG
+ * geometry properties `cx`/`cy`/`r`/`rx`/`ry`, which csstype also models as CSS
+ * properties and so would otherwise narrow to `string` when intersected with
+ * `SVGAttributes`. Widening it to `string | number` matches framer-motion,
+ * whose CSS properties come from React's `string | number`.
+ */
+type CSSProperties = Properties<string | number>;
+
 type CSSPropertiesWithoutTransitionOrSingleTransforms = Omit<
-	Properties,
+	CSSProperties,
 	Extract<
 		| 'transition'
 		| 'rotate'
@@ -964,7 +975,7 @@ type CSSPropertiesWithoutTransitionOrSingleTransforms = Omit<
 		| 'translateX'
 		| 'translateY'
 		| 'translateZ',
-		keyof Properties
+		keyof CSSProperties
 	>
 >;
 

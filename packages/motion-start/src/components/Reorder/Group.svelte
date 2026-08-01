@@ -58,7 +58,7 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 </script>
 
 <script lang="ts" generics="V">
-	import { tick, type Component, type Snippet } from "svelte";
+	import { flushSync, tick, type Component, type Snippet } from "svelte";
 	import type { SvelteHTMLElements } from "svelte/elements";
 	import { setReorderContext } from "../../context/ReorderContext.js";
 	import { motion } from "../../render/components/motion/proxy.js";
@@ -128,6 +128,9 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 			}
 			order.sort(compareMin);
 		},
+		unregisterItem: (value) => {
+			order = order.filter((entry) => entry.value !== value);
+		},
 		updateOrder: (item, offset, velocity) => {
 			if (isReordering) return;
 			reconcileOrder();
@@ -135,18 +138,22 @@ function compareMin<V>(a: ItemData<V>, b: ItemData<V>) {
 			if (order !== newOrder) {
 				isReordering = true;
 				order = newOrder;
-				layoutInvalidation.invalidate();
 				const reordered = newOrder
 					.map(getValue)
 					.filter((value) => values.includes(value));
-				// Call onReorder after this drag tick so the Svelte keyed list
-				// doesn't move the dragged node before the active motion value
-				// has been applied for this frame.
+				// Wait for the active drag update, then publish the ambient layout
+				// invalidation in its own flush before onReorder can move keyed children.
 				tick().then(() => {
-					onReorder?.(reordered);
-					queueMicrotask(() => {
-						isReordering = false;
-					});
+					try {
+						flushSync(() => {
+							layoutInvalidation.invalidate();
+						});
+						onReorder?.(reordered);
+					} finally {
+						queueMicrotask(() => {
+							isReordering = false;
+						});
+					}
 				});
 			}
 		},

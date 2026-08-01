@@ -4,7 +4,7 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import { invariant } from '../../utils/errors.js';
-import { PanSession, type PanInfo } from '../pan/PanSession.js';
+import { PanSession, type PanInfo, type PanSessionHandlers } from '../pan/PanSession.js';
 import type { ResolvedConstraints } from './types.js';
 import { type Lock, getGlobalLock } from './utils/lock.js';
 import { isRefObject } from '../../utils/is-ref-object.js';
@@ -38,6 +38,23 @@ import { addValueToWillChange } from '../../value/use-will-change/add-will-chang
 
 export const elementDragControls = new WeakMap<VisualElement<unknown>, VisualElementDragControls>();
 
+/**
+ * Tracks the controls instance currently owning an in-progress drag gesture,
+ * keyed by the dragged element's resolved `layoutId`. When a dragged
+ * `Reorder.Item`/motion element is conditionally reparented into a different
+ * DOM subtree mid-gesture (e.g. a kanban card crossing into another
+ * `Reorder.Group` while the pointer is still down), the freshly-mounted
+ * same-`layoutId` copy looks itself up here and adopts the still-running
+ * pointer gesture via `VisualElementDragControls.adopt`, rather than the
+ * unmounted element's stale closures silently keeping (or losing) it.
+ *
+ * Framer Motion v2 had an equivalent mechanism - resuming drag controls from
+ * `visualElement.prevSnapshot` in `VisualElementDragControls.mount` - this is
+ * this v11-derived architecture's analogue, scoped to gesture ownership
+ * rather than layout snapshots.
+ */
+export const activeLayoutIdDrags = new Map<string, VisualElementDragControls>();
+
 export interface DragControlOptions {
 	snapToCursor?: boolean;
 	cursorProgress?: Point;
@@ -64,6 +81,11 @@ export class VisualElementDragControls {
 	private currentDirection: DragDirection | null = null;
 
 	private originPoint: Point = { x: 0, y: 0 };
+	private cursorOffset: Point = { x: 0, y: 0 };
+	private latestPointerPoint?: Point;
+	private latestPointerOffset?: Point;
+	private renderedCenterBeforeOnDrag?: Point;
+	private activeLayoutId?: string;
 
 	/**
 	 * The permitted boundaries of travel, in pixels.
@@ -71,6 +93,7 @@ export class VisualElementDragControls {
 	private constraints: ResolvedConstraints | false = false;
 
 	private hasMutatedConstraints = false;
+	private skipNextLayoutRebase = false;
 
 	/**
 	 * The per-axis resolved elastic values.
@@ -81,13 +104,31 @@ export class VisualElementDragControls {
 		this.visualElement = visualElement;
 	}
 
-	start(originEvent: PointerEvent, { snapToCursor = false }: DragControlOptions = {}) {
-		/**
-		 * Don't start dragging if this component is exiting
-		 */
-		const { presenceContext } = this.visualElement;
-		if (presenceContext && presenceContext.isPresent === false) return;
+	private getLayoutId(): string | undefined {
+		return (this.getProps() as MotionProps).layoutId;
+	}
 
+	private syncActiveLayoutId() {
+		const layoutId = this.getLayoutId();
+		if (layoutId === this.activeLayoutId) return;
+
+		if (this.activeLayoutId !== undefined && activeLayoutIdDrags.get(this.activeLayoutId) === this) {
+			activeLayoutIdDrags.delete(this.activeLayoutId);
+		}
+
+		this.activeLayoutId = layoutId;
+		if (layoutId !== undefined) {
+			activeLayoutIdDrags.set(layoutId, this);
+		}
+	}
+
+	/**
+	 * Build the set of `PanSession` handlers bound to this controls instance.
+	 * Used both to start a brand new session and, via `updateHandlers`, to
+	 * retarget an existing (already-running) session onto this instance when
+	 * adopting a handed-off gesture.
+	 */
+	private buildSessionHandlers(snapToCursor = false): Partial<PanSessionHandlers> {
 		const onSessionStart = (event: PointerEvent) => {
 			const { dragSnapToOrigin } = this.getProps();
 
@@ -115,6 +156,15 @@ export class VisualElementDragControls {
 			this.isDragging = true;
 
 			this.currentDirection = null;
+			const center = this.measureRenderedCenter();
+			if (center) {
+				this.cursorOffset = {
+					x: center.x + window.scrollX - (info.point.x - info.offset.x),
+					y: center.y + window.scrollY - (info.point.y - info.offset.y),
+				};
+			}
+			this.latestPointerPoint = info.point;
+			this.latestPointerOffset = info.offset;
 
 			this.resolveConstraints();
 
@@ -148,6 +198,8 @@ export class VisualElementDragControls {
 				this.originPoint[axis] = current;
 			});
 
+			this.syncActiveLayoutId();
+
 			// Fire onDragStart event
 			if (onDragStart) {
 				frame.postRender(() => onDragStart(event, info));
@@ -168,6 +220,9 @@ export class VisualElementDragControls {
 			if (!dragPropagation && !this.openGlobalLock) return;
 
 			const { offset } = info;
+			this.syncActiveLayoutId();
+			this.latestPointerPoint = info.point;
+			this.latestPointerOffset = offset;
 			// Attempt to detect drag direction if directionLock is true
 			if (dragDirectionLock && this.currentDirection === null) {
 				this.currentDirection = getCurrentDirection(offset);
@@ -196,7 +251,11 @@ export class VisualElementDragControls {
 			 * This must fire after the render call as it might trigger a state
 			 * change which itself might trigger a layout update.
 			 */
-			onDrag && onDrag(event, info);
+			if (onDrag) {
+				this.renderedCenterBeforeOnDrag = this.measureRenderedCenter();
+				onDrag(event, info);
+				frame.read(this.compensateForOnDragLayoutShift);
+			}
 		};
 
 		const onSessionEnd = (event: PointerEvent, info: PanInfo) => this.stop(event, info);
@@ -204,22 +263,116 @@ export class VisualElementDragControls {
 		const resumeAnimation = () =>
 			eachAxis((axis) => this.getAnimationState(axis) === 'paused' && this.getAxisMotionValue(axis).animation?.play());
 
+		return { onSessionStart, onStart, onMove, onSessionEnd, resumeAnimation };
+	}
+
+	start(originEvent: PointerEvent, { snapToCursor = false }: DragControlOptions = {}) {
+		/**
+		 * Don't start dragging if this component is exiting
+		 */
+		const { presenceContext } = this.visualElement;
+		if (presenceContext && presenceContext.isPresent === false) return;
+
 		const { dragSnapToOrigin } = this.getProps();
-		this.panSession = new PanSession(
-			originEvent,
-			{
-				onSessionStart,
-				onStart,
-				onMove,
-				onSessionEnd,
-				resumeAnimation,
-			},
-			{
-				transformPagePoint: this.visualElement.getTransformPagePoint(),
-				dragSnapToOrigin,
-				contextWindow: getContextWindow(this.visualElement),
+		this.panSession = new PanSession(originEvent, this.buildSessionHandlers(snapToCursor), {
+			transformPagePoint: this.visualElement.getTransformPagePoint(),
+			dragSnapToOrigin,
+			contextWindow: getContextWindow(this.visualElement),
+		});
+	}
+
+	/**
+	 * Take over an in-progress drag gesture from `previous`: the same live
+	 * `PanSession` (and therefore the same window-level pointermove/pointerup
+	 * listeners already tracking this gesture) is retargeted to call back into
+	 * *this* controls instance instead, so the freshly-mounted element's props
+	 * (`onDrag`, `onDragEnd`, etc.) drive the rest of the gesture rather than
+	 * the unmounted element's stale closures. Returns `false` if `previous`
+	 * isn't actually mid-gesture.
+	 */
+	adopt(previous: VisualElementDragControls): boolean {
+		const { panSession } = previous;
+		if (!panSession || !previous.isDragging) return false;
+
+		this.panSession = panSession;
+		this.isDragging = true;
+		this.currentDirection = previous.currentDirection;
+		this.openGlobalLock = previous.openGlobalLock;
+		this.skipNextLayoutRebase = true;
+		frame.postRender(() => {
+			this.skipNextLayoutRebase = false;
+		});
+		this.cursorOffset = previous.cursorOffset;
+		this.latestPointerPoint = previous.latestPointerPoint;
+		this.latestPointerOffset = previous.latestPointerOffset;
+
+		const nextCenter = this.measureDragCenter();
+
+		eachAxis((axis) => {
+			if (this.latestPointerPoint && this.latestPointerOffset && nextCenter) {
+				const scroll = axis === 'x' ? window.scrollX : window.scrollY;
+				const next = this.latestPointerPoint[axis] + this.cursorOffset[axis] - (nextCenter[axis] + scroll);
+				this.originPoint[axis] = next - this.latestPointerOffset[axis];
+				this.getAxisMotionValue(axis).set(next);
+			} else {
+				this.originPoint[axis] = previous.originPoint[axis];
+
+				const previousValue = previous.getAxisMotionValue(axis).get();
+				if (typeof previousValue === 'number') {
+					this.getAxisMotionValue(axis).set(previousValue);
+				}
 			}
-		);
+		});
+
+		this.resolveConstraints();
+
+		if (this.visualElement.projection) {
+			const { projection } = this.visualElement;
+			projection.isAnimationBlocked = true;
+			projection.finishAnimation();
+			projection.target = undefined;
+			projection.relativeTarget = undefined;
+			projection.targetDelta = undefined;
+			projection.projectionDelta = undefined;
+			projection.projectionDeltaWithTransform = undefined;
+			projection.resumeFrom = undefined;
+			projection.resumingFrom = undefined;
+			projection.isProjectionDirty = true;
+		}
+
+		panSession.updateHandlers(this.buildSessionHandlers());
+
+		// Detach the predecessor from the gesture it no longer owns so its own
+		// unmount cleanup can't cancel the session or release a lock this
+		// controls instance is now relying on.
+		previous.panSession = undefined;
+		previous.isDragging = false;
+		previous.openGlobalLock = null;
+
+		addValueToWillChange(this.visualElement, 'transform');
+
+		const { animationState } = this.visualElement;
+		animationState && animationState.setActive('whileDrag', true);
+
+		this.syncActiveLayoutId();
+
+		return true;
+	}
+
+	cancelIfHandoffMissed() {
+		if (!this.isDragging) return;
+
+		const layoutId = this.activeLayoutId;
+		if (layoutId === undefined) {
+			this.cancel();
+			return;
+		}
+
+		frame.postRender(() => {
+			if (this.isDragging && activeLayoutIdDrags.get(layoutId) === this) {
+				this.cancel();
+			}
+		});
 	}
 
 	private stop(event: PointerEvent, info: PanInfo) {
@@ -245,13 +398,67 @@ export class VisualElementDragControls {
 		this.panSession && this.panSession.end();
 		this.panSession = undefined;
 
-		const { dragPropagation } = this.getProps();
-		if (!dragPropagation && this.openGlobalLock) {
+		if (this.openGlobalLock) {
 			this.openGlobalLock();
 			this.openGlobalLock = null;
 		}
 
+		if (this.activeLayoutId !== undefined && activeLayoutIdDrags.get(this.activeLayoutId) === this) {
+			activeLayoutIdDrags.delete(this.activeLayoutId);
+		}
+		this.activeLayoutId = undefined;
+
 		animationState && animationState.setActive('whileDrag', false);
+	}
+
+	private measureDragCenter(): Point | undefined {
+		const renderedCenter = this.measureRenderedCenter();
+		if (!renderedCenter) return undefined;
+
+		const x = this.getAxisMotionValue('x').get();
+		const y = this.getAxisMotionValue('y').get();
+		// Centers remain stable under whileDrag scale/rotation. Removing only
+		// the drag translation keeps both layouts in the same DOM coordinate space.
+		return {
+			x: renderedCenter.x - (typeof x === 'number' ? x : 0),
+			y: renderedCenter.y - (typeof y === 'number' ? y : 0),
+		};
+	}
+
+	private compensateForOnDragLayoutShift = () => {
+		const centerBefore = this.renderedCenterBeforeOnDrag;
+		this.renderedCenterBeforeOnDrag = undefined;
+		if (!this.isDragging || !centerBefore) return;
+
+		const centerAfter = this.measureRenderedCenter();
+		if (!centerAfter) return;
+
+		// Compensate only for the rendered shift caused after `onDrag`.
+		// Pointer-driven movement stays in updateAxis, where constraints apply.
+		let hasRebased = false;
+		eachAxis((axis) => {
+			const delta = centerBefore[axis] - centerAfter[axis];
+			if (Math.abs(delta) < 0.5) return;
+
+			const motionValue = this.getAxisMotionValue(axis);
+			const current = motionValue.get();
+			if (typeof current !== 'number') return;
+
+			this.originPoint[axis] += delta;
+			motionValue.set(current + delta);
+			hasRebased = true;
+		});
+		if (hasRebased) this.visualElement.render();
+	};
+
+	private measureRenderedCenter(): Point | undefined {
+		if (!this.visualElement.current) return undefined;
+
+		const box = this.visualElement.measureViewportBox();
+		return {
+			x: (box.x.min + box.x.max) / 2,
+			y: (box.y.min + box.y.max) / 2,
+		};
 	}
 
 	private updateAxis(axis: DragDirection, _point: Point, offset?: Point) {
@@ -544,6 +751,11 @@ export class VisualElementDragControls {
 			hasLayoutChanged,
 		}: LayoutUpdateData) => {
 			if (this.isDragging && hasLayoutChanged) {
+				if (this.skipNextLayoutRebase) {
+					this.skipNextLayoutRebase = false;
+					return;
+				}
+
 				eachAxis((axis) => {
 					const motionValue = this.getAxisMotionValue(axis);
 					if (!motionValue) return;
@@ -551,7 +763,6 @@ export class VisualElementDragControls {
 					this.originPoint[axis] += delta[axis].translate;
 					motionValue.set(motionValue.get() + delta[axis].translate);
 				});
-
 				this.visualElement.render();
 			}
 		}) as any);

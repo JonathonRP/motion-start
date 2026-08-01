@@ -16,14 +16,27 @@ function box(min: number, max: number): Box {
 	return { x: { min: 0, max: 0 }, y: { min, max } };
 }
 
+function getRenderedItems() {
+	return Array.from(document.querySelectorAll('[data-testid^="item-"]'), (item) => item.textContent);
+}
+
 describe('Reorder.Group order reconciliation', () => {
-	it('invalidates layout only when updateOrder produces a real reorder', () => {
+	it('publishes layout invalidation before updating keyed children', async () => {
 		const captured: { context: ReorderContext<string> | null } = { context: null };
+		const reorderSnapshots: Array<{
+			token: unknown;
+			renderedItems: (string | null)[];
+		}> = [];
 
 		instance = mount(ReorderGroupFixture, {
 			target: document.body,
 			props: {
-				onReorder: () => undefined,
+				onReorder: () => {
+					reorderSnapshots.push({
+						token: captured.context?.layoutInvalidation.current,
+						renderedItems: getRenderedItems(),
+					});
+				},
 				oncontext: (context: ReorderContext<string> | null) => {
 					captured.context = context;
 				},
@@ -34,7 +47,6 @@ describe('Reorder.Group order reconciliation', () => {
 		const context = captured.context;
 		if (!context) throw new Error('Reorder.Group did not provide a context');
 
-		expect(context).not.toHaveProperty('orderVersion');
 		expect(context.layoutInvalidation).toBeDefined();
 
 		context.registerItem('a', box(0, 50));
@@ -48,7 +60,20 @@ describe('Reorder.Group order reconciliation', () => {
 		expect(context.layoutInvalidation.current).toBe(initialToken);
 
 		context.updateOrder('b', 30, 1);
-		expect(context.layoutInvalidation.current).not.toBe(initialToken);
+		expect(context.layoutInvalidation.current).toBe(initialToken);
+		expect(reorderSnapshots).toEqual([]);
+
+		await tick();
+
+		const updatedToken = context.layoutInvalidation.current;
+		expect(updatedToken).not.toBe(initialToken);
+		expect(reorderSnapshots).toEqual([
+			{
+				token: updatedToken,
+				renderedItems: ['a', 'b', 'c', 'd'],
+			},
+		]);
+		expect(getRenderedItems()).toEqual(['a', 'c', 'b', 'd']);
 	});
 
 	it('ignores items removed from values when picking the next reorder target', async () => {
@@ -87,6 +112,38 @@ describe('Reorder.Group order reconciliation', () => {
 		// Drag "b" past the centre of "d" at its real, post-removal position (225).
 		// A stale entry for "c" would be treated as the next target instead, so the
 		// swap would resolve back to the current values and the drag would stick.
+		context.updateOrder('b', 90, 1);
+		await tick();
+		await tick();
+
+		expect(reorders.at(-1)).toEqual(['a', 'd', 'b']);
+	});
+
+	it('unregisters conditionally rendered items even when values still contains them', async () => {
+		const reorders: string[][] = [];
+		const captured: { context: ReorderContext<string> | null } = { context: null };
+
+		instance = mount(ReorderGroupFixture, {
+			target: document.body,
+			props: {
+				onReorder: (values: string[]) => reorders.push(values),
+				oncontext: (context: ReorderContext<string> | null) => {
+					captured.context = context;
+				},
+			},
+		});
+		flushSync();
+
+		const context = captured.context;
+		if (!context) throw new Error('Reorder.Group did not provide a context');
+
+		context.registerItem('a', box(0, 50));
+		context.registerItem('b', box(50, 150));
+		context.registerItem('c', box(150, 200));
+		context.registerItem('d', box(200, 350));
+		context.unregisterItem('c');
+		context.registerItem('d', box(150, 300));
+
 		context.updateOrder('b', 90, 1);
 		await tick();
 		await tick();

@@ -23,6 +23,58 @@ function expectBbox(element: HTMLElement, expectedBbox: BoundingBox) {
 }
 
 describe("Drag to reorder", () => {
+    it("animates a displaced sibling through kanban-style invalidation", () => {
+        cy.visit("?test=drag-to-reorder&layoutId&freeDrag&invalidateOnDrag&objectValues")
+            .wait(50)
+            .get("#Tomato")
+            .trigger("pointerdown", 360, 175, { force: true })
+            .wait(50)
+            .trigger("pointermove", 360, 180, { force: true })
+            .wait(50)
+            .trigger("pointermove", 360, 200, { force: true })
+            .wait(50)
+            .trigger("pointermove", 360, 220, { force: true })
+            .get("#Cucumber")
+            .then(([$sibling]) => {
+                const win = $sibling.ownerDocument.defaultView
+                if (!win) throw new Error("application window is unavailable")
+
+                return new Cypress.Promise<number[]>((resolve) => {
+                    const projectionFrames: number[] = []
+                    const sampleFrame = () => {
+                        const transform = win.getComputedStyle($sibling).transform
+                        projectionFrames.push(
+                            transform === "none" ? 0 : new win.DOMMatrix(transform).m42
+                        )
+
+                        if (projectionFrames.length === 8) {
+                            resolve(projectionFrames)
+                            return
+                        }
+                        win.requestAnimationFrame(sampleFrame)
+                    }
+
+                    win.requestAnimationFrame(sampleFrame)
+                })
+            })
+            .then((projectionFrames) => {
+                const movingFrames = projectionFrames
+                    .map(Math.abs)
+                    .filter((frame) => frame > 1)
+
+                expect(
+                    movingFrames.length,
+                    `displaced sibling projection frames: ${JSON.stringify(projectionFrames)}`
+                ).to.be.at.least(2)
+                expect(
+                    new Set(movingFrames.map((frame) => Math.round(frame))).size,
+                    `distinct displaced sibling projection frames: ${JSON.stringify(projectionFrames)}`
+                ).to.be.at.least(2)
+            })
+            .get("#Tomato")
+            .trigger("pointerup", 360, 220, { force: true })
+    })
+
     it("Y axis", () => {
         cy.visit("?test=drag-to-reorder")
             .wait(50)
