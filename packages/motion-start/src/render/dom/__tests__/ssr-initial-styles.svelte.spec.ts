@@ -163,6 +163,7 @@ describe('motion element SSR styles', () => {
 		const declarations = parseStyleAttribute(style ?? '');
 		expect(declarations).toMatchObject({
 			'background-color': 'tomato',
+			'background-image': '\\00005c',
 			'--accentColor': 'rebeccapurple',
 			'-webkit-filter': 'blur(1px)',
 			color: 'red\\00003b position: fixed',
@@ -201,6 +202,9 @@ describe('opt-in appear animations during SSR', () => {
 		expect(getAdjacentScripts(body, 'ssr-appear-tween')[0]?.attributes).toContain('nonce="appear-nonce"');
 		expect(getAdjacentScripts(body, 'ssr-appear-keyframes')).not.toHaveLength(0);
 		expect(getAdjacentScripts(body, 'ssr-appear-implicit-ease')).not.toHaveLength(0);
+		expect(getAdjacentScripts(body, 'ssr-appear-negative-delay')).toHaveLength(0);
+		expect(getAdjacentScripts(body, 'ssr-appear-reserved-keyframe-property')).toHaveLength(0);
+		expect(getAdjacentScripts(body, 'ssr-appear-css-variable')).toHaveLength(0);
 		expect(getAdjacentScripts(body, 'ssr-appear-opted-out')).toHaveLength(0);
 		expect(getAdjacentScripts(body, 'ssr-appear-spring')).toHaveLength(0);
 		expect(getAdjacentScripts(body, 'ssr-appear-unsafe')).toHaveLength(0);

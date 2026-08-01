@@ -1,3 +1,5 @@
+<svelte:options runes />
+
 <script lang="ts">
 import { motion } from '../../../index.js';
 </script>
@@ -6,6 +8,7 @@ import { motion } from '../../../index.js';
 	data-testid="ssr-motion"
 	style={{
 		backgroundColor: 'tomato',
+		backgroundImage: '\\',
 		color: 'red; position: fixed',
 		WebkitFilter: 'blur(1px)'
 	}}

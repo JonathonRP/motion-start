@@ -80,7 +80,8 @@ function motionAppearBootstrap() {
 		};
 
 		w.MotionHandoffMarkAsComplete = (id) => {
-			if (complete.has(id)) complete.set(id, true);
+			if (!complete.has(id)) return;
+			complete.set(id, true);
 		};
 
 		w.MotionHandoffIsComplete = (id) => complete.get(id) === true;
@@ -125,9 +126,6 @@ function motionAppearBootstrap() {
 				if (cancelOptimisedAnimation) cancelOptimisedAnimation(id, valueName, frame);
 			};
 
-			// Prefer `onfinish` over `finished` for browser support.
-			entry.animation.onfinish = cancel;
-
 			// A null startTime means this is still the paint-ready placeholder, and an
 			// already-complete handoff means Motion is interrupting its own animation.
 			if (entry.startTime === null || complete.get(id) === true) {
@@ -135,15 +133,25 @@ function motionAppearBootstrap() {
 				return null;
 			}
 
-			// A finished WAAPI animation can no longer fire the newly-installed
-			// `onfinish` callback. Clean it up now, but preserve its original
-			// startTime so Motion resumes the completed timeline instead of replaying.
+			// A transform animation is shared by every transform value. Keep a
+			// finished entry through synchronous target resolution, then clean it
+			// up after Motion has rendered the handed-off values.
 			if (entry.animation.playState === 'finished') {
-				const startTime = entry.startTime;
-				cancel();
-				return startTime;
+				const finishedAnimation = entry.animation;
+				const key = storeId(id, valueName);
+				frame.postRender(() => {
+					frame.postRender(() => {
+						if (store.get(key)?.animation !== finishedAnimation) return;
+						finishedAnimation.cancel();
+						store.delete(key);
+						if (!store.size) w.MotionCancelOptimisedAnimation = undefined;
+					});
+				});
+				return entry.startTime;
 			}
 
+			// Prefer `onfinish` over `finished` for browser support.
+			entry.animation.onfinish = cancel;
 			return entry.startTime;
 		};
 
@@ -179,7 +187,13 @@ function motionAppearBootstrap() {
 	const firstFrames = first.keyframes[first.name] as string[];
 	const placeholderKeyframes: PropertyIndexedKeyframes = {};
 	placeholderKeyframes[first.name] = [firstFrames[0], firstFrames[0]];
-	const readyAnimation = element.animate(placeholderKeyframes, { duration: 10000, easing: 'linear' });
+	let readyAnimation: Animation;
+	try {
+		readyAnimation = element.animate(placeholderKeyframes, { duration: 10000, easing: 'linear' });
+	} catch {
+		complete.delete(elementId);
+		return;
+	}
 
 	// Register every value up front so a handoff that lands before the browser is
 	// paint-ready still finds this element and cancels the placeholder.
@@ -207,9 +221,17 @@ function motionAppearBootstrap() {
 			const key = storeId(elementId, animation.name);
 			// Removed by an early handoff.
 			if (!store.has(key)) continue;
-			const started = element.animate(animation.keyframes, animation.options);
-			started.startTime = startTime;
-			store.set(key, { animation: started, startTime });
+			try {
+				const started = element.animate(animation.keyframes, animation.options);
+				started.startTime = startTime;
+				store.set(key, { animation: started, startTime });
+			} catch {
+				store.delete(key);
+			}
+		}
+
+		if (!activeAnimations.some((animation) => store.has(storeId(elementId, animation.name)))) {
+			complete.delete(elementId);
 		}
 	};
 
@@ -225,8 +247,9 @@ function motionAppearBootstrap() {
 		pendingReady.then(start, abort);
 	} else {
 		const ready = readyAnimation.ready;
-		w.__MotionAppearReady = ready ? ready.then(() => undefined) : Promise.resolve();
-		w.__MotionAppearReady.then(start, abort);
+		const elementReady = ready ? ready.then(() => undefined) : Promise.resolve();
+		w.__MotionAppearReady = elementReady.catch(() => undefined);
+		elementReady.then(start, abort);
 	}
 }
 

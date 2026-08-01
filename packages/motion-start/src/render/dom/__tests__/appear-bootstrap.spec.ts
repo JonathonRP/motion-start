@@ -26,13 +26,14 @@ const immediateFrame = {
 	render: (callback: () => void) => callback(),
 } as unknown as Batcher;
 
-function createAppearElement(elementId: string, placeholderReady?: Promise<unknown>) {
+function createAppearElement(elementId: string, placeholderReady?: Promise<unknown>, throwAtAnimation?: number) {
 	const element = document.createElement('div');
 	element.dataset.framerAppearId = elementId;
 	document.body.append(element);
 
 	const animations: FakeAnimation[] = [];
 	element.animate = ((keyframes: PropertyIndexedKeyframes, options: KeyframeAnimationOptions) => {
+		if (animations.length === throwAtAnimation) throw new Error('WAAPI rejected the keyframes');
 		const animation: FakeAnimation = {
 			keyframes,
 			options,
@@ -184,16 +185,30 @@ describe('appear bootstrap handoff bridge', () => {
 		const second = createAppearElement('el-2');
 		runBootstrap(second.element, opacityAndTransform);
 
-		await window.__MotionAppearReady?.catch(() => undefined);
+		await window.__MotionAppearReady;
 		await Promise.resolve();
 		await Promise.resolve();
 
-		// Neither element animates, and crucially neither is left with a 10s
-		// placeholder pinning it to its first frame.
+		// The interrupted element falls back to hydration-time Motion, but its
+		// rejected readiness signal doesn't suppress later elements.
 		expect(first.animations).toHaveLength(1);
-		expect(second.animations).toHaveLength(1);
+		expect(second.animations).toHaveLength(3);
 		expect(first.animations[0]?.cancelled).toBe(true);
 		expect(second.animations[0]?.cancelled).toBe(true);
+	});
+
+	it('clears completion state when the paint-ready animation cannot be created', () => {
+		const element = document.createElement('div');
+		const elementId = 'el-1';
+		element.dataset.framerAppearId = elementId;
+		element.animate = (() => {
+			throw new Error('WAAPI unavailable');
+		}) as Element['animate'];
+		document.body.append(element);
+
+		expect(() => runBootstrap(element, opacityAndTransform)).not.toThrow();
+		expect(appearComplete.has(elementId)).toBe(false);
+		expect(window.MotionHasOptimisedAnimation?.(elementId)).toBe(false);
 	});
 
 	it('hands the start time to Motion and cancels once the handoff is complete', async () => {
@@ -210,29 +225,61 @@ describe('appear bootstrap handoff bridge', () => {
 		expect(appearAnimationStore.has(appearStoreId(elementId, 'x'))).toBe(false);
 	});
 
-	it('cleans up an animation that finished before hydration', async () => {
+	it('preserves a finished transform until every transform value can hand off', async () => {
 		const { element, elementId, animations } = createAppearElement('el-1', Promise.resolve());
+		const postRenderCallbacks: Array<() => void> = [];
+		const deferredFrame = {
+			postRender: (callback: () => void) => postRenderCallbacks.push(callback),
+			render: (callback: () => void) => callback(),
+		} as unknown as Batcher;
 		runBootstrap(element, opacityAndTransform);
 		await window.__MotionAppearReady;
 		await Promise.resolve();
 
-		animations[2]!.playState = 'finished';
+		const transformAnimation = animations[1];
+		expect(transformAnimation).toBeDefined();
+		if (!transformAnimation) throw new Error('Expected the transform animation to start');
+		transformAnimation.playState = 'finished';
+		const startTime = window.__MotionAppearStartTime;
 
-		expect(window.MotionHandoffAnimation?.(elementId, 'opacity', immediateFrame)).toBe(window.__MotionAppearStartTime);
-		expect(animations[2]?.cancelled).toBe(true);
-		expect(appearAnimationStore.has(appearStoreId(elementId, 'opacity'))).toBe(false);
+		expect(window.MotionHandoffAnimation?.(elementId, 'x', deferredFrame)).toBe(startTime);
+		expect(window.MotionHandoffAnimation?.(elementId, 'scale', deferredFrame)).toBe(startTime);
+		expect(animations[1]?.cancelled).toBe(false);
+		expect(appearAnimationStore.has(appearStoreId(elementId, 'x'))).toBe(true);
+
+		window.MotionHandoffMarkAsComplete?.(elementId);
+		expect(animations[1]?.cancelled).toBe(false);
+		while (postRenderCallbacks.length) postRenderCallbacks.shift()?.();
+
+		expect(animations[1]?.cancelled).toBe(true);
+		expect(appearAnimationStore.has(appearStoreId(elementId, 'x'))).toBe(false);
+	});
+
+	it('isolates a rejected real animation and keeps valid values available for handoff', async () => {
+		const payload = [...opacityAndTransform].reverse();
+		const { element, elementId } = createAppearElement('el-1', Promise.resolve(), 2);
+
+		runBootstrap(element, payload);
+		await window.__MotionAppearReady;
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect(appearAnimationStore.has(appearStoreId(elementId, 'opacity'))).toBe(true);
+		expect(appearAnimationStore.has(appearStoreId(elementId, 'x'))).toBe(false);
+		expect(window.MotionHasOptimisedAnimation?.(elementId)).toBe(true);
 	});
 
 	it('skips transform animations when the user prefers reduced motion', async () => {
 		const matchMedia = window.matchMedia;
+		const noop = () => undefined;
 		window.matchMedia = (query) => ({
 			matches: true,
 			media: query,
 			onchange: null,
-			addListener() {},
-			removeListener() {},
-			addEventListener() {},
-			removeEventListener() {},
+			addListener: noop,
+			removeListener: noop,
+			addEventListener: noop,
+			removeEventListener: noop,
 			dispatchEvent: () => true,
 		});
 		const payload = opacityAndTransform.map((animation) =>
@@ -298,10 +345,12 @@ describe('appear bootstrap handoff bridge', () => {
 		await Promise.resolve();
 
 		const entry = appearAnimationStore.get(appearStoreId(elementId, 'x'));
+		expect(entry).toBeDefined();
+		if (!entry) throw new Error('Expected the transform appear animation to be registered');
 		window.MotionCancelOptimisedAnimation?.(elementId, 'x', immediateFrame, true);
 
 		expect(appearAnimationStore.has(appearStoreId(elementId, 'x'))).toBe(true);
-		expect((entry?.animation as unknown as FakeAnimation).played).toBe(true);
-		expect(entry?.animation.startTime).toBe(entry?.startTime);
+		expect((entry.animation as unknown as FakeAnimation).played).toBe(true);
+		expect(entry.animation.startTime).toBe(entry.startTime);
 	});
 });

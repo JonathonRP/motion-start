@@ -5,25 +5,25 @@ Copyright (c) 2018 Framer B.V.
 
 import { watch } from 'runed';
 import type { Component, ComponentProps, Snippet } from 'svelte';
+import { optimizedAppearDataAttribute } from '../animation/optimized-appear/data-id.js';
 import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte.js';
 import { useLazyContext } from '../context/LazyContext.js';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte.js';
-import { setMotionContext, useMotionContext } from '../context/MotionContext/index.js';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte.js';
-import { optimizedAppearDataAttribute } from '../animation/optimized-appear/data-id.js';
+import { setMotionContext, useMotionContext } from '../context/MotionContext/index.js';
 import type { CreateVisualElement } from '../render/types.js';
 import { invariant, warning } from '../utils/errors.js';
 import type { Ref } from '../utils/safe-react-types.js';
 import { featureDefinitions } from './features/definitions.js';
 import { loadFeatures } from './features/load-features.js';
-import type { RenderComponent, FeatureBundle } from './features/types.js';
-import type { MotionProps } from './types.js';
-import { useMotionRef } from './utils/use-motion-ref.svelte.js';
-import type { UseVisualState } from './utils/use-visual-state.svelte.js';
-import { motionComponentSymbol } from './utils/symbol.js';
-import { useVisualElement } from './utils/use-visual-element.svelte.js';
+import type { FeatureBundle, RenderComponent } from './features/types.js';
 import MeasureLayoutRenderer from './MeasureLayoutRenderer.svelte';
 import MotionScope from './MotionScope.svelte';
+import type { MotionProps } from './types.js';
+import { motionComponentSymbol } from './utils/symbol.js';
+import { useMotionRef } from './utils/use-motion-ref.svelte.js';
+import { useVisualElement } from './utils/use-visual-element.svelte.js';
+import type { UseVisualState } from './utils/use-visual-state.svelte.js';
 
 export interface MotionComponentConfig<Instance, RenderState> {
 	preloadedFeatures?: FeatureBundle;

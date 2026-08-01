@@ -19,6 +19,11 @@ export const appearAnimationStore =
 
 export const appearComplete = browserGlobal?.__MotionAppearComplete ?? new Map<AppearElementId, IsComplete>();
 
+export function markAppearAnimationComplete(elementId: AppearElementId) {
+	if (!appearComplete.has(elementId)) return;
+	appearComplete.set(elementId, true);
+}
+
 /**
  * The parser-time bootstrap emitted by the `appear` prop usually runs before
  * this module is evaluated, but a client-only entry can load it first.

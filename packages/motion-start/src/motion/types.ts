@@ -4,15 +4,15 @@ Copyright (c) 2018 Framer B.V.
 */
 
 import type { Properties } from 'csstype';
-import type { MotionValue } from '../value/index.js';
-import type { AnimationControls } from '../animation/types.js';
-import type { Variants, Target, Transition, TargetAndTransition, Omit, MakeCustomValueType } from '../types.js';
-import type { DraggableProps } from '../gestures/drag/types.js';
-import type { LayoutProps } from './features/layout/types.js';
-import type { EventProps } from '../render/types.js';
-import type { PanHandlers, TapHandlers, HoverHandlers, FocusHandlers } from '../gestures/types.js';
-import type { ViewportProps } from './features/viewport/types.js';
 import type { Snippet } from 'svelte';
+import type { AnimationControls } from '../animation/types.js';
+import type { DraggableProps } from '../gestures/drag/types.js';
+import type { FocusHandlers, HoverHandlers, PanHandlers, TapHandlers } from '../gestures/types.js';
+import type { EventProps } from '../render/types.js';
+import type { MakeCustomValueType, Omit, Target, TargetAndTransition, Transition, Variants } from '../types.js';
+import type { MotionValue } from '../value/index.js';
+import type { LayoutProps } from './features/layout/types.js';
+import type { ViewportProps } from './features/viewport/types.js';
 
 /**
  * Either a string, or array of strings, that reference variants defined via the `variants` prop.

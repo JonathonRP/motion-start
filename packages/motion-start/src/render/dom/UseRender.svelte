@@ -78,7 +78,7 @@ function serializeServerStyle(style: Record<string, unknown>) {
 	return Object.entries(style)
 		.filter(([key, value]) => !/[;:{}\s]/.test(key) && value != null && !isMotionValue(value))
 		.map(([key, value]) => {
-			const serializedValue = String(value).replaceAll(';', '\\00003b');
+			const serializedValue = String(value).replaceAll('\\', '\\00005c').replaceAll(';', '\\00003b');
 			return `${getServerStyleName(key)}: ${serializedValue};`;
 		})
 		.join(' ');

@@ -15,6 +15,7 @@ import { createHtmlRenderState } from '../html/utils/create-render-state.js';
 import { transformAliases, transformPropOrder, transformProps } from '../html/utils/transform.js';
 import type { ResolvedValues } from '../types.js';
 import { type AppearAnimationPayload, appearBootstrapSource } from './appear-bootstrap.js';
+import { isCSSVariableName } from './utils/is-css-variable.js';
 import { getValueAsType } from './value-types/get-as-type.js';
 import { numberValueTypes } from './value-types/number.js';
 
@@ -35,6 +36,7 @@ type ResolvedOptions = {
  * makes the element fall back to animating on hydration.
  */
 const supportedTransitionKeys = new Set(['type', 'duration', 'delay', 'ease', 'times', 'values']);
+const reservedKeyframeProperties = new Set(['composite', 'easing', 'offset']);
 
 /** Mirrors the animator defaults in `AcceleratedAnimation`/`keyframes`. */
 const defaultDurationSeconds = 0.3;
@@ -199,7 +201,7 @@ function createOptions(transition: Record<string, unknown>, frameCount: number):
 	if (Object.keys(transition).some((key) => !supportedTransitionKeys.has(key))) return;
 	if (transition.type !== 'tween' && transition.type !== 'keyframes') return;
 	if (transition.duration !== undefined && (!isFiniteNumber(transition.duration) || transition.duration < 0)) return;
-	if (transition.delay !== undefined && !isFiniteNumber(transition.delay)) return;
+	if (transition.delay !== undefined && (!isFiniteNumber(transition.delay) || transition.delay < 0)) return;
 
 	const duration = (isFiniteNumber(transition.duration) ? transition.duration : defaultDurationSeconds) * 1000;
 	const delay = isFiniteNumber(transition.delay) ? transition.delay * 1000 : 0;
@@ -240,7 +242,6 @@ function createOptions(transition: Record<string, unknown>, frameCount: number):
 }
 
 function buildAnimations(
-	props: MotionProps,
 	initial: ResolvedValues,
 	values: StaticTarget,
 	transition: Record<string, unknown>,
@@ -272,6 +273,9 @@ function buildAnimations(
 	const initialCss = buildCssValues(initial, transformKeys);
 	for (const [name, value] of Object.entries(values)) {
 		if (transformProps.has(name)) continue;
+		// PropertyIndexedKeyframes reserves these names for timing metadata, and
+		// unregistered CSS variables animate discretely rather than like Motion.
+		if (reservedKeyframeProperties.has(name) || isCSSVariableName(name)) return;
 		if (!isSafeTargetValue(value)) return;
 		const frames = Array.isArray(value)
 			? value.map((frameValue) => buildCssValues({ ...initial, [name]: frameValue }, transformKeys)[name])
@@ -328,7 +332,7 @@ export function createAppearBootstrap(
 	if (!isPlainObject(transition) || !isSerializable(transition)) return;
 	if (Object.keys(values).length === 0 || !Object.values(values).every(isSafeTargetValue)) return;
 
-	const animations = buildAnimations(props, initial, values, transition, reducedMotion);
+	const animations = buildAnimations(initial, values, transition, reducedMotion);
 	if (!animations) return;
 
 	// Percent-encoded so user data can never be parsed as JavaScript.

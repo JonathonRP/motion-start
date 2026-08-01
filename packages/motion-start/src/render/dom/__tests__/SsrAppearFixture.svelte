@@ -1,3 +1,5 @@
+<svelte:options runes />
+
 <script lang="ts">
 import { motion } from '../../../index.js';
 
@@ -39,6 +41,36 @@ const unsafeEase = `${scriptEnd}<script>globalThis.__appearInjected = true${scri
 	transition={{ type: 'tween', duration: 0.4 }}
 >
 	implicit ease
+</motion.div>
+
+<motion.div
+	appear
+	data-testid="ssr-appear-negative-delay"
+	initial={{ opacity: 0 }}
+	animate={{ opacity: 1 }}
+	transition={{ type: 'tween', duration: 0.4, delay: -0.1 }}
+>
+	negative delay fallback
+</motion.div>
+
+<motion.div
+	appear
+	data-testid="ssr-appear-reserved-keyframe-property"
+	initial={{ offset: '0px' }}
+	animate={{ offset: '10px' }}
+	transition={{ type: 'tween', duration: 0.4 }}
+>
+	reserved keyframe property fallback
+</motion.div>
+
+<motion.div
+	appear
+	data-testid="ssr-appear-css-variable"
+	initial={{ '--progress': 0 }}
+	animate={{ '--progress': 1 }}
+	transition={{ type: 'tween', duration: 0.4 }}
+>
+	CSS variable fallback
 </motion.div>
 
 <motion.svg

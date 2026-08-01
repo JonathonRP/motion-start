@@ -2,8 +2,8 @@ import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { frame } from '../../../frameloop/index.js';
 import { visualElementStore } from '../../store.js';
-import type { AppearAnimationPayload } from '../appear-bootstrap.js';
 import { createAppearBootstrap } from '../appear.js';
+import type { AppearAnimationPayload } from '../appear-bootstrap.js';
 import AppearHandoffFixture from './AppearHandoffFixture.svelte';
 
 let instance: ReturnType<typeof mount> | undefined;

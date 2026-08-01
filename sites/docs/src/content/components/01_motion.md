@@ -80,9 +80,10 @@ resolved on the server, with an explicit `tween` or `keyframes` transition. Ever
 must also be present in `initial`, since there is no computed style to read from before hydration.
 
 Springs, dynamic variant functions, `transformTemplate`, SVG elements, custom components,
-per-value transitions, repeats, orchestration options (`when`, `delayChildren`, `staggerChildren`)
-and client-side navigations all fall back to the normal hydration-time animation. The parser-time
-animation hands off to Motion during hydration without restarting.
+CSS custom properties, per-value transitions, repeats, orchestration options (`when`,
+`delayChildren`, `staggerChildren`) and client-side navigations all fall back to the normal
+hydration-time animation. The parser-time animation hands off to Motion during hydration without
+restarting.
 
 Omitting `ease` is supported: the parser-time animation uses Motion's default `easeOut` curve.
 `MotionConfig` reduced-motion settings are respected; `"user"` suppresses parser-time transform
