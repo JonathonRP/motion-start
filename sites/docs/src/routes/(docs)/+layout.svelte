@@ -8,6 +8,7 @@
 	import { beforeNavigate } from "$app/navigation";
 	import { MediaQuery } from "svelte/reactivity";
 	import { page } from "$app/state";
+	import { onMount } from "svelte";
 
 	let { children } = $props();
 
@@ -20,6 +21,11 @@
 	 * instead would be a frame late and every transition would run forwards.
 	 */
 	let direction = $state<1 | -1>(1);
+	let hasMounted = $state(false);
+
+	onMount(() => {
+		hasMounted = true;
+	});
 
 	beforeNavigate(({ from, to }) => {
 		if (!to) return;
@@ -54,9 +60,10 @@
 		`popLayout` takes the outgoing page out of flow at its measured position
 		and lays the incoming one out immediately, so the row is never empty and
 		the footer never moves. The two pages cross instead of queueing, which is
-		also what a directional slide wants.
+		also what a directional slide wants. First-load animation suppression is
+		scoped to the page wrapper so nested demos retain their initial variants.
 	-->
-	<AnimatePresence mode="popLayout" initial={false}>
+	<AnimatePresence mode="popLayout">
 		{#key page.url.pathname}
 			<!-- DocPage emits the TOC <aside> and the article as siblings that the
 			     kit expects to be direct flex children of #content. This wrapper
@@ -65,7 +72,7 @@
 			     left edge on every navigation. -->
 			<motion.div
 				class="flex w-full flex-row-reverse xl:gap-4"
-				initial={{ opacity: 0, x: travel }}
+				initial={hasMounted ? { opacity: 0, x: travel } : false}
 				animate={{ opacity: 1, x: 0 }}
 				exit={{ opacity: 0, x: -travel }}
 				transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
