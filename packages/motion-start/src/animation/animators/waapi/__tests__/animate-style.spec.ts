@@ -128,6 +128,24 @@ describe.skipIf(typeof Element === 'undefined')('animateMini', () => {
 		expect(div.style.opacity).toBe('0.5');
 	});
 
+	test('applies multi-word target keyframe when animation has finished', async () => {
+		const div = document.createElement('div');
+		const animation = animateMini(div, { clipPath: 'inset(10%)' }, { duration });
+
+		await animation;
+
+		expect(div.style.clipPath).toBe('inset(10%)');
+	});
+
+	test('applies final multi-word target keyframe when animation has finished', async () => {
+		const div = document.createElement('div');
+		const animation = animateMini(div, { backgroundColor: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'] }, { duration });
+
+		await animation;
+
+		expect(div.style.backgroundColor).toBe('rgb(0, 0, 255)');
+	});
+
 	test('time sets and gets time', async () => {
 		const div = document.createElement('div');
 		const animation = animateMini(div, { opacity: 0.5 }, { duration: 10 });
