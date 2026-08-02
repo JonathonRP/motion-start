@@ -5,6 +5,22 @@ import { frame } from '../../frameloop/index.js';
 import { collectMotionValues, type MotionValue, motionValue } from '../index.js';
 import MotionValueReactiveReadsFixture from './MotionValueReactiveReadsFixture.svelte';
 
+const subscriptionManagers = vi.hoisted(() => ({ constructed: 0 }));
+
+vi.mock('../../utils/subscription-manager.js', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('../../utils/subscription-manager.js')>();
+
+	return {
+		...actual,
+		SubscriptionManager: new Proxy(actual.SubscriptionManager, {
+			construct(target, args) {
+				subscriptionManagers.constructed++;
+				return Reflect.construct(target, args);
+			},
+		}),
+	};
+});
+
 let instance: ReturnType<typeof mount> | undefined;
 
 afterEach(async () => {
@@ -72,5 +88,24 @@ describe('MotionValue reactive reads', () => {
 		expect(value.isAnimating()).toBe(true);
 
 		value.stop();
+	});
+
+	it('allocates the reactive subscription manager only once current is read reactively', () => {
+		subscriptionManagers.constructed = 0;
+
+		const value = motionValue(0);
+		value.set(1);
+
+		// A MotionValue that is never read inside a $derived/$effect and has no
+		// event listeners should not allocate a SubscriptionManager at all.
+		expect(subscriptionManagers.constructed).toBe(0);
+
+		instance = mount(MotionValueReactiveReadsFixture, {
+			target: document.body,
+			props: { value, oncurrent: vi.fn(), onget: vi.fn() },
+		});
+		flushSync();
+
+		expect(subscriptionManagers.constructed).toBe(1);
 	});
 });

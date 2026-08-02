@@ -94,15 +94,21 @@ export class MotionValue<V = any> {
 	 * otherwise unmounting a component that merely read the value would cancel
 	 * an in-flight animation.
 	 *
+	 * Allocated lazily on first reactive subscription, mirroring how `events`
+	 * managers are only created on first `on()`. Most `MotionValue`s are never
+	 * read inside a `$derived`/`$effect`, so this stays undefined for them.
+	 *
 	 * @internal
 	 */
-	readonly #reactiveSubscribers = new SubscriptionManager<() => void>();
+	#reactiveSubscribers?: SubscriptionManager<() => void>;
 
 	/**
 	 * Svelte signal subscriber — registers this value as a reactive dependency
 	 * when `current` is read inside a `$derived` or `$effect`.
 	 */
 	readonly #subscribe = createSubscriber((update) => {
+		this.#reactiveSubscribers ??= new SubscriptionManager<() => void>();
+
 		return this.#reactiveSubscribers.add(update);
 	});
 
@@ -160,8 +166,6 @@ export class MotionValue<V = any> {
 	 * @internal
 	 */
 	liveStyle?: boolean;
-
-	// #subscribe: ReturnType<typeof createSubscriber> | null = null;
 
 	/**
 	 * @param init - The initiating value
@@ -359,7 +363,7 @@ export class MotionValue<V = any> {
 				this.events.change.notify(this._current);
 			}
 
-			this.#reactiveSubscribers.notify();
+			this.#reactiveSubscribers?.notify();
 		}
 
 		// Update render subscribers
