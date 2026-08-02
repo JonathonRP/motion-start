@@ -47,7 +47,10 @@ interface ResolvedValues {
 
 export interface Owner {
 	current: HTMLElement | unknown;
-	getProps: () => { onUpdate?: (latest: ResolvedValues) => void };
+	getProps: () => {
+		onUpdate?: (latest: ResolvedValues) => void;
+		transformTemplate?(transform: ResolvedValues, generatedTransform: string): string;
+	};
 }
 
 export interface MotionValueOptions {

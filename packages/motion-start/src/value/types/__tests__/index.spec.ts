@@ -110,6 +110,20 @@ describe('complex value type', () => {
 			'0% 0px var(--grey, 100) rgba(255, 255, 255, 1)'
 		);
 	});
+
+	/**
+	 * Regression test for motion 12.35.2:
+	 * "Detect divide-by-zero in CSS `calc()` values before making animatable templates."
+	 */
+	it('does not zero out divisors in calc() expressions', () => {
+		// calc() with division: divisor must not become 0 (division by zero => NaN)
+		expect(complex.getAnimatableNone('calc(var(--spacing) / 5)')).toBe('calc(var(--spacing) / 5)');
+
+		expect(complex.getAnimatableNone('calc(20% + 200px / 2)')).toBe('calc(0% + 0px / 2)');
+
+		// Multiplication should still zero out normally
+		expect(complex.getAnimatableNone('calc(20% + 200px * 2)')).toBe('calc(0% + 0px * 0)');
+	});
 });
 
 const red = {

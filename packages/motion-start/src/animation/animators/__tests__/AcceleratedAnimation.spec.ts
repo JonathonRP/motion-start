@@ -69,4 +69,35 @@ describe.skipIf(typeof Element === 'undefined')('AcceleratedAnimation', () => {
 		expect(element.style.opacity).toBe('0');
 		expect(nativeAnimation.cancel).toHaveBeenCalledOnce();
 	});
+
+	/**
+	 * Regression test for motion 11.18.2:
+	 * "Animations with `transformTemplate` not hardware accelerated."
+	 */
+	describe('supports', () => {
+		function createOptions(props: Record<string, unknown>) {
+			const element = document.createElement('div');
+			Element.prototype.animate = vi.fn(() => ({}) as Animation);
+
+			return {
+				name: 'opacity',
+				motionValue: motionValue(1, {
+					owner: {
+						current: element,
+						getProps: () => props,
+					},
+				}),
+				keyframes: [1, 0],
+				duration: 100,
+			} as any;
+		}
+
+		test('supports a plain element', () => {
+			expect(AcceleratedAnimation.supports(createOptions({}))).toBe(true);
+		});
+
+		test('does not support elements with a transformTemplate', () => {
+			expect(AcceleratedAnimation.supports(createOptions({ transformTemplate: () => 'none' }))).toBe(false);
+		});
+	});
 });

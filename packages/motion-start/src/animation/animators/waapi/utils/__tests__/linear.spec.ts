@@ -13,4 +13,14 @@ describe('generateLinearEasing', () => {
 		);
 		expect(generateLinearEasing(() => 0.5, 0)).toEqual('linear(0.5, 0.5)');
 	});
+
+	/**
+	 * Regression test for motion 12.17.0:
+	 * "Improved rounding for `linear()` easing curves."
+	 */
+	test('Rounds generated points to 4 decimal places', () => {
+		expect(generateLinearEasing((p) => p / 3, 30)).toEqual('linear(0, 0.1667, 0.3333)');
+		expect(generateLinearEasing(() => 1 / 3, 20)).toEqual('linear(0.3333, 0.3333)');
+		expect(generateLinearEasing(() => 0.000001, 20)).toEqual('linear(0, 0)');
+	});
 });
