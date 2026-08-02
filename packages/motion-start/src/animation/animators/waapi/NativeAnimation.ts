@@ -119,7 +119,11 @@ export class NativeAnimation implements AnimationPlaybackControls {
 		this.removeAnimation = () => state.get(element)?.delete(valueName);
 
 		const onFinish = () => {
-			this.setValue(element as HTMLElement, valueName, getFinalKeyframe(valueKeyframes as string[], this.options));
+			this.setValue(
+				element as HTMLElement,
+				valueName,
+				getFinalKeyframe(valueKeyframes as string[], this.options, undefined, this.speed)
+			);
 			this.cancel();
 			this.resolveFinishedPromise();
 		};

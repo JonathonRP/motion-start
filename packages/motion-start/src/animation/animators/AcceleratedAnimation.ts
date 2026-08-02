@@ -226,7 +226,7 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			 */
 			animation.onfinish = () => {
 				const { onComplete } = this.options;
-				const keyframe = getFinalKeyframe(keyframes, this.options, finalKeyframe);
+				const keyframe = getFinalKeyframe(keyframes, this.options, finalKeyframe, animation.playbackRate);
 				mv.set(keyframe);
 
 				/**
