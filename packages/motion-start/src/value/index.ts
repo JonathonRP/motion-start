@@ -84,11 +84,26 @@ export class MotionValue<V = any> {
 	private _current: V | undefined;
 
 	/**
+	 * Subscribers registered by Svelte's signal system when `current` is read
+	 * reactively.
+	 *
+	 * These are deliberately kept out of the `change` event's
+	 * `SubscriptionManager` because the size of that manager is used to decide
+	 * whether an animation should be auto-stopped once the last consumer goes
+	 * away. Reactive reads of `current` must not participate in that refcount,
+	 * otherwise unmounting a component that merely read the value would cancel
+	 * an in-flight animation.
+	 *
+	 * @internal
+	 */
+	readonly #reactiveSubscribers = new SubscriptionManager<() => void>();
+
+	/**
 	 * Svelte signal subscriber — registers this value as a reactive dependency
 	 * when `current` is read inside a `$derived` or `$effect`.
 	 */
 	readonly #subscribe = createSubscriber((update) => {
-		return this.on('change', update);
+		return this.#reactiveSubscribers.add(update);
 	});
 
 	/**
@@ -339,8 +354,12 @@ export class MotionValue<V = any> {
 		this.setCurrent(v);
 
 		// Update update subscribers
-		if (this._current !== this.prev && this.events.change) {
-			this.events.change.notify(this._current);
+		if (this._current !== this.prev) {
+			if (this.events.change) {
+				this.events.change.notify(this._current);
+			}
+
+			this.#reactiveSubscribers.notify();
 		}
 
 		// Update render subscribers

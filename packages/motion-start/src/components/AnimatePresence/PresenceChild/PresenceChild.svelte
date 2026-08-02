@@ -29,7 +29,11 @@ function newChildrenMap(): Map<string | number, boolean> {
 		children: desendants,
 	}: Props = $props();
 
-	const presenceChildren = $state(newChildrenMap());
+	// A plain Map: its contents are only ever read imperatively (from
+	// `handleExitComplete` and inside effects that track `isPresent`), so it
+	// does not need to drive reactivity. `$state(new Map())` would have been a
+	// no-op here anyway - Svelte only proxies plain objects and arrays.
+	const presenceChildren = newChildrenMap();
 	const id = $props.id();
 
 	// Keep one mutable context object alive so child registration and popLayout
