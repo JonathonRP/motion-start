@@ -10,6 +10,12 @@ export function setCSSVar(element: HTMLElement, name: string, value: string | nu
 }
 
 export function setStyle(element: HTMLElement, name: string, value: string | number) {
-	// Use setProperty for safety since name is dynamic and may not be a known CSS property
-	element.style.setProperty(name, String(value));
+	// `setProperty` doesn't convert camelCase to kebab-case, so multi-word properties
+	// like `clipPath` would be silently dropped. Custom properties can only be set
+	// through `setProperty`.
+	if (name.startsWith('--')) {
+		element.style.setProperty(name, String(value));
+	} else {
+		element.style[name as MotionStyleKey] = value as never;
+	}
 }
