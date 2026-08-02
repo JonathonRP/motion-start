@@ -6,6 +6,8 @@
 
 import { describe, test, expect, vi } from 'vitest';
 import { GroupPlaybackControls } from '../GroupPlaybackControls.js';
+import { animateValue } from '../animators/MainThreadAnimation.js';
+import { syncDriver, withTimeout } from '../animators/__tests__/utils.js';
 import type { AnimationPlaybackControls } from '../types.js';
 
 function createTestAnimationControls(
@@ -236,5 +238,77 @@ describe('GroupPlaybackControls', () => {
 		const controls = new GroupPlaybackControls([]);
 
 		expect(controls.duration).toEqual(0);
+	});
+
+	/**
+	 * Regression tests for https://github.com/motiondivision/motion/issues/3145
+	 * and https://github.com/motiondivision/motion/issues/3144
+	 *
+	 * The group used to hand the member controls straight to Promise.all, which
+	 * consumed each member's finished promise once. Awaiting the group after it
+	 * had completed would then wait on promises that never resolve.
+	 */
+	describe('finished promise', () => {
+		const createAnimation = () =>
+			animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: 'linear',
+				driver: syncDriver(20),
+			});
+
+		test('await resolves once all animations complete', async () => {
+			const controls = new GroupPlaybackControls([createAnimation(), createAnimation()]);
+
+			await withTimeout(controls, 'await of a running group never resolved');
+		});
+
+		test('a second await after natural completion still resolves', async () => {
+			const controls = new GroupPlaybackControls([createAnimation(), createAnimation()]);
+
+			await withTimeout(controls, 'first await never resolved');
+			await withTimeout(controls, 'await after completion never resolved');
+			await withTimeout(controls.finished, '.finished after completion never resolved');
+		});
+
+		test('.then() fires after natural completion', async () => {
+			const controls = new GroupPlaybackControls([createAnimation(), createAnimation()]);
+
+			await withTimeout(controls, 'first await never resolved');
+
+			const onFinished = vi.fn();
+
+			await withTimeout(
+				new Promise<void>((resolve) => {
+					controls.then(() => {
+						onFinished();
+						resolve();
+					});
+				}),
+				'.then() after completion never fired'
+			);
+
+			expect(onFinished).toHaveBeenCalledTimes(1);
+		});
+
+		test('An empty group resolves immediately', async () => {
+			const controls = new GroupPlaybackControls([]);
+
+			await withTimeout(controls, 'await of an empty group never resolved');
+			await withTimeout(controls, 'second await of an empty group never resolved');
+			await withTimeout(controls.finished, '.finished of an empty group never resolved');
+		});
+
+		test('Falls back to members that do not expose finished', async () => {
+			const a = createTestAnimationControls();
+			const b = createTestAnimationControls();
+
+			expect(a.finished).toBeUndefined();
+
+			const controls = new GroupPlaybackControls([a, b]);
+
+			await withTimeout(controls, 'await of a legacy-member group never resolved');
+			await withTimeout(controls, 'second await of a legacy-member group never resolved');
+		});
 	});
 });

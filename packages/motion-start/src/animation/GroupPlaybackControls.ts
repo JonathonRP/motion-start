@@ -16,8 +16,18 @@ export class GroupPlaybackControls implements AnimationPlaybackControls {
 		this.animations = animations.filter(Boolean) as AnimationPlaybackControls[];
 	}
 
+	/**
+	 * Read each member's own finished promise afresh rather than treating the
+	 * controls themselves as one-shot thenables. Members that predate the
+	 * `finished` getter fall back to the controls object, which is itself a
+	 * thenable. An empty group resolves immediately.
+	 */
+	get finished(): Promise<void> {
+		return Promise.all(this.animations.map((animation) => animation.finished ?? animation)).then(() => undefined);
+	}
+
 	then(onResolve: VoidFunction, onReject?: VoidFunction) {
-		return Promise.all(this.animations).then(onResolve).catch(onReject);
+		return this.finished.then(onResolve).catch(onReject);
 	}
 
 	private getTimeValue() {
@@ -81,7 +91,7 @@ export class GroupPlaybackControls implements AnimationPlaybackControls {
 		return max;
 	}
 
-	private runAll(methodName: keyof Omit<AnimationPlaybackControls, PropNames | 'then' | 'state'>) {
+	private runAll(methodName: keyof Omit<AnimationPlaybackControls, PropNames | 'then' | 'state' | 'finished'>) {
 		this.animations.forEach((controls) => controls[methodName]());
 	}
 

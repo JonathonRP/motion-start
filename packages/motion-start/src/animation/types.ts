@@ -117,6 +117,11 @@ export interface AnimationPlaybackControls {
 	pause: () => void;
 	complete: () => void;
 	cancel: () => void;
+	/**
+	 * Resolves when the animation finishes. Optional so third-party
+	 * implementations of this interface remain valid.
+	 */
+	finished?: Promise<void>;
 	then: (onResolve: VoidFunction, onReject?: VoidFunction) => Promise<void>;
 	attachTimeline?: (
 		timeline: ProgressTimeline,
