@@ -439,6 +439,11 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 			 * no way to read the value from WAAPI every frame.
 			 */
 			!motionValue.owner.getProps().onUpdate &&
+			/**
+			 * WAAPI animations bypass the render pipeline, so an element with a
+			 * transformTemplate would lose it for the duration of the animation.
+			 */
+			!motionValue.owner.getProps().transformTemplate &&
 			!repeatDelay &&
 			repeatType !== 'mirror' &&
 			damping !== 0 &&

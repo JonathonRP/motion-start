@@ -69,10 +69,18 @@ export function removeNonTranslationalTransform<I>(visualElement: VisualElement<
 
 export const positionalValues: { [key: string]: GetActualMeasurementInPixels } = {
 	// Dimensions
-	width: ({ x }, { paddingLeft = '0', paddingRight = '0' }) =>
-		x.max - x.min - Number.parseFloat(paddingLeft) - Number.parseFloat(paddingRight),
-	height: ({ y }, { paddingTop = '0', paddingBottom = '0' }) =>
-		y.max - y.min - Number.parseFloat(paddingTop) - Number.parseFloat(paddingBottom),
+	width: ({ x }, { paddingLeft = '0', paddingRight = '0', boxSizing }) => {
+		const width = x.max - x.min;
+		return boxSizing === 'border-box'
+			? width
+			: width - Number.parseFloat(paddingLeft) - Number.parseFloat(paddingRight);
+	},
+	height: ({ y }, { paddingTop = '0', paddingBottom = '0', boxSizing }) => {
+		const height = y.max - y.min;
+		return boxSizing === 'border-box'
+			? height
+			: height - Number.parseFloat(paddingTop) - Number.parseFloat(paddingBottom);
+	},
 
 	top: (_bbox, { top }) => Number.parseFloat(top as string),
 	left: (_bbox, { left }) => Number.parseFloat(left as string),

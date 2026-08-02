@@ -3,7 +3,7 @@ based on framer-motion@11.11.11,
 Copyright (c) 2018 Framer B.V.
 */
 
-import { transformProps } from '../../render/html/utils/transform.js';
+import { positionalKeys } from '../../render/dom/utils/unit-conversion.js';
 import type { AnimationTypeState } from '../../render/utils/animation-state.js';
 import type { VisualElement } from '../../render/VisualElement.svelte.js';
 import type { TargetAndTransition } from '../../types.js';
@@ -80,7 +80,7 @@ export function animateTarget(
 				key,
 				value,
 				valueTarget,
-				visualElement.shouldReduceMotion && transformProps.has(key) ? { type: false } : valueTransition,
+				visualElement.shouldReduceMotion && positionalKeys.has(key) ? { type: false } : valueTransition,
 				visualElement,
 				isHandoff
 			)
