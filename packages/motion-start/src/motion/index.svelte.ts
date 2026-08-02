@@ -10,8 +10,9 @@ import { useLayoutGroupContext } from '../context/LayoutGroupContext.svelte.js';
 import { useLazyContext } from '../context/LazyContext.js';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte.js';
 import { useCreateMotionContext } from '../context/MotionContext/create.svelte.js';
-import { setMotionContext, useMotionContext } from '../context/MotionContext/index.js';
+import { setMotionContext, type MotionContext, useMotionContext } from '../context/MotionContext/index.js';
 import type { CreateVisualElement } from '../render/types.js';
+import type { VisualElement } from '../render/VisualElement.svelte.js';
 import { invariant, warning } from '../utils/errors.js';
 import type { Ref } from '../utils/safe-react-types.js';
 import { featureDefinitions } from './features/definitions.js';
@@ -78,20 +79,47 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			};
 		});
 		const motionConfig = $derived.by(useMotionConfigContext);
-		const configAndProps = $derived.by(() => {
-			const propsState = $state({
-				...motionConfig,
-				...motionProps,
-				layoutId: useLayoutId(() => motionProps),
-			});
-			return propsState;
-		});
+		/**
+		 * A plain object: the `$derived` already recomputes when the config or props
+		 * change, so wrapping the result in `$state` adds no reactivity. It would only
+		 * deep-proxy the whole props graph (`style`, `variants`, `animate`, ...) on
+		 * every recomputation, changing the identity of structures `VisualElement`
+		 * holds by reference and making user objects reactive that never asked to be.
+		 */
+		const configAndProps = $derived.by(() => ({
+			...motionConfig,
+			...motionProps,
+			layoutId: useLayoutId(() => motionProps),
+		}));
 
 		const { isStatic } = $derived(configAndProps);
 
 		const parentContext = useMotionContext();
 
-		const context = $derived.by(useCreateMotionContext<Instance>(() => motionProps, parentContext));
+		const treeVariants = $derived.by(useCreateMotionContext<Instance>(() => motionProps, parentContext));
+
+		/**
+		 * The visual element lives in init-time state rather than on the object
+		 * `treeVariants` derives. Writing it onto the derived's result meant every
+		 * variant change rebuilt that object and dropped the visual element, so any
+		 * read between the rebuild and the reassignment below saw `undefined`.
+		 */
+		let contextVisualElement = $state<VisualElement<Instance> | null>(null);
+
+		const context: MotionContext<Instance> = {
+			get initial() {
+				return treeVariants.initial;
+			},
+			get animate() {
+				return treeVariants.animate;
+			},
+			get visualElement() {
+				return contextVisualElement;
+			},
+			set visualElement(value) {
+				contextVisualElement = value ?? null;
+			},
+		};
 
 		// Call useVisualState once — mirrors React's useConstant pattern.
 		// visualState.latestValues is taken by reference by VisualElement and mutated
@@ -138,15 +166,6 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 		watch.pre([() => visualElement], () => {
 			context.visualElement = visualElement;
 		});
-
-		// $effect(() => {
-		// 	// MotionContext.Provider
-		// 	MotionContext.Provider = context;
-		// 	return () => {
-		// 		// Since useMotionRef is not called on destroy, the visual element is unmounted here
-		// 		context.visualElement?.unmount();
-		// 	};
-		// });
 
 		let rendererInstance: Record<string, any> | null = null;
 
