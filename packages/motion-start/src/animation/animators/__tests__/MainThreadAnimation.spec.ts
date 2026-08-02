@@ -9,7 +9,7 @@ import { MainThreadAnimation, animateValue } from '../MainThreadAnimation.js';
 import { reverseEasing } from '../../../easing/modifiers/reverse.js';
 import { noop } from '../../../utils/noop.js';
 import type { ValueAnimationOptions } from '../../types.js';
-import { syncDriver } from './utils.js';
+import { syncDriver, persistentSyncDriver } from './utils.js';
 import { KeyframeResolver } from '../../../render/utils/KeyframesResolver.js';
 
 /**
@@ -1380,5 +1380,62 @@ describe('MainThreadAnimation', () => {
 		animation.sample(0.4);
 
 		expect(true).toBe(true);
+	});
+
+	/**
+	 * Regression test for https://github.com/motiondivision/motion/issues/3133
+	 *
+	 * teardown() nulls startTime when an animation finishes, so replaying it
+	 * used to rebuild startTime from the (stale) creation time and the animation
+	 * would immediately finish again.
+	 */
+	test('.play() replays a finished animation once the clock has moved on', async () => {
+		const driver = persistentSyncDriver(20);
+		const output: number[] = [];
+
+		const animation = animateValue({
+			keyframes: [0, 100],
+			duration: 100,
+			ease: 'linear',
+			onUpdate: (v) => output.push(Math.round(v)),
+			driver,
+		});
+
+		await nextFrame();
+
+		expect(output).toEqual([0, 20, 40, 60, 80, 100]);
+
+		animation.play();
+
+		await nextFrame();
+
+		expect(output).toEqual([0, 20, 40, 60, 80, 100, 0, 20, 40, 60, 80, 100]);
+	});
+
+	/**
+	 * Regression test for https://github.com/motiondivision/motion/issues/2947
+	 */
+	test('.play() with speed -1 replays a finished animation in reverse', async () => {
+		const driver = persistentSyncDriver(20);
+		const output: number[] = [];
+
+		const animation = animateValue({
+			keyframes: [0, 100],
+			duration: 100,
+			ease: 'linear',
+			onUpdate: (v) => output.push(Math.round(v)),
+			driver,
+		});
+
+		await nextFrame();
+
+		output.length = 0;
+
+		animation.speed = -1;
+		animation.play();
+
+		await nextFrame();
+
+		expect(output).toEqual([100, 80, 60, 40, 20, 0]);
 	});
 });

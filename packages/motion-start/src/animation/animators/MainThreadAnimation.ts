@@ -21,6 +21,7 @@ import { millisecondsToSeconds, secondsToMilliseconds } from '../../utils/time-c
 import { clamp } from '../../utils/clamp.js';
 import { invariant } from '../../utils/errors.js';
 import { frameloopDriver } from './drivers/driver-frameloop.js';
+import { time } from '../../frameloop/sync-time.js';
 import { getFinalKeyframe } from './waapi/utils/get-final-keyframe.js';
 import { isGenerator } from '../generators/utils/is-generator.js';
 
@@ -206,6 +207,21 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 		}
 	}
 
+	/**
+	 * Update the animation's currentTime based on the provided timestamp,
+	 * the animation's startTime and its playback speed.
+	 */
+	private updateTime(timestamp: number) {
+		if (this.holdTime !== null) {
+			this.currentTime = this.holdTime;
+		} else {
+			// Rounding the time because floating point arithmetic is not always accurate, e.g. 3000.367 - 1000.367 =
+			// 2000.0000000000002. This is a problem when we are comparing the currentTime with the duration, for
+			// example.
+			this.currentTime = Math.round(timestamp - this.startTime!) * this.speed;
+		}
+	}
+
 	tick(timestamp: number, sample = false) {
 		const { resolved } = this;
 
@@ -245,13 +261,8 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 		// Update currentTime
 		if (sample) {
 			this.currentTime = timestamp;
-		} else if (this.holdTime !== null) {
-			this.currentTime = this.holdTime;
 		} else {
-			// Rounding the time because floating point arithmetic is not always accurate, e.g. 3000.367 - 1000.367 =
-			// 2000.0000000000002. This is a problem when we are comparing the currentTime with the duration, for
-			// example.
-			this.currentTime = Math.round(timestamp - this.startTime) * this.speed;
+			this.updateTime(timestamp);
 		}
 
 		// Rebase on delay
@@ -340,7 +351,7 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 			this.holdTime === null && (this.state === 'finished' || (this.state === 'running' && done));
 
 		if (isAnimationFinished && finalKeyframe !== undefined) {
-			state.value = getFinalKeyframe(keyframes, this.options, finalKeyframe);
+			state.value = getFinalKeyframe(keyframes, this.options, finalKeyframe, this.speed);
 		}
 
 		if (onUpdate) {
@@ -382,8 +393,18 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 
 	set speed(newSpeed: number) {
 		const hasChanged = this.playbackSpeed !== newSpeed;
+
+		/**
+		 * Bring currentTime up to date before changing speed, otherwise the time
+		 * elapsed since the previous frame would be rebased at the new speed.
+		 */
+		if (hasChanged && this.driver) {
+			this.updateTime(time.now());
+		}
+
 		this.playbackSpeed = newSpeed;
-		if (hasChanged) {
+
+		if (hasChanged && this.driver) {
 			this.time = millisecondsToSeconds(this.currentTime);
 		}
 	}
@@ -409,16 +430,28 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 		onPlay && onPlay();
 
 		const now = this.driver.now();
-		if (this.holdTime !== null) {
+
+		/**
+		 * The finished check must come first: teardown() nulls startTime when an
+		 * animation finishes, so the `!this.startTime` branch would otherwise
+		 * rebuild it from the now-stale creation time and the animation would
+		 * immediately be "finished" again.
+		 */
+		if (this.state === 'finished') {
+			this.updateFinishedPromise();
+			this.startTime = now;
+		} else if (this.holdTime !== null) {
 			this.startTime = now - this.holdTime;
 		} else if (!this.startTime) {
 			this.startTime = startTime ?? this.calcStartTime();
-		} else if (this.state === 'finished') {
-			this.startTime = now;
 		}
 
-		if (this.state === 'finished') {
-			this.updateFinishedPromise();
+		/**
+		 * Replaying a finished animation in reverse needs to start from the end
+		 * of the animation rather than the beginning.
+		 */
+		if (this.state === 'finished' && this.speed < 0) {
+			this.startTime += this._resolved.calculatedDuration;
 		}
 
 		this.cancelTime = this.startTime;
