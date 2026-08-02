@@ -41,8 +41,8 @@ bun test                   # Run Vitest unit tests
 bun test <pattern>         # Run specific tests matching pattern
 bun run test:ui            # Open Vitest UI
 bun run cypress            # Open Cypress GUI
-bun run cypress run        # Run Cypress headless
-bun run cypress run --spec "cypress/integration/<name>.ts"  # Run single E2E test
+bun run cypress:run        # Run all Cypress specs in 2 local shards with videos
+bun run cypress:run:serial -- --spec "cypress/integration/<name>.ts"  # With bun run dev already running
 
 # Type checking and linting
 npx sv check               # Svelte type checking (run before commits)

@@ -426,22 +426,23 @@ export default defineConfig({
 ### Running E2E Tests
 
 ```bash
-# Start dev server first (in separate terminal)
-bun dev
+# Run all E2E tests in two local shards.
+# This starts and health-checks the playground and retains uncompressed Cypress videos.
+bun run cypress:run
 
-# Run all E2E tests
-npx cypress run
+# Start the dev server before targeted, serial, or interactive runs
+bun run dev
 
 # Run specific test file
-npx cypress run --spec "cypress/integration/drag.ts"
+bun run cypress:run:serial -- --spec "cypress/integration/drag.ts"
 
 # Run by category
-npx cypress run --spec "cypress/integration/animate-presence-*.ts"
-npx cypress run --spec "cypress/integration/layout*.ts"
-npx cypress run --spec "cypress/integration/drag*.ts"
+bun run cypress:run:serial -- --spec "cypress/integration/animate-presence-*.ts"
+bun run cypress:run:serial -- --spec "cypress/integration/layout*.ts"
+bun run cypress:run:serial -- --spec "cypress/integration/drag*.ts"
 
 # Open Cypress UI
-npx cypress open
+bun run cypress
 ```
 
 ### Porting Pattern: React → Svelte
@@ -471,7 +472,7 @@ When porting fixtures from upstream React to Svelte 5:
 
 4. **Copy Cypress test** to `cypress/integration/<test>.ts`
 
-5. **Verify**: `npx cypress run --spec "cypress/integration/<test>.ts"`
+5. **Verify** with the playground running: `bun run cypress:run:serial -- --spec "cypress/integration/<test>.ts"`
 
 ### Support Files
 
@@ -514,11 +515,11 @@ npx sv check
 # Run unit tests
 bun test
 
-# Run a single E2E spec
-npx cypress run --spec "cypress/integration/drag.ts"
+# Run a single E2E spec with `bun run dev` already running
+bun run cypress:run:serial -- --spec "cypress/integration/drag.ts"
 
-# Run all E2E specs
-npx cypress run
+# Run all E2E specs in parallel with videos
+bun run cypress:run
 
 # Format the codebase
 npx @biomejs/biome format --write .
@@ -551,17 +552,15 @@ bun test --watch
 ### E2E Tests (Cypress)
 
 ```bash
-# Start dev server first
-bun dev
+# Run all E2E tests in parallel with videos
+bun run cypress:run
 
-# Run all E2E tests (headless)
-npx cypress run
-
-# Run specific test
-npx cypress run --spec "cypress/integration/drag.ts"
+# Start the dev server before a specific serial test
+bun run dev
+bun run cypress:run:serial -- --spec "cypress/integration/drag.ts"
 
 # Open Cypress UI
-npx cypress open
+bun run cypress
 ```
 
 ### Type Checking
