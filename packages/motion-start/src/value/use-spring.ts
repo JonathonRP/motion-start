@@ -6,7 +6,7 @@ Copyright (c) 2018 Framer B.V.
 import type { SpringOptions } from '../animation/types.js';
 import { type MainThreadAnimation, animateValue } from '../animation/animators/MainThreadAnimation.js';
 import { useMotionConfigContext } from '../context/MotionConfigContext.svelte.js';
-import { frame } from '../frameloop/index.js';
+import { frame, frameData } from '../frameloop/index.js';
 import type { MotionValue } from './index.js';
 import { useMotionValue } from './use-motion-value.svelte.js';
 import { isMotionValue } from './utils/is-motion-value.js';
@@ -51,6 +51,15 @@ export const useSpring = (source: MotionValue | number, config: MaybeGetter<Spri
 	let latestSetter = noop<number>;
 
 	const startAnimation = () => {
+		/**
+		 * If the previous animation hasn't had the chance to even render a frame, render it now.
+		 */
+		const animation = activeSpringAnimation;
+
+		if (animation && animation.time === 0) {
+			animation.sample(frameData.delta);
+		}
+
 		stopAnimation();
 
 		activeSpringAnimation = animateValue({
