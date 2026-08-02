@@ -147,7 +147,7 @@ export type {
 export * from './projection/geometry/types.js';
 export type { IProjectionNode } from './projection/node/types.js';
 export type { DOMMotionComponents } from './render/dom/types.js';
-export type { ForwardRefComponent } from './render/html/types.js';
+export type { ForwardRefComponent, HTMLMotionProps } from './render/html/types.js';
 export type { SVGAttributesAsMotionValues, SVGMotionProps } from './render/svg/types.js';
 export type { AnimationLifecycles, CreateVisualElement } from './render/types.js';
 export { FlatTree } from './render/utils/flat-tree.js';
