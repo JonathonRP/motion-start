@@ -54,8 +54,18 @@ type StaggerWindow = Window & {
 };
 
 function recordStaggerUpdate(number: number, latest: Record<string, string | number>) {
-	const updates = ((window as StaggerWindow).__staggerUpdates ??= {});
-	const itemUpdates = (updates[number] ??= []);
+	const staggerWindow = window as StaggerWindow;
+	let updates = staggerWindow.__staggerUpdates;
+	if (!updates) {
+		updates = {};
+		staggerWindow.__staggerUpdates = updates;
+	}
+
+	let itemUpdates = updates[number];
+	if (!itemUpdates) {
+		itemUpdates = [];
+		updates[number] = itemUpdates;
+	}
 	itemUpdates.push({
 		opacity: Number(latest.opacity),
 		time: performance.now(),
