@@ -354,8 +354,12 @@ export class AcceleratedAnimation<T extends string | number> extends BaseAnimati
 		this.isStopped = true;
 		if (this.state === 'idle') return;
 
+		/**
+		 * Resolve, but don't recreate, the finished promise. A stopped animation
+		 * can't be replayed (isStopped short-circuits play()) so anything awaiting
+		 * it after this point must still resolve.
+		 */
 		this.resolveFinishedPromise();
-		this.updateFinishedPromise();
 
 		const { resolved } = this;
 		if (!resolved) return;

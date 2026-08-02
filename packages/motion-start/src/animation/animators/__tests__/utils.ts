@@ -111,3 +111,32 @@ export function animateSync(animation: KeyframeGenerator<string | number>, timeS
 
 	return output;
 }
+
+/**
+ * A minimal thenable, loose enough to accept both real promises and the
+ * animation playback controls, whose `then` doesn't receive a value.
+ */
+export interface AwaitableLike {
+	then: (onResolve: VoidFunction, onReject?: VoidFunction) => unknown;
+}
+
+/**
+ * Rejects if the provided thenable hasn't settled within `timeout` ms, so a
+ * promise that never resolves fails the test fast instead of stalling the suite.
+ */
+export function withTimeout(thenable: AwaitableLike, message = 'Timed out', timeout = 1000): Promise<void> {
+	return new Promise<void>((resolve, reject) => {
+		const timeoutId = setTimeout(() => reject(new Error(message)), timeout);
+
+		thenable.then(
+			() => {
+				clearTimeout(timeoutId);
+				resolve();
+			},
+			(error?: unknown) => {
+				clearTimeout(timeoutId);
+				reject(error);
+			}
+		);
+	});
+}

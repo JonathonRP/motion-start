@@ -4,12 +4,12 @@
  * Ported from packages/framer-motion/src/animation/animators/__tests__/MainThreadAnimation.test.ts
  */
 
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { MainThreadAnimation, animateValue } from '../MainThreadAnimation.js';
 import { reverseEasing } from '../../../easing/modifiers/reverse.js';
 import { noop } from '../../../utils/noop.js';
 import type { ValueAnimationOptions } from '../../types.js';
-import { syncDriver, persistentSyncDriver } from './utils.js';
+import { syncDriver, persistentSyncDriver, withTimeout } from './utils.js';
 import { KeyframeResolver } from '../../../render/utils/KeyframesResolver.js';
 
 /**
@@ -1437,5 +1437,116 @@ describe('MainThreadAnimation', () => {
 		await nextFrame();
 
 		expect(output).toEqual([100, 80, 60, 40, 20, 0]);
+	});
+
+	/**
+	 * Regression tests for https://github.com/motiondivision/motion/issues/3145
+	 * and https://github.com/motiondivision/motion/issues/3144
+	 *
+	 * teardown() used to immediately replace the just-resolved finished promise
+	 * with a fresh, unresolved one. Anything awaiting or chaining the animation
+	 * after it had completed would then wait forever.
+	 */
+	describe('finished promise', () => {
+		test('await resolves once the animation completes', async () => {
+			const animation = animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: 'linear',
+				driver: syncDriver(20),
+			});
+
+			await withTimeout(animation, 'await of a running animation never resolved');
+
+			expect(animation.state).toBe('finished');
+		});
+
+		test('a second await after natural completion still resolves', async () => {
+			const animation = animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: 'linear',
+				driver: syncDriver(20),
+			});
+
+			await withTimeout(animation, 'first await never resolved');
+			await withTimeout(animation, 'await after completion never resolved');
+			await withTimeout(animation.finished, '.finished after completion never resolved');
+		});
+
+		test('.then() fires after natural completion', async () => {
+			const animation = animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: 'linear',
+				driver: syncDriver(20),
+			});
+
+			await withTimeout(animation, 'first await never resolved');
+
+			const onFinished = vi.fn();
+
+			await withTimeout(
+				new Promise<void>((resolve) => {
+					animation.then(() => {
+						onFinished();
+						resolve();
+					});
+				}),
+				'.then() after completion never fired'
+			);
+
+			expect(onFinished).toHaveBeenCalledTimes(1);
+		});
+
+		test('replaying a finished animation creates a new finished promise', async () => {
+			const animation = animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: 'linear',
+				driver: persistentSyncDriver(20),
+			});
+
+			await withTimeout(animation, 'first await never resolved');
+
+			const firstFinished = animation.finished;
+
+			animation.play();
+
+			expect(animation.finished).not.toBe(firstFinished);
+
+			await withTimeout(animation, 'await of a replayed animation never resolved');
+			await withTimeout(animation, 'await after replay completion never resolved');
+		});
+
+		test('a cancelled animation resolves subsequent awaits', async () => {
+			const animation = animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: linear,
+				driver: syncDriver(20),
+				onUpdate: (v) => {
+					if (v === 40) animation.cancel();
+				},
+			});
+
+			await withTimeout(animation, 'await of a cancelled animation never resolved');
+			await withTimeout(animation, 'await after cancellation never resolved');
+		});
+
+		test('a stopped animation resolves subsequent awaits', async () => {
+			const animation = animateValue({
+				keyframes: [0, 100],
+				duration: 100,
+				ease: linear,
+				driver: syncDriver(20),
+				onUpdate: (v) => {
+					if (v === 40) animation.stop();
+				},
+			});
+
+			await withTimeout(animation, 'await of a stopped animation never resolved');
+			await withTimeout(animation, 'await after stop never resolved');
+		});
 	});
 });

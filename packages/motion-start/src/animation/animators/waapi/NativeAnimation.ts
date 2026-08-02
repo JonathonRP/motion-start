@@ -217,12 +217,21 @@ export class NativeAnimation implements AnimationPlaybackControls {
 	}
 
 	/**
+	 * A promise that resolves when the animation finishes. Only replaced when a
+	 * finished animation is replayed via play(), so awaiting an already-finished
+	 * animation resolves immediately.
+	 */
+	get finished(): Promise<void> {
+		return this.currentFinishedPromise;
+	}
+
+	/**
 	 * Allows the returned animation to be awaited or promise-chained. Currently
 	 * resolves when the animation finishes at all but in a future update could/should
 	 * reject if its cancels.
 	 */
 	then(resolve: VoidFunction, reject?: VoidFunction) {
-		return this.currentFinishedPromise.then(resolve, reject);
+		return this.finished.then(resolve, reject);
 	}
 
 	private updateFinishedPromise() {

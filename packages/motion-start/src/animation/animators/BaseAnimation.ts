@@ -185,12 +185,21 @@ export abstract class BaseAnimation<T extends string | number, Resolved> impleme
 	onPostResolved() {}
 
 	/**
+	 * A promise that resolves when the animation finishes. It is only replaced
+	 * when the animation is replayed, so awaiting a finished animation always
+	 * resolves immediately.
+	 */
+	get finished(): Promise<void> {
+		return this.currentFinishedPromise;
+	}
+
+	/**
 	 * Allows the returned animation to be awaited or promise-chained. Currently
 	 * resolves when the animation finishes at all but in a future update could/should
 	 * reject if its cancels.
 	 */
 	then(resolve: VoidFunction, reject?: VoidFunction) {
-		return this.currentFinishedPromise.then(resolve, reject);
+		return this.finished.then(resolve, reject);
 	}
 
 	flatten() {

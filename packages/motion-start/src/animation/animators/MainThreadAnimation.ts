@@ -511,14 +511,18 @@ export class MainThreadAnimation<T extends string | number> extends BaseAnimatio
 			this.tick(this.cancelTime);
 		}
 		this.teardown();
-		this.updateFinishedPromise();
 	}
 
+	/**
+	 * The finished promise is resolved here but deliberately *not* recreated.
+	 * Recreating it on finish means anything that awaits or chains the animation
+	 * after it has completed would wait on a promise that never resolves. It is
+	 * only recreated in play() when a finished animation is replayed.
+	 */
 	private teardown() {
 		this.state = 'idle';
 		this.stopDriver();
 		this.resolveFinishedPromise();
-		this.updateFinishedPromise();
 		this.startTime = this.cancelTime = null;
 		this.resolver.cancel();
 	}
