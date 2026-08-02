@@ -23,11 +23,11 @@ Common test commands:
 # Svelte type checks
 npx sv check
 
-# Run a specific Cypress spec
-npx cypress run --spec cypress/e2e/animate-presence.cy.ts
+# Run a specific Cypress spec (with `bun run dev` already running)
+bun run cypress:run:serial -- --spec cypress/integration/animate-presence-remove.ts
 
-# Run all Cypress specs
-npx cypress run
+# Run all Cypress specs in two local shards with videos
+bun run cypress:run
 ```
 
 ## TDD Agents (Red → Green → Refactor)
@@ -42,13 +42,13 @@ To standardize TDD, the repo includes three agents under `.github/agents/`:
 1. Start with Red agent to author failing tests aligning with the requirement.
 2. Handoff to Green agent to implement the minimal solution and get tests passing.
 3. Handoff to Refactor agent for cleanup while keeping tests green.
-4. Land the plane: run `npx sv check`, `npx cypress run`, format, commit, and provide a concise session summary.
+4. Land the plane: run `npx sv check`, `bun run cypress:run`, format, commit, and provide a concise session summary.
 
 ## Landing the Plane (Complete Sessions)
 When asked to "land the plane", you MUST run all tests and finalize work:
 1. Run all quality gates:
    - `npx sv check`
-   - `npx cypress run` (or targeted specs if scoped changes)
+   - `bun run cypress:run` (or `bun run cypress:run:serial -- --spec ...` with the playground running for scoped changes)
 2. Ensure formatting/linting are clean: `npx @biomejs/biome format --write .`
 3. Ensure working tree is tidy (no untracked files).
 4. Provide a concise summary: what changed, test results, and any follow-ups.

@@ -14,12 +14,17 @@ concurrency:
   # chained off this workflow's completion via `workflow_run`.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: read
+
 jobs:
   Check:
     name: Run svelte-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -30,10 +35,13 @@ jobs:
       - name: Run svelte-check
         run: bun --bun run check
 
-  Test:
+  FastTests:
+    name: Fast tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -47,14 +55,88 @@ jobs:
       - name: Run type tests
         run: bun --bun run test:types
 
+  Cypress:
+    name: Cypress (shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 1
+            port: 5001
+          - shard: 2
+            port: 5002
+          - shard: 3
+            port: 5003
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-13.6.0
+
+      - name: Install Dependencies
+        run: bun --bun install --frozen-lockfile
+
+      - name: Ensure Cypress binary is installed
+        run: bun x cypress install
+
+      - name: Verify Cypress shard coverage
+        if: ${{ matrix.shard == 1 }}
+        run: bun --bun scripts/cypress-shard.ts --verify --shards "${{ strategy.job-total }}"
+
+      - name: Select Cypress specs
+        id: shard
+        run: |
+          set -euo pipefail
+          specs="$(bun --bun scripts/cypress-shard.ts --shard "${{ matrix.shard }}" --shards "${{ strategy.job-total }}")"
+          if [ -z "$specs" ]; then
+            echo "Shard ${{ matrix.shard }} returned no Cypress specs" >&2
+            exit 1
+          fi
+          echo "specs=$specs" >> "$GITHUB_OUTPUT"
+
       - name: Run Cypress tests
-        # The specs live at the repo root but drive the playground's `?test=`
-        # harness, so it is the playground dev server that has to be started.
-        # `dev:ci` carries the host/port flags rather than passing them through
-        # `bun run --filter`, which does not forward trailing arguments.
         uses: cypress-io/github-action@v7
         with:
           install: false
-          start: bun --bun run dev:ci
-          wait-on: http://localhost:5000
+          start: bun run --cwd sites/playground dev -- --host 0.0.0.0 --port ${{ matrix.port }} --strictPort
+          wait-on: http://localhost:${{ matrix.port }}
           wait-on-timeout: 120
+          spec: ${{ steps.shard.outputs.specs }}
+          config: video=false,screenshotOnRunFailure=true,baseUrl=http://localhost:${{ matrix.port }}
+
+      - name: Upload Cypress failure screenshots
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots-${{ matrix.shard }}
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+  Test:
+    name: Test
+    if: ${{ always() }}
+    permissions: {}
+    needs:
+      - FastTests
+      - Cypress
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all test jobs
+        env:
+          FAST_TESTS_RESULT: ${{ needs.FastTests.result }}
+          CYPRESS_RESULT: ${{ needs.Cypress.result }}
+        run: |
+          if [ "$FAST_TESTS_RESULT" != "success" ] || [ "$CYPRESS_RESULT" != "success" ]; then
+            echo "Fast tests: $FAST_TESTS_RESULT"
+            echo "Cypress: $CYPRESS_RESULT"
+            exit 1
+          fi

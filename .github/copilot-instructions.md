@@ -83,6 +83,6 @@ The project is actively being migrated to Svelte 5 and fixing type errors:
 When finishing a session or when asked to "land the plane":
 - Run all checks and tests:
     - `npx sv check` (Svelte type checks)
-    - `npx cypress run` (E2E tests; or target a spec with `--spec` for scoped changes)
+    - `bun run cypress:run` (parallel E2E with videos; use `bun run cypress:run:serial -- --spec ...` with the playground running for scoped changes)
 - Ensure formatting is clean: `npx @biomejs/biome format --write .`
 - Provide a concise summary: changes made, test results, and any follow-ups.

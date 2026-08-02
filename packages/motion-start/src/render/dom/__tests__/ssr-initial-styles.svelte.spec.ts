@@ -5,6 +5,7 @@ import { render } from 'svelte/server';
 import { describe, expect, it } from 'vitest';
 import SsrAppearFixture from './SsrAppearFixture.svelte';
 import SsrBlockedAppearFixture from './SsrBlockedAppearFixture.svelte';
+import SsrInheritedInitialStylesFixture from './SsrInheritedInitialStylesFixture.svelte';
 import SsrInitialStylesFixture from './SsrInitialStylesFixture.svelte';
 
 function parseStyleAttribute(style: string) {
@@ -171,6 +172,22 @@ describe('motion element SSR styles', () => {
 			transform: 'translateX(24px)',
 		});
 		expect(declarations).not.toHaveProperty('position');
+	});
+
+	it('serializes inherited initial variant styles before a parent enters view', () => {
+		const { body } = render(SsrInheritedInitialStylesFixture);
+		const parentTag = getOpeningTag(body, 'ssr-inherited-parent');
+		const childTag = getOpeningTag(body, 'ssr-inherited-child');
+
+		// The parent controls whileInView, but both elements must remain on their
+		// hidden initial variants until an intersection activates the visible variant.
+		expect({
+			parent: parseStyleAttribute(parentTag.match(/\sstyle="([^"]*)"/)?.[1] ?? ''),
+			child: parseStyleAttribute(childTag.match(/\sstyle="([^"]*)"/)?.[1] ?? ''),
+		}).toMatchObject({
+			parent: { opacity: '0' },
+			child: { opacity: '0', transform: 'translateY(16px)' },
+		});
 	});
 });
 
