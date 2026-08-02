@@ -78,11 +78,18 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 			};
 		});
 		const motionConfig = $derived.by(useMotionConfigContext);
+		/**
+		 * `LayoutGroup` is read through `getContext`, which is a component
+		 * initialisation API. Resolving the group id once here keeps the lookup
+		 * out of the derived below, so a props recompute can never re-enter the
+		 * context system and drop the prefix from `layoutId`.
+		 */
+		const layoutGroupId = useLayoutGroupContext()?.id;
 		const configAndProps = $derived.by(() => {
 			const propsState = $state({
 				...motionConfig,
 				...motionProps,
-				layoutId: useLayoutId(() => motionProps),
+				layoutId: getLayoutId(motionProps, layoutGroupId),
 			});
 			return propsState;
 		});
@@ -213,10 +220,13 @@ export const createRendererMotionComponent = <Props extends {}, Instance, Render
 	return MotionComponent;
 };
 
-export function useLayoutId(props: () => MotionProps) {
-	const { layoutId } = props();
-	const { id: layoutGroupId } = useLayoutGroupContext() ?? {};
-
+/**
+ * Prefixes `layoutId` with the enclosing `LayoutGroup` id.
+ *
+ * `layoutGroupId` must be resolved during component initialisation; this helper
+ * is pure so it can safely run inside a `$derived`.
+ */
+export function getLayoutId({ layoutId }: MotionProps, layoutGroupId?: string) {
 	return layoutGroupId && layoutId !== undefined ? `${layoutGroupId}-${layoutId}` : layoutId;
 }
 

@@ -5,8 +5,4 @@ export {
 	defaultMotionConfig,
 	MOTION_CONFIG_CONTEXT_KEY,
 } from './MotionConfigContext.svelte.js';
-export {
-	createLayoutGroupContext,
-	type LayoutGroupContextType,
-	LAYOUT_GROUP_CONTEXT_KEY,
-} from './LayoutGroupContext.svelte.js';
+export { LAYOUT_GROUP_CONTEXT_KEY } from './LayoutGroupContext.svelte.js';
