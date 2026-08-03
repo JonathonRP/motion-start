@@ -71,6 +71,7 @@
 	},
 	"files": [
 		"dist",
+		"!dist/**/__tests__/**",
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
