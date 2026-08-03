@@ -12,7 +12,7 @@
 		"skipLibCheck": true,
 		"verbatimModuleSyntax": true,
 		"declaration": true,
-		"declarationMap": true,
+		"declarationMap": false,
 		"types": ["vitest/globals", "node"]
 	},
 	"include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
